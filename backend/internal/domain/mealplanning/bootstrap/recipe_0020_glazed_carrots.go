@@ -949,11 +949,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the peeled and sliced carrots in an airtight container in the refrigerator for up to 4 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(345600)), // 4 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(345600)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: true},
@@ -967,11 +965,9 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the chopped herbs in an airtight container lined with a damp paper towel in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(172800)), // 2 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(172800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 13, SatisfiesRecipeStep: true},
 		},

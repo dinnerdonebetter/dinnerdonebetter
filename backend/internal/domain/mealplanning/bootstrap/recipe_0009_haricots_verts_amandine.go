@@ -1096,10 +1096,8 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the blanched and dried green beans in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
@@ -1119,10 +1117,8 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the sauce in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 9, SatisfiesRecipeStep: false},

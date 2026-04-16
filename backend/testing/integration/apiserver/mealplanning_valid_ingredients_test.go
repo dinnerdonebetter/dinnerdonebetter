@@ -38,7 +38,8 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *mealplanning.V
 	assert.Equal(t, expected.RestrictToPreparations, actual.RestrictToPreparations, "expected ValidIngredient RestrictToPreparations")
 	assert.Equal(t, expected.ContainsSesame, actual.ContainsSesame, "expected ValidIngredient ContainsSesame")
 	assert.Equal(t, expected.ContainsFish, actual.ContainsFish, "expected ValidIngredient ContainsFish")
-	assert.Equal(t, expected.StorageTemperatureInCelsius, actual.StorageTemperatureInCelsius, "expected ValidIngredient StorageTemperatureInCelsius")
+	assert.Equal(t, expected.MinStorageTemperatureInCelsius, actual.MinStorageTemperatureInCelsius, "expected ValidIngredient MinStorageTemperatureInCelsius")
+	assert.Equal(t, expected.MaxStorageTemperatureInCelsius, actual.MaxStorageTemperatureInCelsius, "expected ValidIngredient MaxStorageTemperatureInCelsius")
 }
 
 func createValidIngredientForTest(t *testing.T) *mealplanning.ValidIngredient {

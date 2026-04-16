@@ -947,11 +947,9 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the minced shallot and garlic in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(259200)), // 3 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: true},
 		},

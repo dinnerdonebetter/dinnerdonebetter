@@ -1082,11 +1082,9 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the diced onion and minced garlic and ginger in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(259200)), // 3 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: true},
@@ -1100,11 +1098,9 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the chopped tomatoes and chiles in separate airtight containers in the refrigerator for up to 2 days (tomatoes) or 3 days (chiles).",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(259200)), // 3 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 2, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: true},
@@ -1118,11 +1114,9 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Wrap the chopped cilantro in a damp paper towel and store in an airtight container in the refrigerator, or store stems-down in a glass of water with a plastic bag over the leaves.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(172800)), // 2 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(172800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 4, SatisfiesRecipeStep: true},
 		},

@@ -86,14 +86,10 @@ func ConvertGRPCRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskWi
 	}
 
 	return &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
+		MinStorageTemperatureInCelsius: input.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: input.StorageTemperatureInCelsius.Max,
+		MinTimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds.Min,
+		MaxTimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds.Max,
 		StorageType:                 input.StorageType,
 		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
 		Notes:                       input.Notes,
@@ -113,12 +109,12 @@ func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToGRPCRecipePrepTaskWi
 
 	return &mealplanningsvc.RecipePrepTaskWithinRecipeCreationRequestInput{
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
+			Min: input.MinStorageTemperatureInCelsius,
+			Max: input.MaxStorageTemperatureInCelsius,
 		},
 		TimeBufferBeforeRecipeInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
+			Min: input.MinTimeBufferBeforeRecipeInSeconds,
+			Max: input.MaxTimeBufferBeforeRecipeInSeconds,
 		},
 		StorageType:                 input.StorageType,
 		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
@@ -138,14 +134,10 @@ func ConvertGRPCRecipePrepTaskCreationRequestInputToRecipePrepTaskCreationReques
 	}
 
 	return &mealplanning.RecipePrepTaskCreationRequestInput{
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
+		MinStorageTemperatureInCelsius: input.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: input.StorageTemperatureInCelsius.Max,
+		MinTimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds.Min,
+		MaxTimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds.Max,
 		StorageType:                 input.StorageType,
 		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
 		Notes:                       input.Notes,
@@ -165,12 +157,12 @@ func ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationReques
 
 	return &mealplanningsvc.RecipePrepTaskCreationRequestInput{
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
+			Min: input.MinStorageTemperatureInCelsius,
+			Max: input.MaxStorageTemperatureInCelsius,
 		},
 		TimeBufferBeforeRecipeInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
+			Min: input.MinTimeBufferBeforeRecipeInSeconds,
+			Max: input.MaxTimeBufferBeforeRecipeInSeconds,
 		},
 		StorageType:                 input.StorageType,
 		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
@@ -1295,12 +1287,12 @@ func ConvertRecipePrepTaskToGRPCRecipePrepTask(input *mealplanning.RecipePrepTas
 	recipePrepTask := &mealplanningsvc.RecipePrepTask{
 		CreatedAt: grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
+			Max: input.MaxStorageTemperatureInCelsius,
+			Min: input.MinStorageTemperatureInCelsius,
 		},
 		TimeBufferBeforeRecipeInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
+			Max: input.MaxTimeBufferBeforeRecipeInSeconds,
+			Min: input.MinTimeBufferBeforeRecipeInSeconds,
 		},
 		ArchivedAt:                  grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		LastUpdatedAt:               grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
@@ -1324,14 +1316,10 @@ func ConvertRecipePrepTaskToGRPCRecipePrepTask(input *mealplanning.RecipePrepTas
 func ConvertGRPCRecipePrepTaskToRecipePrepTask(input *mealplanningsvc.RecipePrepTask) *mealplanning.RecipePrepTask {
 	recipePrepTask := &mealplanning.RecipePrepTask{
 		CreatedAt: grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
-		},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-		},
+		MinStorageTemperatureInCelsius: input.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: input.StorageTemperatureInCelsius.Max,
+		MinTimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds.Min,
+		MaxTimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds.Max,
 		ArchivedAt:                  grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		LastUpdatedAt:               grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		BelongsToRecipe:             input.BelongsToRecipe,
@@ -1466,14 +1454,10 @@ func ConvertGRPCRecipePrepTaskUpdateRequestInputToRecipePrepTaskUpdateRequestInp
 		Description:                 input.Description,
 		BelongsToRecipe:             input.BelongsToRecipe,
 		TaskSteps:                   taskSteps,
-		TimeBufferBeforeRecipeInSeconds: numbers.OpenRangeUpdateRequestInput[uint32]{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
+		MinTimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds.Min,
+		MaxTimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds.Max,
+		MinStorageTemperatureInCelsius: input.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: input.StorageTemperatureInCelsius.Max,
 	}
 }
 
@@ -1493,12 +1477,12 @@ func ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInp
 		BelongsToRecipe:             input.BelongsToRecipe,
 		TaskSteps:                   taskSteps,
 		TimeBufferBeforeRecipeInSeconds: &grpctypes.Uint32RangeWithOptionalMaxUpdateRequestInput{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
+			Min: input.MinTimeBufferBeforeRecipeInSeconds,
+			Max: input.MaxTimeBufferBeforeRecipeInSeconds,
 		},
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
+			Min: input.MinStorageTemperatureInCelsius,
+			Max: input.MaxStorageTemperatureInCelsius,
 		},
 	}
 }

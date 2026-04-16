@@ -50,8 +50,10 @@ func checkRecipePrepTaskEquality(t *testing.T, taskIndex int, expected, actual *
 	assert.Equal(t, expected.ExplicitStorageInstructions, actual.ExplicitStorageInstructions, "expected prep task %d ExplicitStorageInstructions", taskIndex)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected prep task %d Notes", taskIndex)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected prep task %d Optional", taskIndex)
-	assert.Equal(t, expected.StorageTemperatureInCelsius, actual.StorageTemperatureInCelsius, "expected prep task %d StorageTemperatureInCelsius", taskIndex)
-	assert.Equal(t, expected.TimeBufferBeforeRecipeInSeconds, actual.TimeBufferBeforeRecipeInSeconds, "expected prep task %d TimeBufferBeforeRecipeInSeconds", taskIndex)
+	assert.Equal(t, expected.MinStorageTemperatureInCelsius, actual.MinStorageTemperatureInCelsius, "expected prep task %d MinStorageTemperatureInCelsius", taskIndex)
+	assert.Equal(t, expected.MaxStorageTemperatureInCelsius, actual.MaxStorageTemperatureInCelsius, "expected prep task %d MaxStorageTemperatureInCelsius", taskIndex)
+	assert.Equal(t, expected.MinTimeBufferBeforeRecipeInSeconds, actual.MinTimeBufferBeforeRecipeInSeconds, "expected prep task %d MinTimeBufferBeforeRecipeInSeconds", taskIndex)
+	assert.Equal(t, expected.MaxTimeBufferBeforeRecipeInSeconds, actual.MaxTimeBufferBeforeRecipeInSeconds, "expected prep task %d MaxTimeBufferBeforeRecipeInSeconds", taskIndex)
 	checkRecipePrepTaskStepSliceEquality(t, taskIndex, expected.TaskSteps, actual.TaskSteps)
 }
 

@@ -613,11 +613,10 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the ground pepper in an airtight container at room temperature for up to 7 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Min: new(float32(18)), Max: new(float32(25))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(604800)), // 7 days
-		},
+		MinStorageTemperatureInCelsius: new(float32(18)),
+		MaxStorageTemperatureInCelsius: new(float32(25)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(604800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: true},
 		},

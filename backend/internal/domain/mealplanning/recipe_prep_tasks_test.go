@@ -2,9 +2,6 @@ package mealplanning
 
 import (
 	"testing"
-
-	"github.com/primandproper/platform/numbers"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -36,14 +33,10 @@ func TestRecipePrepTaskCreationRequestInput_Validate(T *testing.T) {
 			BelongsToRecipe: t.Name(),
 			Name:            t.Name(),
 			StorageType:     t.Name(),
-			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-				Max: new(fake.Float32()),
-				Min: new(fake.Float32()),
-			},
-			TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-				Max: new(fake.Uint32()),
-				Min: fake.Uint32(),
-			},
+			MinStorageTemperatureInCelsius: new(fake.Float32()),
+			MaxStorageTemperatureInCelsius: new(fake.Float32()),
+			MinTimeBufferBeforeRecipeInSeconds: fake.Uint32(),
+			MaxTimeBufferBeforeRecipeInSeconds: new(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

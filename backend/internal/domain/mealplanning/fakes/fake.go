@@ -60,6 +60,27 @@ func BuildFakeOptionalFloat32Range() numbers.OpenRange[float32] {
 	}
 }
 
+// BuildFakeOptionalFloat32MinMax returns a fake (*float32, *float32) pair for flattened Min/Max fields.
+func BuildFakeOptionalFloat32MinMax() (*float32, *float32) {
+	minimum := float32(buildFakeNumber())
+	maximum := float32(buildFakeNumber()) + minimum
+	return &minimum, &maximum
+}
+
+// BuildFakeOptionalUint32MinMax returns a fake (*uint32, *uint32) pair for flattened Min/Max fields.
+func BuildFakeOptionalUint32MinMax() (*uint32, *uint32) {
+	minimum := uint32(buildFakeNumber())
+	maximum := uint32(buildFakeNumber()) + minimum
+	return &minimum, &maximum
+}
+
+// BuildFakeUint32WithOptionalMax returns a (uint32, *uint32) pair: required min + optional max.
+func BuildFakeUint32WithOptionalMax() (uint32, *uint32) {
+	minimum := uint32(buildFakeNumber())
+	maximum := uint32(buildFakeNumber()) + minimum
+	return minimum, &maximum
+}
+
 func BuildFakeOptionalUint32Range() numbers.OpenRange[uint32] {
 	minimum := uint32(buildFakeNumber())
 	return numbers.OpenRange[uint32]{

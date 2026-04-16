@@ -704,11 +704,9 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Optional:                    false,
 		ExplicitStorageInstructions: "Store the seasoned, trussed chicken on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 1 hour and up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 3600,                // 1 hour
-			Max: new(uint32(172800)), // 2 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 3600,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(172800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},

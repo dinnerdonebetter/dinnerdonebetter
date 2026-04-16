@@ -16,10 +16,8 @@ import (
 
 func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request *mealplanninggrpc.ValidIngredientCreationRequestInput) *mealplanning.ValidIngredientCreationRequestInput {
 	return &mealplanning.ValidIngredientCreationRequestInput{
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: request.StorageTemperatureInCelsius.Max,
-			Min: request.StorageTemperatureInCelsius.Min,
-		},
+		MinStorageTemperatureInCelsius: request.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: request.StorageTemperatureInCelsius.Max,
 		Warning:                request.Warning,
 		IconPath:               request.IconPath,
 		PluralName:             request.PluralName,
@@ -56,48 +54,47 @@ func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInpu
 }
 
 func ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestInput(x *mealplanninggrpc.ValidIngredientUpdateRequestInput) *mealplanning.ValidIngredientUpdateRequestInput {
-	storageTemperatureInCelsius := numbers.OpenRange[float32]{}
+	var minStorageTemperatureInCelsius, maxStorageTemperatureInCelsius *float32
 	if x.StorageTemperatureInCelsius != nil {
-		storageTemperatureInCelsius = numbers.OpenRange[float32]{
-			Max: x.StorageTemperatureInCelsius.Max,
-			Min: x.StorageTemperatureInCelsius.Min,
-		}
+		minStorageTemperatureInCelsius = x.StorageTemperatureInCelsius.Min
+		maxStorageTemperatureInCelsius = x.StorageTemperatureInCelsius.Max
 	}
 
 	return &mealplanning.ValidIngredientUpdateRequestInput{
-		Name:                        x.Name,
-		Description:                 x.Description,
-		Warning:                     x.Warning,
-		IconPath:                    x.IconPath,
-		ContainsDairy:               x.ContainsDairy,
-		ContainsPeanut:              x.ContainsPeanut,
-		ContainsTreeNut:             x.ContainsTreeNut,
-		ContainsEgg:                 x.ContainsEgg,
-		ContainsWheat:               x.ContainsWheat,
-		ContainsShellfish:           x.ContainsShellfish,
-		ContainsSesame:              x.ContainsSesame,
-		ContainsFish:                x.ContainsFish,
-		ContainsGluten:              x.ContainsGluten,
-		AnimalFlesh:                 x.AnimalFlesh,
-		IsLiquid:                    x.IsLiquid,
-		ContainsSoy:                 x.ContainsSoy,
-		PluralName:                  x.PluralName,
-		AnimalDerived:               x.AnimalDerived,
-		RestrictToPreparations:      x.RestrictToPreparations,
-		ContaminatesEquipment:       x.ContaminatesEquipment,
-		StorageTemperatureInCelsius: storageTemperatureInCelsius,
-		StorageInstructions:         x.StorageInstructions,
-		Slug:                        x.Slug,
-		ContainsAlcohol:             x.ContainsAlcohol,
-		ShoppingSuggestions:         x.ShoppingSuggestions,
-		IsStarch:                    x.IsStarch,
-		IsProtein:                   x.IsProtein,
-		IsGrain:                     x.IsGrain,
-		IsFruit:                     x.IsFruit,
-		IsSalt:                      x.IsSalt,
-		IsFat:                       x.IsFat,
-		IsAcid:                      x.IsAcid,
-		IsHeat:                      x.IsHeat,
+		Name:                           x.Name,
+		Description:                    x.Description,
+		Warning:                        x.Warning,
+		IconPath:                       x.IconPath,
+		ContainsDairy:                  x.ContainsDairy,
+		ContainsPeanut:                 x.ContainsPeanut,
+		ContainsTreeNut:                x.ContainsTreeNut,
+		ContainsEgg:                    x.ContainsEgg,
+		ContainsWheat:                  x.ContainsWheat,
+		ContainsShellfish:              x.ContainsShellfish,
+		ContainsSesame:                 x.ContainsSesame,
+		ContainsFish:                   x.ContainsFish,
+		ContainsGluten:                 x.ContainsGluten,
+		AnimalFlesh:                    x.AnimalFlesh,
+		IsLiquid:                       x.IsLiquid,
+		ContainsSoy:                    x.ContainsSoy,
+		PluralName:                     x.PluralName,
+		AnimalDerived:                  x.AnimalDerived,
+		RestrictToPreparations:         x.RestrictToPreparations,
+		ContaminatesEquipment:          x.ContaminatesEquipment,
+		MinStorageTemperatureInCelsius: minStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: maxStorageTemperatureInCelsius,
+		StorageInstructions:            x.StorageInstructions,
+		Slug:                           x.Slug,
+		ContainsAlcohol:                x.ContainsAlcohol,
+		ShoppingSuggestions:            x.ShoppingSuggestions,
+		IsStarch:                       x.IsStarch,
+		IsProtein:                      x.IsProtein,
+		IsGrain:                        x.IsGrain,
+		IsFruit:                        x.IsFruit,
+		IsSalt:                         x.IsSalt,
+		IsFat:                          x.IsFat,
+		IsAcid:                         x.IsAcid,
+		IsHeat:                         x.IsHeat,
 	}
 }
 
@@ -124,8 +121,8 @@ func ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestI
 		RestrictToPreparations: x.RestrictToPreparations,
 		ContaminatesEquipment:  x.ContaminatesEquipment,
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: x.StorageTemperatureInCelsius.Max,
-			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.MaxStorageTemperatureInCelsius,
+			Min: x.MinStorageTemperatureInCelsius,
 		},
 		StorageInstructions: x.StorageInstructions,
 		Slug:                x.Slug,
@@ -148,8 +145,8 @@ func ConvertValidIngredientToGRPCValidIngredient(x *mealplanning.ValidIngredient
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: x.StorageTemperatureInCelsius.Max,
-			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.MaxStorageTemperatureInCelsius,
+			Min: x.MinStorageTemperatureInCelsius,
 		},
 		StorageInstructions:    x.StorageInstructions,
 		Warning:                x.Warning,
@@ -204,10 +201,8 @@ func ConvertGRPCValidIngredientToValidIngredient(x *mealplanninggrpc.ValidIngred
 		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: x.StorageTemperatureInCelsius.Max,
-			Min: x.StorageTemperatureInCelsius.Min,
-		},
+		MinStorageTemperatureInCelsius: x.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: x.StorageTemperatureInCelsius.Max,
 		StorageInstructions:    x.StorageInstructions,
 		Warning:                x.Warning,
 		PluralName:             x.PluralName,
@@ -247,8 +242,8 @@ func ConvertGRPCValidIngredientToValidIngredient(x *mealplanninggrpc.ValidIngred
 func ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(x *mealplanning.ValidIngredientCreationRequestInput) *mealplanninggrpc.ValidIngredientCreationRequestInput {
 	return &mealplanninggrpc.ValidIngredientCreationRequestInput{
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: x.StorageTemperatureInCelsius.Max,
-			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.MaxStorageTemperatureInCelsius,
+			Min: x.MinStorageTemperatureInCelsius,
 		},
 		Warning:                x.Warning,
 		IconPath:               x.IconPath,
@@ -1430,14 +1425,10 @@ func ConvertGRPCValidVesselToValidVessel(x *mealplanninggrpc.ValidVessel) *mealp
 
 func ConvertGRPCValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigCreationRequestInput(x *mealplanninggrpc.ValidPrepTaskConfigCreationRequestInput) *mealplanning.ValidPrepTaskConfigCreationRequestInput {
 	return &mealplanning.ValidPrepTaskConfigCreationRequestInput{
-		StorageDurationInSeconds: numbers.MinRange[uint32]{
-			Min: x.StorageDurationInSeconds.Min,
-			Max: x.StorageDurationInSeconds.Max,
-		},
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: x.StorageTemperatureInCelsius.Min,
-			Max: x.StorageTemperatureInCelsius.Max,
-		},
+		MinStorageDurationInSeconds: x.StorageDurationInSeconds.Min,
+		MaxStorageDurationInSeconds: x.StorageDurationInSeconds.Max,
+		MinStorageTemperatureInCelsius: x.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: x.StorageTemperatureInCelsius.Max,
 		StorageType:         x.StorageType,
 		StorageInstructions: x.StorageInstructions,
 		Notes:               x.Notes,
@@ -1450,12 +1441,12 @@ func ConvertGRPCValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigCrea
 func ConvertValidPrepTaskConfigCreationRequestInputToGRPCValidPrepTaskConfigCreationRequestInput(x *mealplanning.ValidPrepTaskConfigCreationRequestInput) *mealplanninggrpc.ValidPrepTaskConfigCreationRequestInput {
 	return &mealplanninggrpc.ValidPrepTaskConfigCreationRequestInput{
 		StorageDurationInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
-			Min: x.StorageDurationInSeconds.Min,
-			Max: x.StorageDurationInSeconds.Max,
+			Min: x.MinStorageDurationInSeconds,
+			Max: x.MaxStorageDurationInSeconds,
 		},
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: x.StorageTemperatureInCelsius.Min,
-			Max: x.StorageTemperatureInCelsius.Max,
+			Min: x.MinStorageTemperatureInCelsius,
+			Max: x.MaxStorageTemperatureInCelsius,
 		},
 		StorageType:         x.StorageType,
 		StorageInstructions: x.StorageInstructions,
@@ -1468,14 +1459,10 @@ func ConvertValidPrepTaskConfigCreationRequestInputToGRPCValidPrepTaskConfigCrea
 
 func ConvertGRPCValidPrepTaskConfigUpdateRequestInputToValidPrepTaskConfigUpdateRequestInput(x *mealplanninggrpc.ValidPrepTaskConfigUpdateRequestInput) *mealplanning.ValidPrepTaskConfigUpdateRequestInput {
 	return &mealplanning.ValidPrepTaskConfigUpdateRequestInput{
-		StorageDurationInSeconds: numbers.OpenRangeUpdateRequestInput[uint32]{
-			Min: x.StorageDurationInSeconds.Min,
-			Max: x.StorageDurationInSeconds.Max,
-		},
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: x.StorageTemperatureInCelsius.Min,
-			Max: x.StorageTemperatureInCelsius.Max,
-		},
+		MinStorageDurationInSeconds: x.StorageDurationInSeconds.Min,
+		MaxStorageDurationInSeconds: x.StorageDurationInSeconds.Max,
+		MinStorageTemperatureInCelsius: x.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: x.StorageTemperatureInCelsius.Max,
 		StorageType:         x.StorageType,
 		StorageInstructions: x.StorageInstructions,
 		Notes:               x.Notes,
@@ -1488,12 +1475,12 @@ func ConvertGRPCValidPrepTaskConfigUpdateRequestInputToValidPrepTaskConfigUpdate
 func ConvertValidPrepTaskConfigUpdateRequestInputToGRPCValidPrepTaskConfigUpdateRequestInput(x *mealplanning.ValidPrepTaskConfigUpdateRequestInput) *mealplanninggrpc.ValidPrepTaskConfigUpdateRequestInput {
 	return &mealplanninggrpc.ValidPrepTaskConfigUpdateRequestInput{
 		StorageDurationInSeconds: &grpctypes.Uint32RangeWithOptionalMaxUpdateRequestInput{
-			Min: x.StorageDurationInSeconds.Min,
-			Max: x.StorageDurationInSeconds.Max,
+			Min: x.MinStorageDurationInSeconds,
+			Max: x.MaxStorageDurationInSeconds,
 		},
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: x.StorageTemperatureInCelsius.Min,
-			Max: x.StorageTemperatureInCelsius.Max,
+			Min: x.MinStorageTemperatureInCelsius,
+			Max: x.MaxStorageTemperatureInCelsius,
 		},
 		StorageType:         x.StorageType,
 		StorageInstructions: x.StorageInstructions,
@@ -1510,12 +1497,12 @@ func ConvertValidPrepTaskConfigToGRPCValidPrepTaskConfig(x *mealplanning.ValidPr
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		StorageDurationInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
-			Min: x.StorageDurationInSeconds.Min,
-			Max: x.StorageDurationInSeconds.Max,
+			Min: x.MinStorageDurationInSeconds,
+			Max: x.MaxStorageDurationInSeconds,
 		},
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: x.StorageTemperatureInCelsius.Min,
-			Max: x.StorageTemperatureInCelsius.Max,
+			Min: x.MinStorageTemperatureInCelsius,
+			Max: x.MaxStorageTemperatureInCelsius,
 		},
 		Id:                  x.ID,
 		StorageType:         x.StorageType,
@@ -1532,14 +1519,10 @@ func ConvertGRPCValidPrepTaskConfigToValidPrepTaskConfig(x *mealplanninggrpc.Val
 		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
-		StorageDurationInSeconds: numbers.MinRange[uint32]{
-			Min: x.StorageDurationInSeconds.Min,
-			Max: x.StorageDurationInSeconds.Max,
-		},
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: x.StorageTemperatureInCelsius.Min,
-			Max: x.StorageTemperatureInCelsius.Max,
-		},
+		MinStorageDurationInSeconds: x.StorageDurationInSeconds.Min,
+		MaxStorageDurationInSeconds: x.StorageDurationInSeconds.Max,
+		MinStorageTemperatureInCelsius: x.StorageTemperatureInCelsius.Min,
+		MaxStorageTemperatureInCelsius: x.StorageTemperatureInCelsius.Max,
 		ID:                  x.Id,
 		StorageType:         x.StorageType,
 		StorageInstructions: x.StorageInstructions,

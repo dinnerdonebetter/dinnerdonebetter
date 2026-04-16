@@ -825,11 +825,9 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store halved tomatoes and lemon zest in separate airtight containers in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(172800)), // 2 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(172800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: true},
@@ -843,11 +841,9 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the washed and chopped greens in an airtight container in the refrigerator for up to 2 days (spinach) or 3 days (kale).",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(259200)), // 3 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 9, SatisfiesRecipeStep: true},

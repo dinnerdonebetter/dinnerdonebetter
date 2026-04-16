@@ -4,15 +4,16 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigDatabaseCreationInput creates a ValidPrepTaskConfigDatabaseCreationInput from a ValidPrepTaskConfigCreationRequestInput.
 func ConvertValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigDatabaseCreationInput(input *mealplanning.ValidPrepTaskConfigCreationRequestInput) *mealplanning.ValidPrepTaskConfigDatabaseCreationInput {
 	return &mealplanning.ValidPrepTaskConfigDatabaseCreationInput{
 		ID:                          identifiers.New(),
-		StorageDurationInSeconds:    input.StorageDurationInSeconds,
-		StorageTemperatureInCelsius: input.StorageTemperatureInCelsius,
+		MinStorageDurationInSeconds: input.MinStorageDurationInSeconds,
+		MaxStorageDurationInSeconds: input.MaxStorageDurationInSeconds,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
 		StorageType:                 input.StorageType,
 		StorageInstructions:         input.StorageInstructions,
 		Notes:                       input.Notes,
@@ -25,11 +26,10 @@ func ConvertValidPrepTaskConfigCreationRequestInputToValidPrepTaskConfigDatabase
 // ConvertValidPrepTaskConfigToValidPrepTaskConfigUpdateRequestInput builds a ValidPrepTaskConfigUpdateRequestInput from a ValidPrepTaskConfig.
 func ConvertValidPrepTaskConfigToValidPrepTaskConfigUpdateRequestInput(validPrepTaskConfig *mealplanning.ValidPrepTaskConfig) *mealplanning.ValidPrepTaskConfigUpdateRequestInput {
 	return &mealplanning.ValidPrepTaskConfigUpdateRequestInput{
-		StorageDurationInSeconds: numbers.OpenRangeUpdateRequestInput[uint32]{
-			Min: &validPrepTaskConfig.StorageDurationInSeconds.Min,
-			Max: validPrepTaskConfig.StorageDurationInSeconds.Max,
-		},
-		StorageTemperatureInCelsius: validPrepTaskConfig.StorageTemperatureInCelsius,
+		MinStorageDurationInSeconds: &validPrepTaskConfig.MinStorageDurationInSeconds,
+		MaxStorageDurationInSeconds: validPrepTaskConfig.MaxStorageDurationInSeconds,
+		MinStorageTemperatureInCelsius: validPrepTaskConfig.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: validPrepTaskConfig.MaxStorageTemperatureInCelsius,
 		StorageType:                 &validPrepTaskConfig.StorageType,
 		StorageInstructions:         &validPrepTaskConfig.StorageInstructions,
 		Notes:                       &validPrepTaskConfig.Notes,
@@ -42,8 +42,10 @@ func ConvertValidPrepTaskConfigToValidPrepTaskConfigUpdateRequestInput(validPrep
 // ConvertValidPrepTaskConfigToValidPrepTaskConfigCreationRequestInput builds a ValidPrepTaskConfigCreationRequestInput from a ValidPrepTaskConfig.
 func ConvertValidPrepTaskConfigToValidPrepTaskConfigCreationRequestInput(validPrepTaskConfig *mealplanning.ValidPrepTaskConfig) *mealplanning.ValidPrepTaskConfigCreationRequestInput {
 	return &mealplanning.ValidPrepTaskConfigCreationRequestInput{
-		StorageDurationInSeconds:    validPrepTaskConfig.StorageDurationInSeconds,
-		StorageTemperatureInCelsius: validPrepTaskConfig.StorageTemperatureInCelsius,
+		MinStorageDurationInSeconds: validPrepTaskConfig.MinStorageDurationInSeconds,
+		MaxStorageDurationInSeconds: validPrepTaskConfig.MaxStorageDurationInSeconds,
+		MinStorageTemperatureInCelsius: validPrepTaskConfig.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: validPrepTaskConfig.MaxStorageTemperatureInCelsius,
 		StorageType:                 validPrepTaskConfig.StorageType,
 		StorageInstructions:         validPrepTaskConfig.StorageInstructions,
 		Notes:                       validPrepTaskConfig.Notes,
@@ -57,8 +59,10 @@ func ConvertValidPrepTaskConfigToValidPrepTaskConfigCreationRequestInput(validPr
 func ConvertValidPrepTaskConfigToValidPrepTaskConfigDatabaseCreationInput(validPrepTaskConfig *mealplanning.ValidPrepTaskConfig) *mealplanning.ValidPrepTaskConfigDatabaseCreationInput {
 	return &mealplanning.ValidPrepTaskConfigDatabaseCreationInput{
 		ID:                          validPrepTaskConfig.ID,
-		StorageDurationInSeconds:    validPrepTaskConfig.StorageDurationInSeconds,
-		StorageTemperatureInCelsius: validPrepTaskConfig.StorageTemperatureInCelsius,
+		MinStorageDurationInSeconds: validPrepTaskConfig.MinStorageDurationInSeconds,
+		MaxStorageDurationInSeconds: validPrepTaskConfig.MaxStorageDurationInSeconds,
+		MinStorageTemperatureInCelsius: validPrepTaskConfig.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: validPrepTaskConfig.MaxStorageTemperatureInCelsius,
 		StorageType:                 validPrepTaskConfig.StorageType,
 		StorageInstructions:         validPrepTaskConfig.StorageInstructions,
 		Notes:                       validPrepTaskConfig.Notes,

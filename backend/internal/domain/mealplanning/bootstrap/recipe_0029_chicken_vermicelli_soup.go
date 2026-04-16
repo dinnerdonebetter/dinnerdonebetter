@@ -939,11 +939,9 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store onion and carrot in an airtight container in the refrigerator. Store diced potato in a bowl of water in the refrigerator if prepping more than a few hours ahead. Wrap parsley in a damp paper towel and refrigerate. Store lime juice in an airtight container in the refrigerator.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(259200)), // 3 days
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 3, SatisfiesRecipeStep: false},

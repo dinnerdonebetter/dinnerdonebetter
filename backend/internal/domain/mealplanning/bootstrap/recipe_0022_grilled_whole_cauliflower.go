@@ -467,10 +467,8 @@ func GrilledWholeCauliflowerRecipe(enums *Enumerations, createdRecipes map[strin
 		Optional:                    true,
 		ExplicitStorageInstructions: "Cover and store the brining cauliflower at room temperature for 3-6 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeCovered,
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 10800,              // 3 hours
-			Max: new(uint32(21600)), // 6 hours
-		},
+		MinTimeBufferBeforeRecipeInSeconds: 10800,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(21600)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: false},

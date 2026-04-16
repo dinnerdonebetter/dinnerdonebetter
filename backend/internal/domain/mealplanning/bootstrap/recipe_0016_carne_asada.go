@@ -1420,11 +1420,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the toasted and ground spices in an airtight container at room temperature.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Min: new(float32(18))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 0,
-			Max: new(uint32(604800)), // Up to 7 days
-		},
+		MinStorageTemperatureInCelsius: new(float32(18)),
+		MaxStorageTemperatureInCelsius: new(float32(25)),
+		MinTimeBufferBeforeRecipeInSeconds: 0,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(604800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 0, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 1, SatisfiesRecipeStep: true},
@@ -1439,11 +1438,9 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 		Optional:                    false,
 		ExplicitStorageInstructions: "Store the marinated steak in a sealed zipper-lock bag in the refrigerator for at least 3 hours and up to 12 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: 10800,              // 3 hours
-			Max: new(uint32(43200)), // 12 hours
-		},
+		MaxStorageTemperatureInCelsius: new(float32(4)),
+		MinTimeBufferBeforeRecipeInSeconds: 10800,
+		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(43200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{BelongsToRecipeStepIndex: 8, SatisfiesRecipeStep: false},
 			{BelongsToRecipeStepIndex: 10, SatisfiesRecipeStep: false},

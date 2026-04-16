@@ -105,9 +105,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Ingredient: &mealplanning.ValidIngredient{
-								StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-									Min: new(float32(2.5)),
-								},
+								MinStorageTemperatureInCelsius: new(float32(2.5)),
 								PluralName:          "chicken breasts",
 								StorageInstructions: "keep frozen",
 								Name:                "chicken breast",

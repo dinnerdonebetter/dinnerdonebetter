@@ -570,9 +570,9 @@ func frozenIngredientDefrostStepsFilter(recipe *mealplanning.Recipe) map[string]
 			// if it's a valid ingredient
 			if ingredient.Ingredient != nil &&
 				// if the ingredient has storage temperature set
-				ingredient.Ingredient.StorageTemperatureInCelsius.Min != nil &&
+				ingredient.Ingredient.MinStorageTemperatureInCelsius != nil &&
 				// the ingredient's storage temperature is set to something about freezing temperature.
-				*ingredient.Ingredient.StorageTemperatureInCelsius.Min <= 3 {
+				*ingredient.Ingredient.MinStorageTemperatureInCelsius <= 3 {
 				ingredientIndices = append(ingredientIndices, i)
 			}
 		}

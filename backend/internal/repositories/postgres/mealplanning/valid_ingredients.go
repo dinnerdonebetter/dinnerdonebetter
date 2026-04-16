@@ -11,7 +11,6 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
-	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	platformkeys "github.com/primandproper/platform/observability/keys"
 	"github.com/primandproper/platform/observability/tracing"
@@ -64,10 +63,8 @@ func (q *repository) GetValidIngredient(ctx context.Context, validIngredientID s
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-			Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
-		},
+		MinStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+		MaxStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 		IconPath:               result.IconPath,
 		Warning:                result.Warning,
 		PluralName:             result.PluralName,
@@ -120,10 +117,8 @@ func (q *repository) GetRandomValidIngredient(ctx context.Context) (*mealplannin
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-			Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
-		},
+		MinStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+		MaxStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 		IconPath:               result.IconPath,
 		Warning:                result.Warning,
 		PluralName:             result.PluralName,
@@ -201,10 +196,8 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-				Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-				Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
-			},
+			MinStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			MaxStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 			IconPath:               result.IconPath,
 			Warning:                result.Warning,
 			PluralName:             result.PluralName,
@@ -292,10 +285,8 @@ func (q *repository) SearchForValidIngredientsForPreparation(ctx context.Context
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-				Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-				Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
-			},
+			MinStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			MaxStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 			IconPath:               result.IconPath,
 			Warning:                result.Warning,
 			PluralName:             result.PluralName,
@@ -384,10 +375,8 @@ func (q *repository) GetValidIngredients(ctx context.Context, filter *filtering.
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-				Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-				Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
-			},
+			MinStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			MaxStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 			IconPath:               result.IconPath,
 			Warning:                result.Warning,
 			PluralName:             result.PluralName,
@@ -459,10 +448,8 @@ func (q *repository) GetValidIngredientsWithIDs(ctx context.Context, ids []strin
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-				Max: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-				Min: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
-			},
+			MinStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			MaxStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
 			IconPath:               result.IconPath,
 			Warning:                result.Warning,
 			PluralName:             result.PluralName,
@@ -551,8 +538,8 @@ func (q *repository) CreateValidIngredient(ctx context.Context, input *mealplann
 		PluralName:                              input.PluralName,
 		RestrictToPreparations:                  input.RestrictToPreparations,
 		ContaminatesEquipment:                   input.ContaminatesEquipment,
-		MaximumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Max),
-		MinimumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Min),
+		MaximumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.MaxStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.MinStorageTemperatureInCelsius),
 		StorageInstructions:                     input.StorageInstructions,
 		Slug:                                    input.Slug,
 		ContainsAlcohol:                         input.ContainsAlcohol,
@@ -599,10 +586,8 @@ func (q *repository) CreateValidIngredient(ctx context.Context, input *mealplann
 		IsHeat:                 input.IsHeat,
 		RestrictToPreparations: input.RestrictToPreparations,
 		ContaminatesEquipment:  input.ContaminatesEquipment,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
-		},
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
 		StorageInstructions: input.StorageInstructions,
 		Slug:                input.Slug,
 		ContainsAlcohol:     input.ContainsAlcohol,
@@ -637,8 +622,8 @@ func (q *repository) UpdateValidIngredient(ctx context.Context, updated *mealpla
 		Name:                                    updated.Name,
 		PluralName:                              updated.PluralName,
 		IconPath:                                updated.IconPath,
-		MaximumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(updated.StorageTemperatureInCelsius.Max),
-		MinimumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(updated.StorageTemperatureInCelsius.Min),
+		MaximumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(updated.MaxStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(updated.MinStorageTemperatureInCelsius),
 		IsLiquid:                                database.NullBoolFromBool(updated.IsLiquid),
 		ContainsWheat:                           updated.ContainsWheat,
 		ContainsPeanut:                          updated.ContainsPeanut,

@@ -6,7 +6,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput creates a RecipePrepTaskUpdateRequestInput from a RecipePrepTask.
@@ -26,11 +25,10 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *mealplanning
 		Notes:                       &input.Notes,
 		ExplicitStorageInstructions: &input.ExplicitStorageInstructions,
 		Optional:                    &input.Optional,
-		StorageTemperatureInCelsius: input.StorageTemperatureInCelsius,
-		TimeBufferBeforeRecipeInSeconds: numbers.OpenRangeUpdateRequestInput[uint32]{
-			Min: &input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: &input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 		StorageType:     &input.StorageType,
 		BelongsToRecipe: &input.BelongsToRecipe,
 		TaskSteps:       taskSteps,
@@ -60,8 +58,10 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 		StorageType:                     input.StorageType,
 		BelongsToRecipe:                 input.BelongsToRecipe,
 		TaskSteps:                       taskSteps,
-		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
-		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 	}
 
 	return x
@@ -78,8 +78,10 @@ func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDataba
 		Optional:                        input.Optional,
 		StorageType:                     input.StorageType,
 		BelongsToRecipe:                 input.BelongsToRecipe,
-		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
-		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 	}
 
 	x.TaskSteps = []*mealplanning.RecipePrepTaskStepDatabaseCreationInput{}
@@ -115,8 +117,10 @@ func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *mealplann
 		Optional:                        input.Optional,
 		StorageType:                     input.StorageType,
 		TaskSteps:                       taskSteps,
-		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
-		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 		BelongsToRecipe:                 input.BelongsToRecipe,
 	}
 }
@@ -143,8 +147,10 @@ func ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(input *mealplanni
 		StorageType:                     input.StorageType,
 		BelongsToRecipe:                 input.BelongsToRecipe,
 		RecipeSteps:                     taskSteps,
-		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
-		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 	}
 }
 
@@ -163,8 +169,10 @@ func ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(recip
 		StorageType:                     input.StorageType,
 		BelongsToRecipe:                 input.BelongsToRecipe,
 		RecipeSteps:                     taskSteps,
-		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
-		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 	}
 }
 
