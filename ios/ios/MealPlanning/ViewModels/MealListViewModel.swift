@@ -41,7 +41,7 @@ class MealListViewModel {
     errorMessage = nil
 
     if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
+      let provider = LocalDataProvider.shared
       provider.loadIfNeeded()
       self.meals = provider.getMeals()
       isLoading = false
@@ -114,7 +114,7 @@ class MealListViewModel {
     searchError = nil
 
     if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
+      let provider = LocalDataProvider.shared
       searchResults = provider.searchMeals(query: query)
       isSearching = false
       return

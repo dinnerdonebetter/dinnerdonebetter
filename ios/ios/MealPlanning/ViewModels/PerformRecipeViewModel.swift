@@ -62,7 +62,7 @@ class PerformRecipeViewModel {
     errorMessage = nil
 
     if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
+      let provider = LocalDataProvider.shared
       provider.loadIfNeeded()
       self.recipe = provider.getRecipe(id: recipeID)
       buildProductIDToStepIndexMapping()
@@ -369,7 +369,6 @@ class PerformRecipeViewModel {
       return false
     }
 
-    let stepName = step.hasPreparation ? step.preparation.name : stepID
     let nonOptionalConditions = step.completionConditions.enumerated().filter {
       !$0.element.optional
     }
@@ -444,16 +443,6 @@ class PerformRecipeViewModel {
   /// Can the user press "Complete Step" to mark this step done?
   /// Requires: wash hands + prerequisites + all non-optional conditions + timer condition (if step has timer)
   func canCompleteStep(recipeID: String, stepID: String) -> Bool {
-    let recipeName = recipe?.name ?? "???"
-    let stepName: String = {
-      if let step = stepFor(recipeID: recipeID, stepID: stepID),
-        step.hasPreparation
-      {
-        return step.preparation.name
-      }
-      return stepID
-    }()
-
     if !washHandsCompleted {
       return false
     }
@@ -569,15 +558,6 @@ class PerformRecipeViewModel {
 
   func toggleStep(recipeID: String, stepID: String) {
     let currentStepKey = stepKey(recipeID: recipeID, stepID: stepID)
-    let recipeName = recipe?.name ?? "???"
-    let stepName: String = {
-      if let step = stepFor(recipeID: recipeID, stepID: stepID),
-        step.hasPreparation
-      {
-        return step.preparation.name
-      }
-      return stepID
-    }()
 
     // Basic checks: wash hands + prerequisites (NOT completion conditions)
     guard canStartStep(recipeID: recipeID, stepID: stepID) else {

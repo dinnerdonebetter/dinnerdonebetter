@@ -244,16 +244,12 @@ struct StepCardView: View {
     let prerequisiteStepKeys: [String]
     let isTimerActive: Bool
 
-    let canCheckStep: Bool
-    if let overrideCompleted = isCompletedOverride, let overrideCanCheck = canCheckOverride {
+    if let overrideCompleted = isCompletedOverride, canCheckOverride != nil {
       isCompleted = overrideCompleted
-      canCheckStep = overrideCanCheck
       prerequisiteStepKeys = []
       isTimerActive = timerElapsedSeconds != nil
     } else {
       isCompleted = viewModel.isStepCompleted(recipeID: recipeID, stepID: step.id)
-      let canStartStep = viewModel.canStartStep(recipeID: recipeID, stepID: step.id)
-      canCheckStep = viewModel.canCheckStep(recipeID: recipeID, stepID: step.id)
       isTimerActive = viewModel.isStepTimerActive(recipeID: recipeID, stepID: step.id)
       prerequisiteStepKeys = viewModel.getPrerequisiteStepKeys(recipeID: recipeID, stepID: step.id)
     }
@@ -275,7 +271,6 @@ struct StepCardView: View {
         ?? viewModel.canSkipStepTimer(
           recipeID: recipeID, stepID: step.id))
       : false
-    let timerIconColor: Color = canSkipTimer ? .green : .orange
 
     let hasTimerCondition =
       step.estimatedTimeInSeconds.hasMin && step.estimatedTimeInSeconds.min > 0

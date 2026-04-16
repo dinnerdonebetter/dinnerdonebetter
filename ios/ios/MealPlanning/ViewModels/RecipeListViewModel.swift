@@ -47,7 +47,7 @@ class RecipeListViewModel {
     errorMessage = nil
 
     if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
+      let provider = LocalDataProvider.shared
       provider.loadIfNeeded()
       self.recipes = provider.getRecipes()
       isLoading = false
@@ -121,7 +121,7 @@ class RecipeListViewModel {
     searchError = nil
 
     if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
+      let provider = LocalDataProvider.shared
       searchResults = provider.searchRecipes(query: query)
       isSearching = false
       return

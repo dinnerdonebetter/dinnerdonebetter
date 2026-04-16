@@ -270,9 +270,6 @@ class HomeViewModel {
       let mealPlans = try await fetchMealPlans()
       self.allMealPlans = mealPlans
 
-      // Log pending vote meal plans count
-      let pendingCount = pendingVoteMealPlans.count
-
       // Then fetch tasks (which needs meal plans to be loaded)
       let tasks = try await fetchUserTasks()
       self.userTasks = tasks

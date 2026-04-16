@@ -34,7 +34,7 @@ class MealDetailViewModel {
     errorMessage = nil
 
     if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
+      let provider = LocalDataProvider.shared
       provider.loadIfNeeded()
       self.meal = provider.getMeal(id: mealID)
       isLoading = false
