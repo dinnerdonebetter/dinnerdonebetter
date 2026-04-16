@@ -187,25 +187,28 @@ message MeasurementUnitConversionMismatch {
 
 message ValidPreparation {
   google.protobuf.Timestamp created_at = 1;
-  common.Uint16RangeWithOptionalMax instrument_count = 2;
-  common.Uint16RangeWithOptionalMax ingredient_count = 3;
-  common.Uint16RangeWithOptionalMax vessel_count = 4;
-  optional google.protobuf.Timestamp archived_at = 5;
-  optional google.protobuf.Timestamp last_updated_at = 6;
-  string icon_path = 7;
-  string past_tense = 8;
-  string id = 9;
-  string name = 10;
-  string description = 11;
-  string slug = 12;
-  bool restrict_to_ingredients = 13;
-  bool temperature_required = 14;
-  bool time_estimate_required = 15;
-  bool condition_expression_required = 16;
-  bool consumes_vessel = 17;
-  bool only_for_vessels = 18;
-  bool yields_nothing = 19;
-  repeated uploaded_media.UploadedMedia media = 20;
+  uint32 min_instrument_count = 2;
+  optional uint32 max_instrument_count = 3;
+  uint32 min_ingredient_count = 4;
+  optional uint32 max_ingredient_count = 5;
+  uint32 min_vessel_count = 6;
+  optional uint32 max_vessel_count = 7;
+  optional google.protobuf.Timestamp archived_at = 8;
+  optional google.protobuf.Timestamp last_updated_at = 9;
+  string icon_path = 10;
+  string past_tense = 11;
+  string id = 12;
+  string name = 13;
+  string description = 14;
+  string slug = 15;
+  bool restrict_to_ingredients = 16;
+  bool temperature_required = 17;
+  bool time_estimate_required = 18;
+  bool condition_expression_required = 19;
+  bool consumes_vessel = 20;
+  bool only_for_vessels = 21;
+  bool yields_nothing = 22;
+  repeated uploaded_media.UploadedMedia media = 23;
 }
 
 message ValidPreparationInstrument {

@@ -241,21 +241,24 @@ message ValidMeasurementUnitUpdateRequestInput {
 }
 
 message ValidPreparationCreationRequestInput {
-  common.Uint16RangeWithOptionalMax instrument_count = 1;
-  common.Uint16RangeWithOptionalMax ingredient_count = 2;
-  common.Uint16RangeWithOptionalMax vessel_count = 3;
-  string icon_path = 4;
-  string past_tense = 5;
-  string slug = 6;
-  string name = 7;
-  string description = 8;
-  bool temperature_required = 9;
-  bool time_estimate_required = 10;
-  bool condition_expression_required = 11;
-  bool consumes_vessel = 12;
-  bool only_for_vessels = 13;
-  bool restrict_to_ingredients = 14;
-  bool yields_nothing = 15;
+  uint32 min_instrument_count = 1;
+  optional uint32 max_instrument_count = 2;
+  uint32 min_ingredient_count = 3;
+  optional uint32 max_ingredient_count = 4;
+  uint32 min_vessel_count = 5;
+  optional uint32 max_vessel_count = 6;
+  string icon_path = 7;
+  string past_tense = 8;
+  string slug = 9;
+  string name = 10;
+  string description = 11;
+  bool temperature_required = 12;
+  bool time_estimate_required = 13;
+  bool condition_expression_required = 14;
+  bool consumes_vessel = 15;
+  bool only_for_vessels = 16;
+  bool restrict_to_ingredients = 17;
+  bool yields_nothing = 18;
 }
 
 message ValidPreparationInstrumentCreationRequestInput {
@@ -271,21 +274,24 @@ message ValidPreparationInstrumentUpdateRequestInput {
 }
 
 message ValidPreparationUpdateRequestInput {
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput instrument_count = 1;
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput ingredient_count = 2;
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput vessel_count = 3;
-  optional string name = 4;
-  optional string description = 5;
-  optional string icon_path = 6;
-  optional bool yields_nothing = 7;
-  optional string slug = 8;
-  optional bool restrict_to_ingredients = 9;
-  optional string past_tense = 10;
-  optional bool temperature_required = 11;
-  optional bool time_estimate_required = 12;
-  optional bool condition_expression_required = 13;
-  optional bool consumes_vessel = 14;
-  optional bool only_for_vessels = 15;
+  optional uint32 min_instrument_count = 1;
+  optional uint32 max_instrument_count = 2;
+  optional uint32 min_ingredient_count = 3;
+  optional uint32 max_ingredient_count = 4;
+  optional uint32 min_vessel_count = 5;
+  optional uint32 max_vessel_count = 6;
+  optional string name = 7;
+  optional string description = 8;
+  optional string icon_path = 9;
+  optional bool yields_nothing = 10;
+  optional string slug = 11;
+  optional bool restrict_to_ingredients = 12;
+  optional string past_tense = 13;
+  optional bool temperature_required = 14;
+  optional bool time_estimate_required = 15;
+  optional bool condition_expression_required = 16;
+  optional bool consumes_vessel = 17;
+  optional bool only_for_vessels = 18;
 }
 
 message ValidPreparationVesselCreationRequestInput {

@@ -7,17 +7,15 @@
 package identity
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	filtering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	uploaded_media "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/uploaded_media"
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (

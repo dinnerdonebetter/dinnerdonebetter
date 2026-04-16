@@ -7,16 +7,14 @@
 package webhooks
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	filtering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (

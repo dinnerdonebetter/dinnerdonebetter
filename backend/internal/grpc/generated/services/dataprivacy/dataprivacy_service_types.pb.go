@@ -7,14 +7,12 @@
 package dataprivacy
 
 import (
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
-	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
-
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (

@@ -7,15 +7,13 @@
 package uploaded_media
 
 import (
+	filtering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
-	filtering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
-
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (

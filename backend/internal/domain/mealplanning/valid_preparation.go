@@ -9,7 +9,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -34,11 +33,11 @@ type (
 	ValidPreparation struct {
 		_                           struct{}                       `json:"-"`
 		CreatedAt                   time.Time                      `json:"createdAt"`
-		InstrumentCount             numbers.MinRange[uint16]       `json:"instrumentCount"`
-		IngredientCount             numbers.MinRange[uint16]       `json:"ingredientCount"`
-		VesselCount                 numbers.MinRange[uint16]       `json:"vesselCount"`
 		ArchivedAt                  *time.Time                     `json:"archivedAt"`
 		LastUpdatedAt               *time.Time                     `json:"lastUpdatedAt"`
+		MaxInstrumentCount          *uint16                        `json:"maxInstrumentCount,omitempty"`
+		MaxIngredientCount          *uint16                        `json:"maxIngredientCount,omitempty"`
+		MaxVesselCount              *uint16                        `json:"maxVesselCount,omitempty"`
 		Name                        string                         `json:"name"`
 		PastTense                   string                         `json:"pastTense"`
 		ID                          string                         `json:"id"`
@@ -46,6 +45,9 @@ type (
 		Description                 string                         `json:"description"`
 		Slug                        string                         `json:"slug"`
 		Media                       []*uploadedmedia.UploadedMedia `json:"media"`
+		MinInstrumentCount          uint16                         `json:"minInstrumentCount"`
+		MinIngredientCount          uint16                         `json:"minIngredientCount"`
+		MinVesselCount              uint16                         `json:"minVesselCount"`
 		TemperatureRequired         bool                           `json:"temperatureRequired"`
 		TimeEstimateRequired        bool                           `json:"timeEstimateRequired"`
 		ConditionExpressionRequired bool                           `json:"conditionExpressionRequired"`
@@ -59,64 +61,73 @@ type (
 	ValidPreparationCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		InstrumentCount             numbers.MinRange[uint16] `json:"instrumentCount"`
-		IngredientCount             numbers.MinRange[uint16] `json:"ingredientCount"`
-		VesselCount                 numbers.MinRange[uint16] `json:"vesselCount"`
-		IconPath                    string                   `json:"iconPath"`
-		PastTense                   string                   `json:"pastTense"`
-		Slug                        string                   `json:"slug"`
-		Name                        string                   `json:"name"`
-		Description                 string                   `json:"description"`
-		TemperatureRequired         bool                     `json:"temperatureRequired"`
-		TimeEstimateRequired        bool                     `json:"timeEstimateRequired"`
-		ConditionExpressionRequired bool                     `json:"conditionExpressionRequired"`
-		ConsumesVessel              bool                     `json:"consumesVessel"`
-		OnlyForVessels              bool                     `json:"onlyForVessels"`
-		RestrictToIngredients       bool                     `json:"restrictToIngredients"`
-		YieldsNothing               bool                     `json:"yieldsNothing"`
+		MaxInstrumentCount          *uint16 `json:"maxInstrumentCount,omitempty"`
+		MaxIngredientCount          *uint16 `json:"maxIngredientCount,omitempty"`
+		MaxVesselCount              *uint16 `json:"maxVesselCount,omitempty"`
+		IconPath                    string  `json:"iconPath"`
+		PastTense                   string  `json:"pastTense"`
+		Slug                        string  `json:"slug"`
+		Name                        string  `json:"name"`
+		Description                 string  `json:"description"`
+		MinInstrumentCount          uint16  `json:"minInstrumentCount"`
+		MinIngredientCount          uint16  `json:"minIngredientCount"`
+		MinVesselCount              uint16  `json:"minVesselCount"`
+		TemperatureRequired         bool    `json:"temperatureRequired"`
+		TimeEstimateRequired        bool    `json:"timeEstimateRequired"`
+		ConditionExpressionRequired bool    `json:"conditionExpressionRequired"`
+		ConsumesVessel              bool    `json:"consumesVessel"`
+		OnlyForVessels              bool    `json:"onlyForVessels"`
+		RestrictToIngredients       bool    `json:"restrictToIngredients"`
+		YieldsNothing               bool    `json:"yieldsNothing"`
 	}
 
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		InstrumentCount             numbers.MinRange[uint16] `json:"-"`
-		IngredientCount             numbers.MinRange[uint16] `json:"-"`
-		VesselCount                 numbers.MinRange[uint16] `json:"-"`
-		IconPath                    string                   `json:"-"`
-		PastTense                   string                   `json:"-"`
-		Slug                        string                   `json:"-"`
-		ID                          string                   `json:"-"`
-		Name                        string                   `json:"-"`
-		Description                 string                   `json:"-"`
-		TemperatureRequired         bool                     `json:"-"`
-		TimeEstimateRequired        bool                     `json:"-"`
-		ConditionExpressionRequired bool                     `json:"-"`
-		ConsumesVessel              bool                     `json:"-"`
-		OnlyForVessels              bool                     `json:"-"`
-		RestrictToIngredients       bool                     `json:"-"`
-		YieldsNothing               bool                     `json:"-"`
+		MaxInstrumentCount          *uint16 `json:"-"`
+		MaxIngredientCount          *uint16 `json:"-"`
+		MaxVesselCount              *uint16 `json:"-"`
+		IconPath                    string  `json:"-"`
+		PastTense                   string  `json:"-"`
+		Slug                        string  `json:"-"`
+		ID                          string  `json:"-"`
+		Name                        string  `json:"-"`
+		Description                 string  `json:"-"`
+		MinInstrumentCount          uint16  `json:"-"`
+		MinIngredientCount          uint16  `json:"-"`
+		MinVesselCount              uint16  `json:"-"`
+		TemperatureRequired         bool    `json:"-"`
+		TimeEstimateRequired        bool    `json:"-"`
+		ConditionExpressionRequired bool    `json:"-"`
+		ConsumesVessel              bool    `json:"-"`
+		OnlyForVessels              bool    `json:"-"`
+		RestrictToIngredients       bool    `json:"-"`
+		YieldsNothing               bool    `json:"-"`
 	}
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
 	ValidPreparationUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		InstrumentCount             numbers.OpenRangeUpdateRequestInput[uint16] `json:"instrumentCount"`
-		IngredientCount             numbers.OpenRangeUpdateRequestInput[uint16] `json:"ingredientCount"`
-		VesselCount                 numbers.OpenRangeUpdateRequestInput[uint16] `json:"vesselCount"`
-		Name                        *string                                     `json:"name,omitempty"`
-		Description                 *string                                     `json:"description,omitempty"`
-		IconPath                    *string                                     `json:"iconPath,omitempty"`
-		YieldsNothing               *bool                                       `json:"yieldsNothing,omitempty"`
-		Slug                        *string                                     `json:"slug,omitempty"`
-		RestrictToIngredients       *bool                                       `json:"restrictToIngredients,omitempty"`
-		PastTense                   *string                                     `json:"pastTense,omitempty"`
-		TemperatureRequired         *bool                                       `json:"temperatureRequired,omitempty"`
-		TimeEstimateRequired        *bool                                       `json:"timeEstimateRequired,omitempty"`
-		ConditionExpressionRequired *bool                                       `json:"conditionExpressionRequired,omitempty"`
-		ConsumesVessel              *bool                                       `json:"consumesVessel,omitempty"`
-		OnlyForVessels              *bool                                       `json:"onlyForVessels,omitempty"`
+		MinInstrumentCount          *uint16 `json:"minInstrumentCount,omitempty"`
+		MaxInstrumentCount          *uint16 `json:"maxInstrumentCount,omitempty"`
+		MinIngredientCount          *uint16 `json:"minIngredientCount,omitempty"`
+		MaxIngredientCount          *uint16 `json:"maxIngredientCount,omitempty"`
+		MinVesselCount              *uint16 `json:"minVesselCount,omitempty"`
+		MaxVesselCount              *uint16 `json:"maxVesselCount,omitempty"`
+		Name                        *string `json:"name,omitempty"`
+		Description                 *string `json:"description,omitempty"`
+		IconPath                    *string `json:"iconPath,omitempty"`
+		YieldsNothing               *bool   `json:"yieldsNothing,omitempty"`
+		Slug                        *string `json:"slug,omitempty"`
+		RestrictToIngredients       *bool   `json:"restrictToIngredients,omitempty"`
+		PastTense                   *string `json:"pastTense,omitempty"`
+		TemperatureRequired         *bool   `json:"temperatureRequired,omitempty"`
+		TimeEstimateRequired        *bool   `json:"timeEstimateRequired,omitempty"`
+		ConditionExpressionRequired *bool   `json:"conditionExpressionRequired,omitempty"`
+		ConsumesVessel              *bool   `json:"consumesVessel,omitempty"`
+		OnlyForVessels              *bool   `json:"onlyForVessels,omitempty"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -168,20 +179,20 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 		x.RestrictToIngredients = *input.RestrictToIngredients
 	}
 
-	if input.IngredientCount.Min != nil && *input.IngredientCount.Min != x.IngredientCount.Min {
-		x.IngredientCount.Min = *input.IngredientCount.Min
+	if input.MinIngredientCount != nil && *input.MinIngredientCount != x.MinIngredientCount {
+		x.MinIngredientCount = *input.MinIngredientCount
 	}
 
-	if input.IngredientCount.Max != nil && x.IngredientCount.Max != nil && *input.IngredientCount.Max != *x.IngredientCount.Max {
-		x.IngredientCount.Max = input.IngredientCount.Max
+	if input.MaxIngredientCount != nil && x.MaxIngredientCount != nil && *input.MaxIngredientCount != *x.MaxIngredientCount {
+		x.MaxIngredientCount = input.MaxIngredientCount
 	}
 
-	if input.InstrumentCount.Min != nil && *input.InstrumentCount.Min != x.InstrumentCount.Min {
-		x.InstrumentCount.Min = *input.InstrumentCount.Min
+	if input.MinInstrumentCount != nil && *input.MinInstrumentCount != x.MinInstrumentCount {
+		x.MinInstrumentCount = *input.MinInstrumentCount
 	}
 
-	if input.InstrumentCount.Max != nil && x.InstrumentCount.Max != nil && *input.InstrumentCount.Max != *x.InstrumentCount.Max {
-		x.InstrumentCount.Max = input.InstrumentCount.Max
+	if input.MaxInstrumentCount != nil && x.MaxInstrumentCount != nil && *input.MaxInstrumentCount != *x.MaxInstrumentCount {
+		x.MaxInstrumentCount = input.MaxInstrumentCount
 	}
 
 	if input.TemperatureRequired != nil && *input.TemperatureRequired != x.TemperatureRequired {
@@ -212,12 +223,12 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 		x.OnlyForVessels = *input.OnlyForVessels
 	}
 
-	if input.VesselCount.Min != nil && *input.VesselCount.Min != x.VesselCount.Min {
-		x.VesselCount.Min = *input.VesselCount.Min
+	if input.MinVesselCount != nil && *input.MinVesselCount != x.MinVesselCount {
+		x.MinVesselCount = *input.MinVesselCount
 	}
 
-	if input.VesselCount.Max != nil && x.VesselCount.Max != nil && *input.VesselCount.Max != *x.VesselCount.Max {
-		x.VesselCount.Max = input.VesselCount.Max
+	if input.MaxVesselCount != nil && x.MaxVesselCount != nil && *input.MaxVesselCount != *x.MaxVesselCount {
+		x.MaxVesselCount = input.MaxVesselCount
 	}
 }
 

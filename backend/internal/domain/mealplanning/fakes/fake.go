@@ -76,6 +76,12 @@ func BuildFakeUint16RangeWithOptionalMax() numbers.MinRange[uint16] {
 	}
 }
 
+func buildFakeUint16WithOptionalMax() (uint16, *uint16) {
+	minimum := uint16(buildFakeNumber())
+	maximum := uint16(buildFakeNumber()) + minimum
+	return minimum, &maximum
+}
+
 func BuildFakeUint32RangeWithOptionalMax() numbers.MinRange[uint32] {
 	minimum := uint32(buildFakeNumber())
 	return numbers.MinRange[uint32]{

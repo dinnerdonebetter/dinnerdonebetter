@@ -11,7 +11,6 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
-	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
 )
@@ -74,19 +73,13 @@ func (q *repository) GetValidPreparationInstrument(ctx context.Context, validPre
 			UsableForStorage:               result.ValidInstrumentUsableForStorage,
 		},
 		Preparation: mealplanning.ValidPreparation{
-			CreatedAt: result.ValidPreparationCreatedAt,
-			InstrumentCount: numbers.MinRange[uint16]{
-				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-			},
-			IngredientCount: numbers.MinRange[uint16]{
-				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-			},
-			VesselCount: numbers.MinRange[uint16]{
-				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
-				Min: uint16(result.ValidPreparationMinimumVesselCount),
-			},
+			CreatedAt:          result.ValidPreparationCreatedAt,
+			MinInstrumentCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+			MaxInstrumentCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+			MinIngredientCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+			MaxIngredientCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+			MinVesselCount:     uint16(result.ValidPreparationMinimumVesselCount),
+			MaxVesselCount:     database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 			ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
 			LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
 			IconPath:                    result.ValidPreparationIconPath,
@@ -166,19 +159,13 @@ func (q *repository) GetValidPreparationInstruments(ctx context.Context, filter 
 				UsableForStorage:               result.ValidInstrumentUsableForStorage,
 			},
 			Preparation: mealplanning.ValidPreparation{
-				CreatedAt: result.ValidPreparationCreatedAt,
-				InstrumentCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-				},
-				IngredientCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-				},
-				VesselCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
-					Min: uint16(result.ValidPreparationMinimumVesselCount),
-				},
+				CreatedAt:          result.ValidPreparationCreatedAt,
+				MinInstrumentCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+				MaxInstrumentCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				MinIngredientCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+				MaxIngredientCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				MinVesselCount:     uint16(result.ValidPreparationMinimumVesselCount),
+				MaxVesselCount:     database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
 				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
 				IconPath:                    result.ValidPreparationIconPath,
@@ -273,19 +260,13 @@ func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 				UsableForStorage:               result.ValidInstrumentUsableForStorage,
 			},
 			Preparation: mealplanning.ValidPreparation{
-				CreatedAt: result.ValidPreparationCreatedAt,
-				InstrumentCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-				},
-				IngredientCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-				},
-				VesselCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
-					Min: uint16(result.ValidPreparationMinimumVesselCount),
-				},
+				CreatedAt:          result.ValidPreparationCreatedAt,
+				MinInstrumentCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+				MaxInstrumentCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				MinIngredientCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+				MaxIngredientCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				MinVesselCount:     uint16(result.ValidPreparationMinimumVesselCount),
+				MaxVesselCount:     database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
 				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
 				IconPath:                    result.ValidPreparationIconPath,
@@ -380,19 +361,13 @@ func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 				UsableForStorage:               result.ValidInstrumentUsableForStorage,
 			},
 			Preparation: mealplanning.ValidPreparation{
-				CreatedAt: result.ValidPreparationCreatedAt,
-				InstrumentCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-				},
-				IngredientCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-				},
-				VesselCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
-					Min: uint16(result.ValidPreparationMinimumVesselCount),
-				},
+				CreatedAt:          result.ValidPreparationCreatedAt,
+				MinInstrumentCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+				MaxInstrumentCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				MinIngredientCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+				MaxIngredientCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				MinVesselCount:     uint16(result.ValidPreparationMinimumVesselCount),
+				MaxVesselCount:     database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
 				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
 				IconPath:                    result.ValidPreparationIconPath,
@@ -462,19 +437,13 @@ func (q *repository) GetValidPreparationInstrumentsByIDs(ctx context.Context, id
 				UsableForStorage:               result.ValidInstrumentUsableForStorage,
 			},
 			Preparation: mealplanning.ValidPreparation{
-				CreatedAt: result.ValidPreparationCreatedAt,
-				InstrumentCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-				},
-				IngredientCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-					Min: uint16(result.ValidPreparationMinimumInstrumentCount),
-				},
-				VesselCount: numbers.MinRange[uint16]{
-					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
-					Min: uint16(result.ValidPreparationMinimumVesselCount),
-				},
+				CreatedAt:          result.ValidPreparationCreatedAt,
+				MinInstrumentCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+				MaxInstrumentCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				MinIngredientCount: uint16(result.ValidPreparationMinimumInstrumentCount),
+				MaxIngredientCount: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				MinVesselCount:     uint16(result.ValidPreparationMinimumVesselCount),
+				MaxVesselCount:     database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
 				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
 				IconPath:                    result.ValidPreparationIconPath,

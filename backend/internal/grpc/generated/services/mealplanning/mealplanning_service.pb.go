@@ -7,13 +7,11 @@
 package mealplanning
 
 import (
-	reflect "reflect"
-	unsafe "unsafe"
-
 	comments "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	unsafe "unsafe"
 )
 
 const (

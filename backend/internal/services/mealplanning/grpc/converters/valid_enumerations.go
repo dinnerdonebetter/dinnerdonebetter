@@ -12,7 +12,6 @@ import (
 	uploadedmediaconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
 	"github.com/primandproper/platform/numbers"
-	"github.com/primandproper/platform/pointer"
 )
 
 func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request *mealplanninggrpc.ValidIngredientCreationRequestInput) *mealplanning.ValidIngredientCreationRequestInput {
@@ -983,18 +982,12 @@ func ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(x
 
 func ConvertGRPCValidPreparationCreationRequestInputToValidPreparationCreationRequestInput(x *mealplanninggrpc.ValidPreparationCreationRequestInput) *mealplanning.ValidPreparationCreationRequestInput {
 	return &mealplanning.ValidPreparationCreationRequestInput{
-		InstrumentCount: numbers.MinRange[uint16]{
-			Min: uint16(x.InstrumentCount.Min),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
-		},
-		IngredientCount: numbers.MinRange[uint16]{
-			Min: uint16(x.IngredientCount.Min),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
-		},
-		VesselCount: numbers.MinRange[uint16]{
-			Min: uint16(x.VesselCount.Min),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
-		},
+		MinInstrumentCount:          uint16(x.MinInstrumentCount),
+		MaxInstrumentCount:          converters.ConvertUint32PointerToUint16Pointer(x.MaxInstrumentCount),
+		MinIngredientCount:          uint16(x.MinIngredientCount),
+		MaxIngredientCount:          converters.ConvertUint32PointerToUint16Pointer(x.MaxIngredientCount),
+		MinVesselCount:              uint16(x.MinVesselCount),
+		MaxVesselCount:              converters.ConvertUint32PointerToUint16Pointer(x.MaxVesselCount),
 		IconPath:                    x.IconPath,
 		PastTense:                   x.PastTense,
 		Slug:                        x.Slug,
@@ -1012,18 +1005,12 @@ func ConvertGRPCValidPreparationCreationRequestInputToValidPreparationCreationRe
 
 func ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRequestInput(x *mealplanning.ValidPreparationCreationRequestInput) *mealplanninggrpc.ValidPreparationCreationRequestInput {
 	return &mealplanninggrpc.ValidPreparationCreationRequestInput{
-		InstrumentCount: &grpctypes.Uint16RangeWithOptionalMax{
-			Min: uint32(x.InstrumentCount.Min),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.InstrumentCount.Max),
-		},
-		IngredientCount: &grpctypes.Uint16RangeWithOptionalMax{
-			Min: uint32(x.IngredientCount.Min),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.IngredientCount.Max),
-		},
-		VesselCount: &grpctypes.Uint16RangeWithOptionalMax{
-			Min: uint32(x.VesselCount.Min),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.VesselCount.Max),
-		},
+		MinInstrumentCount:          uint32(x.MinInstrumentCount),
+		MaxInstrumentCount:          converters.ConvertUint16PointerToUint32Pointer(x.MaxInstrumentCount),
+		MinIngredientCount:          uint32(x.MinIngredientCount),
+		MaxIngredientCount:          converters.ConvertUint16PointerToUint32Pointer(x.MaxIngredientCount),
+		MinVesselCount:              uint32(x.MinVesselCount),
+		MaxVesselCount:              converters.ConvertUint16PointerToUint32Pointer(x.MaxVesselCount),
 		IconPath:                    x.IconPath,
 		PastTense:                   x.PastTense,
 		Slug:                        x.Slug,
@@ -1041,18 +1028,12 @@ func ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRe
 
 func ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateRequestInput(x *mealplanninggrpc.ValidPreparationUpdateRequestInput) *mealplanning.ValidPreparationUpdateRequestInput {
 	return &mealplanning.ValidPreparationUpdateRequestInput{
-		InstrumentCount: numbers.OpenRangeUpdateRequestInput[uint16]{
-			Min: new(uint16(pointer.Dereference(x.InstrumentCount.Min))),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
-		},
-		IngredientCount: numbers.OpenRangeUpdateRequestInput[uint16]{
-			Min: new(uint16(pointer.Dereference(x.IngredientCount.Min))),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
-		},
-		VesselCount: numbers.OpenRangeUpdateRequestInput[uint16]{
-			Min: new(uint16(pointer.Dereference(x.VesselCount.Min))),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
-		},
+		MinInstrumentCount:          converters.ConvertUint32PointerToUint16Pointer(x.MinInstrumentCount),
+		MaxInstrumentCount:          converters.ConvertUint32PointerToUint16Pointer(x.MaxInstrumentCount),
+		MinIngredientCount:          converters.ConvertUint32PointerToUint16Pointer(x.MinIngredientCount),
+		MaxIngredientCount:          converters.ConvertUint32PointerToUint16Pointer(x.MaxIngredientCount),
+		MinVesselCount:              converters.ConvertUint32PointerToUint16Pointer(x.MinVesselCount),
+		MaxVesselCount:              converters.ConvertUint32PointerToUint16Pointer(x.MaxVesselCount),
 		Name:                        x.Name,
 		Description:                 x.Description,
 		IconPath:                    x.IconPath,
@@ -1070,18 +1051,12 @@ func ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateReques
 
 func ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateRequestInput(x *mealplanning.ValidPreparationUpdateRequestInput) *mealplanninggrpc.ValidPreparationUpdateRequestInput {
 	return &mealplanninggrpc.ValidPreparationUpdateRequestInput{
-		InstrumentCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: new(uint32(pointer.Dereference(x.InstrumentCount.Min))),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.InstrumentCount.Max),
-		},
-		IngredientCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: new(uint32(pointer.Dereference(x.IngredientCount.Min))),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.IngredientCount.Max),
-		},
-		VesselCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: new(uint32(pointer.Dereference(x.VesselCount.Min))),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.VesselCount.Max),
-		},
+		MinInstrumentCount:          converters.ConvertUint16PointerToUint32Pointer(x.MinInstrumentCount),
+		MaxInstrumentCount:          converters.ConvertUint16PointerToUint32Pointer(x.MaxInstrumentCount),
+		MinIngredientCount:          converters.ConvertUint16PointerToUint32Pointer(x.MinIngredientCount),
+		MaxIngredientCount:          converters.ConvertUint16PointerToUint32Pointer(x.MaxIngredientCount),
+		MinVesselCount:              converters.ConvertUint16PointerToUint32Pointer(x.MinVesselCount),
+		MaxVesselCount:              converters.ConvertUint16PointerToUint32Pointer(x.MaxVesselCount),
 		Name:                        x.Name,
 		Description:                 x.Description,
 		IconPath:                    x.IconPath,
@@ -1099,21 +1074,15 @@ func ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateReques
 
 func ConvertValidPreparationToGRPCValidPreparation(x *mealplanning.ValidPreparation) *mealplanninggrpc.ValidPreparation {
 	return &mealplanninggrpc.ValidPreparation{
-		CreatedAt:     converters.ConvertTimeToPBTimestamp(x.CreatedAt),
-		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
-		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
-		InstrumentCount: &grpctypes.Uint16RangeWithOptionalMax{
-			Min: uint32(x.InstrumentCount.Min),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.InstrumentCount.Max),
-		},
-		IngredientCount: &grpctypes.Uint16RangeWithOptionalMax{
-			Min: uint32(x.IngredientCount.Min),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.IngredientCount.Max),
-		},
-		VesselCount: &grpctypes.Uint16RangeWithOptionalMax{
-			Min: uint32(x.VesselCount.Min),
-			Max: converters.ConvertUint16PointerToUint32Pointer(x.VesselCount.Max),
-		},
+		CreatedAt:                   converters.ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt:               converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:                  converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		MinInstrumentCount:          uint32(x.MinInstrumentCount),
+		MaxInstrumentCount:          converters.ConvertUint16PointerToUint32Pointer(x.MaxInstrumentCount),
+		MinIngredientCount:          uint32(x.MinIngredientCount),
+		MaxIngredientCount:          converters.ConvertUint16PointerToUint32Pointer(x.MaxIngredientCount),
+		MinVesselCount:              uint32(x.MinVesselCount),
+		MaxVesselCount:              converters.ConvertUint16PointerToUint32Pointer(x.MaxVesselCount),
 		Name:                        x.Name,
 		Id:                          x.ID,
 		IconPath:                    x.IconPath,
@@ -1133,18 +1102,12 @@ func ConvertValidPreparationToGRPCValidPreparation(x *mealplanning.ValidPreparat
 
 func ConvertGRPCValidPreparationToValidPreparation(x *mealplanninggrpc.ValidPreparation) *mealplanning.ValidPreparation {
 	return &mealplanning.ValidPreparation{
-		InstrumentCount: numbers.MinRange[uint16]{
-			Min: uint16(x.InstrumentCount.Min),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
-		},
-		IngredientCount: numbers.MinRange[uint16]{
-			Min: uint16(x.IngredientCount.Min),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
-		},
-		VesselCount: numbers.MinRange[uint16]{
-			Min: uint16(x.VesselCount.Min),
-			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
-		},
+		MinInstrumentCount:          uint16(x.MinInstrumentCount),
+		MaxInstrumentCount:          converters.ConvertUint32PointerToUint16Pointer(x.MaxInstrumentCount),
+		MinIngredientCount:          uint16(x.MinIngredientCount),
+		MaxIngredientCount:          converters.ConvertUint32PointerToUint16Pointer(x.MaxIngredientCount),
+		MinVesselCount:              uint16(x.MinVesselCount),
+		MaxVesselCount:              converters.ConvertUint32PointerToUint16Pointer(x.MaxVesselCount),
 		CreatedAt:                   converters.ConvertPBTimestampToTime(x.CreatedAt),
 		ArchivedAt:                  converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		LastUpdatedAt:               converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),

@@ -11,6 +11,9 @@ import (
 
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
+	minIngredientCount, maxIngredientCount := buildFakeUint16WithOptionalMax()
+	minInstrumentCount, maxInstrumentCount := buildFakeUint16WithOptionalMax()
+	minVesselCount, maxVesselCount := buildFakeUint16WithOptionalMax()
 	return &types.ValidPreparation{
 		ID:                          BuildFakeID(),
 		Name:                        buildUniqueString(),
@@ -21,14 +24,17 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 		Slug:                        buildUniqueString(),
 		PastTense:                   buildUniqueString(),
 		CreatedAt:                   BuildFakeTime(),
-		IngredientCount:             BuildFakeUint16RangeWithOptionalMax(),
-		InstrumentCount:             BuildFakeUint16RangeWithOptionalMax(),
+		MinIngredientCount:          minIngredientCount,
+		MaxIngredientCount:          maxIngredientCount,
+		MinInstrumentCount:          minInstrumentCount,
+		MaxInstrumentCount:          maxInstrumentCount,
+		MinVesselCount:              minVesselCount,
+		MaxVesselCount:              maxVesselCount,
 		TemperatureRequired:         fake.Bool(),
 		TimeEstimateRequired:        fake.Bool(),
 		ConditionExpressionRequired: fake.Bool(),
 		ConsumesVessel:              fake.Bool(),
 		OnlyForVessels:              fake.Bool(),
-		VesselCount:                 BuildFakeUint16RangeWithOptionalMax(),
 	}
 }
 
