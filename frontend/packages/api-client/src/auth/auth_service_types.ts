@@ -2854,10 +2854,10 @@ function createBaseTOTPSecretRefreshResponse(): TOTPSecretRefreshResponse {
 export const TOTPSecretRefreshResponse: MessageFns<TOTPSecretRefreshResponse> = {
   encode(message: TOTPSecretRefreshResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.twoFactorQrCode !== '') {
-      writer.uint32(18).string(message.twoFactorQrCode);
+      writer.uint32(10).string(message.twoFactorQrCode);
     }
     if (message.twoFactorSecret !== '') {
-      writer.uint32(26).string(message.twoFactorSecret);
+      writer.uint32(18).string(message.twoFactorSecret);
     }
     return writer;
   },
@@ -2869,16 +2869,16 @@ export const TOTPSecretRefreshResponse: MessageFns<TOTPSecretRefreshResponse> = 
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 2: {
-          if (tag !== 18) {
+        case 1: {
+          if (tag !== 10) {
             break;
           }
 
           message.twoFactorQrCode = reader.string();
           continue;
         }
-        case 3: {
-          if (tag !== 26) {
+        case 2: {
+          if (tag !== 18) {
             break;
           }
 
@@ -3023,19 +3023,19 @@ function createBaseTokenResponse(): TokenResponse {
 export const TokenResponse: MessageFns<TokenResponse> = {
   encode(message: TokenResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.userId !== '') {
-      writer.uint32(18).string(message.userId);
+      writer.uint32(10).string(message.userId);
     }
     if (message.accountId !== '') {
-      writer.uint32(26).string(message.accountId);
+      writer.uint32(18).string(message.accountId);
     }
     if (message.accessToken !== '') {
-      writer.uint32(34).string(message.accessToken);
+      writer.uint32(26).string(message.accessToken);
     }
     if (message.refreshToken !== '') {
-      writer.uint32(42).string(message.refreshToken);
+      writer.uint32(34).string(message.refreshToken);
     }
     if (message.expiresUtc !== undefined) {
-      Timestamp.encode(toTimestamp(message.expiresUtc), writer.uint32(50).fork()).join();
+      Timestamp.encode(toTimestamp(message.expiresUtc), writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -3047,12 +3047,20 @@ export const TokenResponse: MessageFns<TokenResponse> = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
         case 2: {
           if (tag !== 18) {
             break;
           }
 
-          message.userId = reader.string();
+          message.accountId = reader.string();
           continue;
         }
         case 3: {
@@ -3060,7 +3068,7 @@ export const TokenResponse: MessageFns<TokenResponse> = {
             break;
           }
 
-          message.accountId = reader.string();
+          message.accessToken = reader.string();
           continue;
         }
         case 4: {
@@ -3068,19 +3076,11 @@ export const TokenResponse: MessageFns<TokenResponse> = {
             break;
           }
 
-          message.accessToken = reader.string();
+          message.refreshToken = reader.string();
           continue;
         }
         case 5: {
           if (tag !== 42) {
-            break;
-          }
-
-          message.refreshToken = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
             break;
           }
 

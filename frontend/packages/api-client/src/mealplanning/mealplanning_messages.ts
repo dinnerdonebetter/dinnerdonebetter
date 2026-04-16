@@ -1211,22 +1211,22 @@ function createBaseDataCollection(): DataCollection {
 export const DataCollection: MessageFns<DataCollection> = {
   encode(message: DataCollection, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.accountInstrumentOwnerships) {
-      AccountInstrumentOwnership.encode(v!, writer.uint32(18).fork()).join();
+      AccountInstrumentOwnership.encode(v!, writer.uint32(10).fork()).join();
     }
     for (const v of message.mealPlans) {
-      MealPlan.encode(v!, writer.uint32(26).fork()).join();
+      MealPlan.encode(v!, writer.uint32(18).fork()).join();
     }
     for (const v of message.recipeRatings) {
-      RecipeRating.encode(v!, writer.uint32(34).fork()).join();
+      RecipeRating.encode(v!, writer.uint32(26).fork()).join();
     }
     for (const v of message.recipes) {
-      Recipe.encode(v!, writer.uint32(42).fork()).join();
+      Recipe.encode(v!, writer.uint32(34).fork()).join();
     }
     for (const v of message.meals) {
-      Meal.encode(v!, writer.uint32(50).fork()).join();
+      Meal.encode(v!, writer.uint32(42).fork()).join();
     }
     for (const v of message.userIngredientPreferences) {
-      UserIngredientPreference.encode(v!, writer.uint32(58).fork()).join();
+      UserIngredientPreference.encode(v!, writer.uint32(50).fork()).join();
     }
     return writer;
   },
@@ -1238,12 +1238,20 @@ export const DataCollection: MessageFns<DataCollection> = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.accountInstrumentOwnerships.push(AccountInstrumentOwnership.decode(reader, reader.uint32()));
+          continue;
+        }
         case 2: {
           if (tag !== 18) {
             break;
           }
 
-          message.accountInstrumentOwnerships.push(AccountInstrumentOwnership.decode(reader, reader.uint32()));
+          message.mealPlans.push(MealPlan.decode(reader, reader.uint32()));
           continue;
         }
         case 3: {
@@ -1251,7 +1259,7 @@ export const DataCollection: MessageFns<DataCollection> = {
             break;
           }
 
-          message.mealPlans.push(MealPlan.decode(reader, reader.uint32()));
+          message.recipeRatings.push(RecipeRating.decode(reader, reader.uint32()));
           continue;
         }
         case 4: {
@@ -1259,7 +1267,7 @@ export const DataCollection: MessageFns<DataCollection> = {
             break;
           }
 
-          message.recipeRatings.push(RecipeRating.decode(reader, reader.uint32()));
+          message.recipes.push(Recipe.decode(reader, reader.uint32()));
           continue;
         }
         case 5: {
@@ -1267,19 +1275,11 @@ export const DataCollection: MessageFns<DataCollection> = {
             break;
           }
 
-          message.recipes.push(Recipe.decode(reader, reader.uint32()));
+          message.meals.push(Meal.decode(reader, reader.uint32()));
           continue;
         }
         case 6: {
           if (tag !== 50) {
-            break;
-          }
-
-          message.meals.push(Meal.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
             break;
           }
 
@@ -6035,22 +6035,22 @@ export const Recipe: MessageFns<Recipe> = {
       writer.uint32(98).string(message.source);
     }
     if (message.sourceIsbn !== '') {
-      writer.uint32(178).string(message.sourceIsbn);
+      writer.uint32(106).string(message.sourceIsbn);
     }
     if (message.slug !== '') {
-      writer.uint32(106).string(message.slug);
+      writer.uint32(114).string(message.slug);
     }
     if (message.yieldsComponentType !== 0) {
-      writer.uint32(112).int32(message.yieldsComponentType);
+      writer.uint32(120).int32(message.yieldsComponentType);
     }
     for (const v of message.prepTasks) {
-      RecipePrepTask.encode(v!, writer.uint32(122).fork()).join();
+      RecipePrepTask.encode(v!, writer.uint32(130).fork()).join();
     }
     for (const v of message.steps) {
-      RecipeStep.encode(v!, writer.uint32(130).fork()).join();
+      RecipeStep.encode(v!, writer.uint32(138).fork()).join();
     }
     for (const v of message.media) {
-      RecipeMedia.encode(v!, writer.uint32(138).fork()).join();
+      RecipeMedia.encode(v!, writer.uint32(146).fork()).join();
     }
     if (message.status !== '') {
       writer.uint32(154).string(message.status);
@@ -6167,36 +6167,28 @@ export const Recipe: MessageFns<Recipe> = {
           message.source = reader.string();
           continue;
         }
-        case 22: {
-          if (tag !== 178) {
+        case 13: {
+          if (tag !== 106) {
             break;
           }
 
           message.sourceIsbn = reader.string();
           continue;
         }
-        case 13: {
-          if (tag !== 106) {
+        case 14: {
+          if (tag !== 114) {
             break;
           }
 
           message.slug = reader.string();
           continue;
         }
-        case 14: {
-          if (tag !== 112) {
+        case 15: {
+          if (tag !== 120) {
             break;
           }
 
           message.yieldsComponentType = reader.int32() as any;
-          continue;
-        }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.prepTasks.push(RecipePrepTask.decode(reader, reader.uint32()));
           continue;
         }
         case 16: {
@@ -6204,11 +6196,19 @@ export const Recipe: MessageFns<Recipe> = {
             break;
           }
 
-          message.steps.push(RecipeStep.decode(reader, reader.uint32()));
+          message.prepTasks.push(RecipePrepTask.decode(reader, reader.uint32()));
           continue;
         }
         case 17: {
           if (tag !== 138) {
+            break;
+          }
+
+          message.steps.push(RecipeStep.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 18: {
+          if (tag !== 146) {
             break;
           }
 

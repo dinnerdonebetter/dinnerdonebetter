@@ -26602,7 +26602,7 @@ extension Mealplanning_UpdateUserIngredientPreferenceResponse: SwiftProtobuf.Mes
 
 extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}inspired_by_recipe_id\0\u{1}name\0\u{1}source\0\u{1}description\0\u{3}plural_portion_name\0\u{3}portion_name\0\u{1}slug\0\u{3}yields_component_type\0\u{3}estimated_portions\0\u{3}prep_tasks\0\u{1}steps\0\u{3}also_create_meal\0\u{3}eligible_for_meals\0\u{4}\u{2}source_isbn\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}inspired_by_recipe_id\0\u{1}name\0\u{1}source\0\u{3}source_isbn\0\u{1}description\0\u{3}plural_portion_name\0\u{3}portion_name\0\u{1}slug\0\u{3}yields_component_type\0\u{3}estimated_portions\0\u{3}prep_tasks\0\u{1}steps\0\u{3}also_create_meal\0\u{3}eligible_for_meals\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -26613,17 +26613,17 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
       case 1: try { try decoder.decodeSingularStringField(value: &self._inspiredByRecipeID) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.source) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self.description_p) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.pluralPortionName) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self.portionName) }()
-      case 7: try { try decoder.decodeSingularStringField(value: &self.slug) }()
-      case 8: try { try decoder.decodeSingularEnumField(value: &self.yieldsComponentType) }()
-      case 9: try { try decoder.decodeSingularMessageField(value: &self._estimatedPortions) }()
-      case 10: try { try decoder.decodeRepeatedMessageField(value: &self.prepTasks) }()
-      case 11: try { try decoder.decodeRepeatedMessageField(value: &self.steps) }()
-      case 12: try { try decoder.decodeSingularBoolField(value: &self.alsoCreateMeal) }()
-      case 13: try { try decoder.decodeSingularBoolField(value: &self.eligibleForMeals) }()
-      case 15: try { try decoder.decodeSingularStringField(value: &self.sourceIsbn) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.sourceIsbn) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.description_p) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.pluralPortionName) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self.portionName) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self.slug) }()
+      case 9: try { try decoder.decodeSingularEnumField(value: &self.yieldsComponentType) }()
+      case 10: try { try decoder.decodeSingularMessageField(value: &self._estimatedPortions) }()
+      case 11: try { try decoder.decodeRepeatedMessageField(value: &self.prepTasks) }()
+      case 12: try { try decoder.decodeRepeatedMessageField(value: &self.steps) }()
+      case 13: try { try decoder.decodeSingularBoolField(value: &self.alsoCreateMeal) }()
+      case 14: try { try decoder.decodeSingularBoolField(value: &self.eligibleForMeals) }()
       default: break
       }
     }
@@ -26643,38 +26643,38 @@ extension Mealplanning_RecipeCreationRequestInput: SwiftProtobuf.Message, SwiftP
     if !self.source.isEmpty {
       try visitor.visitSingularStringField(value: self.source, fieldNumber: 3)
     }
+    if !self.sourceIsbn.isEmpty {
+      try visitor.visitSingularStringField(value: self.sourceIsbn, fieldNumber: 4)
+    }
     if !self.description_p.isEmpty {
-      try visitor.visitSingularStringField(value: self.description_p, fieldNumber: 4)
+      try visitor.visitSingularStringField(value: self.description_p, fieldNumber: 5)
     }
     if !self.pluralPortionName.isEmpty {
-      try visitor.visitSingularStringField(value: self.pluralPortionName, fieldNumber: 5)
+      try visitor.visitSingularStringField(value: self.pluralPortionName, fieldNumber: 6)
     }
     if !self.portionName.isEmpty {
-      try visitor.visitSingularStringField(value: self.portionName, fieldNumber: 6)
+      try visitor.visitSingularStringField(value: self.portionName, fieldNumber: 7)
     }
     if !self.slug.isEmpty {
-      try visitor.visitSingularStringField(value: self.slug, fieldNumber: 7)
+      try visitor.visitSingularStringField(value: self.slug, fieldNumber: 8)
     }
     if self.yieldsComponentType != .unspecified {
-      try visitor.visitSingularEnumField(value: self.yieldsComponentType, fieldNumber: 8)
+      try visitor.visitSingularEnumField(value: self.yieldsComponentType, fieldNumber: 9)
     }
     try { if let v = self._estimatedPortions {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     } }()
     if !self.prepTasks.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.prepTasks, fieldNumber: 10)
+      try visitor.visitRepeatedMessageField(value: self.prepTasks, fieldNumber: 11)
     }
     if !self.steps.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.steps, fieldNumber: 11)
+      try visitor.visitRepeatedMessageField(value: self.steps, fieldNumber: 12)
     }
     if self.alsoCreateMeal != false {
-      try visitor.visitSingularBoolField(value: self.alsoCreateMeal, fieldNumber: 12)
+      try visitor.visitSingularBoolField(value: self.alsoCreateMeal, fieldNumber: 13)
     }
     if self.eligibleForMeals != false {
-      try visitor.visitSingularBoolField(value: self.eligibleForMeals, fieldNumber: 13)
-    }
-    if !self.sourceIsbn.isEmpty {
-      try visitor.visitSingularStringField(value: self.sourceIsbn, fieldNumber: 15)
+      try visitor.visitSingularBoolField(value: self.eligibleForMeals, fieldNumber: 14)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -28689,7 +28689,7 @@ extension Mealplanning_RecipeStepVesselUpdateRequestInput: SwiftProtobuf.Message
 
 extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{1}source\0\u{1}description\0\u{3}inspired_by_recipe_id\0\u{4}\u{2}estimated_portions\0\u{3}portion_name\0\u{3}plural_portion_name\0\u{3}eligible_for_meals\0\u{3}yields_component_type\0\u{3}source_isbn\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}slug\0\u{1}source\0\u{3}source_isbn\0\u{1}description\0\u{3}inspired_by_recipe_id\0\u{3}estimated_portions\0\u{3}portion_name\0\u{3}plural_portion_name\0\u{3}eligible_for_meals\0\u{3}yields_component_type\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -28700,14 +28700,14 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
       case 1: try { try decoder.decodeSingularStringField(value: &self._name) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self._slug) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._source) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._description_p) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self._inspiredByRecipeID) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._sourceIsbn) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._description_p) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self._inspiredByRecipeID) }()
       case 7: try { try decoder.decodeSingularMessageField(value: &self._estimatedPortions) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self._portionName) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._pluralPortionName) }()
       case 10: try { try decoder.decodeSingularBoolField(value: &self._eligibleForMeals) }()
       case 11: try { try decoder.decodeSingularEnumField(value: &self._yieldsComponentType) }()
-      case 12: try { try decoder.decodeSingularStringField(value: &self._sourceIsbn) }()
       default: break
       }
     }
@@ -28727,11 +28727,14 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
     try { if let v = self._source {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     } }()
-    try { if let v = self._description_p {
+    try { if let v = self._sourceIsbn {
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     } }()
-    try { if let v = self._inspiredByRecipeID {
+    try { if let v = self._description_p {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._inspiredByRecipeID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
     } }()
     try { if let v = self._estimatedPortions {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
@@ -28747,9 +28750,6 @@ extension Mealplanning_RecipeUpdateRequestInput: SwiftProtobuf.Message, SwiftPro
     } }()
     try { if let v = self._yieldsComponentType {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 11)
-    } }()
-    try { if let v = self._sourceIsbn {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 12)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -39558,7 +39558,7 @@ extension Mealplanning_UpdateAccountInstrumentOwnershipResponse: SwiftProtobuf.M
 
 extension Mealplanning_AccountInstrumentOwnershipCreationRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountInstrumentOwnershipCreationRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_instrument_id\0\u{2}\u{2}quantity\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notes\0\u{3}valid_instrument_id\0\u{1}quantity\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -39568,7 +39568,7 @@ extension Mealplanning_AccountInstrumentOwnershipCreationRequestInput: SwiftProt
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.notes) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.validInstrumentID) }()
-      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.quantity) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.quantity) }()
       default: break
       }
     }
@@ -39582,7 +39582,7 @@ extension Mealplanning_AccountInstrumentOwnershipCreationRequestInput: SwiftProt
       try visitor.visitSingularStringField(value: self.validInstrumentID, fieldNumber: 2)
     }
     if self.quantity != 0 {
-      try visitor.visitSingularUInt32Field(value: self.quantity, fieldNumber: 4)
+      try visitor.visitSingularUInt32Field(value: self.quantity, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }

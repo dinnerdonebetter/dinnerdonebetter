@@ -9,12 +9,12 @@ import "uploaded_media/uploaded_media_messages.proto";
 option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning";
 
 message DataCollection {
-  repeated AccountInstrumentOwnership account_instrument_ownerships = 2;
-  repeated MealPlan meal_plans = 3;
-  repeated RecipeRating recipe_ratings = 4;
-  repeated Recipe recipes = 5;
-  repeated Meal meals = 6;
-  repeated UserIngredientPreference user_ingredient_preferences = 7;
+  repeated AccountInstrumentOwnership account_instrument_ownerships = 1;
+  repeated MealPlan meal_plans = 2;
+  repeated RecipeRating recipe_ratings = 3;
+  repeated Recipe recipes = 4;
+  repeated Meal meals = 5;
+  repeated UserIngredientPreference user_ingredient_preferences = 6;
 }
 
 message ValidIngredient {
@@ -274,12 +274,12 @@ message Recipe {
   string id = 10;
   string created_by_user = 11;
   string source = 12;
-  string source_isbn = 22;
-  string slug = 13;
-  MealComponentType yields_component_type = 14;
-  repeated RecipePrepTask prep_tasks = 15;
-  repeated RecipeStep steps = 16;
-  repeated RecipeMedia media = 17;
+  string source_isbn = 13;
+  string slug = 14;
+  MealComponentType yields_component_type = 15;
+  repeated RecipePrepTask prep_tasks = 16;
+  repeated RecipeStep steps = 17;
+  repeated RecipeMedia media = 18;
   string status = 19;
   bool eligible_for_meals = 20;
   repeated Recipe associated_recipes = 21;

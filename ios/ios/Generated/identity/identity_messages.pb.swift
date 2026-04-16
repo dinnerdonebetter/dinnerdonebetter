@@ -653,7 +653,7 @@ fileprivate let _protobuf_package = "identity"
 
 extension Identity_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}user\0\u{4}\u{4}received_invites\0\u{3}sent_invites\0\u{2}\u{3}accounts\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}user\0\u{3}received_invites\0\u{3}sent_invites\0\u{1}accounts\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -661,10 +661,10 @@ extension Identity_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._user) }()
-      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.receivedInvites) }()
-      case 7: try { try decoder.decodeRepeatedMessageField(value: &self.sentInvites) }()
-      case 10: try { try decoder.decodeRepeatedMessageField(value: &self.accounts) }()
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._user) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.receivedInvites) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.sentInvites) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.accounts) }()
       default: break
       }
     }
@@ -676,16 +676,16 @@ extension Identity_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Message
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
     try { if let v = self._user {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     } }()
     if !self.receivedInvites.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.receivedInvites, fieldNumber: 6)
+      try visitor.visitRepeatedMessageField(value: self.receivedInvites, fieldNumber: 2)
     }
     if !self.sentInvites.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.sentInvites, fieldNumber: 7)
+      try visitor.visitRepeatedMessageField(value: self.sentInvites, fieldNumber: 3)
     }
     if !self.accounts.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.accounts, fieldNumber: 10)
+      try visitor.visitRepeatedMessageField(value: self.accounts, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }

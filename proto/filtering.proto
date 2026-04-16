@@ -8,13 +8,13 @@ option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/intern
 
 message QueryFilter {
   optional string sort_by = 1;
-  optional google.protobuf.Timestamp created_after = 3;
-  optional google.protobuf.Timestamp created_before = 4;
-  optional google.protobuf.Timestamp updated_after = 5;
-  optional google.protobuf.Timestamp updated_before = 6;
-  optional uint32 max_response_size = 7;
-  optional bool include_archived = 8;
-  optional string cursor = 9;
+  optional google.protobuf.Timestamp created_after = 2;
+  optional google.protobuf.Timestamp created_before = 3;
+  optional google.protobuf.Timestamp updated_after = 4;
+  optional google.protobuf.Timestamp updated_before = 5;
+  optional uint32 max_response_size = 6;
+  optional bool include_archived = 7;
+  optional string cursor = 8;
 }
 
 message Pagination {

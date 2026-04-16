@@ -4137,7 +4137,7 @@ extension Mealplanning_MealPlanRecipeOptionSelectionType: SwiftProtobuf._ProtoNa
 
 extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{2}account_instrument_ownerships\0\u{3}meal_plans\0\u{3}recipe_ratings\0\u{1}recipes\0\u{1}meals\0\u{3}user_ingredient_preferences\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_instrument_ownerships\0\u{3}meal_plans\0\u{3}recipe_ratings\0\u{1}recipes\0\u{1}meals\0\u{3}user_ingredient_preferences\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4145,12 +4145,12 @@ extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Mes
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.accountInstrumentOwnerships) }()
-      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.mealPlans) }()
-      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.recipeRatings) }()
-      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.recipes) }()
-      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.meals) }()
-      case 7: try { try decoder.decodeRepeatedMessageField(value: &self.userIngredientPreferences) }()
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.accountInstrumentOwnerships) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.mealPlans) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.recipeRatings) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.recipes) }()
+      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.meals) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.userIngredientPreferences) }()
       default: break
       }
     }
@@ -4158,22 +4158,22 @@ extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.accountInstrumentOwnerships.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.accountInstrumentOwnerships, fieldNumber: 2)
+      try visitor.visitRepeatedMessageField(value: self.accountInstrumentOwnerships, fieldNumber: 1)
     }
     if !self.mealPlans.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.mealPlans, fieldNumber: 3)
+      try visitor.visitRepeatedMessageField(value: self.mealPlans, fieldNumber: 2)
     }
     if !self.recipeRatings.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.recipeRatings, fieldNumber: 4)
+      try visitor.visitRepeatedMessageField(value: self.recipeRatings, fieldNumber: 3)
     }
     if !self.recipes.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.recipes, fieldNumber: 5)
+      try visitor.visitRepeatedMessageField(value: self.recipes, fieldNumber: 4)
     }
     if !self.meals.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.meals, fieldNumber: 6)
+      try visitor.visitRepeatedMessageField(value: self.meals, fieldNumber: 5)
     }
     if !self.userIngredientPreferences.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.userIngredientPreferences, fieldNumber: 7)
+      try visitor.visitRepeatedMessageField(value: self.userIngredientPreferences, fieldNumber: 6)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6200,7 +6200,7 @@ extension Mealplanning_UserIngredientPreference: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Recipe"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{2}\u{2}status\0\u{3}eligible_for_meals\0\u{3}associated_recipes\0\u{3}source_isbn\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{3}source_isbn\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{1}status\0\u{3}eligible_for_meals\0\u{3}associated_recipes\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -6285,15 +6285,15 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._createdByUser) }()
         case 12: try { try decoder.decodeSingularStringField(value: &_storage._source) }()
-        case 13: try { try decoder.decodeSingularStringField(value: &_storage._slug) }()
-        case 14: try { try decoder.decodeSingularEnumField(value: &_storage._yieldsComponentType) }()
-        case 15: try { try decoder.decodeRepeatedMessageField(value: &_storage._prepTasks) }()
-        case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._steps) }()
-        case 17: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
+        case 13: try { try decoder.decodeSingularStringField(value: &_storage._sourceIsbn) }()
+        case 14: try { try decoder.decodeSingularStringField(value: &_storage._slug) }()
+        case 15: try { try decoder.decodeSingularEnumField(value: &_storage._yieldsComponentType) }()
+        case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._prepTasks) }()
+        case 17: try { try decoder.decodeRepeatedMessageField(value: &_storage._steps) }()
+        case 18: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._eligibleForMeals) }()
         case 21: try { try decoder.decodeRepeatedMessageField(value: &_storage._associatedRecipes) }()
-        case 22: try { try decoder.decodeSingularStringField(value: &_storage._sourceIsbn) }()
         default: break
         }
       }
@@ -6342,20 +6342,23 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if !_storage._source.isEmpty {
         try visitor.visitSingularStringField(value: _storage._source, fieldNumber: 12)
       }
+      if !_storage._sourceIsbn.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._sourceIsbn, fieldNumber: 13)
+      }
       if !_storage._slug.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._slug, fieldNumber: 13)
+        try visitor.visitSingularStringField(value: _storage._slug, fieldNumber: 14)
       }
       if _storage._yieldsComponentType != .unspecified {
-        try visitor.visitSingularEnumField(value: _storage._yieldsComponentType, fieldNumber: 14)
+        try visitor.visitSingularEnumField(value: _storage._yieldsComponentType, fieldNumber: 15)
       }
       if !_storage._prepTasks.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._prepTasks, fieldNumber: 15)
+        try visitor.visitRepeatedMessageField(value: _storage._prepTasks, fieldNumber: 16)
       }
       if !_storage._steps.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._steps, fieldNumber: 16)
+        try visitor.visitRepeatedMessageField(value: _storage._steps, fieldNumber: 17)
       }
       if !_storage._media.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._media, fieldNumber: 17)
+        try visitor.visitRepeatedMessageField(value: _storage._media, fieldNumber: 18)
       }
       if !_storage._status.isEmpty {
         try visitor.visitSingularStringField(value: _storage._status, fieldNumber: 19)
@@ -6365,9 +6368,6 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       }
       if !_storage._associatedRecipes.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._associatedRecipes, fieldNumber: 21)
-      }
-      if !_storage._sourceIsbn.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._sourceIsbn, fieldNumber: 22)
       }
     }
     try unknownFields.traverse(visitor: &visitor)

@@ -158,8 +158,8 @@ message PasswordResetTokenRedemptionRequestInput {
 }
 
 message TOTPSecretRefreshResponse {
-  string two_factor_qr_code = 2;
-  string two_factor_secret = 3;
+  string two_factor_qr_code = 1;
+  string two_factor_secret = 2;
 }
 
 message TOTPSecretVerificationResponse {
@@ -168,11 +168,11 @@ message TOTPSecretVerificationResponse {
 }
 
 message TokenResponse {
-  string user_id = 2;
-  string account_id = 3;
-  string access_token = 4;
-  string refresh_token = 5;
-  google.protobuf.Timestamp expires_utc = 6;
+  string user_id = 1;
+  string account_id = 2;
+  string access_token = 3;
+  string refresh_token = 4;
+  google.protobuf.Timestamp expires_utc = 5;
 }
 
 message UserPermissionsRequestInput {

@@ -48,10 +48,10 @@ function createBaseDataCollection(): DataCollection {
 export const DataCollection: MessageFns<DataCollection> = {
   encode(message: DataCollection, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     globalThis.Object.entries(message.accountAuditLogEntries).forEach(([key, value]: [string, AuditLogEntry]) => {
-      DataCollection_AccountAuditLogEntriesEntry.encode({ key: key as any, value }, writer.uint32(42).fork()).join();
+      DataCollection_AccountAuditLogEntriesEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).join();
     });
     for (const v of message.userAuditLogEntries) {
-      AuditLogEntry.encode(v!, writer.uint32(74).fork()).join();
+      AuditLogEntry.encode(v!, writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -63,19 +63,19 @@ export const DataCollection: MessageFns<DataCollection> = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 5: {
-          if (tag !== 42) {
+        case 1: {
+          if (tag !== 10) {
             break;
           }
 
-          const entry5 = DataCollection_AccountAuditLogEntriesEntry.decode(reader, reader.uint32());
-          if (entry5.value !== undefined) {
-            message.accountAuditLogEntries[entry5.key] = entry5.value;
+          const entry1 = DataCollection_AccountAuditLogEntriesEntry.decode(reader, reader.uint32());
+          if (entry1.value !== undefined) {
+            message.accountAuditLogEntries[entry1.key] = entry1.value;
           }
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
+        case 2: {
+          if (tag !== 18) {
             break;
           }
 

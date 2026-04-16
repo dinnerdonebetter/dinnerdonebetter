@@ -27114,37 +27114,37 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
       writer.uint32(26).string(message.source);
     }
     if (message.sourceIsbn !== '') {
-      writer.uint32(122).string(message.sourceIsbn);
+      writer.uint32(34).string(message.sourceIsbn);
     }
     if (message.description !== '') {
-      writer.uint32(34).string(message.description);
+      writer.uint32(42).string(message.description);
     }
     if (message.pluralPortionName !== '') {
-      writer.uint32(42).string(message.pluralPortionName);
+      writer.uint32(50).string(message.pluralPortionName);
     }
     if (message.portionName !== '') {
-      writer.uint32(50).string(message.portionName);
+      writer.uint32(58).string(message.portionName);
     }
     if (message.slug !== '') {
-      writer.uint32(58).string(message.slug);
+      writer.uint32(66).string(message.slug);
     }
     if (message.yieldsComponentType !== 0) {
-      writer.uint32(64).int32(message.yieldsComponentType);
+      writer.uint32(72).int32(message.yieldsComponentType);
     }
     if (message.estimatedPortions !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.estimatedPortions, writer.uint32(74).fork()).join();
+      Float32RangeWithOptionalMax.encode(message.estimatedPortions, writer.uint32(82).fork()).join();
     }
     for (const v of message.prepTasks) {
-      RecipePrepTaskWithinRecipeCreationRequestInput.encode(v!, writer.uint32(82).fork()).join();
+      RecipePrepTaskWithinRecipeCreationRequestInput.encode(v!, writer.uint32(90).fork()).join();
     }
     for (const v of message.steps) {
-      RecipeStepCreationRequestInput.encode(v!, writer.uint32(90).fork()).join();
+      RecipeStepCreationRequestInput.encode(v!, writer.uint32(98).fork()).join();
     }
     if (message.alsoCreateMeal !== false) {
-      writer.uint32(96).bool(message.alsoCreateMeal);
+      writer.uint32(104).bool(message.alsoCreateMeal);
     }
     if (message.eligibleForMeals !== false) {
-      writer.uint32(104).bool(message.eligibleForMeals);
+      writer.uint32(112).bool(message.eligibleForMeals);
     }
     return writer;
   },
@@ -27180,20 +27180,12 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
           message.source = reader.string();
           continue;
         }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.sourceIsbn = reader.string();
-          continue;
-        }
         case 4: {
           if (tag !== 34) {
             break;
           }
 
-          message.description = reader.string();
+          message.sourceIsbn = reader.string();
           continue;
         }
         case 5: {
@@ -27201,7 +27193,7 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
             break;
           }
 
-          message.pluralPortionName = reader.string();
+          message.description = reader.string();
           continue;
         }
         case 6: {
@@ -27209,7 +27201,7 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
             break;
           }
 
-          message.portionName = reader.string();
+          message.pluralPortionName = reader.string();
           continue;
         }
         case 7: {
@@ -27217,23 +27209,23 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
             break;
           }
 
-          message.slug = reader.string();
+          message.portionName = reader.string();
           continue;
         }
         case 8: {
-          if (tag !== 64) {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.slug = reader.string();
+          continue;
+        }
+        case 9: {
+          if (tag !== 72) {
             break;
           }
 
           message.yieldsComponentType = reader.int32() as any;
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.estimatedPortions = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
           continue;
         }
         case 10: {
@@ -27241,7 +27233,7 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
             break;
           }
 
-          message.prepTasks.push(RecipePrepTaskWithinRecipeCreationRequestInput.decode(reader, reader.uint32()));
+          message.estimatedPortions = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
           continue;
         }
         case 11: {
@@ -27249,19 +27241,27 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
             break;
           }
 
-          message.steps.push(RecipeStepCreationRequestInput.decode(reader, reader.uint32()));
+          message.prepTasks.push(RecipePrepTaskWithinRecipeCreationRequestInput.decode(reader, reader.uint32()));
           continue;
         }
         case 12: {
-          if (tag !== 96) {
+          if (tag !== 98) {
+            break;
+          }
+
+          message.steps.push(RecipeStepCreationRequestInput.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 13: {
+          if (tag !== 104) {
             break;
           }
 
           message.alsoCreateMeal = reader.bool();
           continue;
         }
-        case 13: {
-          if (tag !== 104) {
+        case 14: {
+          if (tag !== 112) {
             break;
           }
 
@@ -32847,13 +32847,13 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
       writer.uint32(26).string(message.source);
     }
     if (message.sourceIsbn !== undefined) {
-      writer.uint32(98).string(message.sourceIsbn);
+      writer.uint32(34).string(message.sourceIsbn);
     }
     if (message.description !== undefined) {
-      writer.uint32(34).string(message.description);
+      writer.uint32(42).string(message.description);
     }
     if (message.inspiredByRecipeId !== undefined) {
-      writer.uint32(42).string(message.inspiredByRecipeId);
+      writer.uint32(50).string(message.inspiredByRecipeId);
     }
     if (message.estimatedPortions !== undefined) {
       Float32RangeWithOptionalMaxUpdateRequestInput.encode(message.estimatedPortions, writer.uint32(58).fork()).join();
@@ -32904,24 +32904,24 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
           message.source = reader.string();
           continue;
         }
-        case 12: {
-          if (tag !== 98) {
+        case 4: {
+          if (tag !== 34) {
             break;
           }
 
           message.sourceIsbn = reader.string();
           continue;
         }
-        case 4: {
-          if (tag !== 34) {
+        case 5: {
+          if (tag !== 42) {
             break;
           }
 
           message.description = reader.string();
           continue;
         }
-        case 5: {
-          if (tag !== 42) {
+        case 6: {
+          if (tag !== 50) {
             break;
           }
 
@@ -57455,7 +57455,7 @@ export const AccountInstrumentOwnershipCreationRequestInput: MessageFns<AccountI
         writer.uint32(18).string(message.validInstrumentId);
       }
       if (message.quantity !== 0) {
-        writer.uint32(32).uint32(message.quantity);
+        writer.uint32(24).uint32(message.quantity);
       }
       return writer;
     },
@@ -57483,8 +57483,8 @@ export const AccountInstrumentOwnershipCreationRequestInput: MessageFns<AccountI
             message.validInstrumentId = reader.string();
             continue;
           }
-          case 4: {
-            if (tag !== 32) {
+          case 3: {
+            if (tag !== 24) {
               break;
             }
 

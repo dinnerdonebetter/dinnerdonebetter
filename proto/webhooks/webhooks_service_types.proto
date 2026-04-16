@@ -88,9 +88,9 @@ message GetWebhooksResponse {
 // Catalog trigger event CRUD
 // When id is set, the existing catalog event is used; otherwise name (and optionally description) create a new catalog event.
 message WebhookTriggerEventCreationRequestInput {
-  optional string id = 3; // reference existing catalog event by id
   string name = 1;
   string description = 2;
+  optional string id = 3; // reference existing catalog event by id
 }
 
 message CreateWebhookTriggerEventRequest {

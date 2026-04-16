@@ -163,7 +163,7 @@ fileprivate let _protobuf_package = "filtering"
 
 extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".QueryFilter"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}sort_by\0\u{4}\u{2}created_after\0\u{3}created_before\0\u{3}updated_after\0\u{3}updated_before\0\u{3}max_response_size\0\u{3}include_archived\0\u{1}cursor\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}sort_by\0\u{3}created_after\0\u{3}created_before\0\u{3}updated_after\0\u{3}updated_before\0\u{3}max_response_size\0\u{3}include_archived\0\u{1}cursor\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -172,13 +172,13 @@ extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._sortBy) }()
-      case 3: try { try decoder.decodeSingularMessageField(value: &self._createdAfter) }()
-      case 4: try { try decoder.decodeSingularMessageField(value: &self._createdBefore) }()
-      case 5: try { try decoder.decodeSingularMessageField(value: &self._updatedAfter) }()
-      case 6: try { try decoder.decodeSingularMessageField(value: &self._updatedBefore) }()
-      case 7: try { try decoder.decodeSingularUInt32Field(value: &self._maxResponseSize) }()
-      case 8: try { try decoder.decodeSingularBoolField(value: &self._includeArchived) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self._cursor) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._createdAfter) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._createdBefore) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._updatedAfter) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._updatedBefore) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self._maxResponseSize) }()
+      case 7: try { try decoder.decodeSingularBoolField(value: &self._includeArchived) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self._cursor) }()
       default: break
       }
     }
@@ -193,25 +193,25 @@ extension Filtering_QueryFilter: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
     try { if let v = self._createdAfter {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
     } }()
     try { if let v = self._createdBefore {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     } }()
     try { if let v = self._updatedAfter {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     } }()
     try { if let v = self._updatedBefore {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     } }()
     try { if let v = self._maxResponseSize {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 7)
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 6)
     } }()
     try { if let v = self._includeArchived {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
     } }()
     try { if let v = self._cursor {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
+      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }

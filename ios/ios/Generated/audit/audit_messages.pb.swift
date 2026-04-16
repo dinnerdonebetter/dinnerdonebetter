@@ -89,7 +89,7 @@ fileprivate let _protobuf_package = "audit"
 
 extension Audit_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{5}account_audit_log_entries\0\u{4}\u{4}user_audit_log_entries\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_audit_log_entries\0\u{3}user_audit_log_entries\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -97,8 +97,8 @@ extension Audit_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 5: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Audit_AuditLogEntry>.self, value: &self.accountAuditLogEntries) }()
-      case 9: try { try decoder.decodeRepeatedMessageField(value: &self.userAuditLogEntries) }()
+      case 1: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Audit_AuditLogEntry>.self, value: &self.accountAuditLogEntries) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.userAuditLogEntries) }()
       default: break
       }
     }
@@ -106,10 +106,10 @@ extension Audit_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.accountAuditLogEntries.isEmpty {
-      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Audit_AuditLogEntry>.self, value: self.accountAuditLogEntries, fieldNumber: 5)
+      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMessageMap<SwiftProtobuf.ProtobufString,Audit_AuditLogEntry>.self, value: self.accountAuditLogEntries, fieldNumber: 1)
     }
     if !self.userAuditLogEntries.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.userAuditLogEntries, fieldNumber: 9)
+      try visitor.visitRepeatedMessageField(value: self.userAuditLogEntries, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
