@@ -105,8 +105,10 @@ Each recipe MUST have at least 2 steps. Each step requires:
 - Vessels (array): Containers/cooking vessels (pot, pan, bowl, etc.)
   - Use SearchForValidVessels to find vessel IDs
 - Products (array): Outputs from this step
-- EstimatedTimeInSeconds (object): Optional time range
-- TemperatureInCelsius (object): Optional temperature range
+- MinEstimatedTimeInSeconds (*uint32): Optional minimum estimated time in seconds
+- MaxEstimatedTimeInSeconds (*uint32): Optional maximum estimated time in seconds
+- MinTemperatureInCelsius (*float32): Optional minimum temperature in Celsius
+- MaxTemperatureInCelsius (*float32): Optional maximum temperature in Celsius
 - Optional (bool): Whether the step is optional
 - StartTimerAutomatically (bool): Whether to auto-start a timer
 

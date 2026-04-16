@@ -231,12 +231,10 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 
 	// Step 3: Preheat baking sheets in oven to 500°F (260°C)
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                3,
-		ExplicitInstructions: "Preheat the baking sheets in the oven to 500°F (260°C).",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(260)), // 500°F = 260°C
-		},
+		PreparationID:           preheatPrep.ID,
+		Index:                   3,
+		ExplicitInstructions:    "Preheat the baking sheets in the oven to 500°F (260°C).",
+		MinTemperatureInCelsius: new(float32(260)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
@@ -458,12 +456,10 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 
 	// Step 8: Roast for 10 minutes
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        roastPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Roast for 10 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(600)), // 10 minutes
-		},
+		PreparationID:             roastPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Roast for 10 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(600)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),
@@ -693,13 +689,10 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	// Step 13: Continue to bake until Brussels sprouts are deeply charred and fully tender and shallots begin to brown, 10 to 15 minutes more
 	brownedState := enums.IngredientStates["browned"]
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        roastPrep.ID,
-		Index:                13,
-		ExplicitInstructions: "Continue to bake until the Brussels sprouts are deeply charred and fully tender and the shallots begin to brown, 10 to 15 minutes more.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(600)), // 10 minutes
-			Max: new(uint32(900)), // 15 minutes
-		},
+		PreparationID:             roastPrep.ID,
+		Index:                     13,
+		ExplicitInstructions:      "Continue to bake until the Brussels sprouts are deeply charred and fully tender and the shallots begin to brown, 10 to 15 minutes more.",
+		MinEstimatedTimeInSeconds: new(uint32(600)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(11)),
@@ -858,9 +851,7 @@ func RoastedBrusselsSproutsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the trimmed and halved Brussels sprouts in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days

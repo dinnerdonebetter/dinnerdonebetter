@@ -259,12 +259,10 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Breadcrumbs Step 4: Cook until fragrant
 	bcStep4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                4,
-		ExplicitInstructions: "Cook until fragrant, about 1 minute.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     4,
+		ExplicitInstructions:      "Cook until fragrant, about 1 minute.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
@@ -362,12 +360,10 @@ func CaesarBreadcrumbsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Breadcrumbs Step 6: Coat breadcrumbs until golden brown
 	bcStep6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        coatPrep.ID,
-		Index:                6,
-		ExplicitInstructions: "Cook, stirring constantly until the breadcrumbs are golden brown, about 3 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(180)),
-		},
+		PreparationID:             coatPrep.ID,
+		Index:                     6,
+		ExplicitInstructions:      "Cook, stirring constantly until the breadcrumbs are golden brown, about 3 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(180)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(5)),

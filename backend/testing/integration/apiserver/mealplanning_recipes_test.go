@@ -337,7 +337,8 @@ func TestRecipes_Creating(T *testing.T) {
 			},
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
-					TemperatureInCelsius: expected.Steps[0].TemperatureInCelsius,
+					MinTemperatureInCelsius: expected.Steps[0].MinTemperatureInCelsius,
+					MaxTemperatureInCelsius: expected.Steps[0].MaxTemperatureInCelsius,
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
 							Name:                expected.Steps[0].Products[0].Name,
@@ -379,7 +380,8 @@ func TestRecipes_Creating(T *testing.T) {
 					Index: expected.Steps[0].Index,
 				},
 				{
-					TemperatureInCelsius: expected.Steps[1].TemperatureInCelsius,
+					MinTemperatureInCelsius: expected.Steps[1].MinTemperatureInCelsius,
+					MaxTemperatureInCelsius: expected.Steps[1].MaxTemperatureInCelsius,
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
 							Name:                expected.Steps[1].Products[0].Name,

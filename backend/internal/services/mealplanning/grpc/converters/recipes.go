@@ -624,15 +624,11 @@ func ConvertGRPCRecipeStepCreationRequestInputToRecipeStepCreationRequestInput(i
 	}
 
 	return &mealplanning.RecipeStepCreationRequestInput{
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: input.EstimatedTimeInSeconds.Min,
-			Max: input.EstimatedTimeInSeconds.Max,
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.TemperatureInCelsius.Min,
-			Max: input.TemperatureInCelsius.Max,
-		},
-		PreparationID:           input.PreparationId,
+		MinEstimatedTimeInSeconds: input.EstimatedTimeInSeconds.Min,
+		MaxEstimatedTimeInSeconds: input.EstimatedTimeInSeconds.Max,
+		MinTemperatureInCelsius:   input.TemperatureInCelsius.Min,
+		MaxTemperatureInCelsius:   input.TemperatureInCelsius.Max,
+		PreparationID:             input.PreparationId,
 		Notes:                   input.Notes,
 		ConditionExpression:     input.ConditionExpression,
 		ExplicitInstructions:    input.ExplicitInstructions,
@@ -675,12 +671,12 @@ func ConvertRecipeStepCreationRequestInputToGRPCRecipeStepCreationRequestInput(i
 
 	return &mealplanningsvc.RecipeStepCreationRequestInput{
 		EstimatedTimeInSeconds: &grpctypes.OptionalUint32Range{
-			Min: input.EstimatedTimeInSeconds.Min,
-			Max: input.EstimatedTimeInSeconds.Max,
+			Min: input.MinEstimatedTimeInSeconds,
+			Max: input.MaxEstimatedTimeInSeconds,
 		},
 		TemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.TemperatureInCelsius.Min,
-			Max: input.TemperatureInCelsius.Max,
+			Min: input.MinTemperatureInCelsius,
+			Max: input.MaxTemperatureInCelsius,
 		},
 		PreparationId:           input.PreparationID,
 		Notes:                   input.Notes,
@@ -803,12 +799,12 @@ func ConvertRecipeStepToGRPCRecipeStep(input *mealplanning.RecipeStep) *mealplan
 	step := &mealplanningsvc.RecipeStep{
 		CreatedAt: grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		EstimatedTimeInSeconds: &grpctypes.OptionalUint32Range{
-			Max: input.EstimatedTimeInSeconds.Max,
-			Min: input.EstimatedTimeInSeconds.Min,
+			Max: input.MaxEstimatedTimeInSeconds,
+			Min: input.MinEstimatedTimeInSeconds,
 		},
 		TemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: input.TemperatureInCelsius.Max,
-			Min: input.TemperatureInCelsius.Min,
+			Max: input.MaxTemperatureInCelsius,
+			Min: input.MinTemperatureInCelsius,
 		},
 		ArchivedAt:              grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		LastUpdatedAt:           grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
@@ -856,15 +852,11 @@ func ConvertRecipeStepToGRPCRecipeStep(input *mealplanning.RecipeStep) *mealplan
 
 func ConvertGRPCRecipeStepToRecipeStep(input *mealplanningsvc.RecipeStep) *mealplanning.RecipeStep {
 	step := &mealplanning.RecipeStep{
-		CreatedAt: grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Max: input.EstimatedTimeInSeconds.Max,
-			Min: input.EstimatedTimeInSeconds.Min,
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: input.TemperatureInCelsius.Max,
-			Min: input.TemperatureInCelsius.Min,
-		},
+		CreatedAt:                 grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		MinEstimatedTimeInSeconds: input.EstimatedTimeInSeconds.Min,
+		MaxEstimatedTimeInSeconds: input.EstimatedTimeInSeconds.Max,
+		MinTemperatureInCelsius:   input.TemperatureInCelsius.Min,
+		MaxTemperatureInCelsius:   input.TemperatureInCelsius.Max,
 		ArchivedAt:              grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		LastUpdatedAt:           grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ExplicitInstructions:    input.ExplicitInstructions,
@@ -1555,15 +1547,11 @@ func ConvertRecipeRatingUpdateRequestInputToGRPCRecipeRatingUpdateRequestInput(i
 
 func ConvertGRPCRecipeStepUpdateRequestInputToRecipeStepUpdateRequestInput(input *mealplanningsvc.RecipeStepUpdateRequestInput) *mealplanning.RecipeStepUpdateRequestInput {
 	return &mealplanning.RecipeStepUpdateRequestInput{
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: input.EstimatedTimeInSeconds.Min,
-			Max: input.EstimatedTimeInSeconds.Max,
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.TemperatureInCelsius.Min,
-			Max: input.TemperatureInCelsius.Max,
-		},
-		Notes:                   input.Notes,
+		MinEstimatedTimeInSeconds: input.EstimatedTimeInSeconds.Min,
+		MaxEstimatedTimeInSeconds: input.EstimatedTimeInSeconds.Max,
+		MinTemperatureInCelsius:   input.TemperatureInCelsius.Min,
+		MaxTemperatureInCelsius:   input.TemperatureInCelsius.Max,
+		Notes:                     input.Notes,
 		Preparation:             ConvertGRPCValidPreparationToValidPreparation(input.Preparation),
 		Index:                   input.Index,
 		Optional:                input.Optional,
@@ -1577,12 +1565,12 @@ func ConvertGRPCRecipeStepUpdateRequestInputToRecipeStepUpdateRequestInput(input
 func ConvertRecipeStepUpdateRequestInputToGRPCRecipeStepUpdateRequestInput(input *mealplanning.RecipeStepUpdateRequestInput) *mealplanningsvc.RecipeStepUpdateRequestInput {
 	return &mealplanningsvc.RecipeStepUpdateRequestInput{
 		EstimatedTimeInSeconds: &grpctypes.OptionalUint32Range{
-			Min: input.EstimatedTimeInSeconds.Min,
-			Max: input.EstimatedTimeInSeconds.Max,
+			Min: input.MinEstimatedTimeInSeconds,
+			Max: input.MaxEstimatedTimeInSeconds,
 		},
 		TemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.TemperatureInCelsius.Min,
-			Max: input.TemperatureInCelsius.Max,
+			Min: input.MinTemperatureInCelsius,
+			Max: input.MaxTemperatureInCelsius,
 		},
 		Notes:                   input.Notes,
 		Preparation:             ConvertValidPreparationToGRPCValidPreparation(input.Preparation),

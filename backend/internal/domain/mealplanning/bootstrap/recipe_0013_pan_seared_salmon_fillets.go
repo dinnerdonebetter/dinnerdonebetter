@@ -305,12 +305,10 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 
 	// Step 5: Add salmon fillets, skin side down, and press firmly in place for 10 seconds each
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        pressPrep.ID,
-		Index:                5,
-		ExplicitInstructions: "Add a salmon fillet, skin side down. Press firmly in place for 10 seconds, using the back of a flexible fish spatula, to prevent the skin from buckling. Add the remaining fillets one at a time, pressing each with the spatula for 10 seconds, until all fillets are in the pan.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(40)), // 4 fillets × 10 seconds
-		},
+		PreparationID:             pressPrep.ID,
+		Index:                     5,
+		ExplicitInstructions:      "Add a salmon fillet, skin side down. Press firmly in place for 10 seconds, using the back of a flexible fish spatula, to prevent the skin from buckling. Add the remaining fillets one at a time, pressing each with the spatula for 10 seconds, until all fillets are in the pan.",
+		MinEstimatedTimeInSeconds: new(uint32(40)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(2)),
@@ -362,13 +360,10 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 	// Step 6: Cook, pressing gently on back of fillets occasionally to ensure good contact with skin, until skin releases easily from pan, about 4 minutes. Continue to cook until salmon registers 110°F (43°C) in the very center for rare, 120°F (49°C) for medium-rare, or 130°F (54°C) for medium, 5 to 7 minutes total.
 	atTemperatureState := enums.IngredientStates["at temperature"]
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                6,
-		ExplicitInstructions: "Cook, pressing gently on the back of the fillets occasionally to ensure good contact with the skin, until the skin releases easily from the pan, about 4 minutes. If the skin shows resistance when you attempt to lift a corner with the spatula, allow it to continue to cook until it lifts easily. Continue to cook until the salmon registers 110°F (43°C) in the very center for rare, 120°F (49°C) for medium-rare, or 130°F (54°C) for medium, 5 to 7 minutes total.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-			Max: new(uint32(420)), // 7 minutes
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     6,
+		ExplicitInstructions:      "Cook, pressing gently on the back of the fillets occasionally to ensure good contact with the skin, until the skin releases easily from the pan, about 4 minutes. If the skin shows resistance when you attempt to lift a corner with the spatula, allow it to continue to cook until it lifts easily. Continue to cook until the salmon registers 110°F (43°C) in the very center for rare, 120°F (49°C) for medium-rare, or 130°F (54°C) for medium, 5 to 7 minutes total.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(5)),
@@ -494,12 +489,10 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 
 	// Step 8: Cook on second side for 15 seconds
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Cook on the second side for 15 seconds.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(15)),
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Cook on the second side for 15 seconds.",
+		MinEstimatedTimeInSeconds: new(uint32(15)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -620,10 +613,7 @@ func PanSearedSalmonFilletsRecipe(enums *Enumerations) []*mealplanning.RecipeCre
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the ground pepper in an airtight container at room temperature for up to 7 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(18)),
-			Max: new(float32(25)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Min: new(float32(18)), Max: new(float32(25))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(604800)), // 7 days

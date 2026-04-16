@@ -399,12 +399,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 
 	// Step 5: Preheat oven to 300°F (150°C)
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                5,
-		ExplicitInstructions: "Preheat the oven to 300°F (150°C).",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(150)), // 300°F
-		},
+		PreparationID:           preheatPrep.ID,
+		Index:                   5,
+		ExplicitInstructions:    "Preheat the oven to 300°F (150°C).",
+		MinTemperatureInCelsius: new(float32(150)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(4)),
@@ -649,13 +647,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 
 	// Step 11: Working in batches if necessary, add chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                11,
-		ExplicitInstructions: "Working in batches if necessary, add the chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(240)), // 4 minutes
-			Max: new(uint32(360)), // 6 minutes
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     11,
+		ExplicitInstructions:      "Working in batches if necessary, add the chicken, skin-side-down, and cook without moving until well-browned and crispy, 4 to 6 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(240)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
@@ -755,12 +750,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 
 	// Step 13: Cook lightly on second side, about 2 minutes
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                13,
-		ExplicitInstructions: "Cook lightly on the second side, about 2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)), // 2 minutes
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     13,
+		ExplicitInstructions:      "Cook lightly on the second side, about 2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(12)),
@@ -951,13 +944,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 
 	// Step 17: Cook, stirring, until vegetables are softened and starting to brown, 3 to 5 minutes
 	step17 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                17,
-		ExplicitInstructions: "Cook, stirring, until the vegetables are softened and starting to brown, 3 to 5 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(180)), // 3 minutes
-			Max: new(uint32(300)), // 5 minutes
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     17,
+		ExplicitInstructions:      "Cook, stirring, until the vegetables are softened and starting to brown, 3 to 5 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(180)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(16)),
@@ -1174,12 +1164,10 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 	// Step 21: Cook uncovered until chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes
 	atTemperatureState := enums.IngredientStates["at temperature"]
 	step21 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        braisePrep.ID,
-		Index:                21,
-		ExplicitInstructions: "Cook uncovered until the chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(1800)), // 30 minutes
-		},
+		PreparationID:             braisePrep.ID,
+		Index:                     21,
+		ExplicitInstructions:      "Cook uncovered until the chicken is cooked through and tender and registers at least 175°F (79°C), about 30 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(1800)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(19)),
@@ -1278,9 +1266,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the seasoned chicken on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 8 hours and up to 72 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 28800,               // 8 hours
 			Max: new(uint32(259200)), // 72 hours
@@ -1300,9 +1286,7 @@ func SoySauceBraisedChickenThighsRecipe(enums *Enumerations) []*mealplanning.Rec
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the prepared aromatics in separate airtight containers in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

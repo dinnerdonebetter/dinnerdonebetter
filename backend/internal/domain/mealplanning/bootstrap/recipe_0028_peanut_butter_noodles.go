@@ -448,12 +448,10 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 7: Stir vigorously, adding reserved water until sauce is glossy and clings
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        stirPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Vigorously stir the noodles for a minute, adding some reserved cooking water, a tablespoon or two at a time, until the sauce is glossy and clings to the noodles.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),
-		},
+		PreparationID:             stirPrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Vigorously stir the noodles for a minute, adding some reserved cooking water, a tablespoon or two at a time, until the sauce is glossy and clings to the noodles.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),

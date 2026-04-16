@@ -202,12 +202,10 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 
 	// Broccoli Step 3: Preheat oven to 500°F
 	brStep3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                3,
-		ExplicitInstructions: "Preheat the oven to 500°F (260°C).",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(260)),
-		},
+		PreparationID:           preheatPrep.ID,
+		Index:                   3,
+		ExplicitInstructions:    "Preheat the oven to 500°F (260°C).",
+		MinTemperatureInCelsius: new(float32(260)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(2)),
@@ -231,12 +229,10 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 
 	// Broccoli Step 4: Place baking sheet in oven to preheat
 	brStep4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                4,
-		ExplicitInstructions: "Place the foil-lined baking sheet on the oven rack to preheat.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(260)),
-		},
+		PreparationID:           preheatPrep.ID,
+		Index:                   4,
+		ExplicitInstructions:    "Place the foil-lined baking sheet on the oven rack to preheat.",
+		MinTemperatureInCelsius: new(float32(260)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(1)),
@@ -367,15 +363,11 @@ func CaesarRoastedBroccoliRecipe(enums *Enumerations, createdRecipes map[string]
 
 	// Broccoli Step 7: Roast broccoli
 	brStep7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        roastPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Roast until the broccoli is tender and deeply browned in spots, about 20 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(1200)), // 20 minutes
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(260)),
-		},
+		PreparationID:             roastPrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Roast until the broccoli is tender and deeply browned in spots, about 20 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(1200)),
+		MinTemperatureInCelsius:   new(float32(260)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(6)),

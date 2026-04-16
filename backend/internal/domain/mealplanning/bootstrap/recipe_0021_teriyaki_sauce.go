@@ -176,10 +176,11 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 	}
 
 	ts3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:          reducePrep.ID,
-		Index:                  3,
-		ExplicitInstructions:   "Cook over medium heat, swirling the pan occasionally, until the temperature reaches 225°F (107℃) and the sauce thickens and is reduced to a scant 1 cup, 12 to 16 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{Min: new(uint32(720)), Max: new(uint32(960))},
+		PreparationID:             reducePrep.ID,
+		Index:                     3,
+		ExplicitInstructions:      "Cook over medium heat, swirling the pan occasionally, until the temperature reaches 225°F (107℃) and the sauce thickens and is reduced to a scant 1 cup, 12 to 16 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(720)),
+		MaxEstimatedTimeInSeconds: new(uint32(960)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(2)),

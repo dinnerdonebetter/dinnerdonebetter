@@ -49,8 +49,10 @@ var recipeStepsSchema = map[string]any{
 	"Index":                   uintField("The index of the step within the recipe"),
 	"Optional":                boolField("Whether this step is optional"),
 	"StartTimerAutomatically": boolField("Whether to start a timer automatically for this step"),
-	"EstimatedTimeInSeconds":  optionalUint32RangeSchema(),
-	"TemperatureInCelsius":    optionalFloat32RangeSchema(),
+	"MinEstimatedTimeInSeconds": uintField("Minimum estimated time in seconds (optional)"),
+	"MaxEstimatedTimeInSeconds": uintField("Maximum estimated time in seconds (optional)"),
+	"MinTemperatureInCelsius":   floatField("Minimum temperature in Celsius (optional)"),
+	"MaxTemperatureInCelsius":   floatField("Maximum temperature in Celsius (optional)"),
 }
 
 var getRecipeStepTool = &mcp.Tool{

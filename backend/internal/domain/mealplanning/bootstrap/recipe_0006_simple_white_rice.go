@@ -345,12 +345,10 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 6: Simmer for 15 minutes
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
-		Index:                6,
-		ExplicitInstructions: "Cook for 15 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(900)), // 15 minutes
-		},
+		PreparationID:             simmerPrep.ID,
+		Index:                     6,
+		ExplicitInstructions:      "Cook for 15 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(900)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(5)),
@@ -430,12 +428,10 @@ func SimpleWhiteRiceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 
 	// Step 8: Rest
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Let the pot sit for at least 5 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Let the pot sit for at least 5 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),

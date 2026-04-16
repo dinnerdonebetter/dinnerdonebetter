@@ -194,12 +194,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 0: Toast fenugreek leaves in a small skillet over medium heat until fragrant
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        toastPrep.ID,
-		Index:                0,
-		ExplicitInstructions: "In a small skillet, toast the fenugreek leaves (or fenugreek seeds, if using) over medium heat, tossing them constantly, until quite fragrant, about 30 seconds.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(30)),
-		},
+		PreparationID:             toastPrep.ID,
+		Index:                     0,
+		ExplicitInstructions:      "In a small skillet, toast the fenugreek leaves (or fenugreek seeds, if using) over medium heat, tossing them constantly, until quite fragrant, about 30 seconds.",
+		MinEstimatedTimeInSeconds: new(uint32(30)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &toastKasuriMethiVIP.ID,
@@ -563,13 +561,11 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 6: Toast spices for sauce
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        toastPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Add the fenugreek leaves (or seeds, if using), chiles de arbol, brown cardamom (or green cardamom, if using), and clove to a small skillet and place it over medium heat. Toast, tossing frequently, until the spices are quite fragrant, about 1 to 2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),
-			Max: new(uint32(120)),
-		},
+		PreparationID:             toastPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Add the fenugreek leaves (or seeds, if using), chiles de arbol, brown cardamom (or green cardamom, if using), and clove to a small skillet and place it over medium heat. Toast, tossing frequently, until the spices are quite fragrant, about 1 to 2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
+		MaxEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &toastKasuriMethiVIP.ID,
@@ -705,12 +701,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 9: Microwave cashews
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        microwavePrep.ID,
-		Index:                11,
-		ExplicitInstructions: "Microwave on high until the cashews look plump and have softened slightly, about 1 minute. Set aside.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),
-		},
+		PreparationID:             microwavePrep.ID,
+		Index:                     11,
+		ExplicitInstructions:      "Microwave on high until the cashews look plump and have softened slightly, about 1 minute. Set aside.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(10)),
@@ -868,13 +862,11 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 11: Cook onions with baking soda
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                15,
-		ExplicitInstructions: "Add the onions and baking soda and, using a wooden spoon, stir to coat the onions in oil and distribute the baking soda. Cook, stirring occasionally, until the onions have completely broken down, most of their moisture has cooked off, and they begin to brown, 14 to 17 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(840)),
-			Max: new(uint32(1020)),
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     15,
+		ExplicitInstructions:      "Add the onions and baking soda and, using a wooden spoon, stir to coat the onions in oil and distribute the baking soda. Cook, stirring occasionally, until the onions have completely broken down, most of their moisture has cooked off, and they begin to brown, 14 to 17 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(840)),
+		MaxEstimatedTimeInSeconds: new(uint32(1020)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(14)),
@@ -1120,12 +1112,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 12: Cook ginger and garlic
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                21,
-		ExplicitInstructions: "Reduce the heat to medium low. Add the ginger and garlic to the pot and cook, stirring constantly, until quite fragrant, about 1 minute.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     21,
+		ExplicitInstructions:      "Reduce the heat to medium low. Add the ginger and garlic to the pot and cook, stirring constantly, until quite fragrant, about 1 minute.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(17)),
@@ -1178,12 +1168,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 13: Add spice mixture to onions
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                22,
-		ExplicitInstructions: "Using a wooden spoon, push the onions into the center of the pot to form a mound. Add the ground spice mixture to the mounded onions to prevent the spices from scorching. Cook, stirring constantly, until the onions are coated in spices and the mixture is very fragrant, about 30 seconds.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(30)),
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     22,
+		ExplicitInstructions:      "Using a wooden spoon, push the onions into the center of the pot to form a mound. Add the ground spice mixture to the mounded onions to prevent the spices from scorching. Cook, stirring constantly, until the onions are coated in spices and the mixture is very fragrant, about 30 seconds.",
+		MinEstimatedTimeInSeconds: new(uint32(30)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
@@ -1286,12 +1274,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 15: Simmer sauce
 	step15 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
-		Index:                24,
-		ExplicitInstructions: "Bring to a boil, then reduce the heat to maintain a gentle simmer. Cook, stirring occasionally, until the tomatoes are completely broken down and the liquid has reduced, about 40 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(2400)),
-		},
+		PreparationID:             simmerPrep.ID,
+		Index:                     24,
+		ExplicitInstructions:      "Bring to a boil, then reduce the heat to maintain a gentle simmer. Cook, stirring occasionally, until the tomatoes are completely broken down and the liquid has reduced, about 40 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(2400)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(23)),
@@ -1351,12 +1337,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 17: Broil chicken
 	step17 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        broilPrep.ID,
-		Index:                26,
-		ExplicitInstructions: "Transfer the chicken to the broiler. Cook, checking the chicken frequently to ensure it's not burning, until the chicken is charred in spots and is fully cooked through, about 14 minutes. Remove the chicken from the broiler and set aside.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(840)),
-		},
+		PreparationID:             broilPrep.ID,
+		Index:                     26,
+		ExplicitInstructions:      "Transfer the chicken to the broiler. Cook, checking the chicken frequently to ensure it's not burning, until the chicken is charred in spots and is fully cooked through, about 14 minutes. Remove the chicken from the broiler and set aside.",
+		MinEstimatedTimeInSeconds: new(uint32(840)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -1394,12 +1378,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 18: Blend sauce
 	step18 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        blendPrep.ID,
-		Index:                27,
-		ExplicitInstructions: "Using an immersion blender and off the heat, blend the contents of the Dutch oven until completely smooth, about 2 minutes. Alternatively, transfer the contents of the pot to a blender and blend until completely smooth.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)),
-		},
+		PreparationID:             blendPrep.ID,
+		Index:                     27,
+		ExplicitInstructions:      "Using an immersion blender and off the heat, blend the contents of the Dutch oven until completely smooth, about 2 minutes. Alternatively, transfer the contents of the pot to a blender and blend until completely smooth.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(24)),
@@ -1482,12 +1464,10 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 
 	// Step 19: Add butter and cream
 	step19 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        blendPrep.ID,
-		Index:                29,
-		ExplicitInstructions: "Add the butter and cream, and blend until completely smooth and emulsified, about 2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)),
-		},
+		PreparationID:             blendPrep.ID,
+		Index:                     29,
+		ExplicitInstructions:      "Add the butter and cream, and blend until completely smooth and emulsified, about 2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(27)),
@@ -1630,9 +1610,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Optional:                    true,
 		ExplicitStorageInstructions: "Cover the baking sheet with the marinated chicken and store in the refrigerator for up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeCovered,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(86400)), // 24 hours
@@ -1656,10 +1634,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the ground spice mixture in an airtight container at room temperature for up to 7 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(18)),
-			Max: new(float32(25)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Min: new(float32(18)), Max: new(float32(25))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(604800)), // 7 days
@@ -1677,9 +1652,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the prepared aromatics in separate airtight containers in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

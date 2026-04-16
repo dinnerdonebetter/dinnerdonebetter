@@ -350,12 +350,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 4: Blanch the green beans
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        blanchPrep.ID,
-		Index:                4,
-		ExplicitInstructions: "Add the green beans to the boiling water and cook until tender-crisp, about 3 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(180)), // 3 minutes
-		},
+		PreparationID:             blanchPrep.ID,
+		Index:                     4,
+		ExplicitInstructions:      "Add the green beans to the boiling water and cook until tender-crisp, about 3 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(180)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(3)),
@@ -597,12 +595,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 9: Toast almonds until deeply browned
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        toastPrep.ID,
-		Index:                9,
-		ExplicitInstructions: "Cook, stirring frequently, until the almonds are deeply browned and nutty, about 5 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-		},
+		PreparationID:             toastPrep.ID,
+		Index:                     9,
+		ExplicitInstructions:      "Cook, stirring frequently, until the almonds are deeply browned and nutty, about 5 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(8)),
@@ -668,12 +664,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 10: Add garlic and shallot and cook
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Add the garlic and shallot and cook, stirring, until lightly browned, about 2 minutes longer.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)), // 2 minutes
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Add the garlic and shallot and cook, stirring, until lightly browned, about 2 minutes longer.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
@@ -829,12 +823,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	// Step 13: Emulsify the sauce
 	desiredConsistencyState := enums.IngredientStates["at desired consistency"]
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        emulsifyPrep.ID,
-		Index:                13,
-		ExplicitInstructions: "Stir and shake the pan rapidly to emulsify, about 30 seconds. The sauce should have a glossy sheen and not appear watery or greasy. If it's still watery, continue to simmer and shake. If it looks greasy, add another tablespoon of water to re-emulsify.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(30)), // 30 seconds
-		},
+		PreparationID:             emulsifyPrep.ID,
+		Index:                     13,
+		ExplicitInstructions:      "Stir and shake the pan rapidly to emulsify, about 30 seconds. The sauce should have a glossy sheen and not appear watery or greasy. If it's still watery, continue to simmer and shake. If it looks greasy, add another tablespoon of water to re-emulsify.",
+		MinEstimatedTimeInSeconds: new(uint32(30)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(11)),
@@ -1023,12 +1015,10 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 17: Cook until heated through
 	step17 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                17,
-		ExplicitInstructions: "Cook over medium heat, tossing, until heated through, about 1 minute.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)), // 1 minute
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     17,
+		ExplicitInstructions:      "Cook over medium heat, tossing, until heated through, about 1 minute.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(16)),
@@ -1106,9 +1096,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the blanched and dried green beans in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 		},
@@ -1131,9 +1119,7 @@ func HaricotsVertsAmandineRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the sauce in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 		},

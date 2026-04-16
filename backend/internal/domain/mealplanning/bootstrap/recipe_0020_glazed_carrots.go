@@ -186,13 +186,10 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 1: Melt butter in skillet over medium heat and cook until browned
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        meltPrep.ID,
-		Index:                1,
-		ExplicitInstructions: "In a deep 12-inch stainless-steel skillet, melt the butter over medium heat, stirring often, until melted, about 2 minutes. Once melted, continue to cook, stirring constantly, just until the milk solids separate and sink to the bottom of the skillet and begin to darken, 2 to 3 minutes. Butter can go from brown to burnt quickly, so keep a close eye on it as you stir it.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(240)), // 4 minutes total (2 + 2)
-			Max: new(uint32(300)), // 5 minutes total (2 + 3)
-		},
+		PreparationID:             meltPrep.ID,
+		Index:                     1,
+		ExplicitInstructions:      "In a deep 12-inch stainless-steel skillet, melt the butter over medium heat, stirring often, until melted, about 2 minutes. Once melted, continue to cook, stirring constantly, just until the milk solids separate and sink to the bottom of the skillet and begin to darken, 2 to 3 minutes. Butter can go from brown to burnt quickly, so keep a close eye on it as you stir it.",
+		MinEstimatedTimeInSeconds: new(uint32(240)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
@@ -247,13 +244,10 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 2: Add sage sprigs and cook until crisp
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                2,
-		ExplicitInstructions: "Add the sage sprigs; cook, stirring constantly, until the sage leaves darken and crisp and the butter foams and browns, 1 to 2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),  // 1 minute
-			Max: new(uint32(120)), // 2 minutes
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     2,
+		ExplicitInstructions:      "Add the sage sprigs; cook, stirring constantly, until the sage leaves darken and crisp and the butter foams and browns, 1 to 2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(1)),
@@ -550,12 +544,10 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 7: Cover and continue to boil
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        coverPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Cover, reduce the heat to medium-high, and continue to boil, vigorously shaking the skillet occasionally, until the carrots are crisp/tender and still firm in the center, about 8 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(480)), // 8 minutes
-		},
+		PreparationID:             coverPrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Cover, reduce the heat to medium-high, and continue to boil, vigorously shaking the skillet occasionally, until the carrots are crisp/tender and still firm in the center, about 8 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(480)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),
@@ -643,13 +635,10 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 
 	// Step 9: Continue boiling until reduced to glaze
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        reducePrep.ID,
-		Index:                9,
-		ExplicitInstructions: "Continue to boil, vigorously stirring and shaking the skillet often, until the mixture is reduced to a glaze that coats and clings to the carrots, 12 to 14 minutes. If the sauce begins to break and you see oily, butter-colored specks, add a splash of water (about 2 tablespoons) and return to a vigorous simmer, stirring constantly, until the mixture looks creamy and homogenous again.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(720)), // 12 minutes
-			Max: new(uint32(840)), // 14 minutes
-		},
+		PreparationID:             reducePrep.ID,
+		Index:                     9,
+		ExplicitInstructions:      "Continue to boil, vigorously stirring and shaking the skillet often, until the mixture is reduced to a glaze that coats and clings to the carrots, 12 to 14 minutes. If the sauce begins to break and you see oily, butter-colored specks, add a splash of water (about 2 tablespoons) and return to a vigorous simmer, stirring constantly, until the mixture looks creamy and homogenous again.",
+		MinEstimatedTimeInSeconds: new(uint32(720)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
@@ -960,9 +949,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the peeled and sliced carrots in an airtight container in the refrigerator for up to 4 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(345600)), // 4 days
@@ -980,9 +967,7 @@ func GlazedCarrotsWithBrownButterAndSageRecipe(enums *Enumerations) []*mealplann
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the chopped herbs in an airtight container lined with a damp paper towel in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days

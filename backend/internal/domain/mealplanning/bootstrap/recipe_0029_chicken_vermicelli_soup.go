@@ -180,13 +180,11 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 1: Add onion and cook until softened and translucent, about 5 minutes
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        sautePrep.ID,
-		Index:                1,
-		ExplicitInstructions: "Add the onion and cook, stirring frequently, until softened and translucent, about 5 minutes; you don't want the onion to take on any color.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)),
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             sautePrep.ID,
+		Index:                     1,
+		ExplicitInstructions:      "Add the onion and cook, stirring frequently, until softened and translucent, about 5 minutes; you don't want the onion to take on any color.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &sauteOnionVIP.ID,
@@ -235,12 +233,10 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 2: Sprinkle in turmeric and stir until fragrant, about 30 seconds
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        sprinklePrep.ID,
-		Index:                2,
-		ExplicitInstructions: "Sprinkle in the turmeric and stir until fragrant, about 30 seconds.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(30)),
-		},
+		PreparationID:             sprinklePrep.ID,
+		Index:                     2,
+		ExplicitInstructions:      "Sprinkle in the turmeric and stir until fragrant, about 30 seconds.",
+		MinEstimatedTimeInSeconds: new(uint32(30)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &sprinkleTurmericVIP.ID,
@@ -281,13 +277,11 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 3: Add potato and carrot, stir and cook for 2 minutes
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                3,
-		ExplicitInstructions: "Add the potato and carrot, then stir and cook for 2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)),
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             addPrep.ID,
+		Index:                     3,
+		ExplicitInstructions:      "Add the potato and carrot, then stir and cook for 2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &addPotatoVIP.ID,
@@ -353,14 +347,12 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 5: Add tomato paste and cook, stirring frequently, until color releases
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                5,
-		ExplicitInstructions: "Add the tomato paste. Cook, stirring frequently, until the tomato paste releases its color into the oil, 2 to 3 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)),
-			Max: new(uint32(180)),
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             cookPrep.ID,
+		Index:                     5,
+		ExplicitInstructions:      "Add the tomato paste. Cook, stirring frequently, until the tomato paste releases its color into the oil, 2 to 3 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
+		MaxEstimatedTimeInSeconds: new(uint32(180)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &cookTomatoPasteVIP.ID,
@@ -668,12 +660,10 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 14: Simmer 40 minutes
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
-		Index:                14,
-		ExplicitInstructions: "Simmer gently for 40 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(2400)),
-		},
+		PreparationID:             simmerPrep.ID,
+		Index:                     14,
+		ExplicitInstructions:      "Simmer gently for 40 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(2400)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
@@ -797,13 +787,11 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 17: Add shredded chicken and vermicelli, bring to lively simmer, cover, simmer 10 min
 	step17 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                17,
-		ExplicitInstructions: "Taste the soup and adjust salt as needed. Add the shredded chicken and vermicelli, stir and increase heat to bring the soup to a lively simmer. Cover, adjust heat to low and simmer until the noodles soften and the flavors come together, 10 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(600)),
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             addPrep.ID,
+		Index:                     17,
+		ExplicitInstructions:      "Taste the soup and adjust salt as needed. Add the shredded chicken and vermicelli, stir and increase heat to bring the soup to a lively simmer. Cover, adjust heat to low and simmer until the noodles soften and the flavors come together, 10 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(600)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(16)),
@@ -878,14 +866,12 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 19: Stir in parsley and lime juice, let rest 5-10 min
 	step19 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        stirPrep.ID,
-		Index:                19,
-		ExplicitInstructions: "Stir in the parsley and lime juice and let sit, covered, for 5 to 10 minutes. Taste and adjust seasoning with more lime juice, salt or pepper as needed.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)),
-			Max: new(uint32(600)),
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             stirPrep.ID,
+		Index:                     19,
+		ExplicitInstructions:      "Stir in the parsley and lime juice and let sit, covered, for 5 to 10 minutes. Taste and adjust seasoning with more lime juice, salt or pepper as needed.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
+		MaxEstimatedTimeInSeconds: new(uint32(600)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &stirParsleyVIP.ID,
@@ -953,9 +939,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store onion and carrot in an airtight container in the refrigerator. Store diced potato in a bowl of water in the refrigerator if prepping more than a few hours ahead. Wrap parsley in a damp paper towel and refrigerate. Store lime juice in an airtight container in the refrigerator.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

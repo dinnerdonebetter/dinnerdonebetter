@@ -187,12 +187,10 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 2: Preheat skillet
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
-		Index:                2,
-		ExplicitInstructions: "Set the skillet over medium heat and allow to preheat for about 5 minutes, then increase the heat to high until smoking.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-		},
+		PreparationID:             heatPrep.ID,
+		Index:                     2,
+		ExplicitInstructions:      "Set the skillet over medium heat and allow to preheat for about 5 minutes, then increase the heat to high until smoking.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(1)),
@@ -420,12 +418,10 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 7: Sear first side until golden brown
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Cook without moving until a golden brown crust develops, about 1 1/2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(90)), // 1.5 minutes
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Cook without moving until a golden brown crust develops, about 1 1/2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(90)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),
@@ -585,12 +581,10 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 10: Finish cooking second side
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Continue to cook until the patties are cooked to desired doneness—about 30 seconds longer for medium-rare.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(30)),
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Continue to cook until the patties are cooked to desired doneness—about 30 seconds longer for medium-rare.",
+		MinEstimatedTimeInSeconds: new(uint32(30)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
@@ -674,10 +668,7 @@ func ClassicSmashBurgersRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the ground pepper in an airtight container at room temperature for up to 7 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(18)),
-			Max: new(float32(25)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Min: new(float32(18)), Max: new(float32(25))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(604800)), // 7 days

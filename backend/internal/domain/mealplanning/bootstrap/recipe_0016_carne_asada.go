@@ -320,13 +320,11 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 1: Microwave dried ancho and guajillo chiles on a microwave-safe plate until pliable and toasty-smelling, 10 to 20 seconds
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        microwavePrep.ID,
-		Index:                2,
-		ExplicitInstructions: "Place the dried ancho and guajillo chiles on a microwave-safe plate and microwave until pliable and toasty-smelling, 10 to 20 seconds.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(10)),
-			Max: new(uint32(20)),
-		},
+		PreparationID:             microwavePrep.ID,
+		Index:                     2,
+		ExplicitInstructions:      "Place the dried ancho and guajillo chiles on a microwave-safe plate and microwave until pliable and toasty-smelling, 10 to 20 seconds.",
+		MinEstimatedTimeInSeconds: new(uint32(10)),
+		MaxEstimatedTimeInSeconds: new(uint32(20)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &microwaveAnchoChilesVIP.ID,
@@ -410,12 +408,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 2: Transfer chiles to blender jar, add all marinade ingredients, and blend until a smooth sauce has formed, about 1 minute
 	step2 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        blendPrep.ID,
-		Index:                4,
-		ExplicitInstructions: "Transfer the chiles to a blender jar, add chipotle peppers, orange juice, lime juice, olive oil, soy sauce, fish sauce, brown sugar, cilantro, garlic, cumin seed, and coriander seed, then blend until a smooth sauce has formed, about 1 minute.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),
-		},
+		PreparationID:             blendPrep.ID,
+		Index:                     4,
+		ExplicitInstructions:      "Transfer the chiles to a blender jar, add chipotle peppers, orange juice, lime juice, olive oil, soy sauce, fish sauce, brown sugar, cilantro, garlic, cumin seed, and coriander seed, then blend until a smooth sauce has formed, about 1 minute.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(2)),
@@ -877,13 +873,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 10: Refrigerate for at least 3 hours or up to 12 hours
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        refrigeratePrep.ID,
-		Index:                13,
-		ExplicitInstructions: "Refrigerate for at least 3 hours or up to 12 hours.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(10800)), // 3 hours
-			Max: new(uint32(43200)), // 12 hours
-		},
+		PreparationID:             refrigeratePrep.ID,
+		Index:                     13,
+		ExplicitInstructions:      "Refrigerate for at least 3 hours or up to 12 hours.",
+		MinEstimatedTimeInSeconds: new(uint32(10800)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(12)),
@@ -1068,13 +1061,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 15: Cover grill and preheat for 5 minutes. Alternatively, for gas grill, preheat for 10 minutes.
 	step15 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                18,
-		ExplicitInstructions: "Cover the grill and preheat for 5 minutes. Alternatively, for a gas grill, preheat for 10 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-			Max: new(uint32(600)), // 10 minutes
-		},
+		PreparationID:             preheatPrep.ID,
+		Index:                     18,
+		ExplicitInstructions:      "Cover the grill and preheat for 5 minutes. Alternatively, for a gas grill, preheat for 10 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(17)),
@@ -1216,13 +1206,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 19: Place steaks directly over the hot side of the grill and cook, turning occasionally, until well charred and center registers 110°F (43°C), 5 to 10 minutes total
 	step19 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        grillPrep.ID,
-		Index:                22,
-		ExplicitInstructions: "Place the steaks directly over the hot side of the grill. If using a gas grill, cover; if using a charcoal grill, leave exposed. Cook, turning occasionally, until the steaks are well charred on the outside and the center registers 110°F (43°C) on an instant-read thermometer, 5 to 10 minutes total.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-			Max: new(uint32(600)), // 10 minutes
-		},
+		PreparationID:             grillPrep.ID,
+		Index:                     22,
+		ExplicitInstructions:      "Place the steaks directly over the hot side of the grill. If using a gas grill, cover; if using a charcoal grill, leave exposed. Cook, turning occasionally, until the steaks are well charred on the outside and the center registers 110°F (43°C) on an instant-read thermometer, 5 to 10 minutes total.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(21)),
@@ -1332,12 +1319,10 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 
 	// Step 21: Allow to rest for 5 minutes
 	step21 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                24,
-		ExplicitInstructions: "Allow to rest for 5 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     24,
+		ExplicitInstructions:      "Allow to rest for 5 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(23)),
@@ -1435,10 +1420,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the toasted and ground spices in an airtight container at room temperature.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(18)), // Room temperature
-			Max: new(float32(25)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Min: new(float32(18))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(604800)), // Up to 7 days
@@ -1457,9 +1439,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 		Optional:                    false,
 		ExplicitStorageInstructions: "Store the marinated steak in a sealed zipper-lock bag in the refrigerator for at least 3 hours and up to 12 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 10800,              // 3 hours
 			Max: new(uint32(43200)), // 12 hours

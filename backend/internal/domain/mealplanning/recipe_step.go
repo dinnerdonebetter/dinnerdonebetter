@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -40,28 +39,30 @@ func init() {
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		_                       struct{}                         `json:"-"`
-		CreatedAt               time.Time                        `json:"createdAt"`
-		EstimatedTimeInSeconds  numbers.OpenRange[uint32]        `json:"estimatedTimeInSeconds"`
-		TemperatureInCelsius    numbers.OpenRange[float32]       `json:"temperatureInCelsius"`
-		ArchivedAt              *time.Time                       `json:"archivedAt"`
-		LastUpdatedAt           *time.Time                       `json:"lastUpdatedAt"`
-		BelongsToRecipe         string                           `json:"belongsToRecipe"`
-		ConditionExpression     string                           `json:"conditionExpression"`
-		ID                      string                           `json:"id"`
-		Notes                   string                           `json:"notes"`
-		ExplicitInstructions    string                           `json:"explicitInstructions"`
-		Products                []*RecipeStepProduct             `json:"products"`
-		Instruments             []*RecipeStepInstrument          `json:"instruments"`
-		Vessels                 []*RecipeStepVessel              `json:"vessels"`
-		CompletionConditions    []*RecipeStepCompletionCondition `json:"completionConditions"`
-		Ingredients             []*RecipeStepIngredient          `json:"ingredients"`
-		Media                   []*RecipeMedia                   `json:"media"`
-		StepImages              []*uploadedmedia.UploadedMedia   `json:"stepImages"`
-		Preparation             ValidPreparation                 `json:"preparation"`
-		Index                   uint32                           `json:"index"`
-		Optional                bool                             `json:"optional"`
-		StartTimerAutomatically bool                             `json:"startTimerAutomatically"`
+		_                         struct{}                         `json:"-"`
+		CreatedAt                 time.Time                        `json:"createdAt"`
+		ArchivedAt                *time.Time                       `json:"archivedAt"`
+		LastUpdatedAt             *time.Time                       `json:"lastUpdatedAt"`
+		MinEstimatedTimeInSeconds *uint32                          `json:"minEstimatedTimeInSeconds,omitempty"`
+		MaxEstimatedTimeInSeconds *uint32                          `json:"maxEstimatedTimeInSeconds,omitempty"`
+		MinTemperatureInCelsius   *float32                         `json:"minTemperatureInCelsius,omitempty"`
+		MaxTemperatureInCelsius   *float32                         `json:"maxTemperatureInCelsius,omitempty"`
+		BelongsToRecipe           string                           `json:"belongsToRecipe"`
+		ConditionExpression       string                           `json:"conditionExpression"`
+		ID                        string                           `json:"id"`
+		Notes                     string                           `json:"notes"`
+		ExplicitInstructions      string                           `json:"explicitInstructions"`
+		Products                  []*RecipeStepProduct             `json:"products"`
+		Instruments               []*RecipeStepInstrument          `json:"instruments"`
+		Vessels                   []*RecipeStepVessel              `json:"vessels"`
+		CompletionConditions      []*RecipeStepCompletionCondition `json:"completionConditions"`
+		Ingredients               []*RecipeStepIngredient          `json:"ingredients"`
+		Media                     []*RecipeMedia                   `json:"media"`
+		StepImages                []*uploadedmedia.UploadedMedia   `json:"stepImages"`
+		Preparation               ValidPreparation                 `json:"preparation"`
+		Index                     uint32                           `json:"index"`
+		Optional                  bool                             `json:"optional"`
+		StartTimerAutomatically   bool                             `json:"startTimerAutomatically"`
 	}
 
 	// RecipeStepList represents a list of recipe steps.
@@ -71,58 +72,64 @@ type (
 	RecipeStepCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedTimeInSeconds  numbers.OpenRange[uint32]                            `json:"estimatedTimeInSeconds"`
-		TemperatureInCelsius    numbers.OpenRange[float32]                           `json:"temperatureInCelsius"`
-		PreparationID           string                                               `json:"preparationID"`
-		Notes                   string                                               `json:"notes"`
-		ConditionExpression     string                                               `json:"conditionExpression"`
-		ExplicitInstructions    string                                               `json:"explicitInstructions"`
-		Instruments             []*RecipeStepInstrumentCreationRequestInput          `json:"instruments"`
-		Vessels                 []*RecipeStepVesselCreationRequestInput              `json:"vessels"`
-		Products                []*RecipeStepProductCreationRequestInput             `json:"products"`
-		Ingredients             []*RecipeStepIngredientCreationRequestInput          `json:"ingredients"`
-		CompletionConditions    []*RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions"`
-		Index                   uint32                                               `json:"index"`
-		Optional                bool                                                 `json:"optional"`
-		StartTimerAutomatically bool                                                 `json:"startTimerAutomatically"`
+		MinEstimatedTimeInSeconds *uint32                                              `json:"minEstimatedTimeInSeconds,omitempty"`
+		MaxEstimatedTimeInSeconds *uint32                                              `json:"maxEstimatedTimeInSeconds,omitempty"`
+		MinTemperatureInCelsius   *float32                                             `json:"minTemperatureInCelsius,omitempty"`
+		MaxTemperatureInCelsius   *float32                                             `json:"maxTemperatureInCelsius,omitempty"`
+		PreparationID             string                                               `json:"preparationID"`
+		Notes                     string                                               `json:"notes"`
+		ConditionExpression       string                                               `json:"conditionExpression"`
+		ExplicitInstructions      string                                               `json:"explicitInstructions"`
+		Instruments               []*RecipeStepInstrumentCreationRequestInput          `json:"instruments"`
+		Vessels                   []*RecipeStepVesselCreationRequestInput              `json:"vessels"`
+		Products                  []*RecipeStepProductCreationRequestInput             `json:"products"`
+		Ingredients               []*RecipeStepIngredientCreationRequestInput          `json:"ingredients"`
+		CompletionConditions      []*RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions"`
+		Index                     uint32                                               `json:"index"`
+		Optional                  bool                                                 `json:"optional"`
+		StartTimerAutomatically   bool                                                 `json:"startTimerAutomatically"`
 	}
 
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedTimeInSeconds  numbers.OpenRange[uint32]                             `json:"-"`
-		TemperatureInCelsius    numbers.OpenRange[float32]                            `json:"-"`
-		BelongsToRecipe         string                                                `json:"-"`
-		PreparationID           string                                                `json:"-"`
-		ID                      string                                                `json:"-"`
-		Notes                   string                                                `json:"-"`
-		ExplicitInstructions    string                                                `json:"-"`
-		ConditionExpression     string                                                `json:"-"`
-		Ingredients             []*RecipeStepIngredientDatabaseCreationInput          `json:"-"`
-		Instruments             []*RecipeStepInstrumentDatabaseCreationInput          `json:"-"`
-		Vessels                 []*RecipeStepVesselDatabaseCreationInput              `json:"-"`
-		Products                []*RecipeStepProductDatabaseCreationInput             `json:"-"`
-		CompletionConditions    []*RecipeStepCompletionConditionDatabaseCreationInput `json:"-"`
-		Index                   uint32                                                `json:"-"`
-		Optional                bool                                                  `json:"-"`
-		StartTimerAutomatically bool                                                  `json:"-"`
+		MinEstimatedTimeInSeconds *uint32                                               `json:"-"`
+		MaxEstimatedTimeInSeconds *uint32                                               `json:"-"`
+		MinTemperatureInCelsius   *float32                                              `json:"-"`
+		MaxTemperatureInCelsius   *float32                                              `json:"-"`
+		BelongsToRecipe           string                                                `json:"-"`
+		PreparationID             string                                                `json:"-"`
+		ID                        string                                                `json:"-"`
+		Notes                     string                                                `json:"-"`
+		ExplicitInstructions      string                                                `json:"-"`
+		ConditionExpression       string                                                `json:"-"`
+		Ingredients               []*RecipeStepIngredientDatabaseCreationInput          `json:"-"`
+		Instruments               []*RecipeStepInstrumentDatabaseCreationInput          `json:"-"`
+		Vessels                   []*RecipeStepVesselDatabaseCreationInput              `json:"-"`
+		Products                  []*RecipeStepProductDatabaseCreationInput             `json:"-"`
+		CompletionConditions      []*RecipeStepCompletionConditionDatabaseCreationInput `json:"-"`
+		Index                     uint32                                                `json:"-"`
+		Optional                  bool                                                  `json:"-"`
+		StartTimerAutomatically   bool                                                  `json:"-"`
 	}
 
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedTimeInSeconds  numbers.OpenRange[uint32]  `json:"estimatedTimeInSeconds"`
-		TemperatureInCelsius    numbers.OpenRange[float32] `json:"temperatureInCelsius"`
-		Notes                   *string                    `json:"notes,omitempty"`
-		Preparation             *ValidPreparation          `json:"preparation,omitempty"`
-		Index                   *uint32                    `json:"index,omitempty"`
-		Optional                *bool                      `json:"optional,omitempty"`
-		ExplicitInstructions    *string                    `json:"explicitInstructions,omitempty"`
-		ConditionExpression     *string                    `json:"conditionExpression,omitempty"`
-		StartTimerAutomatically *bool                      `json:"startTimerAutomatically"`
-		BelongsToRecipe         *string                    `json:"belongsToRecipe"`
+		MinEstimatedTimeInSeconds *uint32           `json:"minEstimatedTimeInSeconds,omitempty"`
+		MaxEstimatedTimeInSeconds *uint32           `json:"maxEstimatedTimeInSeconds,omitempty"`
+		MinTemperatureInCelsius   *float32          `json:"minTemperatureInCelsius,omitempty"`
+		MaxTemperatureInCelsius   *float32          `json:"maxTemperatureInCelsius,omitempty"`
+		Notes                     *string           `json:"notes,omitempty"`
+		Preparation               *ValidPreparation `json:"preparation,omitempty"`
+		Index                     *uint32           `json:"index,omitempty"`
+		Optional                  *bool             `json:"optional,omitempty"`
+		ExplicitInstructions      *string           `json:"explicitInstructions,omitempty"`
+		ConditionExpression       *string           `json:"conditionExpression,omitempty"`
+		StartTimerAutomatically   *bool             `json:"startTimerAutomatically"`
+		BelongsToRecipe           *string           `json:"belongsToRecipe"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
@@ -156,20 +163,20 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Preparation = *input.Preparation
 	}
 
-	if input.EstimatedTimeInSeconds.Min != nil && input.EstimatedTimeInSeconds.Min != x.EstimatedTimeInSeconds.Min {
-		x.EstimatedTimeInSeconds.Min = input.EstimatedTimeInSeconds.Min
+	if input.MinEstimatedTimeInSeconds != nil && input.MinEstimatedTimeInSeconds != x.MinEstimatedTimeInSeconds {
+		x.MinEstimatedTimeInSeconds = input.MinEstimatedTimeInSeconds
 	}
 
-	if input.EstimatedTimeInSeconds.Max != nil && input.EstimatedTimeInSeconds.Max != x.EstimatedTimeInSeconds.Max {
-		x.EstimatedTimeInSeconds.Max = input.EstimatedTimeInSeconds.Max
+	if input.MaxEstimatedTimeInSeconds != nil && input.MaxEstimatedTimeInSeconds != x.MaxEstimatedTimeInSeconds {
+		x.MaxEstimatedTimeInSeconds = input.MaxEstimatedTimeInSeconds
 	}
 
-	if input.TemperatureInCelsius.Min != nil && (x.TemperatureInCelsius.Min == nil || (*input.TemperatureInCelsius.Min != 0 && *input.TemperatureInCelsius.Min != *x.TemperatureInCelsius.Min)) {
-		x.TemperatureInCelsius.Min = input.TemperatureInCelsius.Min
+	if input.MinTemperatureInCelsius != nil && (x.MinTemperatureInCelsius == nil || (*input.MinTemperatureInCelsius != 0 && *input.MinTemperatureInCelsius != *x.MinTemperatureInCelsius)) {
+		x.MinTemperatureInCelsius = input.MinTemperatureInCelsius
 	}
 
-	if input.TemperatureInCelsius.Max != nil && (x.TemperatureInCelsius.Max == nil || (*input.TemperatureInCelsius.Max != 0 && *input.TemperatureInCelsius.Max != *x.TemperatureInCelsius.Max)) {
-		x.TemperatureInCelsius.Max = input.TemperatureInCelsius.Max
+	if input.MaxTemperatureInCelsius != nil && (x.MaxTemperatureInCelsius == nil || (*input.MaxTemperatureInCelsius != 0 && *input.MaxTemperatureInCelsius != *x.MaxTemperatureInCelsius)) {
+		x.MaxTemperatureInCelsius = input.MaxTemperatureInCelsius
 	}
 
 	if input.Notes != nil && *input.Notes != x.Notes {
@@ -300,8 +307,6 @@ func (x *RecipeStepUpdateRequestInput) ValidateWithContext(ctx context.Context) 
 		x,
 		validation.Field(&x.Index, validation.Required),
 		validation.Field(&x.Preparation, validation.Required),
-		validation.Field(&x.EstimatedTimeInSeconds, validation.Required),
-		validation.Field(&x.TemperatureInCelsius, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }

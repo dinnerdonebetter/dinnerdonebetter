@@ -17,8 +17,10 @@ func checkRecipeStepEquality(t *testing.T, index int, expected, actual *mealplan
 	t.Helper()
 
 	assert.NotZero(t, actual.CreatedAt, "expected recipe step %d", index)
-	assert.Equal(t, expected.EstimatedTimeInSeconds, actual.EstimatedTimeInSeconds, "expected recipe step %d", index)
-	assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected recipe step %d", index)
+	assert.Equal(t, expected.MinEstimatedTimeInSeconds, actual.MinEstimatedTimeInSeconds, "expected recipe step %d", index)
+	assert.Equal(t, expected.MaxEstimatedTimeInSeconds, actual.MaxEstimatedTimeInSeconds, "expected recipe step %d", index)
+	assert.Equal(t, expected.MinTemperatureInCelsius, actual.MinTemperatureInCelsius, "expected recipe step %d", index)
+	assert.Equal(t, expected.MaxTemperatureInCelsius, actual.MaxTemperatureInCelsius, "expected recipe step %d", index)
 	assert.NotEmpty(t, actual.BelongsToRecipe, "expected recipe step %d", index)
 	assert.Equal(t, expected.ConditionExpression, actual.ConditionExpression, "expected recipe step %d", index)
 	assert.NotEmpty(t, actual.ID, "expected recipe step %d", index)

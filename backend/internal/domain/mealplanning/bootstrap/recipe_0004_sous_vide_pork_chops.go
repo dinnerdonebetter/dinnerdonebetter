@@ -201,13 +201,10 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 1: Preheat water bath
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
-		Index:                1,
-		ExplicitInstructions: "Place an immersion circulator in a water bath and set the circulator to the desired final temperature. For medium-rare, set to 140°F (60°C). Allow the water bath to come to temperature.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(60)), // 140°F = 60°C (medium-rare default)
-			Max: new(float32(60)),
-		},
+		PreparationID:           heatPrep.ID,
+		Index:                   1,
+		ExplicitInstructions:    "Place an immersion circulator in a water bath and set the circulator to the desired final temperature. For medium-rare, set to 140°F (60°C). Allow the water bath to come to temperature.",
+		MinTemperatureInCelsius: new(float32(60)),
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &heatSousVideCookerVPI.ID,
@@ -377,17 +374,11 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 5: Cook sous vide
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        sousVidePrep.ID,
-		Index:                5,
-		ExplicitInstructions: "Place the sealed bagged pork chops in the preheated water bath and cook for the recommended time. For 1 1/2 inch thick chops at 140°F (60°C), cook for 1 to 4 hours.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(3600)),  // 1 hour minimum
-			Max: new(uint32(14400)), // 4 hours maximum
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(60)), // 140°F = 60°C
-			Max: new(float32(60)),
-		},
+		PreparationID:             sousVidePrep.ID,
+		Index:                     5,
+		ExplicitInstructions:      "Place the sealed bagged pork chops in the preheated water bath and cook for the recommended time. For 1 1/2 inch thick chops at 140°F (60°C), cook for 1 to 4 hours.",
+		MinEstimatedTimeInSeconds: new(uint32(3600)),
+		MinTemperatureInCelsius:   new(float32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(4)),
@@ -567,13 +558,11 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 9: Preheat skillet until oil smokes (Optional - Pan Finish)
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
-		Index:                9,
-		Optional:             true,
-		ExplicitInstructions: "Place the skillet over the hottest burner you have and preheat until the oil starts to smoke.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(220)), // Very high heat
-		},
+		PreparationID:           heatPrep.ID,
+		Index:                   9,
+		Optional:                true,
+		ExplicitInstructions:    "Place the skillet over the hottest burner you have and preheat until the oil starts to smoke.",
+		MinTemperatureInCelsius: new(float32(220)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
@@ -625,13 +614,11 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 10: Pan-sear first side (Optional - Pan Finish)
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                10,
-		Optional:             true,
-		ExplicitInstructions: "Using your fingers or a set of tongs, gently lay two pork chops in the skillet. If desired, add 1 tablespoon butter; for a cleaner-tasting sear, omit butter at this stage. Carefully lift and peek under the pork as it cooks to gauge how quickly it is browning. Let it continue to cook until the crust is deep brown and very crisp, about 45 seconds.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(45)),
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     10,
+		Optional:                  true,
+		ExplicitInstructions:      "Using your fingers or a set of tongs, gently lay two pork chops in the skillet. If desired, add 1 tablespoon butter; for a cleaner-tasting sear, omit butter at this stage. Carefully lift and peek under the pork as it cooks to gauge how quickly it is browning. Let it continue to cook until the crust is deep brown and very crisp, about 45 seconds.",
+		MinEstimatedTimeInSeconds: new(uint32(45)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(7)),
@@ -831,14 +818,12 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 13: Baste and brown second side (Optional - Pan Finish)
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        bastePrep.ID,
-		Index:                13,
-		Optional:             true,
-		ExplicitInstructions: "Spoon the butter over the pork chops as they cook, if using. Continue cooking until the second side is browned, about 45 seconds longer.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(45)),
-			Max: new(uint32(60)),
-		},
+		PreparationID:             bastePrep.ID,
+		Index:                     13,
+		Optional:                  true,
+		ExplicitInstructions:      "Spoon the butter over the pork chops as they cook, if using. Continue cooking until the second side is browned, about 45 seconds longer.",
+		MinEstimatedTimeInSeconds: new(uint32(45)),
+		MaxEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(12)),
@@ -1033,14 +1018,11 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 16: Rest on wire rack (Optional - Pan Finish)
 	step16 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                16,
-		Optional:             true,
-		ExplicitInstructions: "Let the chops rest for 3 to 5 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(180)), // 3 minutes
-			Max: new(uint32(300)), // 5 minutes
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     16,
+		Optional:                  true,
+		ExplicitInstructions:      "Let the chops rest for 3 to 5 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(180)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(15)),
@@ -1185,9 +1167,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the sealed pork chops in the refrigerator for up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(86400)), // 24 hours

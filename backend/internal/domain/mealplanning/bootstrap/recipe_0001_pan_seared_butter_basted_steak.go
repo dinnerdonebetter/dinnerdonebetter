@@ -279,14 +279,11 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 
 	// Step 3: Rest the steak (optional - at room temperature or refrigerated)
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                3,
-		Optional:             true,
-		ExplicitInstructions: "If desired, let the steak rest at room temperature for 45 minutes, or refrigerate it, loosely covered, for up to 3 days.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(2700)),   // 45 minutes minimum
-			Max: new(uint32(259200)), // 3 days maximum
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     3,
+		Optional:                  true,
+		ExplicitInstructions:      "If desired, let the steak rest at room temperature for 45 minutes, or refrigerate it, loosely covered, for up to 3 days.",
+		MinEstimatedTimeInSeconds: new(uint32(2700)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(2)),
@@ -368,12 +365,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 
 	// Step 5: Heat oil until smoking
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
-		Index:                5,
-		ExplicitInstructions: "In a 12-inch heavy-bottomed cast iron skillet, heat the oil over high heat until it just begins to smoke.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(200)), // High heat, approximately 200°C
-		},
+		PreparationID:           heatPrep.ID,
+		Index:                   5,
+		ExplicitInstructions:    "In a 12-inch heavy-bottomed cast iron skillet, heat the oil over high heat until it just begins to smoke.",
+		MinTemperatureInCelsius: new(float32(200)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &heatVegetableOilVIP.ID,
@@ -441,12 +436,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 
 	// Step 6: Pan-sear the steak
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                6,
-		ExplicitInstructions: "Carefully add the steak to the hot skillet and cook, flipping frequently, until a pale golden-brown crust starts to develop, about 4 minutes total.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(240)), // 4 minutes
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     6,
+		ExplicitInstructions:      "Carefully add the steak to the hot skillet and cook, flipping frequently, until a pale golden-brown crust starts to develop, about 4 minutes total.",
+		MinEstimatedTimeInSeconds: new(uint32(240)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
@@ -508,17 +501,11 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 
 	// Step 7: Baste the steak
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        bastePrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Add butter, herbs (if using), and shallot (if using) to the skillet and continue cooking, flipping the steak occasionally and basting any light spots with foaming butter. If the butter begins to smoke excessively or the steak begins to burn, reduce the heat to medium. To baste, tilt the pan slightly so the butter collects near the handle. Use a spoon to pick up the butter and pour it over the steak, aiming at light spots. Continue flipping and basting until an instant-read thermometer inserted into the thickest part of the tenderloin side registers 120 to 125°F (49 to 52°C) for medium-rare or 130°F (54°C) for medium, 8 to 10 minutes total.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(480)), // 8 minutes
-			Max: new(uint32(600)), // 10 minutes
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(49)), // 120°F = 49°C
-			Max: new(float32(54)), // 130°F = 54°C
-		},
+		PreparationID:             bastePrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Add butter, herbs (if using), and shallot (if using) to the skillet and continue cooking, flipping the steak occasionally and basting any light spots with foaming butter. If the butter begins to smoke excessively or the steak begins to burn, reduce the heat to medium. To baste, tilt the pan slightly so the butter collects near the handle. Use a spoon to pick up the butter and pour it over the steak, aiming at light spots. Continue flipping and basting until an instant-read thermometer inserted into the thickest part of the tenderloin side registers 120 to 125°F (49 to 52°C) for medium-rare or 130°F (54°C) for medium, 8 to 10 minutes total.",
+		MinEstimatedTimeInSeconds: new(uint32(480)),
+		MinTemperatureInCelsius:   new(float32(49)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),
@@ -633,13 +620,10 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 
 	// Step 8: Rest the steak
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Immediately transfer the steak to a large heatproof plate and pour the pan juices on top. Let rest for 5 to 10 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-			Max: new(uint32(600)), // 10 minutes
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Immediately transfer the steak to a large heatproof plate and pour the pan juices on top. Let rest for 5 to 10 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -748,9 +732,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the seasoned steak on a wire rack set in a rimmed baking sheet in the refrigerator, loosely covered, for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

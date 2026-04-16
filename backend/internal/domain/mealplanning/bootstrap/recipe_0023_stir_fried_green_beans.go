@@ -273,13 +273,11 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 3: Preheat the wok until smoking
 	step3 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                3,
-		ExplicitInstructions: "Place your wok over the highest flame and let heat for 3 to 4 minutes, until the wok is smoking.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(180)),
-			Max: new(uint32(240)),
-		},
+		PreparationID:             preheatPrep.ID,
+		Index:                     3,
+		ExplicitInstructions:      "Place your wok over the highest flame and let heat for 3 to 4 minutes, until the wok is smoking.",
+		MinEstimatedTimeInSeconds: new(uint32(180)),
+		MaxEstimatedTimeInSeconds: new(uint32(240)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(preheatWokVPV),
@@ -389,12 +387,10 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 6: Stir the garlic in the oil
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        stirPrep.ID,
-		Index:                6,
-		ExplicitInstructions: "Move the garlic around in the oil for about 5 seconds.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(5)),
-		},
+		PreparationID:             stirPrep.ID,
+		Index:                     6,
+		ExplicitInstructions:      "Move the garlic around in the oil for about 5 seconds.",
+		MinEstimatedTimeInSeconds: new(uint32(5)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(5)),
@@ -483,13 +479,11 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 8: Stir-fry the vegetables
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        stirPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Rapidly stir the vegetables with a spatula or wooden spoon. Stir-fry for 2 to 4 minutes, until the green beans are still crisp and barely raw in the center. To check the doneness, taste a green bean after 2 minutes into the cooking.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)),
-			Max: new(uint32(240)),
-		},
+		PreparationID:             stirPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Rapidly stir the vegetables with a spatula or wooden spoon. Stir-fry for 2 to 4 minutes, until the green beans are still crisp and barely raw in the center. To check the doneness, taste a green bean after 2 minutes into the cooking.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
+		MaxEstimatedTimeInSeconds: new(uint32(240)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -728,9 +722,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the trimmed and snapped green beans in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

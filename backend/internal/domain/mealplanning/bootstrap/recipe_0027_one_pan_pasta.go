@@ -441,12 +441,10 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	// Step 7: Reduce to simmer and cook, stirring with tongs
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Reduce the heat to a simmer and cook for about 6 minutes, using tongs to move the spaghetti around now and then so it doesn't stick.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(360)),
-		},
+		PreparationID:             simmerPrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Reduce the heat to a simmer and cook for about 6 minutes, using tongs to move the spaghetti around now and then so it doesn't stick.",
+		MinEstimatedTimeInSeconds: new(uint32(360)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),
@@ -827,9 +825,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store halved tomatoes and lemon zest in separate airtight containers in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days
@@ -847,9 +843,7 @@ func OnePanPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the washed and chopped greens in an airtight container in the refrigerator for up to 2 days (spinach) or 3 days (kale).",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

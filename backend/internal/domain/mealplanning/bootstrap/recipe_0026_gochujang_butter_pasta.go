@@ -450,13 +450,11 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 
 	// Step 7: Add garlic and salt, cook until garlic softens
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Add the garlic and season generously with salt. Cook, stirring occasionally, until the garlic starts to soften but not brown, 1 to 3 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),
-			Max: new(uint32(180)),
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Add the garlic and season generously with salt. Cook, stirring occasionally, until the garlic starts to soften but not brown, 1 to 3 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
+		MaxEstimatedTimeInSeconds: new(uint32(180)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),
@@ -617,13 +615,11 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 
 	// Step 9: Bring to simmer and reduce
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        reducePrep.ID,
-		Index:                9,
-		ExplicitInstructions: "Bring to a simmer over medium-high. Cook, stirring constantly, until the mixture reduces significantly, 3 to 4 minutes; when you drag a spatula across the bottom of the pan, it should leave behind a trail that stays put for about 3 seconds.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(180)),
-			Max: new(uint32(240)),
-		},
+		PreparationID:             reducePrep.ID,
+		Index:                     9,
+		ExplicitInstructions:      "Bring to a simmer over medium-high. Cook, stirring constantly, until the mixture reduces significantly, 3 to 4 minutes; when you drag a spatula across the bottom of the pan, it should leave behind a trail that stays put for about 3 seconds.",
+		MinEstimatedTimeInSeconds: new(uint32(180)),
+		MaxEstimatedTimeInSeconds: new(uint32(240)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
@@ -816,9 +812,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the minced garlic in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

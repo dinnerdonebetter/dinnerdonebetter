@@ -169,13 +169,10 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 1: Preheat water bath
 	step1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
-		Index:                1,
-		ExplicitInstructions: "Preheat a water bath to 150°F (66°C) using a sous vide cooker. This temperature produces tender and juicy chicken, ideal for chicken salad when served cold.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(66)), // 150°F = 66°C
-			Max: new(float32(66)), // 150°F = 66°C
-		},
+		PreparationID:           heatPrep.ID,
+		Index:                   1,
+		ExplicitInstructions:    "Preheat a water bath to 150°F (66°C) using a sous vide cooker. This temperature produces tender and juicy chicken, ideal for chicken salad when served cold.",
+		MinTemperatureInCelsius: new(float32(66)),
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &heatSousVideCookerVPI.ID,
@@ -374,17 +371,11 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 5: Cook sous vide
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        sousVidePrep.ID,
-		Index:                5,
-		ExplicitInstructions: "Add the sealed bagged chicken to the preheated water bath and cook at 150°F (66°C) for 1 to 4 hours.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(3600)),  // 1 hour minimum
-			Max: new(uint32(14400)), // 4 hours maximum
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(66)), // 150°F = 66°C
-			Max: new(float32(66)), // 150°F = 66°C
-		},
+		PreparationID:             sousVidePrep.ID,
+		Index:                     5,
+		ExplicitInstructions:      "Add the sealed bagged chicken to the preheated water bath and cook at 150°F (66°C) for 1 to 4 hours.",
+		MinEstimatedTimeInSeconds: new(uint32(3600)),
+		MinTemperatureInCelsius:   new(float32(66)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(4)),
@@ -520,13 +511,11 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 8: Heat oil in cast iron skillet
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
-		Index:                8,
-		Optional:             true,
-		ExplicitInstructions: "Heat the oil in a heavy cast iron or stainless steel skillet over medium-high heat until shimmering.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(180)), // Medium-high heat
-		},
+		PreparationID:           heatPrep.ID,
+		Index:                   8,
+		Optional:                true,
+		ExplicitInstructions:    "Heat the oil in a heavy cast iron or stainless steel skillet over medium-high heat until shimmering.",
+		MinTemperatureInCelsius: new(float32(180)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
@@ -582,13 +571,11 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 9: Pan-sear the chicken
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                9,
-		Optional:             true,
-		ExplicitInstructions: "Gently lay the chicken in the skillet using your fingers or a set of tongs. Hold the chicken down flat in the pan with a flexible metal spatula or your fingers (be careful of splattering oil). Cook until golden brown and crisp, about 2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)), // 2 minutes
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     9,
+		Optional:                  true,
+		ExplicitInstructions:      "Gently lay the chicken in the skillet using your fingers or a set of tongs. Hold the chicken down flat in the pan with a flexible metal spatula or your fingers (be careful of splattering oil). Cook until golden brown and crisp, about 2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -665,12 +652,10 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 10: Rest
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Remove from the pan and let rest until cool enough to handle, about 2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)), // 2 minutes
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Remove from the pan and let rest until cool enough to handle, about 2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
@@ -764,9 +749,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the sealed chicken breasts in the refrigerator for up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)), // Refrigerator temperature
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(86400)), // 24 hours

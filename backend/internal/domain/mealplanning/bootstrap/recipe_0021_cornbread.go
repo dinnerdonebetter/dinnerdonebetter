@@ -122,12 +122,10 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 0: Preheat the oven to 375°F
 	step0 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                0,
-		ExplicitInstructions: "Preheat the oven to 375°F.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(190)), // 375°F = ~190°C
-		},
+		PreparationID:           preheatPrep.ID,
+		Index:                   0,
+		ExplicitInstructions:    "Preheat the oven to 375°F.",
+		MinTemperatureInCelsius: new(float32(190)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
@@ -252,13 +250,10 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 2c: Heat milk to lukewarm
 	step2c := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
-		Index:                4,
-		ExplicitInstructions: "Heat the milk in a small saucepan over low heat until lukewarm (about 100°F or 38°C).",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(35)), // ~95°F
-			Max: new(float32(40)), // ~104°F
-		},
+		PreparationID:           heatPrep.ID,
+		Index:                   4,
+		ExplicitInstructions:    "Heat the milk in a small saucepan over low heat until lukewarm (about 100°F or 38°C).",
+		MinTemperatureInCelsius: new(float32(35)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &heatMilkVIP.ID,
@@ -604,16 +599,11 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 7: Bake for 20 to 25 minutes
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        bakePrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Bake the bread for 20 to 25 minutes, until the edges just begin to pull away from the pan and a cake tester or paring knife inserted in the center comes out clean.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(1200)), // 20 minutes
-			Max: new(uint32(1500)), // 25 minutes
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(190)), // 375°F
-		},
+		PreparationID:             bakePrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Bake the bread for 20 to 25 minutes, until the edges just begin to pull away from the pan and a cake tester or paring knife inserted in the center comes out clean.",
+		MinEstimatedTimeInSeconds: new(uint32(1200)),
+		MinTemperatureInCelsius:   new(float32(190)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
@@ -670,12 +660,10 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 8: Cool on a rack for 5 minutes
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        coolPrep.ID,
-		Index:                11,
-		ExplicitInstructions: "Remove the bread from the oven and cool it on a rack for 5 minutes before cutting; serve warm.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-		},
+		PreparationID:             coolPrep.ID,
+		Index:                     11,
+		ExplicitInstructions:      "Remove the bread from the oven and cool it on a rack for 5 minutes before cutting; serve warm.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(10)),
@@ -713,10 +701,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the dry ingredient mixture in an airtight container at room temperature for up to 7 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(18)),
-			Max: new(float32(25)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Min: new(float32(18)), Max: new(float32(25))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(604800)), // 7 days

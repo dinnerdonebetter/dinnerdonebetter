@@ -364,13 +364,10 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	// Step 6: Simmer until beans are very tender, about 1 to 2 hours
 	tenderState := enums.IngredientStates["tender"]
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
-		Index:                6,
-		ExplicitInstructions: "Simmer until the beans are very tender, about 1 to 2 hours.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(3600)), // 1 hour
-			Max: new(uint32(7200)), // 2 hours
-		},
+		PreparationID:             simmerPrep.ID,
+		Index:                     6,
+		ExplicitInstructions:      "Simmer until the beans are very tender, about 1 to 2 hours.",
+		MinEstimatedTimeInSeconds: new(uint32(3600)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(5)),
@@ -713,12 +710,10 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	// Step 13: Add minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes
 	translucentState := enums.IngredientStates["translucent"]
 	step13 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        sautPrep.ID,
-		Index:                13,
-		ExplicitInstructions: "Add the minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(420)), // 7 minutes
-		},
+		PreparationID:             sautPrep.ID,
+		Index:                     13,
+		ExplicitInstructions:      "Add the minced onion and cook, stirring occasionally, until translucent and lightly golden, about 7 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(420)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(11)),
@@ -816,12 +811,10 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	// Step 15: Cook for 2 minutes
 	step15 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        sautPrep.ID,
-		Index:                15,
-		ExplicitInstructions: "Cook for 2 minutes, stirring occasionally.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)), // 2 minutes
-		},
+		PreparationID:             sautPrep.ID,
+		Index:                     15,
+		ExplicitInstructions:      "Cook for 2 minutes, stirring occasionally.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(14)),
@@ -1076,9 +1069,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the drained cooked beans and reserved bean-cooking liquid in separate airtight containers in the refrigerator for up to 5 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(432000)), // 5 days
@@ -1105,9 +1096,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the minced onion in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

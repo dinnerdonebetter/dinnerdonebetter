@@ -283,13 +283,11 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 4: When ready to cook, light a chimney full of charcoal. When all charcoal is lit and covered with gray ash, pour out and arrange coals on one side of coal grate and set grilling grate in place. Alternatively, set half the burners of a gas grill to high heat. Cover grill and allow to preheat for 5 minutes.
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                4,
-		ExplicitInstructions: "When ready to cook, light a chimney full of charcoal. When all charcoal is lit and covered with gray ash, pour out and arrange the coals on one side of the coal grate and set the grilling grate in place. Alternatively, set half the burners of a gas grill to high heat. Cover the grill and allow to preheat for 5 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)), // 5 minutes
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             preheatPrep.ID,
+		Index:                     4,
+		ExplicitInstructions:      "When ready to cook, light a chimney full of charcoal. When all charcoal is lit and covered with gray ash, pour out and arrange the coals on one side of the coal grate and set the grilling grate in place. Alternatively, set half the burners of a gas grill to high heat. Cover the grill and allow to preheat for 5 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
+		StartTimerAutomatically:   true,
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &preheatGrillVPV.ID,
@@ -434,13 +432,11 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	// Step 8: Set over hot side of grill and cook, turning often, until well browned on all sides, about 15 minutes
 	brownedState := enums.IngredientStates["browned"]
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        grillPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Set over the hot side of the grill and cook, turning often, until well browned on all sides, about 15 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(900)), // 15 minutes
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             grillPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Set over the hot side of the grill and cook, turning often, until well browned on all sides, about 15 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(900)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -607,13 +603,11 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Step 11: Let rest for 10 minutes
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                11,
-		ExplicitInstructions: "Let rest for 10 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(600)), // 10 minutes
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             restPrep.ID,
+		Index:                     11,
+		ExplicitInstructions:      "Let rest for 10 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(600)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(10)),
@@ -702,9 +696,7 @@ func GrilledPorkTenderloinRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the salted pork tenderloins on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 45 minutes and up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 2700,               // 45 minutes
 			Max: new(uint32(86400)), // 24 hours

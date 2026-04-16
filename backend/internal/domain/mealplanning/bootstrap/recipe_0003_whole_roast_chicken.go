@@ -298,13 +298,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 4: Dry-brine (refrigerate)
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        dryBrinePrep.ID,
-		Index:                4,
-		ExplicitInstructions: "Place the chicken, back side down, on a wire rack set in a rimmed baking sheet and refrigerate, uncovered, for at least 1 hour and up to 2 days.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(3600)),   // 1 hour minimum
-			Max: new(uint32(172800)), // 2 days maximum
-		},
+		PreparationID:             dryBrinePrep.ID,
+		Index:                     4,
+		ExplicitInstructions:      "Place the chicken, back side down, on a wire rack set in a rimmed baking sheet and refrigerate, uncovered, for at least 1 hour and up to 2 days.",
+		MinEstimatedTimeInSeconds: new(uint32(3600)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
@@ -346,12 +343,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 5: Preheat the oven
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                5,
-		ExplicitInstructions: "Adjust the oven rack to the middle position and preheat the oven to 425°F (220°C).",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(220)), // 425°F
-		},
+		PreparationID:           preheatPrep.ID,
+		Index:                   5,
+		ExplicitInstructions:    "Adjust the oven rack to the middle position and preheat the oven to 425°F (220°C).",
+		MinTemperatureInCelsius: new(float32(220)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
@@ -483,13 +478,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 8: Brown chicken legs
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        panSearPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Set the chicken on its side in the skillet so that the full thigh and drumstick are in contact with the pan; the wing will also be touching, but the breast should have little to no contact with the skillet. Cook until the leg is well browned, 8 to 10 minutes, then flip the bird so the other leg is touching the pan and repeat; lower the heat at any point if the chicken skin begins to burn.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(960)),  // 16 minutes minimum (8 min per side)
-			Max: new(uint32(1200)), // 20 minutes maximum (10 min per side)
-		},
+		PreparationID:             panSearPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Set the chicken on its side in the skillet so that the full thigh and drumstick are in contact with the pan; the wing will also be touching, but the breast should have little to no contact with the skillet. Cook until the leg is well browned, 8 to 10 minutes, then flip the bird so the other leg is touching the pan and repeat; lower the heat at any point if the chicken skin begins to burn.",
+		MinEstimatedTimeInSeconds: new(uint32(960)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -556,16 +548,11 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 9: Roast the chicken
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        roastPrep.ID,
-		Index:                9,
-		ExplicitInstructions: "Using your hands and a spatula if needed, rotate the chicken so it is breast side up in the skillet and transfer to the oven. Roast until the breast registers 150°F (65°C) in the center of its thickest part and the thighs register 165°F (75°C) near (but not touching) the bone, about 40 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(2400)), // 40 minutes
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(65)), // 150°F for breast
-			Max: new(float32(75)), // 165°F for thighs
-		},
+		PreparationID:             roastPrep.ID,
+		Index:                     9,
+		ExplicitInstructions:      "Using your hands and a spatula if needed, rotate the chicken so it is breast side up in the skillet and transfer to the oven. Roast until the breast registers 150°F (65°C) in the center of its thickest part and the thighs register 165°F (75°C) near (but not touching) the bone, about 40 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(2400)),
+		MinTemperatureInCelsius:   new(float32(65)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
@@ -627,13 +614,10 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	// Step 10: Rest the chicken
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Remove from the oven and transfer the chicken to a carving board. Let rest for 10 to 20 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(600)),  // 10 minutes
-			Max: new(uint32(1200)), // 20 minutes
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Remove from the oven and transfer the chicken to a carving board. Let rest for 10 to 20 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(600)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
@@ -720,9 +704,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		Optional:                    false,
 		ExplicitStorageInstructions: "Store the seasoned, trussed chicken on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 1 hour and up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 3600,                // 1 hour
 			Max: new(uint32(172800)), // 2 days

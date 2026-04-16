@@ -309,12 +309,10 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 
 	// Step 4: Let stand until barely al dente
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                4,
-		ExplicitInstructions: "Let stand until the pasta is barely al dente, about 8 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(480)), // 8 minutes
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     4,
+		ExplicitInstructions:      "Let stand until the pasta is barely al dente, about 8 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(480)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
@@ -872,9 +870,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the cornstarch-coated cheese mixture in an airtight container in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days

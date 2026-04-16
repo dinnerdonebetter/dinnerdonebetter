@@ -445,13 +445,11 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	// Step 6: Add garlic, ginger, and onion; cook until onion softens
 	step6 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                6,
-		ExplicitInstructions: "Stir in the garlic, ginger, and onion. Continue cooking, stirring occasionally, until the onion softens, 5 to 7 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)),
-			Max: new(uint32(420)),
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     6,
+		ExplicitInstructions:      "Stir in the garlic, ginger, and onion. Continue cooking, stirring occasionally, until the onion softens, 5 to 7 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
+		MaxEstimatedTimeInSeconds: new(uint32(420)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(1)),
@@ -519,13 +517,11 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	// Step 7: Add chiles and spices; stir for 30 seconds
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Stir in the green chiles, cumin seeds, turmeric, ground coriander, and chile powder. Continue stirring for 30 seconds so the spices don't burn.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(30)),
-			Max: new(uint32(30)),
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Stir in the green chiles, cumin seeds, turmeric, ground coriander, and chile powder. Continue stirring for 30 seconds so the spices don't burn.",
+		MinEstimatedTimeInSeconds: new(uint32(30)),
+		MaxEstimatedTimeInSeconds: new(uint32(30)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
@@ -694,13 +690,11 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	// Step 10: Cook, stirring often, until jammy
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Cook, stirring often, until the mixture is jammy, 5 to 7 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)),
-			Max: new(uint32(420)),
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Cook, stirring often, until the mixture is jammy, 5 to 7 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
+		MaxEstimatedTimeInSeconds: new(uint32(420)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
@@ -912,13 +906,11 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 
 	// Step 14: Simmer until thickened
 	step14 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
-		Index:                14,
-		ExplicitInstructions: "Simmer until the mixture has thickened slightly, 5 to 7 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(300)),
-			Max: new(uint32(420)),
-		},
+		PreparationID:             simmerPrep.ID,
+		Index:                     14,
+		ExplicitInstructions:      "Simmer until the mixture has thickened slightly, 5 to 7 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(300)),
+		MaxEstimatedTimeInSeconds: new(uint32(420)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(11)),
@@ -1090,9 +1082,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the diced onion and minced garlic and ginger in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days
@@ -1110,9 +1100,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the chopped tomatoes and chiles in separate airtight containers in the refrigerator for up to 2 days (tomatoes) or 3 days (chiles).",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days
@@ -1130,9 +1118,7 @@ func ChanaMasalaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReques
 		Optional:                    true,
 		ExplicitStorageInstructions: "Wrap the chopped cilantro in a damp paper towel and store in an airtight container in the refrigerator, or store stems-down in a glass of water with a plastic bag over the leaves.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days

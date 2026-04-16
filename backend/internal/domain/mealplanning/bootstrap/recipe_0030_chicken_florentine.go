@@ -351,13 +351,11 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 4: Add chicken and cook first side until golden brown
 	step4 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                4,
-		ExplicitInstructions: "Add the chicken and cook until the first side is golden brown, about 4 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(240)),
-			Max: new(uint32(240)),
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     4,
+		ExplicitInstructions:      "Add the chicken and cook until the first side is golden brown, about 4 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(240)),
+		MaxEstimatedTimeInSeconds: new(uint32(240)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(2)),
@@ -406,13 +404,11 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 5: Flip chicken and cook second side until golden brown (not cooked through)
 	step5 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                5,
-		ExplicitInstructions: "Flip the chicken and cook until the second side is golden brown (but not cooked through), about 4 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(240)),
-			Max: new(uint32(240)),
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     5,
+		ExplicitInstructions:      "Flip the chicken and cook until the second side is golden brown (but not cooked through), about 4 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(240)),
+		MaxEstimatedTimeInSeconds: new(uint32(240)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(4)),
@@ -504,13 +500,11 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 7: Add remaining butter, shallot, garlic; cook until softened
 	step7 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                7,
-		ExplicitInstructions: "Add remaining 2 tablespoons of butter to the pan and let it melt. Add shallot, garlic and a pinch of salt and cook, stirring until the shallot is softened and the garlic is aromatic, about 2 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(120)),
-			Max: new(uint32(120)),
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     7,
+		ExplicitInstructions:      "Add remaining 2 tablespoons of butter to the pan and let it melt. Add shallot, garlic and a pinch of salt and cook, stirring until the shallot is softened and the garlic is aromatic, about 2 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(120)),
+		MaxEstimatedTimeInSeconds: new(uint32(120)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     &addButterVIP.ID,
@@ -583,13 +577,11 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 8: Add wine, broth, basil, oregano; reduce by half
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Add wine, broth, basil and oregano, and stir, scraping the browned bits from the bottom of the pan, until the liquid has reduced by about half, 3 to 4 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(180)),
-			Max: new(uint32(240)),
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Add wine, broth, basil and oregano, and stir, scraping the browned bits from the bottom of the pan, until the liquid has reduced by about half, 3 to 4 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(180)),
+		MaxEstimatedTimeInSeconds: new(uint32(240)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -701,13 +693,11 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 9: Add heavy cream and cream cheese; stir until thick sauce forms
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                9,
-		ExplicitInstructions: "Add the heavy cream and cream cheese and stir, allowing the cream cheese to soften and melt, until a thick sauce forms, about 6 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(360)),
-			Max: new(uint32(360)),
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     9,
+		ExplicitInstructions:      "Add the heavy cream and cream cheese and stir, allowing the cream cheese to soften and melt, until a thick sauce forms, about 6 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(360)),
+		MaxEstimatedTimeInSeconds: new(uint32(360)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
@@ -779,13 +769,11 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 10: Add baby spinach and stir until wilted
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        addPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Add baby spinach and stir until it is folded into the cream sauce and the spinach is beginning to wilt, about 1 minute.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)),
-			Max: new(uint32(60)),
-		},
+		PreparationID:             addPrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Add baby spinach and stir until it is folded into the cream sauce and the spinach is beginning to wilt, about 1 minute.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
+		MaxEstimatedTimeInSeconds: new(uint32(60)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
@@ -849,13 +837,11 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	// Step 11: Return chicken to pan and simmer until cooked through
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
-		Index:                11,
-		ExplicitInstructions: "Return the chicken breasts to the pan and simmer until the chicken is cooked through, 4 to 5 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(240)),
-			Max: new(uint32(300)),
-		},
+		PreparationID:             simmerPrep.ID,
+		Index:                     11,
+		ExplicitInstructions:      "Return the chicken breasts to the pan and simmer until the chicken is cooked through, 4 to 5 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(240)),
+		MaxEstimatedTimeInSeconds: new(uint32(300)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),
@@ -961,9 +947,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the minced shallot and garlic in an airtight container in the refrigerator for up to 3 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(259200)), // 3 days

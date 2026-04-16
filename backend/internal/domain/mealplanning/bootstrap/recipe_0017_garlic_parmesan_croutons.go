@@ -151,12 +151,10 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 1: Preheat oven to 375°F
 	crStep1 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                1,
-		ExplicitInstructions: "Adjust the oven rack to the middle position and preheat the oven to 375°F (190°C).",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(190)),
-		},
+		PreparationID:           preheatPrep.ID,
+		Index:                   1,
+		ExplicitInstructions:    "Adjust the oven rack to the middle position and preheat the oven to 375°F (190°C).",
+		MinTemperatureInCelsius: new(float32(190)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
@@ -474,15 +472,11 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 8: Bake until pale golden brown and crisp
 	crStep8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        bakePrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Bake until the croutons are pale golden brown and crisp, about 15 minutes.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(190)),
-		},
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(900)), // 15 minutes
-		},
+		PreparationID:             bakePrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Bake until the croutons are pale golden brown and crisp, about 15 minutes.",
+		MinTemperatureInCelsius:   new(float32(190)),
+		MinEstimatedTimeInSeconds: new(uint32(900)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
@@ -586,12 +580,10 @@ func GarlicParmesanCroutonsRecipe(enums *Enumerations, createdRecipes map[string
 
 	// Step 10: Allow to cool
 	crStep10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        coolPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Allow the croutons to cool.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(600)), // 10 minutes
-		},
+		PreparationID:             coolPrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Allow the croutons to cool.",
+		MinEstimatedTimeInSeconds: new(uint32(600)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),

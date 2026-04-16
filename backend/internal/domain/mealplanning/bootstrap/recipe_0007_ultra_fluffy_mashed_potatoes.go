@@ -496,13 +496,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 
 	// Step 8: Simmer until tender
 	step8 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        simmerPrep.ID,
-		Index:                8,
-		ExplicitInstructions: "Cook until the potatoes are completely tender, about 15 minutes.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(900)), // 15 minutes
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             simmerPrep.ID,
+		Index:                     8,
+		ExplicitInstructions:      "Cook until the potatoes are completely tender, about 15 minutes.",
+		MinEstimatedTimeInSeconds: new(uint32(900)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(7)),
@@ -581,12 +579,10 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 
 	// Step 10: Rinse under hot running water
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        rinsePrep.ID,
-		Index:                10,
-		ExplicitInstructions: "Rinse the potatoes under hot running water for 30 seconds to wash away excess starch.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(30)),
-		},
+		PreparationID:             rinsePrep.ID,
+		Index:                     10,
+		ExplicitInstructions:      "Rinse the potatoes under hot running water for 30 seconds to wash away excess starch.",
+		MinEstimatedTimeInSeconds: new(uint32(30)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(9)),
@@ -621,13 +617,11 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 
 	// Step 11: Allow potatoes to steam/rest
 	step11 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                11,
-		ExplicitInstructions: "Allow the potatoes to steam for 1 minute to remove excess moisture.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(60)), // 1 minute
-		},
-		StartTimerAutomatically: true,
+		PreparationID:             restPrep.ID,
+		Index:                     11,
+		ExplicitInstructions:      "Allow the potatoes to steam for 1 minute to remove excess moisture.",
+		MinEstimatedTimeInSeconds: new(uint32(60)),
+		StartTimerAutomatically:   true,
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:         new(uint64(10)),
@@ -1011,9 +1005,7 @@ func UltraFluffyMashedPotatoesRecipe(enums *Enumerations) []*mealplanning.Recipe
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the cubed and seasoned potatoes in the pot, covered with water, in the refrigerator for up to 24 hours.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeCovered,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)), // Refrigerator temperature
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(86400)), // 24 hours

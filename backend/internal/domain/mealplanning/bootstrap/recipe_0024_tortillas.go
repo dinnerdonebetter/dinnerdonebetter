@@ -304,13 +304,10 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 2a: Heat water to 110°F to 120°F
 	step2a := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        heatPrep.ID,
-		Index:                3,
-		ExplicitInstructions: "Heat the water in a small saucepan to 110°F to 120°F (43°C to 49°C).",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(43)), // 110°F
-			Max: new(float32(49)), // 120°F
-		},
+		PreparationID:           heatPrep.ID,
+		Index:                   3,
+		ExplicitInstructions:    "Heat the water in a small saucepan to 110°F to 120°F (43°C to 49°C).",
+		MinTemperatureInCelsius: new(float32(43)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ValidIngredientPreparationID:     vipID(heatWaterVIP),
@@ -596,12 +593,10 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 9: Allow the dough balls to rest for about 30 minutes
 	step9 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        restPrep.ID,
-		Index:                9,
-		ExplicitInstructions: "Allow them to rest, covered, for about 30 minutes. The resting period improves the texture of the dough by giving the flour time to absorb the water. The tortillas will roll out more easily if you include the rest.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(1800)), // 30 minutes
-		},
+		PreparationID:             restPrep.ID,
+		Index:                     9,
+		ExplicitInstructions:      "Allow them to rest, covered, for about 30 minutes. The resting period improves the texture of the dough by giving the flour time to absorb the water. The tortillas will roll out more easily if you include the rest.",
+		MinEstimatedTimeInSeconds: new(uint32(1800)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
@@ -644,12 +639,10 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 10: Preheat an ungreased cast iron griddle or skillet
 	step10 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        preheatPrep.ID,
-		Index:                10,
-		ExplicitInstructions: "While the dough rests, preheat an ungreased cast iron griddle or skillet over medium high heat, about 400°F.",
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(204)), // 400°F = ~204°C
-		},
+		PreparationID:           preheatPrep.ID,
+		Index:                   10,
+		ExplicitInstructions:    "While the dough rests, preheat an ungreased cast iron griddle or skillet over medium high heat, about 400°F.",
+		MinTemperatureInCelsius: new(float32(204)),
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(preheatCastIronSkilletVPV),
@@ -707,16 +700,12 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	// Step 12: Cook the tortilla in the ungreased pan
 	step12 := &mealplanning.RecipeStepCreationRequestInput{
-		PreparationID:        cookPrep.ID,
-		Index:                12,
-		ExplicitInstructions: "Cook the tortilla in the ungreased pan for about 30 seconds on each side. Repeat with the remaining dough balls.",
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: new(uint32(30)),
-			Max: new(uint32(60)),
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: new(float32(204)), // 400°F
-		},
+		PreparationID:             cookPrep.ID,
+		Index:                     12,
+		ExplicitInstructions:      "Cook the tortilla in the ungreased pan for about 30 seconds on each side. Repeat with the remaining dough balls.",
+		MinEstimatedTimeInSeconds: new(uint32(30)),
+		MaxEstimatedTimeInSeconds: new(uint32(60)),
+		MinTemperatureInCelsius:   new(float32(204)),
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 			{
 				ProductOfRecipeStepIndex:        new(uint64(12)),

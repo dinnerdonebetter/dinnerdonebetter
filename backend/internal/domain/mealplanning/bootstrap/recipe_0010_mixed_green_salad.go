@@ -1361,9 +1361,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 		Optional:                    true,
 		ExplicitStorageInstructions: "Store the washed, dried, and prepared greens in an airtight container lined with paper towels in the refrigerator for up to 2 days.",
 		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: new(float32(4)),
-		},
+		StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(float32(4))},
 		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
 			Min: 0,
 			Max: new(uint32(172800)), // 2 days
