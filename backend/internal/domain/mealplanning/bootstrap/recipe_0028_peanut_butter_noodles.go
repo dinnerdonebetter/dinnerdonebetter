@@ -141,9 +141,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "pot",
@@ -202,9 +200,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "pot",
@@ -245,9 +241,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 		},
 	}
@@ -292,9 +286,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -330,9 +322,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "pot",
@@ -373,9 +363,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "pot",
@@ -448,9 +436,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "pot",
@@ -530,9 +516,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "pot",
@@ -581,9 +565,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "pot",
@@ -633,9 +615,7 @@ func PeanutButterNoodlesRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}

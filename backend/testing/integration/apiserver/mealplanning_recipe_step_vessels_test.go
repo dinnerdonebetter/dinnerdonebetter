@@ -198,10 +198,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductVesselType,
 							MeasurementUnit: unit,
 							QuantityNotes:   "",
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Max: nil,
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Notes:       "first step",
@@ -244,10 +241,7 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: head,
 							QuantityNotes:   "",
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Max: nil,
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Notes: "second step",

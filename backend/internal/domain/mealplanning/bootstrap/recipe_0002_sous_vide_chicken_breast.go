@@ -162,9 +162,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -253,9 +251,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}
@@ -315,17 +311,13 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 			{
 				Name:  "bag with chicken",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinItemQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -375,9 +367,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}
@@ -431,9 +421,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -478,9 +466,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}
@@ -527,9 +513,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}
@@ -577,17 +561,13 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &milliliterMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(15)),
-				},
+				MinMeasurementQuantity: new(float32(15)),
 			},
 			{
 				Name:  "cast iron skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinItemQuantity: new(float32(1)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -664,17 +644,13 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 			{
 				Name:  "cast iron skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinItemQuantity: new(float32(1)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -730,9 +706,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}
@@ -777,9 +751,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}

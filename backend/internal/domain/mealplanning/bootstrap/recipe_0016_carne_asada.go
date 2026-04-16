@@ -267,9 +267,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -315,9 +313,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -364,9 +360,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(6)),
-				},
+				MinMeasurementQuantity: new(float32(6)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -409,9 +403,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -561,9 +553,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1.5)),
-				},
+				MinMeasurementQuantity: new(float32(1.5)),
 			},
 		},
 	}
@@ -606,9 +596,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1.5)),
-				},
+				MinMeasurementQuantity: new(float32(1.5)),
 			},
 		},
 	}
@@ -650,26 +638,20 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "marinade in large bowl",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "marinade in sealed container",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "marinade",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             2,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.75)),
-				},
+				MinMeasurementQuantity: new(float32(0.75)),
 			},
 		},
 	}
@@ -702,9 +684,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "refrigerated marinade in sealed container",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -740,9 +720,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "salted marinade in large bowl",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -786,9 +764,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -832,9 +808,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "steak in zipper-lock bag",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -870,9 +844,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "steak in bag with excess marinade",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -898,9 +870,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "sealed zipper-lock bag with steak",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -949,9 +919,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -986,9 +954,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "removed marinade container",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1021,9 +987,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "lit chimney starter with charcoal",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1056,9 +1020,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "charcoal arranged on one side of grate",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1099,9 +1061,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "cooking grate set in place on grill",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1140,9 +1100,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "preheated grill",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1177,9 +1135,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "cleaned grilling grate",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1215,9 +1171,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "oiled grilling grate",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1255,9 +1209,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -1324,9 +1276,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -1375,9 +1325,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Name:  "steak on cutting board",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1418,9 +1366,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -1476,9 +1422,7 @@ func CarneAsadaRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequest
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}

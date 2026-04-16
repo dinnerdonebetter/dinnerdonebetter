@@ -175,9 +175,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -236,9 +234,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "plate with dredging mixture",
@@ -290,12 +286,8 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
+				MinItemQuantity: new(float32(4)),
 			},
 		},
 	}
@@ -347,9 +339,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "large pan",
@@ -403,12 +393,8 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
+				MinItemQuantity: new(float32(4)),
 			},
 			{
 				Name:  "large pan",
@@ -462,12 +448,8 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
+				MinItemQuantity: new(float32(4)),
 			},
 			{
 				Name:  "large pan",
@@ -509,12 +491,8 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
+				MinItemQuantity: new(float32(4)),
 			},
 			{
 				Name:  "large pan",
@@ -593,9 +571,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "large pan",
@@ -713,9 +689,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "large pan",
@@ -793,9 +767,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "large pan",
@@ -865,9 +837,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "large pan",
@@ -929,9 +899,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "large pan",
@@ -981,9 +949,7 @@ func ChickenFlorentineRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}

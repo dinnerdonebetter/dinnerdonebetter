@@ -299,117 +299,91 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
 				Name:              "inspected radicchio",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "inspected endive",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             2,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "inspected frisée",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             3,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "inspected kale",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             4,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "inspected dandelion greens",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             5,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "inspected purslane",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             6,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "inspected fennel fronds",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             7,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "inspected parsley",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             8,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "inspected tarragon",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             9,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "inspected chervil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             10,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "inspected basil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             11,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "inspected mint",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             12,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 		},
 	}
@@ -553,117 +527,91 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
 				Name:              "washed radicchio",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "washed endive",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             2,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "washed frisée",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             3,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "washed kale",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             4,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "washed dandelion greens",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             5,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "washed purslane",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             6,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "washed fennel fronds",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             7,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "washed parsley",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             8,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "washed tarragon",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             9,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "washed chervil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             10,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "washed basil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             11,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "washed mint",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             12,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 		},
 	}
@@ -807,117 +755,91 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
 				Name:              "dried radicchio",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "dried endive",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             2,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "dried frisée",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             3,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "dried kale",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             4,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "dried dandelion greens",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             5,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "dried purslane",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             6,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:              "dried fennel fronds",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             7,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "dried parsley",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             8,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "dried tarragon",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             9,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "dried chervil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             10,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "dried basil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             11,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "dried mint",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             12,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 		},
 	}
@@ -962,9 +884,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(2)),
-				},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -1045,54 +965,42 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "plucked parsley",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "plucked tarragon",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             2,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "plucked chervil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             3,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "plucked basil",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             4,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 			{
 				Name:              "plucked mint",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             5,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.25)),
-				},
+				MinMeasurementQuantity: new(float32(0.25)),
 			},
 		},
 	}
@@ -1146,18 +1054,14 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:              "sliced endive",
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             1,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1310,9 +1214,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(8)),
-				},
+				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
 	}
@@ -1375,17 +1277,13 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "serving bowl with salad",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1451,9 +1349,7 @@ func MixedGreenSaladRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRe
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}

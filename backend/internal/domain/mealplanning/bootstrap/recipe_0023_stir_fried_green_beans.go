@@ -196,7 +196,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(0.5))},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 		},
 	}
@@ -228,7 +228,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(0.5))},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 		},
 	}
@@ -266,7 +266,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(2))},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -332,7 +332,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "wok with oil",
@@ -377,7 +377,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "wok with garlic",
@@ -426,7 +426,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "wok with stirred garlic",
@@ -471,7 +471,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "wok with green beans",
@@ -534,7 +534,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "wok with stir-fried green beans",
@@ -584,7 +584,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "wok with seasoned green beans",
@@ -630,7 +630,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "wok with coated green beans",
@@ -668,7 +668,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "covered wok",
@@ -715,7 +715,8 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(2)), Max: new(float32(3))},
+				MinMeasurementQuantity: new(float32(2)),
+				MaxMeasurementQuantity: new(float32(3)),
 			},
 		},
 	}

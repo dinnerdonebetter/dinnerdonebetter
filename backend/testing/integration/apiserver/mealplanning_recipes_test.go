@@ -240,10 +240,7 @@ func TestRecipes_Creating(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Max: nil,
-								Min: new(float32(1000)),
-							},
+							MinMeasurementQuantity: new(float32(1000)),
 						},
 					},
 					Notes:       "first step",
@@ -287,10 +284,7 @@ func TestRecipes_Creating(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Max: nil,
-								Min: new(float32(1010)),
-							},
+							MinMeasurementQuantity: new(float32(1010)),
 						},
 					},
 					Notes:       "second step",
@@ -350,7 +344,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Type:                expected.Steps[0].Products[0].Type,
 							MeasurementUnitID:   &expected.Steps[0].Products[0].MeasurementUnit.ID,
 							QuantityNotes:       expected.Steps[0].Products[0].QuantityNotes,
-							MeasurementQuantity: expected.Steps[0].Products[0].MeasurementQuantity,
+							MinMeasurementQuantity: expected.Steps[0].Products[0].MinMeasurementQuantity,
+							MaxMeasurementQuantity: expected.Steps[0].Products[0].MaxMeasurementQuantity,
 						},
 					},
 					Notes:         expected.Steps[0].Notes,
@@ -391,7 +386,8 @@ func TestRecipes_Creating(T *testing.T) {
 							Type:                expected.Steps[1].Products[0].Type,
 							MeasurementUnitID:   &expected.Steps[1].Products[0].MeasurementUnit.ID,
 							QuantityNotes:       expected.Steps[1].Products[0].QuantityNotes,
-							MeasurementQuantity: expected.Steps[1].Products[0].MeasurementQuantity,
+							MinMeasurementQuantity: expected.Steps[1].Products[0].MinMeasurementQuantity,
+							MaxMeasurementQuantity: expected.Steps[1].Products[0].MaxMeasurementQuantity,
 						},
 					},
 					Notes:         expected.Steps[1].Notes,
@@ -804,10 +800,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Max: nil,
-								Min: new(float32(1000)),
-							},
+							MinMeasurementQuantity: new(float32(1000)),
 						},
 					},
 					Notes:       "first step",
@@ -838,10 +831,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:            mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnit: grams,
 							QuantityNotes:   "",
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Max: nil,
-								Min: new(float32(1010)),
-							},
+							MinMeasurementQuantity: new(float32(1010)),
 						},
 					},
 					Notes:       "second step",
@@ -884,7 +874,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID:   &grams.ID,
 							QuantityNotes:       "",
-							MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1000))},
+							MinMeasurementQuantity: new(float32(1000)),
 						},
 					},
 					Notes:         "first step",
@@ -912,7 +902,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID:   &grams.ID,
 							QuantityNotes:       "",
-							MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1010))},
+							MinMeasurementQuantity: new(float32(1010)),
 						},
 					},
 					Notes:         "second step",
@@ -998,14 +988,8 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							MeasurementUnit: createdValidMeasurementUnit,
 							QuantityNotes:   "",
 							// Discrete product: 4 patties, each 4 ounces
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(4)),
-								Max: nil,
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(4)), // per-item measurement
-								Max: nil,
-							},
+							MinItemQuantity: new(float32(4)),
+							MinMeasurementQuantity: new(float32(4)),
 						},
 					},
 					Notes:       "Shape the meat into patties",
@@ -1036,14 +1020,8 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							MeasurementUnit: createdValidMeasurementUnit,
 							QuantityNotes:   "",
 							// Continuous product: 8 ounces total
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: nil,
-								Max: nil,
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(8)), // total quantity
-								Max: nil,
-							},
+							
+							MinMeasurementQuantity: new(float32(8)),
 						},
 					},
 					Notes:       "Mix the sauce",
@@ -1087,14 +1065,8 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							MeasurementUnitID: &createdValidMeasurementUnit.ID,
 							QuantityNotes:     "",
 							// Discrete product: 4 patties, each 4 ounces
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(4)),
-								Max: nil,
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(4)), // per-item measurement
-								Max: nil,
-							},
+							MinItemQuantity: new(float32(4)),
+							MinMeasurementQuantity: new(float32(4)),
 						},
 					},
 					Notes:         "Shape the meat into patties",
@@ -1123,14 +1095,8 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							MeasurementUnitID: &createdValidMeasurementUnit.ID,
 							QuantityNotes:     "",
 							// Continuous product: 8 ounces total (ItemQuantity not set)
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: nil,
-								Max: nil,
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(8)), // total quantity
-								Max: nil,
-							},
+							
+							MinMeasurementQuantity: new(float32(8)),
 						},
 					},
 					Notes:         "Mix the sauce",
@@ -1172,18 +1138,18 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 		step0Product := createdRecipe.Steps[0].Products[0]
 		assert.Equal(t, "beef patties", step0Product.Name)
 		// Verify discrete product fields
-		require.NotNil(t, step0Product.ItemQuantity.Min, "discrete product should have ItemQuantity.Min set")
-		assert.Equal(t, float32(4), *step0Product.ItemQuantity.Min, "ItemQuantity should be 4 patties")
-		assert.Equal(t, float32(4), *step0Product.MeasurementQuantity.Min, "MeasurementQuantity should be 4 oz per patty")
+		require.NotNil(t, step0Product.MinItemQuantity, "discrete product should have ItemQuantity.Min set")
+		assert.Equal(t, float32(4), *step0Product.MinItemQuantity, "ItemQuantity should be 4 patties")
+		assert.Equal(t, float32(4), *step0Product.MinMeasurementQuantity, "MeasurementQuantity should be 4 oz per patty")
 
 		// Verify step 1 has continuous product (sauce)
 		require.Len(t, createdRecipe.Steps[1].Products, 1)
 		step1Product := createdRecipe.Steps[1].Products[0]
 		assert.Equal(t, "special sauce", step1Product.Name)
 		// Verify continuous product fields (ItemQuantity should be empty)
-		assert.Nil(t, step1Product.ItemQuantity.Min, "continuous product should not have ItemQuantity.Min set")
-		assert.Nil(t, step1Product.ItemQuantity.Max, "continuous product should not have ItemQuantity.Max set")
-		assert.Equal(t, float32(8), *step1Product.MeasurementQuantity.Min, "MeasurementQuantity should be 8 oz total")
+		assert.Nil(t, step1Product.MinItemQuantity, "continuous product should not have ItemQuantity.Min set")
+		assert.Nil(t, step1Product.MaxItemQuantity, "continuous product should not have ItemQuantity.Max set")
+		assert.Equal(t, float32(8), *step1Product.MinMeasurementQuantity, "MeasurementQuantity should be 8 oz total")
 
 		// Verify we can retrieve the recipe and products are still correct
 		retrieved, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{
@@ -1197,17 +1163,17 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 		require.Len(t, retrievedRecipe.Steps[0].Products, 1)
 		retrievedStep0Product := retrievedRecipe.Steps[0].Products[0]
 		assert.Equal(t, "beef patties", retrievedStep0Product.Name)
-		require.NotNil(t, retrievedStep0Product.ItemQuantity.Min)
-		assert.Equal(t, float32(4), *retrievedStep0Product.ItemQuantity.Min)
-		assert.Equal(t, float32(4), *retrievedStep0Product.MeasurementQuantity.Min)
+		require.NotNil(t, retrievedStep0Product.MinItemQuantity)
+		assert.Equal(t, float32(4), *retrievedStep0Product.MinItemQuantity)
+		assert.Equal(t, float32(4), *retrievedStep0Product.MinMeasurementQuantity)
 
 		// Verify continuous product is still correct after retrieval
 		require.Len(t, retrievedRecipe.Steps[1].Products, 1)
 		retrievedStep1Product := retrievedRecipe.Steps[1].Products[0]
 		assert.Equal(t, "special sauce", retrievedStep1Product.Name)
-		assert.Nil(t, retrievedStep1Product.ItemQuantity.Min)
-		assert.Nil(t, retrievedStep1Product.ItemQuantity.Max)
-		assert.Equal(t, float32(8), *retrievedStep1Product.MeasurementQuantity.Min)
+		assert.Nil(t, retrievedStep1Product.MinItemQuantity)
+		assert.Nil(t, retrievedStep1Product.MaxItemQuantity)
+		assert.Equal(t, float32(8), *retrievedStep1Product.MinMeasurementQuantity)
 
 		// Cleanup
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
@@ -1265,14 +1231,8 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete product: ItemQuantity.Min set
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(12)),
-								Max: nil,
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(2)), // per-item measurement (2 oz per cookie)
-								Max: nil,
-							},
+							MinItemQuantity: new(float32(12)),
+							MinMeasurementQuantity: new(float32(2)),
 						},
 					},
 					Index: 0,
@@ -1290,9 +1250,7 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -1312,10 +1270,10 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 		product := createdRecipe.Steps[0].Products[0]
 		assert.Equal(t, "cookies", product.Name)
 		// Verify ItemQuantity.Min is set (indicates discrete)
-		require.NotNil(t, product.ItemQuantity.Min, "discrete product should have ItemQuantity.Min set")
-		assert.Equal(t, float32(12), *product.ItemQuantity.Min, "ItemQuantity should be 12 cookies")
+		require.NotNil(t, product.MinItemQuantity, "discrete product should have ItemQuantity.Min set")
+		assert.Equal(t, float32(12), *product.MinItemQuantity, "ItemQuantity should be 12 cookies")
 		// Verify MeasurementQuantity represents per-item measurement
-		assert.Equal(t, float32(2), *product.MeasurementQuantity.Min, "MeasurementQuantity should be 2 oz per cookie")
+		assert.Equal(t, float32(2), *product.MinMeasurementQuantity, "MeasurementQuantity should be 2 oz per cookie")
 
 		// Cleanup
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
@@ -1369,14 +1327,9 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete product: ItemQuantity.Max set (range)
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(8)),
-								Max: new(float32(10)),
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)), // per-item measurement (1 oz per slice)
-								Max: nil,
-							},
+							MinItemQuantity: new(float32(8)),
+				MaxItemQuantity: new(float32(10)),
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -1394,9 +1347,7 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -1416,12 +1367,12 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 		product := createdRecipe.Steps[0].Products[0]
 		assert.Equal(t, "slices", product.Name)
 		// Verify ItemQuantity.Max is set (indicates discrete with range)
-		require.NotNil(t, product.ItemQuantity.Min, "discrete product should have ItemQuantity.Min set")
-		require.NotNil(t, product.ItemQuantity.Max, "discrete product with range should have ItemQuantity.Max set")
-		assert.Equal(t, float32(8), *product.ItemQuantity.Min, "ItemQuantity.Min should be 8 slices")
-		assert.Equal(t, float32(10), *product.ItemQuantity.Max, "ItemQuantity.Max should be 10 slices")
+		require.NotNil(t, product.MinItemQuantity, "discrete product should have ItemQuantity.Min set")
+		require.NotNil(t, product.MaxItemQuantity, "discrete product with range should have ItemQuantity.Max set")
+		assert.Equal(t, float32(8), *product.MinItemQuantity, "ItemQuantity.Min should be 8 slices")
+		assert.Equal(t, float32(10), *product.MaxItemQuantity, "ItemQuantity.Max should be 10 slices")
 		// Verify MeasurementQuantity represents per-item measurement
-		assert.Equal(t, float32(1), *product.MeasurementQuantity.Min, "MeasurementQuantity should be 1 oz per slice")
+		assert.Equal(t, float32(1), *product.MinMeasurementQuantity, "MeasurementQuantity should be 1 oz per slice")
 
 		// Cleanup
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
@@ -1479,14 +1430,8 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Continuous product: both ItemQuantity.Min and Max are null
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: nil,
-								Max: nil,
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(16)), // total quantity (16 oz total)
-								Max: nil,
-							},
+							
+							MinMeasurementQuantity: new(float32(16)),
 						},
 					},
 					Index: 0,
@@ -1504,9 +1449,7 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -1526,10 +1469,10 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 		product := createdRecipe.Steps[0].Products[0]
 		assert.Equal(t, "sauce", product.Name)
 		// Verify both ItemQuantity.Min and Max are null (indicates continuous)
-		assert.Nil(t, product.ItemQuantity.Min, "continuous product should not have ItemQuantity.Min set")
-		assert.Nil(t, product.ItemQuantity.Max, "continuous product should not have ItemQuantity.Max set")
+		assert.Nil(t, product.MinItemQuantity, "continuous product should not have ItemQuantity.Min set")
+		assert.Nil(t, product.MaxItemQuantity, "continuous product should not have ItemQuantity.Max set")
 		// Verify MeasurementQuantity represents total quantity
-		assert.Equal(t, float32(16), *product.MeasurementQuantity.Min, "MeasurementQuantity should be 16 oz total")
+		assert.Equal(t, float32(16), *product.MinMeasurementQuantity, "MeasurementQuantity should be 16 oz total")
 
 		// Cleanup
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
@@ -1587,14 +1530,8 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete: ItemQuantity.Min set, Max null
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(4)),
-								Max: nil,
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(4)), // per-item
-								Max: nil,
-							},
+							MinItemQuantity: new(float32(4)),
+							MinMeasurementQuantity: new(float32(4)),
 						},
 					},
 					Index: 0,
@@ -1612,9 +1549,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -1633,8 +1568,8 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 		require.Len(t, createdRecipe.Steps[0].Products, 1)
 		product := createdRecipe.Steps[0].Products[0]
 		assert.Equal(t, "patties", product.Name)
-		require.NotNil(t, product.ItemQuantity.Min, "discrete product should have ItemQuantity.Min set")
-		assert.Nil(t, product.ItemQuantity.Max, "ItemQuantity.Max can be null for discrete products")
+		require.NotNil(t, product.MinItemQuantity, "discrete product should have ItemQuantity.Min set")
+		assert.Nil(t, product.MaxItemQuantity, "ItemQuantity.Max can be null for discrete products")
 
 		// Cleanup
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
@@ -1688,14 +1623,8 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete: ItemQuantity.Min null, Max set
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: nil,
-								Max: new(float32(6)),
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(3)), // per-item
-								Max: nil,
-							},
+							MaxItemQuantity: new(float32(6)),
+							MinMeasurementQuantity: new(float32(3)),
 						},
 					},
 					Index: 0,
@@ -1713,9 +1642,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -1734,8 +1661,8 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 		require.Len(t, createdRecipe.Steps[0].Products, 1)
 		product := createdRecipe.Steps[0].Products[0]
 		assert.Equal(t, "pieces", product.Name)
-		assert.Nil(t, product.ItemQuantity.Min, "ItemQuantity.Min can be null when Max is set")
-		require.NotNil(t, product.ItemQuantity.Max, "discrete product should have ItemQuantity.Max set")
+		assert.Nil(t, product.MinItemQuantity, "ItemQuantity.Min can be null when Max is set")
+		require.NotNil(t, product.MaxItemQuantity, "discrete product should have ItemQuantity.Max set")
 
 		// Cleanup
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
@@ -1789,14 +1716,8 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Continuous: both ItemQuantity.Min and Max are null
-							ItemQuantity: numbers.OpenRange[float32]{
-								Min: nil,
-								Max: nil,
-							},
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(32)), // total quantity
-								Max: nil,
-							},
+							
+							MinMeasurementQuantity: new(float32(32)),
 						},
 					},
 					Index: 0,
@@ -1814,9 +1735,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -1835,10 +1754,10 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 		require.Len(t, createdRecipe.Steps[0].Products, 1)
 		product := createdRecipe.Steps[0].Products[0]
 		assert.Equal(t, "liquid", product.Name)
-		assert.Nil(t, product.ItemQuantity.Min, "continuous product should not have ItemQuantity.Min set")
-		assert.Nil(t, product.ItemQuantity.Max, "continuous product should not have ItemQuantity.Max set")
+		assert.Nil(t, product.MinItemQuantity, "continuous product should not have ItemQuantity.Min set")
+		assert.Nil(t, product.MaxItemQuantity, "continuous product should not have ItemQuantity.Max set")
 		// Verify MeasurementQuantity represents total quantity
-		assert.Equal(t, float32(32), *product.MeasurementQuantity.Min, "MeasurementQuantity should be 32 oz total")
+		assert.Equal(t, float32(32), *product.MinMeasurementQuantity, "MeasurementQuantity should be 32 oz total")
 
 		// Cleanup
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{
@@ -1937,9 +1856,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -1999,9 +1916,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2019,9 +1934,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2080,9 +1993,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2100,9 +2011,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2154,9 +2063,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2169,9 +2076,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2230,9 +2135,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2250,9 +2153,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2315,9 +2216,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2335,9 +2234,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2400,9 +2297,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2420,9 +2315,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2485,9 +2378,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2505,9 +2396,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2569,9 +2458,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2589,9 +2476,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2649,9 +2534,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2669,9 +2552,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2729,9 +2610,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -2749,9 +2628,7 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -2827,9 +2704,7 @@ func TestRecipes_Validation(T *testing.T) {
 									Name:              "output",
 									Type:              mealplanning.RecipeStepProductIngredientType,
 									MeasurementUnitID: &measurementUnit.ID,
-									MeasurementQuantity: numbers.OpenRange[float32]{
-										Min: new(float32(1)),
-									},
+									MinMeasurementQuantity: new(float32(1)),
 								},
 							},
 							Index: 0,
@@ -2847,9 +2722,7 @@ func TestRecipes_Validation(T *testing.T) {
 									Name:              "final output",
 									Type:              mealplanning.RecipeStepProductIngredientType,
 									MeasurementUnitID: &measurementUnit.ID,
-									MeasurementQuantity: numbers.OpenRange[float32]{
-										Min: new(float32(1)),
-									},
+									MinMeasurementQuantity: new(float32(1)),
 								},
 							},
 							Index: 1,
@@ -3085,9 +2958,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Name:              "base sauce",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit1.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -3105,9 +2976,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Name:              "final sauce",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit1.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,
@@ -3174,9 +3043,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Name:              "final dish",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit2.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 0,
@@ -3194,9 +3061,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Name:              "final output",
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit2.ID,
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Min: new(float32(1)),
-							},
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Index: 1,

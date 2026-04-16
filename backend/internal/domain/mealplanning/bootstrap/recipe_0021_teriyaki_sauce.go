@@ -148,7 +148,7 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{{ValidPreparationVesselID: vpvID(addSaucepanVPV), Name: "medium saucepan", Quantity: numbers.MinRange[uint16]{Min: 1}}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
-			{Name: "sauce ingredients in saucepan", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))}},
+			{Name: "sauce ingredients in saucepan", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MinMeasurementQuantity: new(float32(1))},
 			{Name: "medium saucepan", Type: mealplanning.RecipeStepProductVesselType, Index: 1},
 		},
 	}
@@ -160,7 +160,7 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Ingredients:          []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: new(uint64(0)), ProductOfRecipeStepProductIndex: new(uint64(0)), Name: "sauce ingredients in saucepan", Quantity: numbers.MinRange[float32]{Min: 1}}},
 		Vessels:              []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: new(uint64(0)), ProductOfRecipeStepProductIndex: new(uint64(1)), Name: "medium saucepan", Quantity: numbers.MinRange[uint16]{Min: 1}}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
-			{Name: "combined sauce mixture", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))}},
+			{Name: "combined sauce mixture", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MinMeasurementQuantity: new(float32(1))},
 			{Name: "medium saucepan", Type: mealplanning.RecipeStepProductVesselType, Index: 1},
 		},
 	}
@@ -170,7 +170,7 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{{ProductOfRecipeStepIndex: new(uint64(1)), ProductOfRecipeStepProductIndex: new(uint64(0)), Name: "combined sauce mixture", Quantity: numbers.MinRange[float32]{Min: 1}}},
 		Vessels:     []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: new(uint64(1)), ProductOfRecipeStepProductIndex: new(uint64(1)), Name: "medium saucepan", Quantity: numbers.MinRange[uint16]{Min: 1}}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
-			{Name: "boiling sauce mixture", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))}},
+			{Name: "boiling sauce mixture", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &unitMeasurement.ID, MinMeasurementQuantity: new(float32(1))},
 			{Name: "medium saucepan", Type: mealplanning.RecipeStepProductVesselType, Index: 1},
 		},
 	}
@@ -194,7 +194,7 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		Vessels:              []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: new(uint64(2)), ProductOfRecipeStepProductIndex: new(uint64(1)), Name: "medium saucepan", Quantity: numbers.MinRange[uint16]{Min: 1}}},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{{IngredientStateID: thickenedState.ID, Notes: "Sauce should reach 225°F (107℃) and reduce to a scant 1 cup", Ingredients: []uint64{0}, Optional: false}},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
-			{Name: "reduced teriyaki sauce", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &cupMeasurement.ID, MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))}},
+			{Name: "reduced teriyaki sauce", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &cupMeasurement.ID, MinMeasurementQuantity: new(float32(1))},
 			{Name: "medium saucepan", Type: mealplanning.RecipeStepProductVesselType, Index: 1},
 		},
 	}
@@ -208,7 +208,7 @@ func TeriyakiSauceRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{{ValidPreparationInstrumentID: vpiID(stirSpoonVPI), Name: "spoon", Quantity: numbers.MinRange[uint32]{Min: 1}}},
 		Vessels:     []*mealplanning.RecipeStepVesselCreationRequestInput{{ProductOfRecipeStepIndex: new(uint64(3)), ProductOfRecipeStepProductIndex: new(uint64(1)), Name: "medium saucepan", Quantity: numbers.MinRange[uint16]{Min: 1}}},
-		Products:    []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "teriyaki sauce", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &cupMeasurement.ID, MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))}}},
+		Products:    []*mealplanning.RecipeStepProductCreationRequestInput{{Name: "teriyaki sauce", Type: mealplanning.RecipeStepProductIngredientType, Index: 0, MeasurementUnitID: &cupMeasurement.ID, MinMeasurementQuantity: new(float32(1))}},
 	}
 
 	teriyakiSauceRecipe := &mealplanning.RecipeCreationRequestInput{

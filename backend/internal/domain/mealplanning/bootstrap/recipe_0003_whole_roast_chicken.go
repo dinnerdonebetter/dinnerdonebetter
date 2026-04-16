@@ -154,9 +154,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(6)),
-				},
+				MinMeasurementQuantity: new(float32(6)),
 			},
 		},
 	}
@@ -211,9 +209,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(36)), // 30g salt + 6g pepper; 56g with optional baking powder
-				},
+				MinMeasurementQuantity: new(float32(36)),
 			},
 		},
 	}
@@ -257,10 +253,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-					Max: new(float32(5)),
-				},
+				MinMeasurementQuantity: new(float32(4)),
+				MaxMeasurementQuantity: new(float32(5)),
 			},
 		},
 	}
@@ -296,10 +290,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-					Max: new(float32(5)),
-				},
+				MinMeasurementQuantity: new(float32(4)),
+				MaxMeasurementQuantity: new(float32(5)),
 			},
 		},
 	}
@@ -346,10 +338,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-					Max: new(float32(5)),
-				},
+				MinMeasurementQuantity: new(float32(4)),
+				MaxMeasurementQuantity: new(float32(5)),
 			},
 		},
 	}
@@ -422,18 +412,14 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &milliliterMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(15)),
-				},
+				MinMeasurementQuantity: new(float32(15)),
 			},
 			{
 				Name:  "pre-heated skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-					Max: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
+				MaxMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -489,10 +475,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-					Max: new(float32(5)),
-				},
+				MinMeasurementQuantity: new(float32(4)),
+				MaxMeasurementQuantity: new(float32(5)),
 			},
 		},
 	}
@@ -551,10 +535,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-					Max: new(float32(5)),
-				},
+				MinMeasurementQuantity: new(float32(4)),
+				MaxMeasurementQuantity: new(float32(5)),
 			},
 			{
 				Name:  "stainless steel skillet with browned chicken",
@@ -629,10 +611,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-					Max: new(float32(5)),
-				},
+				MinMeasurementQuantity: new(float32(4)),
+				MaxMeasurementQuantity: new(float32(5)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -680,10 +660,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-					Max: new(float32(5)),
-				},
+				MinMeasurementQuantity: new(float32(4)),
+				MaxMeasurementQuantity: new(float32(5)),
 			},
 		},
 	}
@@ -729,10 +707,8 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(4)),
-					Max: new(float32(5)),
-				},
+				MinMeasurementQuantity: new(float32(4)),
+				MaxMeasurementQuantity: new(float32(5)),
 			},
 		},
 	}

@@ -225,9 +225,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -263,9 +261,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &tablespoonMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -299,9 +295,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Name:  "prepared baking sheet with foil boat",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 0,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -346,9 +340,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -394,9 +386,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -474,17 +464,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(0.5)),
-				},
+				MinMeasurementQuantity: new(float32(0.5)),
 			},
 			{
 				Name:  "bowl with marinade",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -530,7 +516,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(2))},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -563,14 +549,14 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Name:                "prepared baking sheet",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "marinated chicken",
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               1,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(2))},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -624,7 +610,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -668,7 +654,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -706,13 +692,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "bowl with cashews",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -749,7 +735,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -790,7 +776,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Name:                "Dutch oven with hot oil",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -836,7 +822,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -875,7 +861,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -926,13 +912,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "Dutch oven with browned onions",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -971,7 +957,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1011,7 +997,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1049,7 +1035,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(4))},
+				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
 	}
@@ -1088,7 +1074,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(4))},
+				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
 	}
@@ -1127,7 +1113,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cloveMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(4))},
+				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
 	}
@@ -1179,13 +1165,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "Dutch oven with aromatics",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1228,13 +1214,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "Dutch oven with spiced onions",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1287,13 +1273,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "Dutch oven with sauce base",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1330,13 +1316,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "Dutch oven with simmered sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1358,7 +1344,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Name:                "preheated broiler",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               0,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1401,7 +1387,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &poundMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(2))},
+				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
 	}
@@ -1445,13 +1431,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "Dutch oven with blended sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1489,7 +1475,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &tablespoonMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(4))},
+				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
 	}
@@ -1546,13 +1532,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "Dutch oven with makhani sauce",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1593,13 +1579,13 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:                "Dutch oven with butter chicken",
 				Type:                mealplanning.RecipeStepProductVesselType,
 				Index:               1,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -1631,7 +1617,7 @@ func ButterChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequ
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}

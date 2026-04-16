@@ -160,9 +160,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -208,10 +206,8 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(700)),
-					Max: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(700)),
+				MaxMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}
@@ -269,18 +265,14 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(700)),
-					Max: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(700)),
+				MaxMeasurementQuantity: new(float32(900)),
 			},
 			{
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Name:  "sheet pan",
 				Index: 1,
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinItemQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -323,10 +315,8 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(700)),
-					Max: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(700)),
+				MaxMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}
@@ -371,9 +361,7 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(28)),
-				},
+				MinMeasurementQuantity: new(float32(28)),
 			},
 		},
 	}
@@ -432,17 +420,13 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &milliliterMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(60)),
-				},
+				MinMeasurementQuantity: new(float32(60)),
 			},
 			{
 				Name:  "cast iron skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinItemQuantity: new(float32(1)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -510,18 +494,14 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(700)),
-					Max: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(700)),
+				MaxMeasurementQuantity: new(float32(900)),
 			},
 			{
 				Name:  "cast iron skillet",
 				Type:  mealplanning.RecipeStepProductVesselType,
 				Index: 1,
-				ItemQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(1)),
-				},
+				MinItemQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -637,10 +617,8 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(700)),
-					Max: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(700)),
+				MaxMeasurementQuantity: new(float32(900)),
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -697,10 +675,8 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(700)),
-					Max: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(700)),
+				MaxMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}
@@ -746,10 +722,8 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Type:              mealplanning.RecipeStepProductIngredientType,
 				Index:             0,
 				MeasurementUnitID: &gramMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{
-					Min: new(float32(700)),
-					Max: new(float32(900)),
-				},
+				MinMeasurementQuantity: new(float32(700)),
+				MaxMeasurementQuantity: new(float32(900)),
 			},
 		},
 	}

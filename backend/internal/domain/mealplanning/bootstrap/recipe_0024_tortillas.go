@@ -204,7 +204,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "bowl with dry ingredients",
@@ -248,7 +248,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "bowl with dry ingredients and fat",
@@ -292,7 +292,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "bowl with flour-fat mixture",
@@ -333,7 +333,8 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &cupMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(0.875)), Max: new(float32(1))},
+				MinMeasurementQuantity: new(float32(0.875)),
+				MaxMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -371,7 +372,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "bowl with flour mixture and water",
@@ -415,7 +416,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
@@ -453,7 +454,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
 				Name:  "countertop with dough",
@@ -497,7 +498,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(8))},
+				MinMeasurementQuantity: new(float32(8)),
 			},
 			{
 				Name:  "countertop with dough pieces",
@@ -541,7 +542,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(8))},
+				MinMeasurementQuantity: new(float32(8)),
 			},
 			{
 				Name:  "countertop with dough balls",
@@ -583,7 +584,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(8))},
+				MinMeasurementQuantity: new(float32(8)),
 			},
 			{
 				Name:  "countertop with covered dough",
@@ -631,7 +632,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(8))},
+				MinMeasurementQuantity: new(float32(8)),
 			},
 			{
 				Name:  "countertop with rested dough",
@@ -699,7 +700,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(8))},
+				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
 	}
@@ -738,7 +739,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(8))},
+				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
 	}
@@ -769,7 +770,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				Type:                mealplanning.RecipeStepProductIngredientType,
 				Index:               0,
 				MeasurementUnitID:   &unitMeasurement.ID,
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(8))},
+				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
 	}

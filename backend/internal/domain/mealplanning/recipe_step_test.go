@@ -31,11 +31,11 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		},
 		Products: []*RecipeStepProductCreationRequestInput{
 			{
-				Name:                "Name",
-				Type:                RecipeStepProductIngredientType,
-				MeasurementUnitID:   new("MeasurementUnitID"),
-				MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
-				QuantityNotes:       "QuantityNotes",
+				Name:                   "Name",
+				Type:                   RecipeStepProductIngredientType,
+				MeasurementUnitID:      new("MeasurementUnitID"),
+				MinMeasurementQuantity: new(float32(1)),
+				QuantityNotes:          "QuantityNotes",
 			},
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{
