@@ -247,19 +247,21 @@ func (l *AuthManager) NewTOTPSecret(ctx context.Context, input *auth.TOTPSecretR
 	}
 
 	if user.TwoFactorSecretVerifiedAt != nil {
-		// validate password.
 		matches, validationErr := l.authenticator.PasswordMatches(ctx, user.HashedPassword, input.CurrentPassword)
 		if validationErr != nil {
 			return nil, observability.PrepareError(validationErr, span, "validating credentials")
-		} else if !matches {
-			return nil, observability.PrepareError(validationErr, span, "invalid credentials")
+		}
+
+		if !matches {
+			// Use an explicit error instead of the nil validationErr
+			return nil, observability.PrepareError(errors.New("password mismatch"), span, "invalid credentials")
 		}
 
 		if verifyErr := l.totpVerifier.Verify(ctx, user.TwoFactorSecret, input.TOTPToken); verifyErr != nil {
 			return nil, observability.PrepareError(verifyErr, span, "invalid credentials")
 		}
 	} else {
-		return nil, observability.PrepareError(err, span, "two factor secret not yet verified")
+		return nil, observability.PrepareError(errors.New("unverified secret"), span, "two factor secret not yet verified")
 	}
 
 	// document who this is for.

@@ -599,14 +599,6 @@ func TestAuth_RequestingPasswordReset(T *testing.T) {
 	})
 }
 
-// TODO section below this line
-
-/*
-somewhere here we should validate that a user can't just pretend to be an admin via OAuth somehow?
-I feel like that's now how it presently works anyway, but the whole thing is haphazard and fucked up, so
-just shore all of it iup.
-*/
-
 func TestAuth_InvalidateToken(T *testing.T) {
 	T.Parallel()
 

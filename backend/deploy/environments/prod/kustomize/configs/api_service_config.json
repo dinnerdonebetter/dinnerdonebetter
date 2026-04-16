@@ -232,6 +232,7 @@
 		},
 		"tokens": {
 			"provider": "paseto",
+			"issuer": "dinner-done-better",
 			"audience": "https://http-api.dinnerdonebetter.com",
 			"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
 			"maxAccessTokenLifetime": 0,
@@ -352,6 +353,7 @@
 		"auth": {
 			"tokens": {
 				"provider": "paseto",
+				"issuer": "dinner-done-better",
 				"audience": "https://http-api.dinnerdonebetter.com",
 				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
 				"maxAccessTokenLifetime": 0,
