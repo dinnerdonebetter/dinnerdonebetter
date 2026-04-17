@@ -188,11 +188,12 @@ struct RecipeCard: View {
             .foregroundColor(DSTheme.Colors.textSecondary)
           }
 
-          if recipe.hasEstimatedPortions {
-            Label("\(PortionsFormatter.format(recipe.estimatedPortions))", systemImage: "person.2")
-              .font(DSTheme.Typography.caption)
-              .foregroundColor(DSTheme.Colors.textSecondary)
-          }
+          Label(
+            "\(PortionsFormatter.format(min: recipe.minEstimatedPortions, max: recipe.hasMaxEstimatedPortions ? recipe.maxEstimatedPortions : nil))",
+            systemImage: "person.2"
+          )
+          .font(DSTheme.Typography.caption)
+          .foregroundColor(DSTheme.Colors.textSecondary)
         }
 
         // Recipe metadata - secondary row (source, yields type, prep tasks, eligible)

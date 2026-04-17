@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/numbers"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,20 +14,17 @@ func TestRecipeStepVessel_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVessel{
-			Quantity: numbers.MinRange[uint16]{
-				Max: new(uint16(1234)),
-				Min: 1234,
-			},
-			Vessel: &ValidVessel{},
+			MinQuantity: 1234,
+
+			MaxQuantity: new(uint16(1234)),
+			Vessel:      &ValidVessel{},
 		}
 		input := &RecipeStepVesselUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 		input.UnavailableAfterStep = new(true)
-		input.Quantity = numbers.OpenRangeUpdateRequestInput[uint16]{
-			Min: new(uint16(1)),
-			Max: new(uint16(1)),
-		}
+		input.MinQuantity = new(uint16(1))
+		input.MaxQuantity = new(uint16(1))
 		input.VesselID = new(t.Name())
 
 		x.Update(input)
@@ -58,10 +53,9 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 			Name:                     t.Name(),
 			RecipeStepProductID:      new(t.Name()),
 			Notes:                    t.Name(),
-			Quantity: numbers.MinRange[uint16]{
-				Max: new(fake.Uint16()),
-				Min: fake.Uint16(),
-			},
+			MinQuantity:              fake.Uint16(),
+
+			MaxQuantity: new(fake.Uint16()),
 			ScaleFactor: 0.5,
 		}
 
@@ -77,10 +71,9 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 			ProductOfRecipeStepProductIndex: new(uint64(0)),
 			Name:                            t.Name(),
 			Notes:                           t.Name(),
-			Quantity: numbers.MinRange[uint16]{
-				Max: new(fake.Uint16()),
-				Min: fake.Uint16(),
-			},
+			MinQuantity:                     fake.Uint16(),
+
+			MaxQuantity: new(fake.Uint16()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -133,10 +126,9 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 			BelongsToRecipeStep: new(t.Name()),
 			RecipeStepProductID: new(t.Name()),
 			Notes:               new(t.Name()),
-			Quantity: numbers.OpenRangeUpdateRequestInput[uint16]{
-				Max: new(fake.Uint16()),
-				Min: new(fake.Uint16()),
-			},
+			MinQuantity:         new(fake.Uint16()),
+
+			MaxQuantity: new(fake.Uint16()),
 			ScaleFactor: new(float32(0.5)),
 		}
 

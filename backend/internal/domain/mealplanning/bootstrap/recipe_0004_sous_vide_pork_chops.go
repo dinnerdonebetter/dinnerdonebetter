@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
@@ -163,37 +161,31 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 0,
+				MinQuantity:                  1,
+				Index:                        new(uint16(0)),
+				OptionIndex:                  0,
 			},
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 1,
+				MinQuantity:                  1,
+				Index:                        new(uint16(0)),
+				OptionIndex:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "freshly ground black pepper",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "freshly ground black pepper",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -209,9 +201,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 			{
 				ValidPreparationInstrumentID: &heatSousVideCookerVPI.ID,
 				Name:                         "sous vide cooker",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
@@ -219,10 +209,8 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &heatWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterQuartVIMU.ID,
 				Name:                             "water",
-				Quantity: numbers.MinRange[float32]{
-					Min: 12,
-					Max: new(float32(12)),
-				},
+				MinQuantity:                      12,
+				MaxQuantity:                      new(float32(12)),
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -232,10 +220,10 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				Index: 0,
 			},
 			{
-				Name:              "heated water bath",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             1,
-				MeasurementUnitID: &quartMeasurement.ID,
+				Name:                   "heated water bath",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  1,
+				MeasurementUnitID:      &quartMeasurement.ID,
 				MinMeasurementQuantity: new(float32(12)),
 				MaxMeasurementQuantity: new(float32(12)),
 			},
@@ -252,44 +240,36 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &seasonPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "bone-in pork rib chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                      4,
 			},
 			{
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				ToTaste: true,
+				MinQuantity:                      0,
+				ToTaste:                          true,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				ToTaste: true,
+				MinQuantity:                     0,
+				ToTaste:                         true,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "seasoned pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "seasoned pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
@@ -305,26 +285,22 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                     4,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &bagVacuumBagVPV.ID,
 				Name:                     "vacuum bag",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "bagged pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "bagged pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 			{
@@ -345,9 +321,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "bagged pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                     4,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -356,17 +330,15 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &sealVacuumBagVPV.ID,
 				Name:                            "vacuum bag with pork chops",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "sealed bagged pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "sealed bagged pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
@@ -384,17 +356,13 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "sealed bagged pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                     4,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "water bath",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
@@ -403,9 +371,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationInstrumentID:    &sousVideCookerVPI.ID,
 				Name:                            "sous vide cooker",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -413,17 +379,15 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex: new(uint64(1)),
 				ValidPreparationVesselID: &sousVideWaterBathVPV.ID,
 				Name:                     "preheated water bath",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "sous vide cooked pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "sous vide cooked pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
@@ -449,26 +413,22 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &removePorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "sous vide cooked pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                      4,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &removeTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "unbagged sous vide pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "unbagged sous vide pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
@@ -486,26 +446,22 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &dryPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "unbagged sous vide pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                      4,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &dryPaperTowelsVPI.ID,
 				Name:                         "paper towels",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "dried sous vide pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "dried sous vide pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
@@ -522,34 +478,30 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &addOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oilTablespoonVIMU.ID,
 				Name:                             "canola oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-					Max: new(float32(4)),
-				},
+				MinQuantity:                      2,
+				MaxQuantity:                      new(float32(4)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &addSkilletVPV.ID,
 				Name:                     "cast iron skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:  "oil in skillet",
-				Type:  mealplanning.RecipeStepProductIngredientType,
-				Index: 0,
+				Name:                   "oil in skillet",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(2)),
 				MaxMeasurementQuantity: new(float32(4)),
-				MeasurementUnitID: &tablespoonMeasurement.ID,
+				MeasurementUnitID:      &tablespoonMeasurement.ID,
 			},
 			{
-				Name:  "skillet with oil",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "skillet with oil",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -568,10 +520,8 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "oil in skillet",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-					Max: new(float32(4)),
-				},
+				MinQuantity:                     2,
+				MaxQuantity:                     new(float32(4)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -580,24 +530,22 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &heatSkilletVPV.ID,
 				Name:                            "skillet with oil",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:  "smoking oil",
-				Type:  mealplanning.RecipeStepProductIngredientType,
-				Index: 0,
+				Name:                   "smoking oil",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(2)),
 				MaxMeasurementQuantity: new(float32(4)),
-				MeasurementUnitID: &tablespoonMeasurement.ID,
+				MeasurementUnitID:      &tablespoonMeasurement.ID,
 			},
 			{
-				Name:  "heated skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "heated skillet",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -626,18 +574,13 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &panSearPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "dried sous vide pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2, // Two at a time
-				},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -646,23 +589,21 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "heated skillet with smoking oil",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "partially seared pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "partially seared pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
-				Name:  "heated cast iron skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "heated cast iron skillet",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -682,18 +623,14 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &flipPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "partially seared pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &flipTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -702,23 +639,21 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &flipSkilletVPV.ID,
 				Name:                            "heated cast iron skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "flipped partially seared pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "flipped partially seared pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
-				Name:  "heated cast iron skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "heated cast iron skillet",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -736,55 +671,42 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "flipped partially seared pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                     2,
 			},
 			{
 				ValidIngredientPreparationID:     &addButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				Name:                             "butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-					Max: new(float32(2)),
-				},
-				Optional: true,
+				MinQuantity:                      1,
+				MaxQuantity:                      new(float32(2)),
+				Optional:                         true,
 			},
 			{
 				ValidIngredientPreparationID:     &addThymeVIP.ID,
 				ValidIngredientMeasurementUnitID: &thymeSprigVIMU.ID,
 				Name:                             "thyme",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
-				Optional: true,
+				MinQuantity:                      4,
+				Optional:                         true,
 			},
 			{
 				ValidIngredientPreparationID:     &addRosemaryVIP.ID,
 				ValidIngredientMeasurementUnitID: &rosemarySprigVIMU.ID,
 				Name:                             "rosemary",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
-				Optional: true,
+				MinQuantity:                      4,
+				Optional:                         true,
 			},
 			{
 				ValidIngredientPreparationID:     &addGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicUnitVIMU.ID,
 				Name:                             "garlic cloves",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
-				Optional: true,
+				MinQuantity:                      2,
+				Optional:                         true,
 			},
 			{
 				ValidIngredientPreparationID:     &addShallotVIP.ID,
 				ValidIngredientMeasurementUnitID: &shallotGramVIMU.ID,
 				Name:                             "shallots, thinly sliced",
-				Quantity: numbers.MinRange[float32]{
-					Min: 30, // About 1 shallot
-				},
-				Optional: true,
+				Optional:                         true,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -793,23 +715,21 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addSkilletVPV.ID,
 				Name:                            "heated cast iron skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "pork chops with aromatics",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "pork chops with aromatics",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
-				Name:  "heated cast iron skillet with aromatics",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "heated cast iron skillet with aromatics",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -831,27 +751,21 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &bastePorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "pork chops with aromatics",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &basteSpoonVPI.ID,
 				Name:                         "spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 			{
 				ValidPreparationInstrumentID: &basteTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                  1,
+				Index:                        new(uint16(1)),
+				OptionIndex:                  0,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -860,23 +774,21 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &basteSkilletVPV.ID,
 				Name:                            "heated cast iron skillet with aromatics",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "second-side-browned pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "second-side-browned pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
-				Name:  "heated cast iron skillet with drippings",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "heated cast iron skillet with drippings",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -904,18 +816,14 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &panSearPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "second-side-browned pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -924,23 +832,21 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &panSearSkilletVPV.ID,
 				Name:                            "heated cast iron skillet with drippings",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "seared and basted pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "seared and basted pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
-				Name:  "heated cast iron skillet with drippings",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "heated cast iron skillet with drippings",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -968,48 +874,40 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &transferPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "seared and basted pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                      4,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &transferTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &transferWireRackVPV.ID,
 				Name:                     "wire rack",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 			{
 				ValidPreparationVesselID: &transferBakingSheetVPV.ID,
 				Name:                     "rimmed baking sheet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "seared and basted pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "seared and basted pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 			{
-				Name:  "heated cast iron skillet with drippings",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "heated cast iron skillet with drippings",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -1030,42 +928,34 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ValidIngredientPreparationID:     &restPorkChopVIP.ID,
 				ValidIngredientMeasurementUnitID: &porkChopUnitVIMU.ID,
 				Name:                             "seared and basted pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                      4,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &restTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &restWireRackVPV.ID,
 				Name:                     "wire rack",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 			{
 				ValidPreparationVesselID: &restBakingSheetVPV.ID,
 				Name:                     "rimmed baking sheet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "rested pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "rested pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
@@ -1082,9 +972,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(15)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "cast iron skillet with drippings",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -1093,22 +981,20 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &heatSkilletVPV.ID,
 				Name:                            "cast iron skillet with drippings",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:  "sizzling-hot drippings",
-				Type:  mealplanning.RecipeStepProductIngredientType,
-				Index: 0,
+				Name:                   "sizzling-hot drippings",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
-				Name:  "cast iron skillet with sizzling drippings",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "cast iron skillet with sizzling drippings",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -1126,9 +1012,7 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepIndex:        new(uint64(16)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "rested pork chops",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                     4,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -1137,37 +1021,33 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &pourSkilletVPV.ID,
 				Name:                            "cast iron skillet with sizzling drippings",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ValidPreparationVesselID: &pourWireRackVPV.ID,
 				Name:                     "wire rack with rested pork chops",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "pan-finished sous vide pork chops",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "pan-finished sous vide pork chops",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Season and bag pork chops",
-		Description:                 "Grind pepper, season the pork chops, place them in vacuum-seal or zipper-lock bags, and seal. The bagged pork chops can be refrigerated until ready to cook.",
-		Notes:                       "Having the pork chops pre-seasoned and bagged means you only need to heat the water bath and drop them in.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the sealed pork chops in the refrigerator for up to 24 hours.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Season and bag pork chops",
+		Description:                        "Grind pepper, season the pork chops, place them in vacuum-seal or zipper-lock bags, and seal. The bagged pork chops can be refrigerated until ready to cook.",
+		Notes:                              "Having the pork chops pre-seasoned and bagged means you only need to heat the water bath and drop them in.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the sealed pork chops in the refrigerator for up to 24 hours.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(86400)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -1180,20 +1060,18 @@ func SousVidePorkChopsRecipe(enums *Enumerations) []*mealplanning.RecipeCreation
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Sous Vide Pork Chops",
-			Slug:                "sous-vide-pork-chops",
-			Source:              "https://www.seriouseats.com/sous-vide-pork-chops-recipe",
-			Description:         "Using an immersion sous vide cooker is the easy, foolproof way to guarantee extra-juicy pork chops. Cooking sous vide ensures pork chops are perfectly cooked from edge to edge by maintaining a precise water temperature that precludes overcooking and preserves moisture. The method allows for greater control over texture by adjusting the cooking temperature, offering options from a pink and tender medium-rare to a traditional well-done chop. A high-heat finish, in a skillet or on the grill, gives the chops a crisp, browned crust and keeps the interior juicy.",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
-			PortionName:       "pork chop",
-			PluralPortionName: "pork chops",
-			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12a, step13, step14, step15, step16, step17, step18},
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
-			AlsoCreateMeal:    false,
+			Name:                 "Sous Vide Pork Chops",
+			Slug:                 "sous-vide-pork-chops",
+			Source:               "https://www.seriouseats.com/sous-vide-pork-chops-recipe",
+			Description:          "Using an immersion sous vide cooker is the easy, foolproof way to guarantee extra-juicy pork chops. Cooking sous vide ensures pork chops are perfectly cooked from edge to edge by maintaining a precise water temperature that precludes overcooking and preserves moisture. The method allows for greater control over texture by adjusting the cooking temperature, offering options from a pink and tender medium-rare to a traditional well-done chop. A high-heat finish, in a skillet or on the grill, gives the chops a crisp, browned crust and keeps the interior juicy.",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			MinEstimatedPortions: 4,
+			PortionName:          "pork chop",
+			PluralPortionName:    "pork chops",
+			EligibleForMeals:     true,
+			Steps:                []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12a, step13, step14, step15, step16, step17, step18},
+			PrepTasks:            []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
+			AlsoCreateMeal:       false,
 		},
 	}
 }

@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 // StovetopMacAndCheeseRecipe creates the Ultra-Gooey Stovetop Mac and Cheese recipe.
@@ -127,44 +125,36 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &submergeMacaroniVIP.ID,
 				ValidIngredientMeasurementUnitID: &macaroniPoundVIMU.ID,
 				Name:                             "elbow macaroni",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 			{
 				ValidIngredientPreparationID:     &submergeWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &enums.IngredientMeasurementUnits[water.ID][cupMeasurement.ID].ID,
 				QuantityNotes:                    "enough to cover macaroni by 2 inches",
 				Name:                             "water",
-				Quantity: numbers.MinRange[float32]{
-					Min: 8,
-				},
+				MinQuantity:                      8,
 			},
 			{
 				ValidIngredientPreparationID:     &submergeSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID].ID,
 				QuantityNotes:                    "to taste",
 				Name:                             "kosher salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &submergeSaucepanVPV.ID,
 				Name:                     "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "macaroni in salted water",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "macaroni in salted water",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -185,18 +175,14 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "macaroni in salted water",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &boilWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -204,17 +190,15 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "boiling macaroni",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "boiling macaroni",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -235,9 +219,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "boiling macaroni",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -245,17 +227,15 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "covered macaroni",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "covered macaroni",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -276,9 +256,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "covered macaroni",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -286,17 +264,15 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "covered macaroni off heat",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "covered macaroni off heat",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -318,9 +294,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "covered macaroni off heat",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -328,9 +302,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -343,10 +315,10 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "al dente macaroni",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "al dente macaroni",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -368,59 +340,47 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientMeasurementUnitID: &evaporatedMilkFluidOzVIMU.ID,
 				Name:                             "evaporated milk",
 				QuantityNotes:                    "one 12-ounce can",
-				Quantity: numbers.MinRange[float32]{
-					Min: 12,
-				},
+				MinQuantity:                      12,
 			},
 			{
 				ValidIngredientPreparationID:     &mixEggsVIP.ID,
 				ValidIngredientMeasurementUnitID: &eggsUnitVIMU.ID,
 				Name:                             "large eggs",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 			{
 				ValidIngredientPreparationID:     &mixHotSauceVIP.ID,
 				ValidIngredientMeasurementUnitID: &hotSauceTeaspoonVIMU.ID,
 				Name:                             "hot sauce",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 			{
 				ValidIngredientPreparationID:     &mixGroundMustardVIP.ID,
 				ValidIngredientMeasurementUnitID: &groundMustardTeaspoonVIMU.ID,
 				Name:                             "ground mustard",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &mixWhiskVPI.ID,
 				Name:                         "whisk",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &mixMediumBowlVPV.ID,
 				Name:                     "bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "milk mixture",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "milk mixture",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -436,26 +396,22 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &grateCheddarVIP.ID,
 				ValidIngredientMeasurementUnitID: &cheddarPoundVIMU.ID,
 				Name:                             "extra-sharp cheddar cheese",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &grateMicroplaneVPI.ID,
 				Name:                         "microplane",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "grated cheddar cheese",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "grated cheddar cheese",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -471,35 +427,29 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &cutAmericanCheeseVIP.ID,
 				ValidIngredientMeasurementUnitID: &americanOunceVIMU.ID,
 				Name:                             "American cheese",
-				Quantity: numbers.MinRange[float32]{
-					Min: 8,
-				},
+				MinQuantity:                      8,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "American cheese, cut into 1/2-inch cubes",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &ounceMeasurement.ID,
+				Name:                   "American cheese, cut into 1/2-inch cubes",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &ounceMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
@@ -515,42 +465,34 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "grated cheddar cheese",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "American cheese, cut into 1/2-inch cubes",
-				Quantity: numbers.MinRange[float32]{
-					Min: 8,
-				},
+				MinQuantity:                     8,
 			},
 			{
 				ValidIngredientPreparationID:     &tossCornstarchVIP.ID,
 				ValidIngredientMeasurementUnitID: &cornstarchTablespoonVIMU.ID,
 				Name:                             "cornstarch",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &tossLargeBowlVPV.ID,
 				Name:                     "large bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "cheese mixture",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "cheese mixture",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -566,26 +508,22 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "al dente macaroni",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &drainColanderVPV.ID,
 				Name:                     "colander",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "drained macaroni",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "drained macaroni",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -601,9 +539,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "drained macaroni",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -611,17 +547,15 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "macaroni in saucepan",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "macaroni in saucepan",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -642,35 +576,28 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &cutButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				Name:                             "unsalted butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 8, // 8 tablespoons = 1 stick
-				},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &cutKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &cutCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "butter, cut into 4 chunks",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &tablespoonMeasurement.ID,
+				Name:                   "butter, cut into 4 chunks",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &tablespoonMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
@@ -686,17 +613,12 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "macaroni in saucepan",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "butter, cut into 4 chunks",
-				Quantity: numbers.MinRange[float32]{
-					Min: 8, // 8 tablespoons = 1 stick
-				},
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -704,9 +626,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -719,10 +639,10 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "buttered macaroni",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "buttered macaroni",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -743,34 +663,26 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "buttered macaroni",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "milk mixture",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cheese mixture",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &cookWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -778,9 +690,7 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -793,10 +703,10 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "mac and cheese",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "mac and cheese",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -817,29 +727,23 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "mac and cheese",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &enums.IngredientMeasurementUnits[salt.ID][teaspoonMeasurement.ID].ID,
 				Name:                             "salt",
 				QuantityNotes:                    "to taste",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				Optional: true,
+				MinQuantity:                      0,
+				Optional:                         true,
 			},
 			{
 				ValidIngredientPreparationID:     &seasonHotSauceVIP.ID,
 				ValidIngredientMeasurementUnitID: &hotSauceTeaspoonVIMU.ID,
 				Name:                             "hot sauce",
 				QuantityNotes:                    "to taste",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				Optional: true,
+				MinQuantity:                      0,
+				Optional:                         true,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -847,30 +751,28 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "stovetop mac and cheese",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "stovetop mac and cheese",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Grate and prepare cheeses",
-		Description:                 "Grate the cheddar cheese, cut the American cheese into 1/2-inch cubes, and toss both cheeses with cornstarch. This can be done up to 2 days ahead.",
-		Notes:                       "Tossing with cornstarch ahead of time is fine; it helps the cheeses melt smoothly.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the cornstarch-coated cheese mixture in an airtight container in the refrigerator for up to 2 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Grate and prepare cheeses",
+		Description:                        "Grate the cheddar cheese, cut the American cheese into 1/2-inch cubes, and toss both cheeses with cornstarch. This can be done up to 2 days ahead.",
+		Notes:                              "Tossing with cornstarch ahead of time is fine; it helps the cheeses melt smoothly.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the cornstarch-coated cheese mixture in an airtight container in the refrigerator for up to 2 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(172800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -882,18 +784,16 @@ func StovetopMacAndCheeseRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Stovetop Mac and Cheese",
-			Slug:                "stovetop-mac-and-cheese",
-			Source:              "https://www.seriouseats.com/the-food-labs-ultra-gooey-stovetop-mac-cheese",
-			Description:         "A homemade stovetop mac and cheese recipe that's ultra-gooey with the consistency of the blue box but with the complex flavor of real cheese.",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-				Max: new(float32(6)),
-			},
-			PortionName:       "serving",
-			PluralPortionName: "servings",
-			EligibleForMeals:  true,
+			Name:                 "Stovetop Mac and Cheese",
+			Slug:                 "stovetop-mac-and-cheese",
+			Source:               "https://www.seriouseats.com/the-food-labs-ultra-gooey-stovetop-mac-cheese",
+			Description:          "A homemade stovetop mac and cheese recipe that's ultra-gooey with the consistency of the blue box but with the complex flavor of real cheese.",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			MinEstimatedPortions: 4,
+			MaxEstimatedPortions: new(float32(6)),
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			EligibleForMeals:     true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step5a, step5b, step6, step7, step8, step8a, step9, step10, step11,
 			},

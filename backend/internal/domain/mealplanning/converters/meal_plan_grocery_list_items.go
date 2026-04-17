@@ -4,20 +4,17 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput builds a MealPlanGroceryListItemDatabaseCreationInput from a MealPlanGroceryListItem.
 func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(input *mealplanning.MealPlanGroceryListItem) *mealplanning.MealPlanGroceryListItemDatabaseCreationInput {
 	x := &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
-		ID:                     input.ID,
-		BelongsToMealPlan:      input.BelongsToMealPlan,
-		ValidIngredientID:      input.Ingredient.ID,
-		ValidMeasurementUnitID: input.MeasurementUnit.ID,
-		QuantityNeeded: numbers.MinRange[float32]{
-			Max: input.QuantityNeeded.Max,
-			Min: input.QuantityNeeded.Min,
-		},
+		ID:                      input.ID,
+		BelongsToMealPlan:       input.BelongsToMealPlan,
+		ValidIngredientID:       input.Ingredient.ID,
+		ValidMeasurementUnitID:  input.MeasurementUnit.ID,
+		MinQuantityNeeded:       input.MinQuantityNeeded,
+		MaxQuantityNeeded:       input.MaxQuantityNeeded,
 		QuantityPurchased:       input.QuantityPurchased,
 		PurchasedUPC:            input.PurchasedUPC,
 		PurchasePrice:           input.PurchasePrice,
@@ -48,10 +45,8 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput
 		BelongsToMealPlan:      input.BelongsToMealPlan,
 		ValidIngredientID:      input.Ingredient.ID,
 		ValidMeasurementUnitID: input.MeasurementUnit.ID,
-		QuantityNeeded: numbers.MinRange[float32]{
-			Max: input.QuantityNeeded.Max,
-			Min: input.QuantityNeeded.Min,
-		},
+		MinQuantityNeeded:      input.MinQuantityNeeded,
+		MaxQuantityNeeded:      input.MaxQuantityNeeded,
 	}
 
 	if input.PurchasedMeasurementUnit != nil {
@@ -73,10 +68,8 @@ func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItem
 		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
 		ValidIngredientID:          input.ValidIngredientID,
 		BelongsToMealPlan:          input.BelongsToMealPlan,
-		QuantityNeeded: numbers.MinRange[float32]{
-			Max: input.QuantityNeeded.Max,
-			Min: input.QuantityNeeded.Min,
-		},
+		MinQuantityNeeded:          input.MinQuantityNeeded,
+		MaxQuantityNeeded:          input.MaxQuantityNeeded,
 		// Recipe context fields are not included in creation request input
 		// They are set separately when creating items with alternatives
 	}
@@ -89,13 +82,11 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(i
 	}
 
 	return &mealplanning.MealPlanGroceryListItemUpdateRequestInput{
-		BelongsToMealPlan:      &input.BelongsToMealPlan,
-		ValidIngredientID:      &input.Ingredient.ID,
-		ValidMeasurementUnitID: &input.MeasurementUnit.ID,
-		QuantityNeeded: numbers.OpenRangeUpdateRequestInput[float32]{
-			Max: input.QuantityNeeded.Max,
-			Min: &input.QuantityNeeded.Min,
-		},
+		BelongsToMealPlan:          &input.BelongsToMealPlan,
+		ValidIngredientID:          &input.Ingredient.ID,
+		ValidMeasurementUnitID:     &input.MeasurementUnit.ID,
+		MinQuantityNeeded:          &input.MinQuantityNeeded,
+		MaxQuantityNeeded:          input.MaxQuantityNeeded,
 		QuantityPurchased:          input.QuantityPurchased,
 		PurchasedMeasurementUnitID: purchasedMeasurementUnitID,
 		PurchasedUPC:               input.PurchasedUPC,

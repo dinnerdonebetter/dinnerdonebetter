@@ -10,8 +10,6 @@ import (
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
-	"github.com/primandproper/platform/numbers"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +20,8 @@ func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
-	assert.Equal(t, expected.EstimatedPortions, actual.EstimatedPortions, "expected EstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.EstimatedPortions, actual.EstimatedPortions)
+	assert.Equal(t, expected.MinEstimatedPortions, actual.MinEstimatedPortions, "expected MinEstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.MinEstimatedPortions, actual.MinEstimatedPortions)
+	assert.Equal(t, expected.MaxEstimatedPortions, actual.MaxEstimatedPortions, "expected MaxEstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.MaxEstimatedPortions, actual.MaxEstimatedPortions)
 	assert.Equal(t, expected.PluralPortionName, actual.PluralPortionName, "expected PluralPortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PluralPortionName, actual.PluralPortionName)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
@@ -221,25 +220,24 @@ func TestRecipes_Creating(T *testing.T) {
 		vpiMixInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, mix, createdValidInstrument)
 
 		expected := &mealplanning.Recipe{
-			Name:                "sopa de frijol",
-			Slug:                "sopa-de-frijol",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         t.Name(),
-			PluralPortionName:   t.Name(),
-			Media:               []*mealplanning.RecipeMedia{},
-			PrepTasks:           []*mealplanning.RecipePrepTask{},
-			EstimatedPortions: numbers.MinRange[float32]{
-				Max: nil,
-				Min: 1,
-			},
+			Name:                 "sopa de frijol",
+			Slug:                 "sopa-de-frijol",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          t.Name(),
+			PluralPortionName:    t.Name(),
+			Media:                []*mealplanning.RecipeMedia{},
+			PrepTasks:            []*mealplanning.RecipePrepTask{},
+			MinEstimatedPortions: 1,
+
+			MaxEstimatedPortions: nil,
 			Steps: []*mealplanning.RecipeStep{
 				{
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:            "soaked pinto beans",
-							Type:            mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnit: grams,
-							QuantityNotes:   "",
+							Name:                   "soaked pinto beans",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit:        grams,
+							QuantityNotes:          "",
 							MinMeasurementQuantity: new(float32(1000)),
 						},
 					},
@@ -258,21 +256,17 @@ func TestRecipes_Creating(T *testing.T) {
 							Ingredient:      pintoBeans,
 							Name:            "pinto beans",
 							MeasurementUnit: *grams,
-							Quantity: numbers.MinRange[float32]{
-								Min: 500,
-							},
-							Index:       0, // Array index 0
-							OptionIndex: 0,
+							MinQuantity:     500,
+							Index:           0, // Array index 0
+							OptionIndex:     0,
 						},
 						{
 							Ingredient:      water,
 							Name:            "water",
 							MeasurementUnit: *cups,
-							Quantity: numbers.MinRange[float32]{
-								Min: 5,
-							},
-							Index:       1, // Array index 1
-							OptionIndex: 0,
+							MinQuantity:     5,
+							Index:           1, // Array index 1
+							OptionIndex:     0,
 						},
 					},
 					Index: 0,
@@ -280,10 +274,10 @@ func TestRecipes_Creating(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:            "final output",
-							Type:            mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnit: grams,
-							QuantityNotes:   "",
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit:        grams,
+							QuantityNotes:          "",
 							MinMeasurementQuantity: new(float32(1010)),
 						},
 					},
@@ -301,21 +295,17 @@ func TestRecipes_Creating(T *testing.T) {
 						{
 							Name:            "soaked pinto beans",
 							MeasurementUnit: *grams,
-							Quantity: numbers.MinRange[float32]{
-								Min: 1000,
-							},
-							Index:       0, // Array index 0
-							OptionIndex: 0,
+							MinQuantity:     1000,
+							Index:           0, // Array index 0
+							OptionIndex:     0,
 						},
 						{
 							Ingredient:      garlicPaste,
 							Name:            "garlic paste",
 							MeasurementUnit: *grams,
-							Quantity: numbers.MinRange[float32]{
-								Min: 10,
-							},
-							Index:       1, // Array index 1
-							OptionIndex: 0,
+							MinQuantity:     10,
+							Index:           1, // Array index 1
+							OptionIndex:     0,
 						},
 					},
 					Index: 1,
@@ -324,27 +314,26 @@ func TestRecipes_Creating(T *testing.T) {
 		}
 
 		expectedInput := &mealplanning.RecipeCreationRequestInput{
-			Name:                expected.Name,
-			Description:         expected.Description,
-			Slug:                expected.Slug,
-			YieldsComponentType: expected.YieldsComponentType,
-			PortionName:         expected.PortionName,
-			PluralPortionName:   expected.PluralPortionName,
-			AlsoCreateMeal:      true,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Max: expected.EstimatedPortions.Max,
-				Min: expected.EstimatedPortions.Min,
-			},
+			Name:                 expected.Name,
+			Description:          expected.Description,
+			Slug:                 expected.Slug,
+			YieldsComponentType:  expected.YieldsComponentType,
+			PortionName:          expected.PortionName,
+			PluralPortionName:    expected.PluralPortionName,
+			AlsoCreateMeal:       true,
+			MinEstimatedPortions: expected.MinEstimatedPortions,
+
+			MaxEstimatedPortions: expected.MaxEstimatedPortions,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					MinTemperatureInCelsius: expected.Steps[0].MinTemperatureInCelsius,
 					MaxTemperatureInCelsius: expected.Steps[0].MaxTemperatureInCelsius,
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:                expected.Steps[0].Products[0].Name,
-							Type:                expected.Steps[0].Products[0].Type,
-							MeasurementUnitID:   &expected.Steps[0].Products[0].MeasurementUnit.ID,
-							QuantityNotes:       expected.Steps[0].Products[0].QuantityNotes,
+							Name:                   expected.Steps[0].Products[0].Name,
+							Type:                   expected.Steps[0].Products[0].Type,
+							MeasurementUnitID:      &expected.Steps[0].Products[0].MeasurementUnit.ID,
+							QuantityNotes:          expected.Steps[0].Products[0].QuantityNotes,
 							MinMeasurementQuantity: expected.Steps[0].Products[0].MinMeasurementQuantity,
 							MaxMeasurementQuantity: expected.Steps[0].Products[0].MaxMeasurementQuantity,
 						},
@@ -362,19 +351,17 @@ func TestRecipes_Creating(T *testing.T) {
 							Name:                             expected.Steps[0].Ingredients[0].Name,
 							ValidIngredientPreparationID:     &vipPintoSoak.ID,
 							ValidIngredientMeasurementUnitID: &vimuPintoGrams.ID,
-							Quantity: numbers.MinRange[float32]{
-								Max: nil,
-								Min: expected.Steps[0].Ingredients[0].Quantity.Min,
-							},
+							MinQuantity:                      expected.Steps[0].Ingredients[0].MinQuantity,
+
+							MaxQuantity: nil,
 						},
 						{
 							Name:                             expected.Steps[0].Ingredients[1].Name,
 							ValidIngredientPreparationID:     &vipWaterSoak.ID,
 							ValidIngredientMeasurementUnitID: &vimuWaterCups.ID,
-							Quantity: numbers.MinRange[float32]{
-								Max: nil,
-								Min: expected.Steps[0].Ingredients[1].Quantity.Min,
-							},
+							MinQuantity:                      expected.Steps[0].Ingredients[1].MinQuantity,
+
+							MaxQuantity: nil,
 						},
 					},
 					Index: expected.Steps[0].Index,
@@ -384,10 +371,10 @@ func TestRecipes_Creating(T *testing.T) {
 					MaxTemperatureInCelsius: expected.Steps[1].MaxTemperatureInCelsius,
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:                expected.Steps[1].Products[0].Name,
-							Type:                expected.Steps[1].Products[0].Type,
-							MeasurementUnitID:   &expected.Steps[1].Products[0].MeasurementUnit.ID,
-							QuantityNotes:       expected.Steps[1].Products[0].QuantityNotes,
+							Name:                   expected.Steps[1].Products[0].Name,
+							Type:                   expected.Steps[1].Products[0].Type,
+							MeasurementUnitID:      &expected.Steps[1].Products[0].MeasurementUnit.ID,
+							QuantityNotes:          expected.Steps[1].Products[0].QuantityNotes,
 							MinMeasurementQuantity: expected.Steps[1].Products[0].MinMeasurementQuantity,
 							MaxMeasurementQuantity: expected.Steps[1].Products[0].MaxMeasurementQuantity,
 						},
@@ -406,19 +393,17 @@ func TestRecipes_Creating(T *testing.T) {
 							Name:                            expected.Steps[1].Ingredients[0].Name,
 							ProductOfRecipeStepIndex:        new(uint64(0)),
 							ProductOfRecipeStepProductIndex: new(uint64(0)),
-							Quantity: numbers.MinRange[float32]{
-								Max: nil,
-								Min: expected.Steps[1].Ingredients[0].Quantity.Min,
-							},
+							MinQuantity:                     expected.Steps[1].Ingredients[0].MinQuantity,
+
+							MaxQuantity: nil,
 						},
 						{
 							Name:                             expected.Steps[1].Ingredients[1].Name,
 							ValidIngredientPreparationID:     &vipGarlicMix.ID,
 							ValidIngredientMeasurementUnitID: &vimuGarlicGrams.ID,
-							Quantity: numbers.MinRange[float32]{
-								Max: nil,
-								Min: expected.Steps[1].Ingredients[1].Quantity.Min,
-							},
+							MinQuantity:                      expected.Steps[1].Ingredients[1].MinQuantity,
+
+							MaxQuantity: nil,
 						},
 					},
 					Index: expected.Steps[1].Index,
@@ -530,7 +515,8 @@ func TestRecipes_Updating(T *testing.T) {
 		assert.Equal(t, newRecipe.Source, actualRecipe.Source, "recipe source should be updated")
 		assert.Equal(t, newRecipe.Description, actualRecipe.Description, "recipe description should be updated")
 		assert.Equal(t, newRecipe.InspiredByRecipeID, actualRecipe.InspiredByRecipeID, "recipe inspired by recipe ID should be updated")
-		assert.Equal(t, newRecipe.EstimatedPortions, actualRecipe.EstimatedPortions, "recipe estimated portions should be updated")
+		assert.Equal(t, newRecipe.MinEstimatedPortions, actualRecipe.MinEstimatedPortions, "recipe estimated portions should be updated")
+		assert.Equal(t, newRecipe.MaxEstimatedPortions, actualRecipe.MaxEstimatedPortions, "recipe estimated portions should be updated")
 		assert.Equal(t, newRecipe.PortionName, actualRecipe.PortionName, "recipe portion name should be updated")
 		assert.Equal(t, newRecipe.PluralPortionName, actualRecipe.PluralPortionName, "recipe plural portion name should be updated")
 		assert.Equal(t, newRecipe.EligibleForMeals, actualRecipe.EligibleForMeals, "recipe eligible for meals should be updated")
@@ -785,23 +771,22 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 		vpiSauteeInstrument := createValidPreparationInstrumentWithEntitiesForTest(t, sautee, createdValidInstrument)
 
 		expected := &mealplanning.Recipe{
-			Name:                "sopa de frijol",
-			Slug:                "whatever-who-cares-sopa-de-frijol",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         t.Name(),
-			PluralPortionName:   t.Name(),
-			EstimatedPortions: numbers.MinRange[float32]{
-				Max: nil,
-				Min: 1,
-			},
+			Name:                 "sopa de frijol",
+			Slug:                 "whatever-who-cares-sopa-de-frijol",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          t.Name(),
+			PluralPortionName:    t.Name(),
+			MinEstimatedPortions: 1,
+
+			MaxEstimatedPortions: nil,
 			Steps: []*mealplanning.RecipeStep{
 				{
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:            "diced chicken breast",
-							Type:            mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnit: grams,
-							QuantityNotes:   "",
+							Name:                   "diced chicken breast",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit:        grams,
+							QuantityNotes:          "",
 							MinMeasurementQuantity: new(float32(1000)),
 						},
 					},
@@ -819,9 +804,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Ingredient:          chickenBreast,
 							Name:                "pinto beans",
 							MeasurementUnit:     *grams,
-							Quantity: numbers.MinRange[float32]{
-								Min: 500,
-							},
+							MinQuantity:         500,
 						},
 					},
 					Index: 0,
@@ -829,10 +812,10 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:            "final output",
-							Type:            mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnit: grams,
-							QuantityNotes:   "",
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit:        grams,
+							QuantityNotes:          "",
 							MinMeasurementQuantity: new(float32(1010)),
 						},
 					},
@@ -848,9 +831,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 						{
 							Name:            "diced chicken breast",
 							MeasurementUnit: *grams,
-							Quantity: numbers.MinRange[float32]{
-								Min: 1000,
-							},
+							MinQuantity:     1000,
 						},
 					},
 					Index: 1,
@@ -859,23 +840,22 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 		}
 
 		expectedInput := &mealplanning.RecipeCreationRequestInput{
-			Name:                expected.Name,
-			Slug:                expected.Slug,
-			YieldsComponentType: expected.YieldsComponentType,
-			PortionName:         expected.PortionName,
-			PluralPortionName:   expected.PluralPortionName,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: expected.EstimatedPortions.Min,
-				Max: expected.EstimatedPortions.Max,
-			},
+			Name:                 expected.Name,
+			Slug:                 expected.Slug,
+			YieldsComponentType:  expected.YieldsComponentType,
+			PortionName:          expected.PortionName,
+			PluralPortionName:    expected.PluralPortionName,
+			MinEstimatedPortions: expected.MinEstimatedPortions,
+
+			MaxEstimatedPortions: expected.MaxEstimatedPortions,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:                "diced chicken breast",
-							Type:                mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID:   &grams.ID,
-							QuantityNotes:       "",
+							Name:                   "diced chicken breast",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &grams.ID,
+							QuantityNotes:          "",
 							MinMeasurementQuantity: new(float32(1000)),
 						},
 					},
@@ -892,7 +872,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 							Name:                             "pinto beans",
 							ValidIngredientPreparationID:     &vipChickenDice.ID,
 							ValidIngredientMeasurementUnitID: &vimuChickenGrams.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 500},
+							MinQuantity:                      500,
 						},
 					},
 					Index: 0,
@@ -900,10 +880,10 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:                "final output",
-							Type:                mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID:   &grams.ID,
-							QuantityNotes:       "",
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &grams.ID,
+							QuantityNotes:          "",
 							MinMeasurementQuantity: new(float32(1010)),
 						},
 					},
@@ -919,7 +899,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 						{
 							// This is a recipe step product (from step 0), no bridge table IDs needed
 							Name:                            "diced chicken breast",
-							Quantity:                        numbers.MinRange[float32]{Min: 1000},
+							MinQuantity:                     1000,
 							ProductOfRecipeStepIndex:        new(uint64(0)),
 							ProductOfRecipeStepProductIndex: new(uint64(0)),
 						},
@@ -973,14 +953,12 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 
 		// Expected recipe with discrete product (beef patties) and continuous product (sauce)
 		expected := &mealplanning.Recipe{
-			Name:                "Cheeseburgers",
-			Slug:                "cheeseburgers",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "Cheeseburgers",
+			Slug:                 "cheeseburgers",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStep{
 				{
 					Products: []*mealplanning.RecipeStepProduct{
@@ -990,7 +968,7 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							MeasurementUnit: createdValidMeasurementUnit,
 							QuantityNotes:   "",
 							// Discrete product: 4 patties, each 4 ounces
-							MinItemQuantity: new(float32(4)),
+							MinItemQuantity:        new(float32(4)),
 							MinMeasurementQuantity: new(float32(4)),
 						},
 					},
@@ -1007,9 +985,6 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							Ingredient:      groundBeef,
 							Name:            "ground beef",
 							MeasurementUnit: *createdValidMeasurementUnit,
-							Quantity: numbers.MinRange[float32]{
-								Min: 16, // 16 ounces total for 4 patties
-							},
 						},
 					},
 					Index: 0,
@@ -1022,7 +997,7 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							MeasurementUnit: createdValidMeasurementUnit,
 							QuantityNotes:   "",
 							// Continuous product: 8 ounces total
-							
+
 							MinMeasurementQuantity: new(float32(8)),
 						},
 					},
@@ -1039,9 +1014,6 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							Ingredient:      cheese,
 							Name:            "cheese",
 							MeasurementUnit: *createdValidMeasurementUnit,
-							Quantity: numbers.MinRange[float32]{
-								Min: 4, // 4 slices
-							},
 						},
 					},
 					Index: 1,
@@ -1050,14 +1022,12 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 		}
 
 		expectedInput := &mealplanning.RecipeCreationRequestInput{
-			Name:                expected.Name,
-			Slug:                expected.Slug,
-			YieldsComponentType: expected.YieldsComponentType,
-			PortionName:         expected.PortionName,
-			PluralPortionName:   expected.PluralPortionName,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: expected.EstimatedPortions.Min,
-			},
+			Name:                 expected.Name,
+			Slug:                 expected.Slug,
+			YieldsComponentType:  expected.YieldsComponentType,
+			PortionName:          expected.PortionName,
+			PluralPortionName:    expected.PluralPortionName,
+			MinEstimatedPortions: expected.MinEstimatedPortions,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -1067,7 +1037,7 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							MeasurementUnitID: &createdValidMeasurementUnit.ID,
 							QuantityNotes:     "",
 							// Discrete product: 4 patties, each 4 ounces
-							MinItemQuantity: new(float32(4)),
+							MinItemQuantity:        new(float32(4)),
 							MinMeasurementQuantity: new(float32(4)),
 						},
 					},
@@ -1084,7 +1054,7 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							Name:                             "ground beef",
 							ValidIngredientPreparationID:     &vipGroundBeefShape.ID,
 							ValidIngredientMeasurementUnitID: &vimuGroundBeefOunce.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 16},
+							MinQuantity:                      16,
 						},
 					},
 					Index: 0,
@@ -1097,7 +1067,7 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							MeasurementUnitID: &createdValidMeasurementUnit.ID,
 							QuantityNotes:     "",
 							// Continuous product: 8 ounces total (ItemQuantity not set)
-							
+
 							MinMeasurementQuantity: new(float32(8)),
 						},
 					},
@@ -1114,7 +1084,7 @@ func TestRecipes_CreationWithDiscreteProducts(T *testing.T) {
 							Name:                             "cheese",
 							ValidIngredientPreparationID:     &vipCheeseSlice.ID,
 							ValidIngredientMeasurementUnitID: &vimuCheeseSlice.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 4},
+							MinQuantity:                      4,
 						},
 					},
 					Index: 1,
@@ -1202,14 +1172,12 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1224,7 +1192,7 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -1233,7 +1201,7 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete product: ItemQuantity.Min set
-							MinItemQuantity: new(float32(12)),
+							MinItemQuantity:        new(float32(12)),
 							MinMeasurementQuantity: new(float32(2)),
 						},
 					},
@@ -1249,9 +1217,9 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1298,14 +1266,12 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1320,7 +1286,7 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -1329,8 +1295,8 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete product: ItemQuantity.Max set (range)
-							MinItemQuantity: new(float32(8)),
-				MaxItemQuantity: new(float32(10)),
+							MinItemQuantity:        new(float32(8)),
+							MaxItemQuantity:        new(float32(10)),
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1346,9 +1312,9 @@ func TestRecipes_StepProducts_Discrete(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1401,14 +1367,12 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1423,7 +1387,7 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -1432,7 +1396,7 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Continuous product: both ItemQuantity.Min and Max are null
-							
+
 							MinMeasurementQuantity: new(float32(16)),
 						},
 					},
@@ -1448,9 +1412,9 @@ func TestRecipes_StepProducts_Continuous(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1501,14 +1465,12 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1523,7 +1485,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -1532,7 +1494,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete: ItemQuantity.Min set, Max null
-							MinItemQuantity: new(float32(4)),
+							MinItemQuantity:        new(float32(4)),
 							MinMeasurementQuantity: new(float32(4)),
 						},
 					},
@@ -1548,9 +1510,9 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1594,14 +1556,12 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1616,7 +1576,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -1625,7 +1585,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Discrete: ItemQuantity.Min null, Max set
-							MaxItemQuantity: new(float32(6)),
+							MaxItemQuantity:        new(float32(6)),
 							MinMeasurementQuantity: new(float32(3)),
 						},
 					},
@@ -1641,9 +1601,9 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1687,14 +1647,12 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1709,7 +1667,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -1718,7 +1676,7 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 							Type:              mealplanning.RecipeStepProductIngredientType,
 							MeasurementUnitID: &measurementUnit.ID,
 							// Continuous: both ItemQuantity.Min and Max are null
-							
+
 							MinMeasurementQuantity: new(float32(32)),
 						},
 					},
@@ -1734,9 +1692,9 @@ func TestRecipes_StepProducts_EdgeCases(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1828,14 +1786,12 @@ func TestRecipes_Validation(T *testing.T) {
 
 		// Create recipe with only 1 step (should fail)
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1850,14 +1806,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1888,14 +1844,12 @@ func TestRecipes_Validation(T *testing.T) {
 
 		// Create recipe with step that has only instruments (should succeed)
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1910,14 +1864,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1933,9 +1887,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -1965,14 +1919,12 @@ func TestRecipes_Validation(T *testing.T) {
 
 		// Create recipe with step that has only vessels (should succeed)
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -1987,14 +1939,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2010,9 +1962,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2040,14 +1992,12 @@ func TestRecipes_Validation(T *testing.T) {
 
 		// Create recipe with step that has neither instruments nor vessels (should fail)
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -2057,14 +2007,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2075,9 +2025,9 @@ func TestRecipes_Validation(T *testing.T) {
 					// No instruments or vessels
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2107,14 +2057,12 @@ func TestRecipes_Validation(T *testing.T) {
 		invalidID := nonexistentID
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -2129,14 +2077,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &invalidID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2152,9 +2100,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2188,14 +2136,12 @@ func TestRecipes_Validation(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation2, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation2.ID, // Different preparation
@@ -2210,14 +2156,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID, // VIP is for preparation1
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2233,9 +2179,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2269,14 +2215,12 @@ func TestRecipes_Validation(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation1, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation2.ID, // Different preparation
@@ -2291,14 +2235,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2314,9 +2258,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2350,14 +2294,12 @@ func TestRecipes_Validation(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -2372,14 +2314,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,  // ingredient1
 							ValidIngredientMeasurementUnitID: &vimu.ID, // ingredient2 - mismatch!
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2395,9 +2337,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2431,13 +2373,11 @@ func TestRecipes_Validation(T *testing.T) {
 
 		input := &mealplanning.RecipeCreationRequestInput{
 			// Name missing
-			Slug:                "test-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Slug:                 "test-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -2452,14 +2392,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2475,9 +2415,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2508,12 +2448,10 @@ func TestRecipes_Validation(T *testing.T) {
 		input := &mealplanning.RecipeCreationRequestInput{
 			Name: "test recipe",
 			// Slug missing
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -2528,14 +2466,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2551,9 +2489,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2582,14 +2520,12 @@ func TestRecipes_Validation(T *testing.T) {
 		vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 		input := &mealplanning.RecipeCreationRequestInput{
-			Name:                "test recipe",
-			Slug:                "test-recipe",
-			YieldsComponentType: "invalid-type", // Invalid component type
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
+			Name:                 "test recipe",
+			Slug:                 "test-recipe",
+			YieldsComponentType:  "invalid-type", // Invalid component type
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation.ID,
@@ -2604,14 +2540,14 @@ func TestRecipes_Validation(T *testing.T) {
 							Name:                             "test ingredient",
 							ValidIngredientPreparationID:     &vip.ID,
 							ValidIngredientMeasurementUnitID: &vimu.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2627,9 +2563,9 @@ func TestRecipes_Validation(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2676,14 +2612,12 @@ func TestRecipes_Validation(T *testing.T) {
 				vpi := createValidPreparationInstrumentWithEntitiesForTest(t, preparation, instrument)
 
 				input := &mealplanning.RecipeCreationRequestInput{
-					Name:                fmt.Sprintf("test recipe %s", componentType),
-					Slug:                fmt.Sprintf("test-recipe-%s", componentType),
-					YieldsComponentType: componentType,
-					PortionName:         "serving",
-					PluralPortionName:   "servings",
-					EstimatedPortions: numbers.MinRange[float32]{
-						Min: 4,
-					},
+					Name:                 fmt.Sprintf("test recipe %s", componentType),
+					Slug:                 fmt.Sprintf("test-recipe-%s", componentType),
+					YieldsComponentType:  componentType,
+					PortionName:          "serving",
+					PluralPortionName:    "servings",
+					MinEstimatedPortions: 4,
 					Steps: []*mealplanning.RecipeStepCreationRequestInput{
 						{
 							PreparationID: preparation.ID,
@@ -2698,14 +2632,14 @@ func TestRecipes_Validation(T *testing.T) {
 									Name:                             "test ingredient",
 									ValidIngredientPreparationID:     &vip.ID,
 									ValidIngredientMeasurementUnitID: &vimu.ID,
-									Quantity:                         numbers.MinRange[float32]{Min: 1},
+									MinQuantity:                      1,
 								},
 							},
 							Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 								{
-									Name:              "output",
-									Type:              mealplanning.RecipeStepProductIngredientType,
-									MeasurementUnitID: &measurementUnit.ID,
+									Name:                   "output",
+									Type:                   mealplanning.RecipeStepProductIngredientType,
+									MeasurementUnitID:      &measurementUnit.ID,
 									MinMeasurementQuantity: new(float32(1)),
 								},
 							},
@@ -2721,9 +2655,9 @@ func TestRecipes_Validation(T *testing.T) {
 							},
 							Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 								{
-									Name:              "final output",
-									Type:              mealplanning.RecipeStepProductIngredientType,
-									MeasurementUnitID: &measurementUnit.ID,
+									Name:                   "final output",
+									Type:                   mealplanning.RecipeStepProductIngredientType,
+									MeasurementUnitID:      &measurementUnit.ID,
 									MinMeasurementQuantity: new(float32(1)),
 								},
 							},
@@ -2929,15 +2863,13 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 
 		// Create first recipe with a product in step 0
 		firstRecipeInput := &mealplanning.RecipeCreationRequestInput{
-			Name:                "Base Sauce Recipe",
-			Slug:                "base-sauce-recipe",
-			YieldsComponentType: mealplanning.MealComponentTypesUnspecified,
-			PortionName:         "cup",
-			PluralPortionName:   "cups",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 1,
-			},
-			EligibleForMeals: false,
+			Name:                 "Base Sauce Recipe",
+			Slug:                 "base-sauce-recipe",
+			YieldsComponentType:  mealplanning.MealComponentTypesUnspecified,
+			PortionName:          "cup",
+			PluralPortionName:    "cups",
+			MinEstimatedPortions: 1,
+			EligibleForMeals:     false,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation1.ID,
@@ -2952,14 +2884,14 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Name:                             "base ingredient",
 							ValidIngredientPreparationID:     &vip1.ID,
 							ValidIngredientMeasurementUnitID: &vimu1.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "base sauce",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit1.ID,
+							Name:                   "base sauce",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit1.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -2975,9 +2907,9 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final sauce",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit1.ID,
+							Name:                   "final sauce",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit1.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -3005,15 +2937,13 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 
 		// Create second recipe that references the product from the first recipe
 		secondRecipeInput := &mealplanning.RecipeCreationRequestInput{
-			Name:                "Recipe Using Base Sauce",
-			Slug:                "recipe-using-base-sauce",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         "serving",
-			PluralPortionName:   "servings",
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
-			EligibleForMeals: true,
+			Name:                 "Recipe Using Base Sauce",
+			Slug:                 "recipe-using-base-sauce",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			MinEstimatedPortions: 4,
+			EligibleForMeals:     true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				{
 					PreparationID: preparation2.ID,
@@ -3028,7 +2958,7 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							Name:                             "other ingredient",
 							ValidIngredientPreparationID:     &vip2.ID,
 							ValidIngredientMeasurementUnitID: &vimu2.ID,
-							Quantity:                         numbers.MinRange[float32]{Min: 1},
+							MinQuantity:                      1,
 						},
 						{
 							// Reference the product from the first recipe
@@ -3037,14 +2967,14 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 							ProductOfRecipeStepProductIndex: new(uint64(0)),
 							RecipeStepProductRecipeID:       &firstRecipe.ID,
 							Name:                            "base sauce",
-							Quantity:                        numbers.MinRange[float32]{Min: 0.5},
+							MinQuantity:                     0.5,
 						},
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final dish",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit2.ID,
+							Name:                   "final dish",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit2.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
@@ -3060,9 +2990,9 @@ func TestRecipes_AssociatedRecipes(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 						{
-							Name:              "final output",
-							Type:              mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnitID: &measurementUnit2.ID,
+							Name:                   "final output",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnitID:      &measurementUnit2.ID,
 							MinMeasurementQuantity: new(float32(1)),
 						},
 					},

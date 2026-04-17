@@ -78,21 +78,21 @@ func (q *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 	for _, result := range results {
 		if x == nil {
 			x = &mealplanning.RecipePrepTask{
-				CreatedAt: result.CreatedAt,
-				MinStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
-				MaxStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+				CreatedAt:                          result.CreatedAt,
+				MinStorageTemperatureInCelsius:     database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+				MaxStorageTemperatureInCelsius:     database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
 				MinTimeBufferBeforeRecipeInSeconds: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
 				MaxTimeBufferBeforeRecipeInSeconds: database.Uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
-				ArchivedAt:                  database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt:               database.TimePointerFromNullTime(result.LastUpdatedAt),
-				ID:                          result.ID,
-				BelongsToRecipe:             result.BelongsToRecipe,
-				ExplicitStorageInstructions: result.ExplicitStorageInstructions,
-				Notes:                       result.Notes,
-				Name:                        result.Name,
-				Description:                 result.Description,
-				TaskSteps:                   []*mealplanning.RecipePrepTaskStep{},
-				Optional:                    result.Optional,
+				ArchivedAt:                         database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:                      database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:                                 result.ID,
+				BelongsToRecipe:                    result.BelongsToRecipe,
+				ExplicitStorageInstructions:        result.ExplicitStorageInstructions,
+				Notes:                              result.Notes,
+				Name:                               result.Name,
+				Description:                        result.Description,
+				TaskSteps:                          []*mealplanning.RecipePrepTaskStep{},
+				Optional:                           result.Optional,
 			}
 
 			logger.WithValue("storage_type", result.StorageType).Info("storage type")
@@ -150,19 +150,19 @@ func (q *repository) createRecipePrepTask(ctx context.Context, querier database.
 	}
 
 	x := &mealplanning.RecipePrepTask{
-		CreatedAt:                   q.CurrentTime(),
-		ID:                          input.ID,
-		Name:                        input.Name,
-		Description:                 input.Description,
-		Notes:                       input.Notes,
-		Optional:                    input.Optional,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
-		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		CreatedAt:                          q.CurrentTime(),
+		ID:                                 input.ID,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		Notes:                              input.Notes,
+		Optional:                           input.Optional,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
 		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
-		StorageType:     input.StorageType,
-		BelongsToRecipe: input.BelongsToRecipe,
+		StorageType:                        input.StorageType,
+		BelongsToRecipe:                    input.BelongsToRecipe,
 	}
 
 	for _, recipePrepTaskStep := range input.TaskSteps {
@@ -284,22 +284,22 @@ func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 
 		if currentRecipePrepTask == nil {
 			currentRecipePrepTask = &mealplanning.RecipePrepTask{
-				CreatedAt:     result.CreatedAt,
-				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-				MinStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
-				MaxStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+				CreatedAt:                          result.CreatedAt,
+				ArchivedAt:                         database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:                      database.TimePointerFromNullTime(result.LastUpdatedAt),
+				MinStorageTemperatureInCelsius:     database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+				MaxStorageTemperatureInCelsius:     database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
 				MinTimeBufferBeforeRecipeInSeconds: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
 				MaxTimeBufferBeforeRecipeInSeconds: database.Uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
-				ID:                          result.ID,
-				StorageType:                 string(result.StorageType.StorageContainerType),
-				BelongsToRecipe:             result.BelongsToRecipe,
-				ExplicitStorageInstructions: result.ExplicitStorageInstructions,
-				Notes:                       result.Notes,
-				Name:                        result.Name,
-				Description:                 result.Description,
-				TaskSteps:                   []*mealplanning.RecipePrepTaskStep{},
-				Optional:                    result.Optional,
+				ID:                                 result.ID,
+				StorageType:                        string(result.StorageType.StorageContainerType),
+				BelongsToRecipe:                    result.BelongsToRecipe,
+				ExplicitStorageInstructions:        result.ExplicitStorageInstructions,
+				Notes:                              result.Notes,
+				Name:                               result.Name,
+				Description:                        result.Description,
+				TaskSteps:                          []*mealplanning.RecipePrepTaskStep{},
+				Optional:                           result.Optional,
 			}
 		}
 		currentRecipePrepTask.TaskSteps = append(currentRecipePrepTask.TaskSteps, prepTaskStep)

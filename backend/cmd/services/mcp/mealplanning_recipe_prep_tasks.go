@@ -25,20 +25,22 @@ var recipePrepTaskStepSchema = map[string]any{
 }
 
 var recipePrepTasksSchema = map[string]any{
-	"ID":                              stringField("The ID of the recipe prep task"),
-	"CreatedAt":                       timestampField("When the recipe prep task was created"),
-	"LastUpdatedAt":                   timestampField("When the recipe prep task was last updated"),
-	"ArchivedAt":                      timestampField("When the recipe prep task was soft deleted"),
-	"BelongsToRecipe":                 stringField("The ID of the recipe this prep task belongs to"),
-	"Name":                            stringField("Name of the prep task"),
-	"Description":                     stringField("Description of the prep task"),
-	"Notes":                           stringField("Notes about the prep task"),
-	"StorageType":                     stringField("The storage type for the prep task (e.g., 'covered', 'uncovered', 'on a wire rack')"),
-	"ExplicitStorageInstructions":     stringField("Explicit storage instructions for the prep task"),
-	"StorageTemperatureInCelsius":     optionalFloatRangeSchema(),
-	"TimeBufferBeforeRecipeInSeconds": uint32RangeWithOptionalMaxSchema(),
-	"Optional":                        boolField("Whether this prep task is optional"),
-	"TaskSteps":                       arrayType(schemaObject(recipePrepTaskStepSchema)),
+	"ID":                                 stringField("The ID of the recipe prep task"),
+	"CreatedAt":                          timestampField("When the recipe prep task was created"),
+	"LastUpdatedAt":                      timestampField("When the recipe prep task was last updated"),
+	"ArchivedAt":                         timestampField("When the recipe prep task was soft deleted"),
+	"BelongsToRecipe":                    stringField("The ID of the recipe this prep task belongs to"),
+	"Name":                               stringField("Name of the prep task"),
+	"Description":                        stringField("Description of the prep task"),
+	"Notes":                              stringField("Notes about the prep task"),
+	"StorageType":                        stringField("The storage type for the prep task (e.g., 'covered', 'uncovered', 'on a wire rack')"),
+	"ExplicitStorageInstructions":        stringField("Explicit storage instructions for the prep task"),
+	"MinStorageTemperatureInCelsius":     floatField("Minimum storage temperature in Celsius (optional)"),
+	"MaxStorageTemperatureInCelsius":     floatField("Maximum storage temperature in Celsius (optional)"),
+	"MinTimeBufferBeforeRecipeInSeconds": uintField("Minimum time buffer before recipe in seconds (required)"),
+	"MaxTimeBufferBeforeRecipeInSeconds": uintField("Maximum time buffer before recipe in seconds (optional)"),
+	"Optional":                           boolField("Whether this prep task is optional"),
+	"TaskSteps":                          arrayType(schemaObject(recipePrepTaskStepSchema)),
 }
 
 var getRecipePrepTaskTool = &mcp.Tool{

@@ -4,7 +4,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateRequestInput creates a ValidIngredientMeasurementUnitUpdateRequestInput from a ValidIngredientMeasurementUnit.
@@ -13,10 +12,8 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdate
 		Notes:                  &input.Notes,
 		ValidMeasurementUnitID: &input.MeasurementUnit.ID,
 		ValidIngredientID:      &input.Ingredient.ID,
-		AllowableQuantity: numbers.OpenRangeUpdateRequestInput[float32]{
-			Max: input.AllowableQuantity.Max,
-			Min: &input.AllowableQuantity.Min,
-		},
+		MinAllowableQuantity:   &input.MinAllowableQuantity,
+		MaxAllowableQuantity:   input.MaxAllowableQuantity,
 	}
 
 	return x
@@ -29,7 +26,8 @@ func ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientM
 		Notes:                  input.Notes,
 		ValidMeasurementUnitID: input.ValidMeasurementUnitID,
 		ValidIngredientID:      input.ValidIngredientID,
-		AllowableQuantity:      input.AllowableQuantity,
+		MinAllowableQuantity:   input.MinAllowableQuantity,
+		MaxAllowableQuantity:   input.MaxAllowableQuantity,
 	}
 
 	return x
@@ -41,7 +39,8 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreati
 		Notes:                  validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID: validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:      validIngredientMeasurementUnit.Ingredient.ID,
-		AllowableQuantity:      validIngredientMeasurementUnit.AllowableQuantity,
+		MinAllowableQuantity:   validIngredientMeasurementUnit.MinAllowableQuantity,
+		MaxAllowableQuantity:   validIngredientMeasurementUnit.MaxAllowableQuantity,
 	}
 }
 
@@ -52,6 +51,7 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDataba
 		Notes:                  validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID: validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:      validIngredientMeasurementUnit.Ingredient.ID,
-		AllowableQuantity:      validIngredientMeasurementUnit.AllowableQuantity,
+		MinAllowableQuantity:   validIngredientMeasurementUnit.MinAllowableQuantity,
+		MaxAllowableQuantity:   validIngredientMeasurementUnit.MaxAllowableQuantity,
 	}
 }

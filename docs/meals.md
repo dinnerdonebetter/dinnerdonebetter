@@ -6,12 +6,12 @@ A `Meal` represents a complete dining experience composed of multiple recipes wi
 
 ## Core Fields
 
-### `EstimatedPortions` (Float32RangeWithOptionalMax)
+### `MinEstimatedPortions` / `MaxEstimatedPortions`
 
 Defines the serving size range for this meal:
 
-- `Min` (float32, required): Minimum number of portions the meal serves
-- `Max` (*float32, optional): Maximum number of portions the meal serves
+- `MinEstimatedPortions` (float32, required): Minimum number of portions the meal serves
+- `MaxEstimatedPortions` (*float32, optional): Maximum number of portions the meal serves
 
 This range helps users understand how many people the meal can feed and is used in meal planning calculations.
 

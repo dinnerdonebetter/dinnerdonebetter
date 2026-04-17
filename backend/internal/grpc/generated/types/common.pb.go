@@ -7,11 +7,12 @@
 package types
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -125,422 +126,6 @@ func (x *ResponseDetails) GetTraceId() string {
 	return ""
 }
 
-type OptionalFloat32Range struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *float32               `protobuf:"fixed32,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
-	Min           *float32               `protobuf:"fixed32,2,opt,name=min,proto3,oneof" json:"min,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *OptionalFloat32Range) Reset() {
-	*x = OptionalFloat32Range{}
-	mi := &file_common_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OptionalFloat32Range) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OptionalFloat32Range) ProtoMessage() {}
-
-func (x *OptionalFloat32Range) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use OptionalFloat32Range.ProtoReflect.Descriptor instead.
-func (*OptionalFloat32Range) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *OptionalFloat32Range) GetMax() float32 {
-	if x != nil && x.Max != nil {
-		return *x.Max
-	}
-	return 0
-}
-
-func (x *OptionalFloat32Range) GetMin() float32 {
-	if x != nil && x.Min != nil {
-		return *x.Min
-	}
-	return 0
-}
-
-type OptionalUint32Range struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *uint32                `protobuf:"varint,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
-	Min           *uint32                `protobuf:"varint,2,opt,name=min,proto3,oneof" json:"min,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *OptionalUint32Range) Reset() {
-	*x = OptionalUint32Range{}
-	mi := &file_common_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OptionalUint32Range) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OptionalUint32Range) ProtoMessage() {}
-
-func (x *OptionalUint32Range) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use OptionalUint32Range.ProtoReflect.Descriptor instead.
-func (*OptionalUint32Range) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *OptionalUint32Range) GetMax() uint32 {
-	if x != nil && x.Max != nil {
-		return *x.Max
-	}
-	return 0
-}
-
-func (x *OptionalUint32Range) GetMin() uint32 {
-	if x != nil && x.Min != nil {
-		return *x.Min
-	}
-	return 0
-}
-
-type Float32RangeWithOptionalMax struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *float32               `protobuf:"fixed32,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
-	Min           float32                `protobuf:"fixed32,2,opt,name=min,proto3" json:"min,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Float32RangeWithOptionalMax) Reset() {
-	*x = Float32RangeWithOptionalMax{}
-	mi := &file_common_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Float32RangeWithOptionalMax) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Float32RangeWithOptionalMax) ProtoMessage() {}
-
-func (x *Float32RangeWithOptionalMax) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Float32RangeWithOptionalMax.ProtoReflect.Descriptor instead.
-func (*Float32RangeWithOptionalMax) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *Float32RangeWithOptionalMax) GetMax() float32 {
-	if x != nil && x.Max != nil {
-		return *x.Max
-	}
-	return 0
-}
-
-func (x *Float32RangeWithOptionalMax) GetMin() float32 {
-	if x != nil {
-		return x.Min
-	}
-	return 0
-}
-
-type Float32RangeWithOptionalMaxUpdateRequestInput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Min           *float32               `protobuf:"fixed32,1,opt,name=min,proto3,oneof" json:"min,omitempty"`
-	Max           *float32               `protobuf:"fixed32,2,opt,name=max,proto3,oneof" json:"max,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Float32RangeWithOptionalMaxUpdateRequestInput) Reset() {
-	*x = Float32RangeWithOptionalMaxUpdateRequestInput{}
-	mi := &file_common_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Float32RangeWithOptionalMaxUpdateRequestInput) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Float32RangeWithOptionalMaxUpdateRequestInput) ProtoMessage() {}
-
-func (x *Float32RangeWithOptionalMaxUpdateRequestInput) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Float32RangeWithOptionalMaxUpdateRequestInput.ProtoReflect.Descriptor instead.
-func (*Float32RangeWithOptionalMaxUpdateRequestInput) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *Float32RangeWithOptionalMaxUpdateRequestInput) GetMin() float32 {
-	if x != nil && x.Min != nil {
-		return *x.Min
-	}
-	return 0
-}
-
-func (x *Float32RangeWithOptionalMaxUpdateRequestInput) GetMax() float32 {
-	if x != nil && x.Max != nil {
-		return *x.Max
-	}
-	return 0
-}
-
-type Uint16RangeWithOptionalMax struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *uint32                `protobuf:"varint,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
-	Min           uint32                 `protobuf:"varint,2,opt,name=min,proto3" json:"min,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Uint16RangeWithOptionalMax) Reset() {
-	*x = Uint16RangeWithOptionalMax{}
-	mi := &file_common_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Uint16RangeWithOptionalMax) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Uint16RangeWithOptionalMax) ProtoMessage() {}
-
-func (x *Uint16RangeWithOptionalMax) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Uint16RangeWithOptionalMax.ProtoReflect.Descriptor instead.
-func (*Uint16RangeWithOptionalMax) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *Uint16RangeWithOptionalMax) GetMax() uint32 {
-	if x != nil && x.Max != nil {
-		return *x.Max
-	}
-	return 0
-}
-
-func (x *Uint16RangeWithOptionalMax) GetMin() uint32 {
-	if x != nil {
-		return x.Min
-	}
-	return 0
-}
-
-type Uint16RangeWithOptionalMaxUpdateRequestInput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Min           *uint32                `protobuf:"varint,1,opt,name=min,proto3,oneof" json:"min,omitempty"`
-	Max           *uint32                `protobuf:"varint,2,opt,name=max,proto3,oneof" json:"max,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Uint16RangeWithOptionalMaxUpdateRequestInput) Reset() {
-	*x = Uint16RangeWithOptionalMaxUpdateRequestInput{}
-	mi := &file_common_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Uint16RangeWithOptionalMaxUpdateRequestInput) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Uint16RangeWithOptionalMaxUpdateRequestInput) ProtoMessage() {}
-
-func (x *Uint16RangeWithOptionalMaxUpdateRequestInput) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Uint16RangeWithOptionalMaxUpdateRequestInput.ProtoReflect.Descriptor instead.
-func (*Uint16RangeWithOptionalMaxUpdateRequestInput) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *Uint16RangeWithOptionalMaxUpdateRequestInput) GetMin() uint32 {
-	if x != nil && x.Min != nil {
-		return *x.Min
-	}
-	return 0
-}
-
-func (x *Uint16RangeWithOptionalMaxUpdateRequestInput) GetMax() uint32 {
-	if x != nil && x.Max != nil {
-		return *x.Max
-	}
-	return 0
-}
-
-type Uint32RangeWithOptionalMax struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Max           *uint32                `protobuf:"varint,1,opt,name=max,proto3,oneof" json:"max,omitempty"`
-	Min           uint32                 `protobuf:"varint,2,opt,name=min,proto3" json:"min,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Uint32RangeWithOptionalMax) Reset() {
-	*x = Uint32RangeWithOptionalMax{}
-	mi := &file_common_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Uint32RangeWithOptionalMax) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Uint32RangeWithOptionalMax) ProtoMessage() {}
-
-func (x *Uint32RangeWithOptionalMax) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Uint32RangeWithOptionalMax.ProtoReflect.Descriptor instead.
-func (*Uint32RangeWithOptionalMax) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *Uint32RangeWithOptionalMax) GetMax() uint32 {
-	if x != nil && x.Max != nil {
-		return *x.Max
-	}
-	return 0
-}
-
-func (x *Uint32RangeWithOptionalMax) GetMin() uint32 {
-	if x != nil {
-		return x.Min
-	}
-	return 0
-}
-
-type Uint32RangeWithOptionalMaxUpdateRequestInput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Min           *uint32                `protobuf:"varint,1,opt,name=min,proto3,oneof" json:"min,omitempty"`
-	Max           *uint32                `protobuf:"varint,2,opt,name=max,proto3,oneof" json:"max,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Uint32RangeWithOptionalMaxUpdateRequestInput) Reset() {
-	*x = Uint32RangeWithOptionalMaxUpdateRequestInput{}
-	mi := &file_common_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Uint32RangeWithOptionalMaxUpdateRequestInput) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Uint32RangeWithOptionalMaxUpdateRequestInput) ProtoMessage() {}
-
-func (x *Uint32RangeWithOptionalMaxUpdateRequestInput) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Uint32RangeWithOptionalMaxUpdateRequestInput.ProtoReflect.Descriptor instead.
-func (*Uint32RangeWithOptionalMaxUpdateRequestInput) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *Uint32RangeWithOptionalMaxUpdateRequestInput) GetMin() uint32 {
-	if x != nil && x.Min != nil {
-		return *x.Min
-	}
-	return 0
-}
-
-func (x *Uint32RangeWithOptionalMaxUpdateRequestInput) GetMax() uint32 {
-	if x != nil && x.Max != nil {
-		return *x.Max
-	}
-	return 0
-}
-
 var File_common_proto protoreflect.FileDescriptor
 
 var file_common_proto_rawDesc = string([]byte{
@@ -554,59 +139,12 @@ var file_common_proto_rawDesc = string([]byte{
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x41, 0x63, 0x63,
 	0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x74, 0x72, 0x61, 0x63, 0x65, 0x5f,
 	0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x74, 0x72, 0x61, 0x63, 0x65, 0x49,
-	0x64, 0x22, 0x54, 0x0a, 0x14, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x61, 0x6c, 0x46, 0x6c, 0x6f,
-	0x61, 0x74, 0x33, 0x32, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x15, 0x0a, 0x03, 0x6d, 0x61, 0x78,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x48, 0x00, 0x52, 0x03, 0x6d, 0x61, 0x78, 0x88, 0x01, 0x01,
-	0x12, 0x15, 0x0a, 0x03, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x48, 0x01, 0x52,
-	0x03, 0x6d, 0x69, 0x6e, 0x88, 0x01, 0x01, 0x42, 0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x61, 0x78, 0x42,
-	0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x69, 0x6e, 0x22, 0x53, 0x0a, 0x13, 0x4f, 0x70, 0x74, 0x69, 0x6f,
-	0x6e, 0x61, 0x6c, 0x55, 0x69, 0x6e, 0x74, 0x33, 0x32, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x15,
-	0x0a, 0x03, 0x6d, 0x61, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x48, 0x00, 0x52, 0x03, 0x6d,
-	0x61, 0x78, 0x88, 0x01, 0x01, 0x12, 0x15, 0x0a, 0x03, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x0d, 0x48, 0x01, 0x52, 0x03, 0x6d, 0x69, 0x6e, 0x88, 0x01, 0x01, 0x42, 0x06, 0x0a, 0x04,
-	0x5f, 0x6d, 0x61, 0x78, 0x42, 0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x69, 0x6e, 0x22, 0x4e, 0x0a, 0x1b,
-	0x46, 0x6c, 0x6f, 0x61, 0x74, 0x33, 0x32, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x57, 0x69, 0x74, 0x68,
-	0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x61, 0x6c, 0x4d, 0x61, 0x78, 0x12, 0x15, 0x0a, 0x03, 0x6d,
-	0x61, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x48, 0x00, 0x52, 0x03, 0x6d, 0x61, 0x78, 0x88,
-	0x01, 0x01, 0x12, 0x10, 0x0a, 0x03, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x52,
-	0x03, 0x6d, 0x69, 0x6e, 0x42, 0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x61, 0x78, 0x22, 0x6d, 0x0a, 0x2d,
-	0x46, 0x6c, 0x6f, 0x61, 0x74, 0x33, 0x32, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x57, 0x69, 0x74, 0x68,
-	0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x61, 0x6c, 0x4d, 0x61, 0x78, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x15, 0x0a,
-	0x03, 0x6d, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x48, 0x00, 0x52, 0x03, 0x6d, 0x69,
-	0x6e, 0x88, 0x01, 0x01, 0x12, 0x15, 0x0a, 0x03, 0x6d, 0x61, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x02, 0x48, 0x01, 0x52, 0x03, 0x6d, 0x61, 0x78, 0x88, 0x01, 0x01, 0x42, 0x06, 0x0a, 0x04, 0x5f,
-	0x6d, 0x69, 0x6e, 0x42, 0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x61, 0x78, 0x22, 0x4d, 0x0a, 0x1a, 0x55,
-	0x69, 0x6e, 0x74, 0x31, 0x36, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x57, 0x69, 0x74, 0x68, 0x4f, 0x70,
-	0x74, 0x69, 0x6f, 0x6e, 0x61, 0x6c, 0x4d, 0x61, 0x78, 0x12, 0x15, 0x0a, 0x03, 0x6d, 0x61, 0x78,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x48, 0x00, 0x52, 0x03, 0x6d, 0x61, 0x78, 0x88, 0x01, 0x01,
-	0x12, 0x10, 0x0a, 0x03, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x03, 0x6d,
-	0x69, 0x6e, 0x42, 0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x61, 0x78, 0x22, 0x6c, 0x0a, 0x2c, 0x55, 0x69,
-	0x6e, 0x74, 0x31, 0x36, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x57, 0x69, 0x74, 0x68, 0x4f, 0x70, 0x74,
-	0x69, 0x6f, 0x6e, 0x61, 0x6c, 0x4d, 0x61, 0x78, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x15, 0x0a, 0x03, 0x6d, 0x69,
-	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x48, 0x00, 0x52, 0x03, 0x6d, 0x69, 0x6e, 0x88, 0x01,
-	0x01, 0x12, 0x15, 0x0a, 0x03, 0x6d, 0x61, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x48, 0x01,
-	0x52, 0x03, 0x6d, 0x61, 0x78, 0x88, 0x01, 0x01, 0x42, 0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x69, 0x6e,
-	0x42, 0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x61, 0x78, 0x22, 0x4d, 0x0a, 0x1a, 0x55, 0x69, 0x6e, 0x74,
-	0x33, 0x32, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x57, 0x69, 0x74, 0x68, 0x4f, 0x70, 0x74, 0x69, 0x6f,
-	0x6e, 0x61, 0x6c, 0x4d, 0x61, 0x78, 0x12, 0x15, 0x0a, 0x03, 0x6d, 0x61, 0x78, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0d, 0x48, 0x00, 0x52, 0x03, 0x6d, 0x61, 0x78, 0x88, 0x01, 0x01, 0x12, 0x10, 0x0a,
-	0x03, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x03, 0x6d, 0x69, 0x6e, 0x42,
-	0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x61, 0x78, 0x22, 0x6c, 0x0a, 0x2c, 0x55, 0x69, 0x6e, 0x74, 0x33,
-	0x32, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x57, 0x69, 0x74, 0x68, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e,
-	0x61, 0x6c, 0x4d, 0x61, 0x78, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x15, 0x0a, 0x03, 0x6d, 0x69, 0x6e, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0d, 0x48, 0x00, 0x52, 0x03, 0x6d, 0x69, 0x6e, 0x88, 0x01, 0x01, 0x12, 0x15,
-	0x0a, 0x03, 0x6d, 0x61, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x48, 0x01, 0x52, 0x03, 0x6d,
-	0x61, 0x78, 0x88, 0x01, 0x01, 0x42, 0x06, 0x0a, 0x04, 0x5f, 0x6d, 0x69, 0x6e, 0x42, 0x06, 0x0a,
-	0x04, 0x5f, 0x6d, 0x61, 0x78, 0x42, 0x54, 0x5a, 0x52, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65,
-	0x74, 0x74, 0x65, 0x72, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62,
-	0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e,
-	0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65,
-	0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x64, 0x42, 0x54, 0x5a, 0x52, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72,
+	0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65,
+	0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e,
+	0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65,
+	0x64, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -621,18 +159,10 @@ func file_common_proto_rawDescGZIP() []byte {
 	return file_common_proto_rawDescData
 }
 
-var file_common_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_common_proto_goTypes = []any{
-	(*NamedID)(nil),                                       // 0: common.NamedID
-	(*ResponseDetails)(nil),                               // 1: common.ResponseDetails
-	(*OptionalFloat32Range)(nil),                          // 2: common.OptionalFloat32Range
-	(*OptionalUint32Range)(nil),                           // 3: common.OptionalUint32Range
-	(*Float32RangeWithOptionalMax)(nil),                   // 4: common.Float32RangeWithOptionalMax
-	(*Float32RangeWithOptionalMaxUpdateRequestInput)(nil), // 5: common.Float32RangeWithOptionalMaxUpdateRequestInput
-	(*Uint16RangeWithOptionalMax)(nil),                    // 6: common.Uint16RangeWithOptionalMax
-	(*Uint16RangeWithOptionalMaxUpdateRequestInput)(nil),  // 7: common.Uint16RangeWithOptionalMaxUpdateRequestInput
-	(*Uint32RangeWithOptionalMax)(nil),                    // 8: common.Uint32RangeWithOptionalMax
-	(*Uint32RangeWithOptionalMaxUpdateRequestInput)(nil),  // 9: common.Uint32RangeWithOptionalMaxUpdateRequestInput
+	(*NamedID)(nil),         // 0: common.NamedID
+	(*ResponseDetails)(nil), // 1: common.ResponseDetails
 }
 var file_common_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -647,21 +177,13 @@ func file_common_proto_init() {
 	if File_common_proto != nil {
 		return
 	}
-	file_common_proto_msgTypes[2].OneofWrappers = []any{}
-	file_common_proto_msgTypes[3].OneofWrappers = []any{}
-	file_common_proto_msgTypes[4].OneofWrappers = []any{}
-	file_common_proto_msgTypes[5].OneofWrappers = []any{}
-	file_common_proto_msgTypes[6].OneofWrappers = []any{}
-	file_common_proto_msgTypes[7].OneofWrappers = []any{}
-	file_common_proto_msgTypes[8].OneofWrappers = []any{}
-	file_common_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_rawDesc), len(file_common_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

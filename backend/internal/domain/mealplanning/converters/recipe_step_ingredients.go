@@ -4,7 +4,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
@@ -20,22 +19,20 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 		ValidIngredientPreparationID:     input.ValidIngredientPreparationID,
 		ValidIngredientMeasurementUnitID: input.ValidIngredientMeasurementUnitID,
 		Name:                             input.Name,
-		Quantity: numbers.MinRange[float32]{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
-		},
-		QuantityNotes:                   input.QuantityNotes,
-		IngredientNotes:                 input.IngredientNotes,
-		Optional:                        input.Optional,
-		Index:                           index,
-		OptionIndex:                     input.OptionIndex,
-		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
-		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
-		RecipeStepProductRecipeID:       input.RecipeStepProductRecipeID,
-		VesselIndex:                     input.VesselIndex,
-		ToTaste:                         input.ToTaste,
-		ProductPercentageToUse:          input.ProductPercentageToUse,
-		ScaleFactor:                     scaleFactorOrDefault(input.ScaleFactor),
+		MinQuantity:                      input.MinQuantity,
+		MaxQuantity:                      input.MaxQuantity,
+		QuantityNotes:                    input.QuantityNotes,
+		IngredientNotes:                  input.IngredientNotes,
+		Optional:                         input.Optional,
+		Index:                            index,
+		OptionIndex:                      input.OptionIndex,
+		ProductOfRecipeStepIndex:         input.ProductOfRecipeStepIndex,
+		ProductOfRecipeStepProductIndex:  input.ProductOfRecipeStepProductIndex,
+		RecipeStepProductRecipeID:        input.RecipeStepProductRecipeID,
+		VesselIndex:                      input.VesselIndex,
+		ToTaste:                          input.ToTaste,
+		ProductPercentageToUse:           input.ProductPercentageToUse,
+		ScaleFactor:                      scaleFactorOrDefault(input.ScaleFactor),
 	}
 
 	return x
@@ -44,17 +41,15 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 // ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput creates a RecipeStepIngredientUpdateRequestInput from a RecipeStepIngredient.
 func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientUpdateRequestInput {
 	x := &mealplanning.RecipeStepIngredientUpdateRequestInput{
-		IngredientID:        &input.Ingredient.ID,
-		RecipeStepProductID: input.RecipeStepProductID,
-		Name:                &input.Name,
-		MeasurementUnitID:   &input.MeasurementUnit.ID,
-		QuantityNotes:       &input.QuantityNotes,
-		IngredientNotes:     &input.IngredientNotes,
-		BelongsToRecipeStep: &input.BelongsToRecipeStep,
-		Quantity: numbers.OpenRangeUpdateRequestInput[float32]{
-			Max: input.Quantity.Max,
-			Min: &input.Quantity.Min,
-		},
+		IngredientID:           &input.Ingredient.ID,
+		RecipeStepProductID:    input.RecipeStepProductID,
+		Name:                   &input.Name,
+		MeasurementUnitID:      &input.MeasurementUnit.ID,
+		QuantityNotes:          &input.QuantityNotes,
+		IngredientNotes:        &input.IngredientNotes,
+		BelongsToRecipeStep:    &input.BelongsToRecipeStep,
+		MinQuantity:            &input.MinQuantity,
+		MaxQuantity:            input.MaxQuantity,
 		Optional:               &input.Optional,
 		Index:                  &input.Index,
 		OptionIndex:            &input.OptionIndex,
@@ -76,12 +71,10 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input
 		indexPtr = new(input.Index)
 	}
 	return &mealplanning.RecipeStepIngredientCreationRequestInput{
-		Name:     input.Name,
-		Optional: input.Optional,
-		Quantity: numbers.MinRange[float32]{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
-		},
+		Name:                   input.Name,
+		Optional:               input.Optional,
+		MinQuantity:            input.MinQuantity,
+		MaxQuantity:            input.MaxQuantity,
 		QuantityNotes:          input.QuantityNotes,
 		IngredientNotes:        input.IngredientNotes,
 		Index:                  indexPtr,
@@ -96,15 +89,13 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input
 // ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput builds a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredient.
 func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientDatabaseCreationInput {
 	return &mealplanning.RecipeStepIngredientDatabaseCreationInput{
-		ID:                input.ID,
-		Name:              input.Name,
-		Optional:          input.Optional,
-		IngredientID:      &input.Ingredient.ID,
-		MeasurementUnitID: input.MeasurementUnit.ID,
-		Quantity: numbers.MinRange[float32]{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
-		},
+		ID:                     input.ID,
+		Name:                   input.Name,
+		Optional:               input.Optional,
+		IngredientID:           &input.Ingredient.ID,
+		MeasurementUnitID:      input.MeasurementUnit.ID,
+		MinQuantity:            input.MinQuantity,
+		MaxQuantity:            input.MaxQuantity,
 		QuantityNotes:          input.QuantityNotes,
 		IngredientNotes:        input.IngredientNotes,
 		BelongsToRecipeStep:    input.BelongsToRecipeStep,

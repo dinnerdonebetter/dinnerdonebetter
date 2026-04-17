@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 // CornbreadRecipe creates the Cornbread recipe.
@@ -130,9 +128,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
 				Name:                     "oven",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -154,18 +150,14 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID: &greaseButterVIP.ID,
 				Name:                         "butter for greasing",
 				QuantityNotes:                "as needed",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &greaseBakingPanVPV.ID,
 				Name:                     `9" square or round pan`,
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -187,26 +179,22 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				Name:                             "unsalted butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                      4,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &meltSmallSaucepanVPV.ID,
 				Name:                     "small saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "melted butter",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &tablespoonMeasurement.ID,
+				Name:                   "melted butter",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &tablespoonMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
@@ -223,26 +211,22 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &restButterVIP.ID,
 				Name:                            "melted butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                     4,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &restSmallBowlVPV.ID,
 				Name:                     "small bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "melted and cooled butter",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &tablespoonMeasurement.ID,
+				Name:                   "melted and cooled butter",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &tablespoonMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
@@ -259,26 +243,22 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientPreparationID:     &heatMilkVIP.ID,
 				ValidIngredientMeasurementUnitID: &milkCupVIMU.ID,
 				Name:                             "milk",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1.25,
-				},
+				MinQuantity:                      1.25,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &heatSmallSaucepanVPV.ID,
 				Name:                     "small saucepan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "lukewarm milk",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "lukewarm milk",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1.25)),
 			},
 		},
@@ -295,77 +275,60 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientMeasurementUnitID: &flourCupVIMU.ID,
 				Name:                             "all-purpose flour",
 				QuantityNotes:                    "210g",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1.75,
-				},
+				MinQuantity:                      1.75,
 			},
 			{
 				ValidIngredientPreparationID:     &mixCornmealVIP.ID,
 				ValidIngredientMeasurementUnitID: &cornmealCupVIMU.ID,
 				Name:                             "yellow cornmeal",
 				QuantityNotes:                    "156g",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 			{
 				ValidIngredientPreparationID:     &mixSugarVIP.ID,
 				ValidIngredientMeasurementUnitID: &sugarCupVIMU.ID,
 				Name:                             "granulated sugar",
 				QuantityNotes:                    "50g",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                      0.25,
 			},
 			{
 				ValidIngredientPreparationID:     &mixBakingPowderVIP.ID,
 				ValidIngredientMeasurementUnitID: &bakingPowderTeaspoonVIMU.ID,
 				Name:                             "baking powder",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 			{
 				ValidIngredientPreparationID:     &mixBakingSodaVIP.ID,
 				ValidIngredientMeasurementUnitID: &bakingSodaTeaspoonVIMU.ID,
 				Name:                             "baking soda",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                      0.25,
 			},
 			{
 				ValidIngredientPreparationID:     &mixSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "table salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4.5, // about 3/4 tsp
-				},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &mixWhiskVPI.ID,
 				Name:                         "whisk",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &mixMediumBowlVPV.ID,
 				Name:                     "medium bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "dry ingredient mixture",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "dry ingredient mixture",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -387,60 +350,47 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &mixMilkVIP.ID,
 				Name:                            "lukewarm milk",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1.25,
-				},
+				MinQuantity:                     1.25,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &mixButterVIP.ID,
 				Name:                            "melted and cooled butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                     4,
 			},
 			{
 				ValidIngredientPreparationID:     &mixVegetableOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilGramVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 56, // 1/4 cup
-				},
 			},
 			{
 				ValidIngredientPreparationID:     &mixEggsVIP.ID,
 				ValidIngredientMeasurementUnitID: &eggsUnitVIMU.ID,
 				Name:                             "large egg",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &mixWhiskVPI.ID,
 				Name:                         "whisk",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &mixMediumBowlVPV.ID,
 				Name:                     "bowl or large measuring cup",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "wet ingredient mixture",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "wet ingredient mixture",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -461,17 +411,13 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "wet ingredient mixture",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dry ingredient mixture",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -480,17 +426,15 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &combineMediumBowlVPV.ID,
 				Name:                            "bowl with dry ingredients",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "combined wet and dry ingredients",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "combined wet and dry ingredients",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -511,18 +455,14 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "combined wet and dry ingredients",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &mixSpoonVPI.ID,
 				Name:                         "spoon or spatula",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -531,9 +471,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &mixMediumBowlVPV.ID,
 				Name:                            "bowl with combined ingredients",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -546,10 +484,10 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "cornbread batter",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "cornbread batter",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -565,9 +503,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cornbread batter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -576,17 +512,15 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &pourBakingPanVPV.ID,
 				Name:                            "greased baking pan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "unbaked cornbread in pan",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "unbaked cornbread in pan",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -609,9 +543,7 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "unbaked cornbread in pan",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -620,18 +552,14 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &bakeOvenVPV.ID,
 				Name:                            "preheated oven",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &bakeBakingPanVPV.ID,
 				Name:                            "pan with cornbread batter",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -644,10 +572,10 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "baked cornbread",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "baked cornbread",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -669,40 +597,36 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "baked cornbread",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &coolWireRackVPV.ID,
 				Name:                     "wire rack",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "Cornbread",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "Cornbread",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(12)),
 			},
 		},
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Mix dry ingredients",
-		Description:                 "Whisk together the flour, cornmeal, sugar, baking powder, baking soda, and salt. The dry mix can be prepared well ahead of time.",
-		Notes:                       "Having the dry ingredients pre-mixed saves time and ensures even distribution of leavening agents.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the dry ingredient mixture in an airtight container at room temperature for up to 7 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MinStorageTemperatureInCelsius: new(float32(18)),
-		MaxStorageTemperatureInCelsius: new(float32(25)),
+		Name:                               "Mix dry ingredients",
+		Description:                        "Whisk together the flour, cornmeal, sugar, baking powder, baking soda, and salt. The dry mix can be prepared well ahead of time.",
+		Notes:                              "Having the dry ingredients pre-mixed saves time and ensures even distribution of leavening agents.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the dry ingredient mixture in an airtight container at room temperature for up to 7 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MinStorageTemperatureInCelsius:     new(float32(18)),
+		MaxStorageTemperatureInCelsius:     new(float32(25)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(604800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -712,17 +636,15 @@ func CornbreadRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Cornbread",
-			Slug:                "cornbread",
-			Source:              "https://www.kingarthurbaking.com/recipes/cornbread-recipe",
-			Description:         "This cornbread is a rare compromise between Southern and Northern cornbreads: it's tender and moist, with pleasing corn flavor and just the right amount of sweetness.",
-			YieldsComponentType: mealplanning.MealComponentTypesSide,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 12,
-			},
-			PortionName:       "piece",
-			PluralPortionName: "pieces",
-			EligibleForMeals:  true,
+			Name:                 "Cornbread",
+			Slug:                 "cornbread",
+			Source:               "https://www.kingarthurbaking.com/recipes/cornbread-recipe",
+			Description:          "This cornbread is a rare compromise between Southern and Northern cornbreads: it's tender and moist, with pleasing corn flavor and just the right amount of sweetness.",
+			YieldsComponentType:  mealplanning.MealComponentTypesSide,
+			MinEstimatedPortions: 12,
+			PortionName:          "piece",
+			PluralPortionName:    "pieces",
+			EligibleForMeals:     true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2a, step2b, step2c, step2, step3, step4, step5, step6, step7, step8,
 			},

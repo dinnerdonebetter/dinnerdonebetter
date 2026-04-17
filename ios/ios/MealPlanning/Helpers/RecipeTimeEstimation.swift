@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftProtobuf
 
 // MARK: - RecipeTimeEstimate
 
@@ -35,17 +34,18 @@ enum RecipeTimeEstimation {
     var totalMax: UInt32 = 0
 
     for step in steps {
-      let range = step.estimatedTimeInSeconds
+      let hasMin = step.hasMinEstimatedTimeInSeconds
+      let hasMax = step.hasMaxEstimatedTimeInSeconds
       let (stepMin, stepMax): (UInt32, UInt32)
-      if range.hasMin && range.hasMax {
-        stepMin = range.min
-        stepMax = range.max
-      } else if range.hasMin {
-        stepMin = range.min
-        stepMax = range.min
-      } else if range.hasMax {
-        stepMin = range.max
-        stepMax = range.max
+      if hasMin && hasMax {
+        stepMin = step.minEstimatedTimeInSeconds
+        stepMax = step.maxEstimatedTimeInSeconds
+      } else if hasMin {
+        stepMin = step.minEstimatedTimeInSeconds
+        stepMax = step.minEstimatedTimeInSeconds
+      } else if hasMax {
+        stepMin = step.maxEstimatedTimeInSeconds
+        stepMax = step.maxEstimatedTimeInSeconds
       } else {
         stepMin = defaultMinSeconds
         stepMax = defaultMaxSeconds
@@ -99,19 +99,19 @@ enum RecipeTimeEstimation {
 
   /// Formats a prep task's time buffer (how far in advance it can be done) for display.
   /// Returns nil when the range has no meaningful values.
-  static func formatTimeBufferInAdvance(_ range: Common_Uint32RangeWithOptionalMax) -> String? {
-    guard range.min > 0 || range.hasMax else { return nil }
+  static func formatTimeBufferInAdvance(min: UInt32, max: UInt32?) -> String? {
+    guard min > 0 || max != nil else { return nil }
     let maxCapSeconds: UInt32 = 24 * 3600
-    if range.min > 0 && range.hasMax {
-      let minStr = formatDuration(seconds: range.min)
-      let maxStr = range.max > maxCapSeconds ? "24+ hr" : formatDuration(seconds: range.max)
+    if min > 0, let max = max {
+      let minStr = formatDuration(seconds: min)
+      let maxStr = max > maxCapSeconds ? "24+ hr" : formatDuration(seconds: max)
       return "\(minStr) – \(maxStr) in advance"
     }
-    if range.hasMax {
-      let maxStr = range.max > maxCapSeconds ? "24+ hr" : formatDuration(seconds: range.max)
+    if let max = max {
+      let maxStr = max > maxCapSeconds ? "24+ hr" : formatDuration(seconds: max)
       return "Up to \(maxStr) in advance"
     }
-    return "At least \(formatDuration(seconds: range.min)) in advance"
+    return "At least \(formatDuration(seconds: min)) in advance"
   }
 
   /// Formats elapsed and total time for timer display (e.g. "2:30 / 5:00").
@@ -148,16 +148,16 @@ enum RecipeTimeEstimation {
 
   /// Formats a step's optional time range for display.
   /// Returns nil when the step has no time estimate (neither min nor max set).
-  static func formatStepTime(_ range: Common_OptionalUint32Range) -> String? {
-    if range.hasMin && range.hasMax {
-      return format(minSeconds: range.min, maxSeconds: range.max)
+  static func formatStepTime(min: UInt32?, max: UInt32?) -> String? {
+    if let min = min, let max = max {
+      return format(minSeconds: min, maxSeconds: max)
     }
-    if range.hasMin {
-      return formatDuration(seconds: range.min)
+    if let min = min {
+      return formatDuration(seconds: min)
     }
-    if range.hasMax {
+    if let max = max {
       let maxCapSeconds: UInt32 = 24 * 3600
-      return range.max > maxCapSeconds ? "24+ hr" : formatDuration(seconds: range.max)
+      return max > maxCapSeconds ? "24+ hr" : formatDuration(seconds: max)
     }
     return nil
   }

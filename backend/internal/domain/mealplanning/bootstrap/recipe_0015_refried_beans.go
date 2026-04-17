@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 // RefriedBeansRecipe creates the Perfect Frijoles Refritos (Mexican Refried Beans) recipe.
@@ -121,35 +119,29 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ValidIngredientPreparationID:     &halveWhiteOnionVIP.ID,
 				ValidIngredientMeasurementUnitID: &whiteOnionUnitVIMU.ID,
 				Name:                             "medium white onion",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &halveChefsKnifeVPI.ID,
 				Name:                         "chef's knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &halveCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "halved onion (2 halves)",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "halved onion (2 halves)",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
@@ -167,9 +159,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ValidIngredientMeasurementUnitID: &pintoBeansPoundVIMU.ID,
 				Name:                             "dried pinto beans",
 				QuantityNotes:                    "1/2 pound (227 g)",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.5,
-				},
+				MinQuantity:                      0.5,
 			},
 			{
 
@@ -177,9 +167,6 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
 				Name:                             "cold water",
 				QuantityNotes:                    "Enough to cover beans by at least 2 inches",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4, // Approximate cups
-				},
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -187,17 +174,15 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ValidPreparationVesselID: &coverLargePotVPV.ID,
 				Name:                     "large pot",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:  "beans covered with water",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 0,
+				Name:                   "beans covered with water",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -215,9 +200,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				Name:                             "medium cloves garlic",
 				QuantityNotes:                    "2 medium cloves",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
@@ -225,18 +208,16 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ValidPreparationInstrumentID: &peelBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "peeled garlic cloves",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cloveMeasurement.ID,
+				Name:                   "peeled garlic cloves",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cloveMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
@@ -254,27 +235,21 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ValidIngredientMeasurementUnitID: &epazoteSprigVIMU.ID,
 				Name:                             "fresh epazote",
 				QuantityNotes:                    "2 sprigs",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 			{
 
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "onion half (left whole)",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.5,
-				},
+				MinQuantity:                     0.5,
 			},
 			{
 
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "peeled garlic cloves",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                     2,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -283,17 +258,15 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "large pot with beans covered with water",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:  "beans with aromatics in pot",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 0,
+				Name:                   "beans with aromatics in pot",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -311,17 +284,15 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "beans with aromatics in pot",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:  "boiling beans with aromatics",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 0,
+				Name:                   "boiling beans with aromatics",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -338,24 +309,22 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "boiling beans with aromatics",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:  "beans ready to simmer",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 0,
+				Name:                   "beans ready to simmer",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
-				Name:              "beans ready to simmer",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             1,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "beans ready to simmer",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  1,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 		},
@@ -373,9 +342,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "beans ready to simmer",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-				},
+				MinQuantity:                     3,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -384,25 +351,23 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "beans ready to simmer",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "very tender cooked beans",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "very tender cooked beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 			{
 
-				Name:  "pot with cooked beans and cooking liquid",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "pot with cooked beans and cooking liquid",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -427,18 +392,14 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "very tender cooked beans",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-				},
+				MinQuantity:                     3,
 			},
 			{
 
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				Name:                             "Kosher salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -447,18 +408,16 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot with cooked beans and cooking liquid",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "seasoned cooked beans",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "seasoned cooked beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 		},
@@ -475,9 +434,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned cooked beans",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-				},
+				MinQuantity:                     3,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -486,34 +443,30 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot with cooked beans and cooking liquid",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 
 				ValidPreparationVesselID: &drainLargeBowlVPV.ID,
 				Name:                     "large bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "drained cooked beans",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "drained cooked beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 			{
 
-				Name:              "reserved bean-cooking liquid",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             1,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "reserved bean-cooking liquid",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  1,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -531,9 +484,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "drained cooked beans",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-				},
+				MinQuantity:                     3,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -541,18 +492,16 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ValidPreparationVesselID: &measureLargeBowlVPV.ID,
 				Name:                     "large bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "3 cups of cooked beans",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "3 cups of cooked beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 		},
@@ -569,27 +518,21 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ValidIngredientPreparationID:     &discardEpazoteVIP.ID,
 				ValidIngredientMeasurementUnitID: &epazoteSprigVIMU.ID,
 				Name:                             "herb sprigs",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 			{
 
 				ValidIngredientPreparationID:     &discardWhiteOnionVIP.ID,
 				ValidIngredientMeasurementUnitID: &whiteOnionUnitVIMU.ID,
 				Name:                             "whole onion half",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.5,
-				},
+				MinQuantity:                      0.5,
 			},
 			{
 
 				ValidIngredientPreparationID:     &discardGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				Name:                             "garlic cloves",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -598,16 +541,14 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "pot with cooked beans and cooking liquid",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:  "pot with cooked beans and herbs removed",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 0,
+				Name:                   "pot with cooked beans and herbs removed",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -624,9 +565,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "onion half",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.5,
-				},
+				MinQuantity:                     0.5,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
@@ -634,9 +573,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ValidPreparationInstrumentID: &minceChefsKnifeVPI.ID,
 				Name:                         "chef's knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -644,18 +581,16 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ValidPreparationVesselID: &minceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "minced white onion",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "minced white onion",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(0.5)),
 			},
 		},
@@ -673,9 +608,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ValidIngredientMeasurementUnitID: &lardTablespoonVIMU.ID,
 				Name:                             "lard",
 				QuantityNotes:                    "6 tablespoons (77 g)",
-				Quantity: numbers.MinRange[float32]{
-					Min: 6,
-				},
+				MinQuantity:                      6,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -683,17 +616,15 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ValidPreparationVesselID: &heatLargeSkilletVPV.ID,
 				Name:                     "large skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:  "heated fat in skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 0,
+				Name:                   "heated fat in skillet",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  0,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -719,9 +650,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "minced white onion",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.5,
-				},
+				MinQuantity:                     0.5,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -730,18 +659,16 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated fat in skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "cooked minced onion",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "cooked minced onion",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(0.5)),
 			},
 		},
@@ -766,18 +693,14 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "3 cups of cooked beans",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-				},
+				MinQuantity:                     3,
 			},
 			{
 
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cooked minced onion",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.5,
-				},
+				MinQuantity:                     0.5,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -786,24 +709,22 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated fat in skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "beans and onion in skillet",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "beans and onion in skillet",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 			{
-				Name:  "skillet with beans and onion",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "skillet with beans and onion",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -820,9 +741,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(14)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "beans and onion in skillet",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-				},
+				MinQuantity:                     3,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -830,23 +749,21 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated fat in skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "beans and onion in skillet",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "beans and onion in skillet",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 			{
-				Name:  "skillet with beans and onion",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "skillet with beans and onion",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -863,9 +780,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "reserved bean-cooking liquid",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                     0.25,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -874,24 +789,22 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(15)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with beans and onion",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "beans with liquid in skillet",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "beans with liquid in skillet",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 			{
-				Name:  "skillet with beans and liquid",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "skillet with beans and liquid",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -908,9 +821,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(16)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "beans with liquid in skillet",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-				},
+				MinQuantity:                     3,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
@@ -918,9 +829,7 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 				ValidPreparationInstrumentID: &smashPotatoMasherVPI.ID,
 				Name:                         "potato masher",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -929,24 +838,22 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(16)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with beans and liquid",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "mashed beans",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "mashed beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(3)),
 			},
 			{
-				Name:  "skillet with mashed beans",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "skillet with mashed beans",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -963,18 +870,14 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(17)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "mashed beans",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-				},
+				MinQuantity:                     3,
 			},
 			{
 
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "reserved bean-cooking liquid",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                     0.25,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -983,24 +886,22 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(17)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with mashed beans",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "refried beans at desired consistency",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "refried beans at desired consistency",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 			{
-				Name:  "skillet with refried beans",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "skillet with refried beans",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -1025,18 +926,14 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(18)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "refried beans at desired consistency",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                     4,
 			},
 			{
 
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTeaspoonVIMU.ID,
 				Name:                             "Kosher salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.5,
-				},
+				MinQuantity:                      0.5,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -1045,31 +942,29 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 				ProductOfRecipeStepIndex:        new(uint64(18)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet with refried beans at desired consistency",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
 
-				Name:              "refried beans",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "refried beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Cook dried pinto beans",
-		Description:                 "Halve onion, cover beans with water, peel garlic, add aromatics, bring to a boil, simmer until very tender (1-2 hours), season with salt, drain reserving liquid, and discard aromatics. Cooked beans keep up to 5 days refrigerated.",
-		Notes:                       "Reserve the bean-cooking liquid separately; you will need it for the refrying stage.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the drained cooked beans and reserved bean-cooking liquid in separate airtight containers in the refrigerator for up to 5 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Cook dried pinto beans",
+		Description:                        "Halve onion, cover beans with water, peel garlic, add aromatics, bring to a boil, simmer until very tender (1-2 hours), season with salt, drain reserving liquid, and discard aromatics. Cooked beans keep up to 5 days refrigerated.",
+		Notes:                              "Reserve the bean-cooking liquid separately; you will need it for the refrying stage.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the drained cooked beans and reserved bean-cooking liquid in separate airtight containers in the refrigerator for up to 5 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(432000)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -1088,13 +983,13 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 	}
 
 	prepTask2 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Mince onion",
-		Description:                 "Mince the remaining onion half for the refrying stage. Minced onion keeps 3-5 days in the fridge.",
-		Notes:                       "This is the second half of the onion used in the bean cooking stage.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the minced onion in an airtight container in the refrigerator for up to 3 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Mince onion",
+		Description:                        "Mince the remaining onion half for the refrying stage. Minced onion keeps 3-5 days in the fridge.",
+		Notes:                              "This is the second half of the onion used in the bean cooking stage.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the minced onion in an airtight container in the refrigerator for up to 3 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -1104,17 +999,15 @@ func RefriedBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreationReque
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Perfect Frijoles Refritos (Mexican Refried Beans)",
-			Slug:                "refried-beans",
-			Source:              "https://www.seriouseats.com/perfect-refried-beans",
-			Description:         "Use this master recipe to make perfect refried beans in any style: chunky or smooth; with black beans or pintos; and using your choice of cooking fat. By offering choices, including bean type, fat type, and mashing technique, this recipe makes it possible to get exactly the style of refried beans you want.",
-			YieldsComponentType: mealplanning.MealComponentTypesSide,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
-			PortionName:       "cup",
-			PluralPortionName: "cups",
-			EligibleForMeals:  true,
+			Name:                 "Perfect Frijoles Refritos (Mexican Refried Beans)",
+			Slug:                 "refried-beans",
+			Source:               "https://www.seriouseats.com/perfect-refried-beans",
+			Description:          "Use this master recipe to make perfect refried beans in any style: chunky or smooth; with black beans or pintos; and using your choice of cooking fat. By offering choices, including bean type, fat type, and mashing technique, this recipe makes it possible to get exactly the style of refried beans you want.",
+			YieldsComponentType:  mealplanning.MealComponentTypesSide,
+			MinEstimatedPortions: 4,
+			PortionName:          "cup",
+			PluralPortionName:    "cups",
+			EligibleForMeals:     true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18, step19,
 			},

@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 // CaesarSaladRecipe creates the Caesar Salad recipe.
@@ -78,35 +76,29 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ValidIngredientMeasurementUnitID: &romaineUnitVIMU.ID,
 				Name:                             "romaine lettuce",
 				QuantityNotes:                    "select inner leaves only",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &inspectBareHandsSaladVPI.ID,
 				Name:                         "bare hands",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &inspectCuttingBoardSaladVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "inner romaine leaves",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "inner romaine leaves",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
@@ -122,26 +114,22 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "inner romaine leaves",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                     2,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &rinseLargeBowlSaladVPV.ID,
 				Name:                     "large bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "washed inner romaine leaves",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "washed inner romaine leaves",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 			{
@@ -162,26 +150,22 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "washed inner romaine leaves",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                     2,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &drySaladSpinnerSaladVPV.ID,
 				Name:                     "salad spinner",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "romaine lettuce, inner leaves only, washed and carefully dried",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "romaine lettuce, inner leaves only, washed and carefully dried",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
@@ -198,9 +182,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "romaine lettuce, inner leaves only, washed and carefully dried",
 				QuantityNotes:                   "large leaves torn into smaller pieces, smaller leaves left intact",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                     2,
 			},
 			{
 				// RecipeStepProductRecipeID references the "Caesar Dressing" recipe (slug: "caesar-dressing")
@@ -212,10 +194,8 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				RecipeStepProductRecipeSlug:     new("caesar-dressing"),
 				Name:                            "Caesar dressing",
 				QuantityNotes:                   "add more if desired",
-				Quantity: numbers.MinRange[float32]{
-					Min: 3,
-					Max: new(float32(6)),
-				},
+				MinQuantity:                     3,
+				MaxQuantity:                     new(float32(6)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -223,17 +203,15 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "dressed lettuce",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "dressed lettuce",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -254,35 +232,29 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ValidIngredientPreparationID:     &grateParmesanVIP.ID,
 				ValidIngredientMeasurementUnitID: &parmesanCupVIMU.ID,
 				Name:                             "parmesan cheese",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &grateCheeseGraterVPI.ID,
 				Name:                         "cheese grater",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &grateCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "finely grated parmesan cheese",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "finely grated parmesan cheese",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -298,18 +270,14 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dressed lettuce",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "half of remaining cheese",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                     0.25,
 			},
 			{
 				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
@@ -321,9 +289,7 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				RecipeStepProductRecipeSlug:     new("garlic-parmesan-croutons"),
 				Name:                            "garlic parmesan croutons",
 				QuantityNotes:                   "three-quarters of croutons",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2.25,
-				},
+				MinQuantity:                     2.25,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -331,17 +297,15 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "tossed Caesar salad",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "tossed Caesar salad",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -357,26 +321,22 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "tossed Caesar salad",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &transferServingBowlVPV.ID,
 				Name:                     "salad bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "Caesar salad in serving bowl",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "Caesar salad in serving bowl",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -392,18 +352,14 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "Caesar salad in serving bowl",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "finely grated parmesan cheese",
 				QuantityNotes:                   "remaining cheese",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                     0.25,
 			},
 			{
 				// RecipeStepProductRecipeID references the "Garlic Parmesan Croutons" recipe (slug: "garlic-parmesan-croutons")
@@ -415,39 +371,35 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 				RecipeStepProductRecipeSlug:     new("garlic-parmesan-croutons"),
 				Name:                            "garlic parmesan croutons",
 				QuantityNotes:                   "remaining croutons",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.75,
-				},
+				MinQuantity:                     0.75,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &sprinkleServingBowlVPV.ID,
 				Name:                     "salad bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "Caesar salad",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "Caesar salad",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 		},
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Wash and dry romaine lettuce",
-		Description:                 "Select the inner romaine leaves, wash in several changes of water, and dry thoroughly. Washed and dried greens keep 2-3 days wrapped in paper towels in the fridge.",
-		Notes:                       "Thoroughly drying the lettuce is essential for the dressing to cling properly.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the washed and dried romaine leaves in an airtight container lined with paper towels in the refrigerator for up to 2 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Wash and dry romaine lettuce",
+		Description:                        "Select the inner romaine leaves, wash in several changes of water, and dry thoroughly. Washed and dried greens keep 2-3 days wrapped in paper towels in the fridge.",
+		Notes:                              "Thoroughly drying the lettuce is essential for the dressing to cling properly.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the washed and dried romaine leaves in an airtight container lined with paper towels in the refrigerator for up to 2 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(172800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -458,17 +410,15 @@ func CaesarSaladRecipe(enums *Enumerations, createdRecipes map[string]*mealplann
 	}
 
 	saladRecipe := &mealplanning.RecipeCreationRequestInput{
-		Name:                "Caesar Salad",
-		Slug:                "caesar-salad",
-		Source:              "https://www.seriouseats.com/the-best-caesar-salad-recipe",
-		Description:         "The crowd-pleasing salad of crisp romaine leaves, crunchy croutons, and a creamy, emulsified dressing with just the right amount of anchovy.",
-		YieldsComponentType: mealplanning.MealComponentTypesSalad,
-		EstimatedPortions: numbers.MinRange[float32]{
-			Min: 4,
-		},
-		PortionName:       "serving",
-		PluralPortionName: "servings",
-		EligibleForMeals:  true,
+		Name:                 "Caesar Salad",
+		Slug:                 "caesar-salad",
+		Source:               "https://www.seriouseats.com/the-best-caesar-salad-recipe",
+		Description:          "The crowd-pleasing salad of crisp romaine leaves, crunchy croutons, and a creamy, emulsified dressing with just the right amount of anchovy.",
+		YieldsComponentType:  mealplanning.MealComponentTypesSalad,
+		MinEstimatedPortions: 4,
+		PortionName:          "serving",
+		PluralPortionName:    "servings",
+		EligibleForMeals:     true,
 		Steps: []*mealplanning.RecipeStepCreationRequestInput{
 			slStep0, slStep1, slStep2, slStep3, slStep4, slStep5, slStep6, slStep7,
 		},

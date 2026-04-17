@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 // ChickenVermicelliSoupRecipe creates the Chicken and Vermicelli Soup with Lime recipe.
@@ -143,30 +141,24 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTbspVIMU.ID,
 				Name:                             "butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 0,
+				MinQuantity:                      2,
+				Index:                            new(uint16(0)),
+				OptionIndex:                      0,
 			},
 			{
 				ValidIngredientPreparationID:     &meltOliveOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oliveOilTbspVIMU.ID,
 				Name:                             "olive oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 1,
+				MinQuantity:                      2,
+				Index:                            new(uint16(0)),
+				OptionIndex:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &meltPotVPV.ID,
 				Name:                     "large pot",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -190,10 +182,8 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &sauteOnionVIP.ID,
 				ValidIngredientMeasurementUnitID: &onionUnitVIMU.ID,
 				Name:                             "yellow onion",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				QuantityNotes: "small or ½ large, finely chopped",
+				MinQuantity:                      1,
+				QuantityNotes:                    "small or ½ large, finely chopped",
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -202,17 +192,15 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &sautePotVPV.ID,
 				Name:                            "pot with melted fat",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "cooked translucent onion",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "cooked translucent onion",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -242,9 +230,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &sprinkleTurmericVIP.ID,
 				ValidIngredientMeasurementUnitID: &turmericTspVIMU.ID,
 				Name:                             "ground turmeric",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.5,
-				},
+				MinQuantity:                      0.5,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -253,9 +239,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &sprinklePotVPV.ID,
 				Name:                            "pot with cooked onion",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -287,17 +271,13 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &addPotatoVIP.ID,
 				ValidIngredientMeasurementUnitID: &potatoUnitVIMU.ID,
 				Name:                             "medium Yukon Gold potato, diced into small cubes",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 			{
 				ValidIngredientPreparationID:     &addCarrotVIP.ID,
 				ValidIngredientMeasurementUnitID: &carrotUnitVIMU.ID,
 				Name:                             "large carrot, finely chopped",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -306,9 +286,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot with onion and turmeric",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -331,9 +309,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &adjustPotVPV.ID,
 				Name:                            "pot with vegetables",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -358,18 +334,14 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &cookTomatoPasteVIP.ID,
 				ValidIngredientMeasurementUnitID: &tomatoPasteTbspVIMU.ID,
 				Name:                             "tomato paste",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &cookWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -378,9 +350,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &cookPotVPV.ID,
 				Name:                            "pot with vegetables",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -402,9 +372,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &placeChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenBreastUnitVIMU.ID,
 				Name:                             "boneless, skinless chicken breast",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -413,9 +381,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &placePotVPV.ID,
 				Name:                            "pot with cooked tomato paste and vegetables",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -438,25 +404,19 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &seasonChickenVIP.ID,
 				Name:                            "chicken in pot",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltTspVIMU.ID,
 				Name:                             "Kosher salt (such as Diamond Crystal)",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 			{
 				ValidIngredientPreparationID:     &seasonBlackPepperVIP.ID,
 				ValidIngredientMeasurementUnitID: &blackPepperTspVIMU.ID,
 				Name:                             "black pepper",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                      0.25,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -465,9 +425,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &seasonPotVPV.ID,
 				Name:                            "pot with chicken on vegetables",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -489,9 +447,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &addWaterVIP.ID,
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
 				Name:                             "water",
-				Quantity: numbers.MinRange[float32]{
-					Min: 6,
-				},
+				MinQuantity:                      6,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -500,9 +456,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "pot with seasoned chicken and vegetables",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -525,9 +479,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &coverPotVPV.ID,
 				Name:                            "pot with chicken and seasoned soup base",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -550,9 +502,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &adjustPotVPV.ID,
 				Name:                            "partially covered pot with chicken and soup base",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -575,9 +525,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &boilChickenVIP.ID,
 				Name:                            "chicken in soup",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -586,9 +534,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &boilPotVPV.ID,
 				Name:                            "partially covered pot with chicken and soup base (high heat)",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -619,9 +565,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &coverPotVPV.ID,
 				Name:                            "partially covered pot with soup at boil",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -644,9 +588,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &adjustPotVPV.ID,
 				Name:                            "fully covered pot with soup at boil",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -670,9 +612,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &simmerChickenVIP.ID,
 				Name:                            "chicken in soup",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -681,9 +621,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &simmerPotVPV.ID,
 				Name:                            "fully covered pot with soup (low heat)",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		StartTimerAutomatically: true,
@@ -715,26 +653,22 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &transferChickenVIP.ID,
 				Name:                            "cooked chicken breast",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &transferMediumBowlVPV.ID,
 				Name:                     "medium bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "chicken in bowl",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "chicken in bowl",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -751,35 +685,29 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &shredChickenVIP.ID,
 				Name:                            "chicken in bowl",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &shredForkVPI.ID,
 				Name:                         "fork",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 2,
-				},
+				MinQuantity:                  2,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &shredMediumBowlVPV.ID,
 				Name:                     "medium bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "shredded chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "shredded chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -798,17 +726,13 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &addChickenVIP.ID,
 				Name:                            "shredded chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ValidIngredientPreparationID:     &addVermicelliVIP.ID,
 				ValidIngredientMeasurementUnitID: &vermicelliCupVIMU.ID,
 				Name:                             "broken wheat vermicelli noodles, broken angel hair pasta or fideo",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.75,
-				},
+				MinQuantity:                      0.75,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -817,9 +741,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "simmered soup (without chicken)",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -850,9 +772,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &removeFromHeatPotVPV.ID,
 				Name:                            "pot with finished soup",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -877,39 +797,31 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &stirParsleyVIP.ID,
 				ValidIngredientMeasurementUnitID: &parsleyTbspVIMU.ID,
 				Name:                             "chopped parsley",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index: new(uint16(0)),
+				MinQuantity:                      1,
+				Index:                            new(uint16(0)),
 			},
 			{
 				ValidIngredientPreparationID:     &stirLimeJuiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &limeJuiceTbspVIMU.ID,
 				Name:                             "lime juice",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                      1,
+				Index:                            new(uint16(1)),
+				OptionIndex:                      0,
 			},
 			{
 				ValidIngredientPreparationID:     &stirLemonJuiceVIP.ID,
 				ValidIngredientMeasurementUnitID: &lemonJuiceTbspVIMU.ID,
 				Name:                             "lemon juice",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 1,
+				MinQuantity:                      1,
+				Index:                            new(uint16(1)),
+				OptionIndex:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &stirWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -918,9 +830,7 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &stirPotVPV.ID,
 				Name:                            "pot with finished soup (off heat)",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -933,13 +843,13 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Chop aromatics, vegetables, and herbs",
-		Description:                 "Finely chop the onion; dice the potato into small cubes and finely chop the carrot; chop the parsley; juice the lime or lemon. Onion and carrot keep 3 to 4 days; potato is best used within 1 day (store diced potato in water to prevent browning); parsley keeps 1 to 2 days wrapped in a damp paper towel; lime juice keeps 1 to 2 days.",
-		Notes:                       "Having these prepared ahead streamlines the soup-making process, especially during the initial sauté and final garnish steps.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store onion and carrot in an airtight container in the refrigerator. Store diced potato in a bowl of water in the refrigerator if prepping more than a few hours ahead. Wrap parsley in a damp paper towel and refrigerate. Store lime juice in an airtight container in the refrigerator.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Chop aromatics, vegetables, and herbs",
+		Description:                        "Finely chop the onion; dice the potato into small cubes and finely chop the carrot; chop the parsley; juice the lime or lemon. Onion and carrot keep 3 to 4 days; potato is best used within 1 day (store diced potato in water to prevent browning); parsley keeps 1 to 2 days wrapped in a damp paper towel; lime juice keeps 1 to 2 days.",
+		Notes:                              "Having these prepared ahead streamlines the soup-making process, especially during the initial sauté and final garnish steps.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store onion and carrot in an airtight container in the refrigerator. Store diced potato in a bowl of water in the refrigerator if prepping more than a few hours ahead. Wrap parsley in a damp paper towel and refrigerate. Store lime juice in an airtight container in the refrigerator.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -951,17 +861,15 @@ func ChickenVermicelliSoupRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Chicken and Vermicelli Soup with Lime",
-			Slug:                "chicken-vermicelli-soup",
-			Source:              "https://cooking.nytimes.com/recipes/1026337-chicken-and-vermicelli-soup-with-lime",
-			Description:         "A comforting Middle Eastern–inspired soup with tender chicken, vermicelli noodles, turmeric, and a bright finish of lime. Serve with lime slices and extra parsley.",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 6,
-			},
-			PortionName:       "serving",
-			PluralPortionName: "servings",
-			EligibleForMeals:  true,
+			Name:                 "Chicken and Vermicelli Soup with Lime",
+			Slug:                 "chicken-vermicelli-soup",
+			Source:               "https://cooking.nytimes.com/recipes/1026337-chicken-and-vermicelli-soup-with-lime",
+			Description:          "A comforting Middle Eastern–inspired soup with tender chicken, vermicelli noodles, turmeric, and a bright finish of lime. Serve with lime slices and extra parsley.",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			MinEstimatedPortions: 6,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			EligibleForMeals:     true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13, step14, step15, step16, step17, step18, step19,
 			},

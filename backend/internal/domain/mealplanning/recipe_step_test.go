@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/numbers"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +19,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 			{
 				ValidPreparationInstrumentID: new("ValidPreparationInstrumentID"),
 				Name:                         "Name",
-				Quantity:                     numbers.MinRange[uint32]{Min: fake.Uint32()},
+				MinQuantity:                  fake.Uint32(),
 			},
 		},
 		Products: []*RecipeStepProductCreationRequestInput{
@@ -39,7 +37,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 				ValidIngredientMeasurementUnitID: new("ValidIngredientMeasurementUnitID"),
 				QuantityNotes:                    "QuantityNotes",
 				IngredientNotes:                  "IngredientNotes",
-				Quantity:                         numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                      1,
 			},
 		},
 	}
@@ -111,7 +109,7 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 				ValidIngredientMeasurementUnitID: new(t.Name()),
 				QuantityNotes:                    t.Name(),
 				IngredientNotes:                  t.Name(),
-				Quantity:                         numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                      1,
 			})
 		}
 

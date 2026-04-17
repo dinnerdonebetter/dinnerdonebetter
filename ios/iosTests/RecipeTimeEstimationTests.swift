@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftProtobuf
 @testable import ios
 import Testing
 
@@ -26,10 +25,10 @@ private func makeStep(
   step.index = 0
 
   if let minVal = estimatedTime.min {
-    step.estimatedTimeInSeconds.min = minVal
+    step.minEstimatedTimeInSeconds = minVal
   }
   if let maxVal = estimatedTime.max {
-    step.estimatedTimeInSeconds.max = maxVal
+    step.maxEstimatedTimeInSeconds = maxVal
   }
   return step
 }
@@ -157,15 +156,11 @@ struct RecipeTimeEstimationTests {
 
   @Test("FormatStepTime returns nil when step has no time")
   func formatStepTimeReturnsNilWhenEmpty() {
-    let range = Common_OptionalUint32Range()
-    #expect(RecipeTimeEstimation.formatStepTime(range) == nil)
+    #expect(RecipeTimeEstimation.formatStepTime(min: nil, max: nil) == nil)
   }
 
   @Test("FormatStepTime formats step with both min and max")
   func formatStepTimeWithBoth() {
-    var range = Common_OptionalUint32Range()
-    range.min = 300
-    range.max = 600
-    #expect(RecipeTimeEstimation.formatStepTime(range) == "5–10 min")
+    #expect(RecipeTimeEstimation.formatStepTime(min: 300, max: 600) == "5–10 min")
   }
 }

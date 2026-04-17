@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
@@ -123,37 +121,30 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: numbers.MinRange[float32]{
-					Min: 6, // ~1.2g per pound for 5 lb chicken
-				},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 0,
+				MinQuantity:                  1,
+				Index:                        new(uint16(0)),
+				OptionIndex:                  0,
 			},
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 1,
+				MinQuantity:                  1,
+				Index:                        new(uint16(0)),
+				OptionIndex:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "freshly ground black pepper",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "freshly ground black pepper",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(6)),
 			},
 		},
@@ -169,46 +160,35 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientPreparationID:     &mixSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 30, // ~6g per pound for 5 lb chicken (dry brine ratio)
-				},
-				Index: new(uint16(0)),
+				Index:                            new(uint16(0)),
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: numbers.MinRange[float32]{
-					Min: 6, // ~1.2g per pound for 5 lb chicken
-				},
-				Index: new(uint16(1)),
+				Index:                           new(uint16(1)),
 			},
 			{
 				ValidIngredientPreparationID:     &mixBakingPowderVIP.ID,
 				ValidIngredientMeasurementUnitID: &bakingPowderGramVIMU.ID,
 				Name:                             "baking powder",
-				Quantity: numbers.MinRange[float32]{
-					Min: 20, // ~1 tsp (4g) per pound for 5 lb chicken (crispy skin)
-				},
-				Optional: true,
-				Index:    new(uint16(2)),
+				Optional:                         true,
+				Index:                            new(uint16(2)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &mixSmallBowlVPV.ID,
 				Name:                     "small bowl",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "seasoning mixture",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "seasoning mixture",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(36)),
 			},
 		},
@@ -224,35 +204,29 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenPoundVIMU.ID,
 				Name:                             "whole chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-					Max: new(float32(5)),
-				},
+				MinQuantity:                      4,
+				MaxQuantity:                      new(float32(5)),
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoning mixture",
-				Quantity: numbers.MinRange[float32]{
-					Min: 36,
-				},
+				MinQuantity:                     36,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "seasoned whole chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "seasoned whole chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 				MaxMeasurementQuantity: new(float32(5)),
 			},
@@ -269,27 +243,23 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned whole chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-					Max: new(float32(5)),
-				},
+				MinQuantity:                     4,
+				MaxQuantity:                     new(float32(5)),
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &trussTwineVPI.ID,
 				Name:                         "butcher's twine",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "trussed seasoned whole chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "trussed seasoned whole chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 				MaxMeasurementQuantity: new(float32(5)),
 			},
@@ -307,34 +277,28 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "trussed seasoned whole chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-					Max: new(float32(5)),
-				},
+				MinQuantity:                     4,
+				MaxQuantity:                     new(float32(5)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &dryBrineWireRackVPV.ID,
 				Name:                     "wire rack",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 			{
 				ValidPreparationVesselID: &dryBrineBakingSheetVPV.ID,
 				Name:                     "rimmed baking sheet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "dry-brined whole chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "dry-brined whole chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 				MaxMeasurementQuantity: new(float32(5)),
 			},
@@ -351,9 +315,7 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ValidPreparationVesselID: &preheatOvenVPV.ID,
 				Name:                     "oven",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -375,44 +337,38 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientPreparationID:     &heatVegetableOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 0,
+				MinQuantity:                      1,
+				Index:                            new(uint16(0)),
+				OptionIndex:                      0,
 			},
 			{
 				ValidIngredientPreparationID:     &heatCanolaOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &canolaOilTablespoonVIMU.ID,
 				Name:                             "canola oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 1,
+				MinQuantity:                      1,
+				Index:                            new(uint16(0)),
+				OptionIndex:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
 				Name:                     "stainless steel skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "pre-heated oil",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &milliliterMeasurement.ID,
+				Name:                   "pre-heated oil",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &milliliterMeasurement.ID,
 				MinMeasurementQuantity: new(float32(15)),
 			},
 			{
-				Name:  "pre-heated skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:                   "pre-heated skillet",
+				Type:                   mealplanning.RecipeStepProductVesselType,
+				Index:                  1,
 				MinMeasurementQuantity: new(float32(1)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -429,47 +385,39 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dry-brined whole chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-					Max: new(float32(5)),
-				},
+				MinQuantity:                     4,
+				MaxQuantity:                     new(float32(5)),
 			},
 			{
 				ValidIngredientPreparationID:     &rubVegetableOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilTablespoonVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                      1,
+				Index:                            new(uint16(1)),
+				OptionIndex:                      0,
 			},
 			{
 				ValidIngredientPreparationID:     &rubCanolaOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &canolaOilTablespoonVIMU.ID,
 				Name:                             "canola oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 1,
+				MinQuantity:                      1,
+				Index:                            new(uint16(1)),
+				OptionIndex:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &rubBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "oiled whole chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "oiled whole chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 				MaxMeasurementQuantity: new(float32(5)),
 			},
@@ -487,27 +435,21 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "oiled whole chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-					Max: new(float32(5)),
-				},
+				MinQuantity:                     4,
+				MaxQuantity:                     new(float32(5)),
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated oil in skillet",
-				Quantity: numbers.MinRange[float32]{
-					Min: 15,
-				},
+				MinQuantity:                     15,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -515,18 +457,16 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "stainless steel skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-					Max: new(uint16(1)),
-				},
+				MinQuantity:                     1,
+				MaxQuantity:                     new(uint16(1)),
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "leg-browned whole chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "leg-browned whole chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 				MaxMeasurementQuantity: new(float32(5)),
 			},
@@ -558,19 +498,15 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "leg-browned whole chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-					Max: new(float32(5)),
-				},
+				MinQuantity:                     4,
+				MaxQuantity:                     new(float32(5)),
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &roastThermometerVPI.ID,
 				Name:                         "instant-read thermometer",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -579,25 +515,21 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &roastOvenVPV.ID,
 				Name:                            "preheated oven",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "stainless steel skillet with browned chicken",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "roasted whole chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "roasted whole chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 				MaxMeasurementQuantity: new(float32(5)),
 			},
@@ -623,27 +555,23 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "roasted whole chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-					Max: new(float32(5)),
-				},
+				MinQuantity:                     4,
+				MaxQuantity:                     new(float32(5)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &restCarvingBoardVPV.ID,
 				Name:                     "carving board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "rested roast chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "rested roast chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 				MaxMeasurementQuantity: new(float32(5)),
 			},
@@ -661,36 +589,30 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &carveWholeChickenVIP.ID,
 				Name:                            "rested roast chicken",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-					Max: new(float32(5)),
-				},
+				MinQuantity:                     4,
+				MaxQuantity:                     new(float32(5)),
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &carveCarvingKnifeVPI.ID,
 				Name:                         "carving knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &carveCarvingBoardVPV.ID,
 				Name:                     "carving board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "carved roast chicken",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &poundMeasurement.ID,
+				Name:                   "carved roast chicken",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 				MaxMeasurementQuantity: new(float32(5)),
 			},
@@ -698,13 +620,13 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Season, truss, and dry-brine chicken",
-		Description:                 "Mix the seasoning blend, season the chicken inside and out, truss it, and place on a wire rack set in a rimmed baking sheet to dry-brine uncovered in the refrigerator for at least 1 hour and up to 2 days.",
-		Notes:                       "The longer the chicken dry-brines, the more evenly seasoned and crisp-skinned the result will be.",
-		Optional:                    false,
-		ExplicitStorageInstructions: "Store the seasoned, trussed chicken on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 1 hour and up to 2 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Season, truss, and dry-brine chicken",
+		Description:                        "Mix the seasoning blend, season the chicken inside and out, truss it, and place on a wire rack set in a rimmed baking sheet to dry-brine uncovered in the refrigerator for at least 1 hour and up to 2 days.",
+		Notes:                              "The longer the chicken dry-brines, the more evenly seasoned and crisp-skinned the result will be.",
+		Optional:                           false,
+		ExplicitStorageInstructions:        "Store the seasoned, trussed chicken on a wire rack set in a rimmed baking sheet in the refrigerator, uncovered, for at least 1 hour and up to 2 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeWireRack,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 3600,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(172800)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -718,20 +640,18 @@ func PerfectRoastChickenRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Whole Roast Chicken",
-			Slug:                "whole-roast-chicken",
-			Source:              "https://www.seriouseats.com/perfect-roast-chicken-recipe-8384377",
-			Description:         "A dry-brine fully seasons the chicken and allows the skin to dehydrate, improving browning and crisping during cooking. Measuring the internal temperature of the chicken to determine doneness leads to more reliable and superior results than going by time. Rubbing the chicken skin with oil before roasting, instead of basting with watery drippings, ensures even browning and a crisp skin.",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
-			PortionName:       "serving",
-			PluralPortionName: "servings",
-			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11},
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
-			AlsoCreateMeal:    false,
+			Name:                 "Whole Roast Chicken",
+			Slug:                 "whole-roast-chicken",
+			Source:               "https://www.seriouseats.com/perfect-roast-chicken-recipe-8384377",
+			Description:          "A dry-brine fully seasons the chicken and allows the skin to dehydrate, improving browning and crisping during cooking. Measuring the internal temperature of the chicken to determine doneness leads to more reliable and superior results than going by time. Rubbing the chicken skin with oil before roasting, instead of basting with watery drippings, ensures even browning and a crisp skin.",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			MinEstimatedPortions: 4,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			EligibleForMeals:     true,
+			Steps:                []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11},
+			PrepTasks:            []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
+			AlsoCreateMeal:       false,
 		},
 	}
 }

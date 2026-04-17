@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
@@ -131,37 +129,31 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 0,
+				MinQuantity:                  1,
+				Index:                        new(uint16(0)),
+				OptionIndex:                  0,
 			},
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 1,
+				MinQuantity:                  1,
+				Index:                        new(uint16(0)),
+				OptionIndex:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "freshly ground black pepper",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "freshly ground black pepper",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -177,18 +169,14 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 			{
 				ValidPreparationInstrumentID: &heatSousVideCookerVPI.ID,
 				Name:                         "sous vide cooker",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &heatWaterBathVPV.ID,
 				Name:                     "water bath",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -210,44 +198,36 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &seasonChickenVIP.ID,
 				ValidIngredientMeasurementUnitID: &chickenGramVIMU.ID,
 				Name:                             "boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
+				MinQuantity:                      900,
 			},
 			{
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				ToTaste: true,
+				MinQuantity:                      0,
+				ToTaste:                          true,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				ToTaste: true,
+				MinQuantity:                     0,
+				ToTaste:                         true,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &seasonBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "seasoned boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "seasoned boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
@@ -263,57 +243,47 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
+				MinQuantity:                     900,
 			},
 			{
 				ValidIngredientPreparationID:     &bagThymeVIP.ID,
 				ValidIngredientMeasurementUnitID: &thymeSprigVIMU.ID,
 				Name:                             "thyme",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
-				Optional: true,
+				MinQuantity:                      4,
+				Optional:                         true,
 			},
 			{
 				ValidIngredientPreparationID:     &bagRosemaryVIP.ID,
 				ValidIngredientMeasurementUnitID: &rosemarySprigVIMU.ID,
 				Name:                             "rosemary",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
-				Optional: true,
+				MinQuantity:                      4,
+				Optional:                         true,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &bagPlasticBagVPV.ID,
 				Name:                     "zipper-lock bag",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 			{
 				ValidPreparationVesselID: &bagVacuumBagVPV.ID,
 				Name:                     "vacuum bag",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "bagged seasoned boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "bagged seasoned boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 			{
-				Name:  "bag with chicken",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:            "bag with chicken",
+				Type:            mealplanning.RecipeStepProductVesselType,
+				Index:           1,
 				MinItemQuantity: new(float32(1)),
 			},
 		},
@@ -329,9 +299,7 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "bagged seasoned boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
+				MinQuantity:                     900,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -340,30 +308,26 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &sealPlasticBagVPV.ID,
 				Name:                            "bag with chicken",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 0,
+				MinQuantity:                     1,
+				Index:                           new(uint16(0)),
+				OptionIndex:                     0,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &sealVacuumBagVPV.ID,
 				Name:                            "bag with chicken",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 1,
+				MinQuantity:                     1,
+				Index:                           new(uint16(0)),
+				OptionIndex:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "sealed bagged seasoned boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "sealed bagged seasoned boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
@@ -381,18 +345,14 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "sealed bagged seasoned boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
+				MinQuantity:                     900,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &sousVideCookerVPI.ID,
 				Name:                         "sous vide cooker",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -401,17 +361,15 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        &sousVideWaterBathVPV.ID,
 				Name:                            "preheated water bath",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "sous vide cooked boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "sous vide cooked boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
@@ -437,26 +395,22 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &removeChickenVIP.ID,
 				Name:                            "sous vide cooked boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
+				MinQuantity:                     900,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &removeTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "unbagged sous vide boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "unbagged sous vide boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
@@ -474,36 +428,30 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &dryChickenVIP.ID,
 				Name:                            "unbagged sous vide boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
+				MinQuantity:                     900,
 			},
 			{
 				ValidIngredientPreparationID:     &dryPaperTowelsVIP.ID,
 				ValidIngredientMeasurementUnitID: &paperTowelsUnitVIMU.ID,
 				Name:                             "paper towels",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                      1,
+				Index:                            new(uint16(1)),
+				OptionIndex:                      0,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &dryBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "dried sous vide boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "dried sous vide boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
@@ -521,41 +469,34 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ValidIngredientPreparationID:     &heatOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &oilMilliliterVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 15, // Enough to coat the pan
-				},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &heatStovetopVPI.ID,
 				Name:                         "stovetop",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
 				Name:                     "cast iron skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "heated shimmering oil",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &milliliterMeasurement.ID,
+				Name:                   "heated shimmering oil",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &milliliterMeasurement.ID,
 				MinMeasurementQuantity: new(float32(15)),
 			},
 			{
-				Name:  "cast iron skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:            "cast iron skillet",
+				Type:            mealplanning.RecipeStepProductVesselType,
+				Index:           1,
 				MinItemQuantity: new(float32(1)),
 			},
 		},
@@ -581,37 +522,29 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dried sous vide boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
+				MinQuantity:                     900,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated shimmering oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 15,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                     15,
+				Index:                           new(uint16(1)),
+				OptionIndex:                     0,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &panSearSpatulaVPI.ID,
 				Name:                         "flexible metal spatula",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                  1,
+				Index:                        new(uint16(1)),
+				OptionIndex:                  0,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -620,23 +553,21 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				Name:                            "cast iron skillet",
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "pan-seared sous vide boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "pan-seared sous vide boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 			{
-				Name:  "cast iron skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:            "cast iron skillet",
+				Type:            mealplanning.RecipeStepProductVesselType,
+				Index:           1,
 				MinItemQuantity: new(float32(1)),
 			},
 		},
@@ -661,36 +592,30 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "pan-seared sous vide boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
-				Optional: true, // From step 7 if pan finishing chosen
+				MinQuantity:                     900,
+				Optional:                        true, // From step 7 if pan finishing chosen
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &restTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &restPlateVPV.ID,
 				Name:                     "serving plate",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "rested sous vide boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "rested sous vide boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
@@ -707,35 +632,29 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &sliceChickenVIP.ID,
 				Name:                            "rested sous vide boneless chicken breasts",
-				Quantity: numbers.MinRange[float32]{
-					Min: 900,
-				},
+				MinQuantity:                     900,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "sliced sous vide boneless chicken breasts",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "sliced sous vide boneless chicken breasts",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(900)),
 			},
 		},
@@ -743,13 +662,13 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	// Create prep task for seasoning and bagging chicken ahead of time
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Season and bag chicken breasts",
-		Description:                 "The chicken breasts can be seasoned and sealed in bags up to 24 hours ahead of time. Store in the refrigerator in sealed bags.",
-		Notes:                       "Preparing the chicken ahead saves time on the day of cooking.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the sealed chicken breasts in the refrigerator for up to 24 hours.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Season and bag chicken breasts",
+		Description:                        "The chicken breasts can be seasoned and sealed in bags up to 24 hours ahead of time. Store in the refrigerator in sealed bags.",
+		Notes:                              "Preparing the chicken ahead saves time on the day of cooking.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the sealed chicken breasts in the refrigerator for up to 24 hours.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(86400)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -761,20 +680,18 @@ func SousVideChickenBreastRecipe(enums *Enumerations) []*mealplanning.RecipeCrea
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Sous Vide Chicken Breast",
-			Slug:                "sous-vide-chicken-breast",
-			Source:              "https://www.seriouseats.com/sous-vide-chicken-breast-recipe",
-			Description:         "",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 2,
-			},
-			PortionName:       "serving",
-			PluralPortionName: "servings",
-			EligibleForMeals:  true,
-			Steps:             []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11},
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
-			AlsoCreateMeal:    false,
+			Name:                 "Sous Vide Chicken Breast",
+			Slug:                 "sous-vide-chicken-breast",
+			Source:               "https://www.seriouseats.com/sous-vide-chicken-breast-recipe",
+			Description:          "",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			MinEstimatedPortions: 2,
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			EligibleForMeals:     true,
+			Steps:                []*mealplanning.RecipeStepCreationRequestInput{step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11},
+			PrepTasks:            []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
+			AlsoCreateMeal:       false,
 		},
 	}
 }

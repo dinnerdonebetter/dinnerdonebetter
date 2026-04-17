@@ -5,7 +5,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 )
 
 // BuildFakeMeal builds a faked meal.
@@ -16,13 +15,11 @@ func BuildFakeMeal() *mealplanning.Meal {
 	}
 
 	return &mealplanning.Meal{
-		ID:          BuildFakeID(),
-		Name:        buildUniqueString(),
-		Description: buildUniqueString(),
-		EstimatedPortions: numbers.MinRange[float32]{
-			Min: float32(buildFakeNumber()),
-			Max: nil,
-		},
+		ID:                   BuildFakeID(),
+		Name:                 buildUniqueString(),
+		Description:          buildUniqueString(),
+		MinEstimatedPortions: float32(buildFakeNumber()),
+		MaxEstimatedPortions: nil,
 		CreatedAt:            BuildFakeTime(),
 		CreatedByUser:        BuildFakeID(),
 		Components:           recipes,

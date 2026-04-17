@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"testing"
+
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -30,11 +31,11 @@ func TestRecipePrepTaskCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipePrepTaskCreationRequestInput{
-			BelongsToRecipe: t.Name(),
-			Name:            t.Name(),
-			StorageType:     t.Name(),
-			MinStorageTemperatureInCelsius: new(fake.Float32()),
-			MaxStorageTemperatureInCelsius: new(fake.Float32()),
+			BelongsToRecipe:                    t.Name(),
+			Name:                               t.Name(),
+			StorageType:                        t.Name(),
+			MinStorageTemperatureInCelsius:     new(fake.Float32()),
+			MaxStorageTemperatureInCelsius:     new(fake.Float32()),
 			MinTimeBufferBeforeRecipeInSeconds: fake.Uint32(),
 			MaxTimeBufferBeforeRecipeInSeconds: new(fake.Uint32()),
 		}

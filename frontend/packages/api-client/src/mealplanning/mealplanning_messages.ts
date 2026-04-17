@@ -6,13 +6,6 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
-import {
-  Float32RangeWithOptionalMax,
-  OptionalFloat32Range,
-  OptionalUint32Range,
-  Uint16RangeWithOptionalMax,
-  Uint32RangeWithOptionalMax,
-} from '../common';
 import { Timestamp } from '../google/protobuf/timestamp';
 import { UploadedMedia } from '../uploaded_media/uploaded_media_messages';
 
@@ -559,7 +552,8 @@ export interface ValidIngredient {
   createdAt: Date | undefined;
   lastUpdatedAt?: Date | undefined;
   archivedAt?: Date | undefined;
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
   iconPath: string;
   warning: string;
   pluralName: string;
@@ -621,7 +615,8 @@ export interface ValidIngredientMeasurementUnit {
   archivedAt?: Date | undefined;
   notes: string;
   id: string;
-  allowableQuantity: Float32RangeWithOptionalMax | undefined;
+  minAllowableQuantity: number;
+  maxAllowableQuantity?: number | undefined;
   measurementUnit: ValidMeasurementUnit | undefined;
   ingredient: ValidIngredient | undefined;
 }
@@ -640,8 +635,10 @@ export interface ValidPrepTaskConfig {
   createdAt: Date | undefined;
   lastUpdatedAt?: Date | undefined;
   archivedAt?: Date | undefined;
-  storageDurationInSeconds: Uint32RangeWithOptionalMax | undefined;
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
+  minStorageDurationInSeconds: number;
+  maxStorageDurationInSeconds?: number | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
   id: string;
   storageType: string;
   storageInstructions: string;
@@ -725,9 +722,12 @@ export interface MeasurementUnitConversionMismatch {
 
 export interface ValidPreparation {
   createdAt: Date | undefined;
-  instrumentCount: Uint16RangeWithOptionalMax | undefined;
-  ingredientCount: Uint16RangeWithOptionalMax | undefined;
-  vesselCount: Uint16RangeWithOptionalMax | undefined;
+  minInstrumentCount: number;
+  maxInstrumentCount?: number | undefined;
+  minIngredientCount: number;
+  maxIngredientCount?: number | undefined;
+  minVesselCount: number;
+  maxVesselCount?: number | undefined;
   archivedAt?: Date | undefined;
   lastUpdatedAt?: Date | undefined;
   iconPath: string;
@@ -804,7 +804,8 @@ export interface Recipe {
   inspiredByRecipeId?: string | undefined;
   lastUpdatedAt?: Date | undefined;
   archivedAt?: Date | undefined;
-  estimatedPortions: Float32RangeWithOptionalMax | undefined;
+  minEstimatedPortions: number;
+  maxEstimatedPortions?: number | undefined;
   pluralPortionName: string;
   description: string;
   name: string;
@@ -838,8 +839,10 @@ export interface RecipeMedia {
 
 export interface RecipePrepTask {
   createdAt: Date | undefined;
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
-  timeBufferBeforeRecipeInSeconds: Uint32RangeWithOptionalMax | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
+  minTimeBufferBeforeRecipeInSeconds: number;
+  maxTimeBufferBeforeRecipeInSeconds?: number | undefined;
   archivedAt?: Date | undefined;
   lastUpdatedAt?: Date | undefined;
   id: string;
@@ -877,8 +880,10 @@ export interface RecipeRating {
 
 export interface RecipeStep {
   createdAt: Date | undefined;
-  estimatedTimeInSeconds: OptionalUint32Range | undefined;
-  temperatureInCelsius: OptionalFloat32Range | undefined;
+  minEstimatedTimeInSeconds?: number | undefined;
+  maxEstimatedTimeInSeconds?: number | undefined;
+  minTemperatureInCelsius?: number | undefined;
+  maxTemperatureInCelsius?: number | undefined;
   archivedAt?: Date | undefined;
   lastUpdatedAt?: Date | undefined;
   belongsToRecipe: string;
@@ -934,7 +939,8 @@ export interface RecipeStepIngredient {
   quantityNotes: string;
   ingredientNotes: string;
   name: string;
-  quantity: Float32RangeWithOptionalMax | undefined;
+  minQuantity: number;
+  maxQuantity?: number | undefined;
   measurementUnit: ValidMeasurementUnit | undefined;
   optionIndex: number;
   optional: boolean;
@@ -953,7 +959,8 @@ export interface RecipeStepInstrument {
   name: string;
   belongsToRecipeStep: string;
   id: string;
-  quantity: Uint32RangeWithOptionalMax | undefined;
+  minQuantity: number;
+  maxQuantity?: number | undefined;
   optionIndex: number;
   preferenceRank: number;
   optional: boolean;
@@ -963,10 +970,14 @@ export interface RecipeStepInstrument {
 
 export interface RecipeStepProduct {
   createdAt: Date | undefined;
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
-  storageDurationInSeconds: OptionalUint32Range | undefined;
-  measurementQuantity: OptionalFloat32Range | undefined;
-  itemQuantity: OptionalFloat32Range | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
+  minStorageDurationInSeconds?: number | undefined;
+  maxStorageDurationInSeconds?: number | undefined;
+  minMeasurementQuantity?: number | undefined;
+  maxMeasurementQuantity?: number | undefined;
+  minItemQuantity?: number | undefined;
+  maxItemQuantity?: number | undefined;
   archivedAt?: Date | undefined;
   lastUpdatedAt?: Date | undefined;
   measurementUnit: ValidMeasurementUnit | undefined;
@@ -985,7 +996,8 @@ export interface RecipeStepProduct {
 
 export interface RecipeStepVessel {
   createdAt: Date | undefined;
-  quantity: Uint16RangeWithOptionalMax | undefined;
+  minQuantity: number;
+  maxQuantity?: number | undefined;
   lastUpdatedAt?: Date | undefined;
   archivedAt?: Date | undefined;
   recipeStepProductId?: string | undefined;
@@ -1005,7 +1017,8 @@ export interface Meal {
   createdAt: Date | undefined;
   archivedAt?: Date | undefined;
   lastUpdatedAt?: Date | undefined;
-  estimatedPortions: Float32RangeWithOptionalMax | undefined;
+  minEstimatedPortions: number;
+  maxEstimatedPortions?: number | undefined;
   id: string;
   description: string;
   createdByUser: string;
@@ -1062,7 +1075,8 @@ export interface MealPlanGroceryListItem {
   status: MealPlanGroceryListItemStatus;
   statusExplanation: string;
   id: string;
-  quantityNeeded: Float32RangeWithOptionalMax | undefined;
+  minQuantityNeeded: number;
+  maxQuantityNeeded?: number | undefined;
   measurementUnit: ValidMeasurementUnit | undefined;
   ingredient: ValidIngredient | undefined;
   /** Recipe context (optional - only set when item is part of a choice group) */
@@ -1369,7 +1383,8 @@ function createBaseValidIngredient(): ValidIngredient {
     createdAt: undefined,
     lastUpdatedAt: undefined,
     archivedAt: undefined,
-    storageTemperatureInCelsius: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
     iconPath: '',
     warning: '',
     pluralName: '',
@@ -1418,8 +1433,11 @@ export const ValidIngredient: MessageFns<ValidIngredient> = {
     if (message.archivedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.archivedAt), writer.uint32(26).fork()).join();
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(34).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(37).float(message.minStorageTemperatureInCelsius);
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(317).float(message.maxStorageTemperatureInCelsius);
     }
     if (message.iconPath !== '') {
       writer.uint32(42).string(message.iconPath);
@@ -1558,11 +1576,19 @@ export const ValidIngredient: MessageFns<ValidIngredient> = {
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 37) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 39: {
+          if (tag !== 317) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 5: {
@@ -1863,10 +1889,15 @@ export const ValidIngredient: MessageFns<ValidIngredient> = {
         : isSet(object.archived_at)
           ? fromJsonTimestamp(object.archived_at)
           : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
+          : undefined,
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
       iconPath: isSet(object.iconPath)
         ? globalThis.String(object.iconPath)
@@ -2028,8 +2059,11 @@ export const ValidIngredient: MessageFns<ValidIngredient> = {
     if (message.archivedAt !== undefined) {
       obj.archivedAt = message.archivedAt.toISOString();
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
     if (message.iconPath !== '') {
       obj.iconPath = message.iconPath;
@@ -2144,10 +2178,8 @@ export const ValidIngredient: MessageFns<ValidIngredient> = {
     message.createdAt = object.createdAt ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
     message.iconPath = object.iconPath ?? '';
     message.warning = object.warning ?? '';
     message.pluralName = object.pluralName ?? '';
@@ -2531,7 +2563,8 @@ function createBaseValidIngredientMeasurementUnit(): ValidIngredientMeasurementU
     archivedAt: undefined,
     notes: '',
     id: '',
-    allowableQuantity: undefined,
+    minAllowableQuantity: 0,
+    maxAllowableQuantity: undefined,
     measurementUnit: undefined,
     ingredient: undefined,
   };
@@ -2554,8 +2587,11 @@ export const ValidIngredientMeasurementUnit: MessageFns<ValidIngredientMeasureme
     if (message.id !== '') {
       writer.uint32(42).string(message.id);
     }
-    if (message.allowableQuantity !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.allowableQuantity, writer.uint32(50).fork()).join();
+    if (message.minAllowableQuantity !== 0) {
+      writer.uint32(53).float(message.minAllowableQuantity);
+    }
+    if (message.maxAllowableQuantity !== undefined) {
+      writer.uint32(77).float(message.maxAllowableQuantity);
     }
     if (message.measurementUnit !== undefined) {
       ValidMeasurementUnit.encode(message.measurementUnit, writer.uint32(58).fork()).join();
@@ -2614,11 +2650,19 @@ export const ValidIngredientMeasurementUnit: MessageFns<ValidIngredientMeasureme
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 53) {
             break;
           }
 
-          message.allowableQuantity = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minAllowableQuantity = reader.float();
+          continue;
+        }
+        case 9: {
+          if (tag !== 77) {
+            break;
+          }
+
+          message.maxAllowableQuantity = reader.float();
           continue;
         }
         case 7: {
@@ -2665,10 +2709,15 @@ export const ValidIngredientMeasurementUnit: MessageFns<ValidIngredientMeasureme
           : undefined,
       notes: isSet(object.notes) ? globalThis.String(object.notes) : '',
       id: isSet(object.id) ? globalThis.String(object.id) : '',
-      allowableQuantity: isSet(object.allowableQuantity)
-        ? Float32RangeWithOptionalMax.fromJSON(object.allowableQuantity)
-        : isSet(object.allowable_quantity)
-          ? Float32RangeWithOptionalMax.fromJSON(object.allowable_quantity)
+      minAllowableQuantity: isSet(object.minAllowableQuantity)
+        ? globalThis.Number(object.minAllowableQuantity)
+        : isSet(object.min_allowable_quantity)
+          ? globalThis.Number(object.min_allowable_quantity)
+          : 0,
+      maxAllowableQuantity: isSet(object.maxAllowableQuantity)
+        ? globalThis.Number(object.maxAllowableQuantity)
+        : isSet(object.max_allowable_quantity)
+          ? globalThis.Number(object.max_allowable_quantity)
           : undefined,
       measurementUnit: isSet(object.measurementUnit)
         ? ValidMeasurementUnit.fromJSON(object.measurementUnit)
@@ -2696,8 +2745,11 @@ export const ValidIngredientMeasurementUnit: MessageFns<ValidIngredientMeasureme
     if (message.id !== '') {
       obj.id = message.id;
     }
-    if (message.allowableQuantity !== undefined) {
-      obj.allowableQuantity = Float32RangeWithOptionalMax.toJSON(message.allowableQuantity);
+    if (message.minAllowableQuantity !== 0) {
+      obj.minAllowableQuantity = message.minAllowableQuantity;
+    }
+    if (message.maxAllowableQuantity !== undefined) {
+      obj.maxAllowableQuantity = message.maxAllowableQuantity;
     }
     if (message.measurementUnit !== undefined) {
       obj.measurementUnit = ValidMeasurementUnit.toJSON(message.measurementUnit);
@@ -2720,10 +2772,8 @@ export const ValidIngredientMeasurementUnit: MessageFns<ValidIngredientMeasureme
     message.archivedAt = object.archivedAt ?? undefined;
     message.notes = object.notes ?? '';
     message.id = object.id ?? '';
-    message.allowableQuantity =
-      object.allowableQuantity !== undefined && object.allowableQuantity !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.allowableQuantity)
-        : undefined;
+    message.minAllowableQuantity = object.minAllowableQuantity ?? 0;
+    message.maxAllowableQuantity = object.maxAllowableQuantity ?? undefined;
     message.measurementUnit =
       object.measurementUnit !== undefined && object.measurementUnit !== null
         ? ValidMeasurementUnit.fromPartial(object.measurementUnit)
@@ -2923,8 +2973,10 @@ function createBaseValidPrepTaskConfig(): ValidPrepTaskConfig {
     createdAt: undefined,
     lastUpdatedAt: undefined,
     archivedAt: undefined,
-    storageDurationInSeconds: undefined,
-    storageTemperatureInCelsius: undefined,
+    minStorageDurationInSeconds: 0,
+    maxStorageDurationInSeconds: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
     id: '',
     storageType: '',
     storageInstructions: '',
@@ -2946,11 +2998,17 @@ export const ValidPrepTaskConfig: MessageFns<ValidPrepTaskConfig> = {
     if (message.archivedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.archivedAt), writer.uint32(26).fork()).join();
     }
-    if (message.storageDurationInSeconds !== undefined) {
-      Uint32RangeWithOptionalMax.encode(message.storageDurationInSeconds, writer.uint32(34).fork()).join();
+    if (message.minStorageDurationInSeconds !== 0) {
+      writer.uint32(32).uint32(message.minStorageDurationInSeconds);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(42).fork()).join();
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      writer.uint32(104).uint32(message.maxStorageDurationInSeconds);
+    }
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(45).float(message.minStorageTemperatureInCelsius);
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(117).float(message.maxStorageTemperatureInCelsius);
     }
     if (message.id !== '') {
       writer.uint32(50).string(message.id);
@@ -3008,19 +3066,35 @@ export const ValidPrepTaskConfig: MessageFns<ValidPrepTaskConfig> = {
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.storageDurationInSeconds = Uint32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minStorageDurationInSeconds = reader.uint32();
+          continue;
+        }
+        case 13: {
+          if (tag !== 104) {
+            break;
+          }
+
+          message.maxStorageDurationInSeconds = reader.uint32();
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 45) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 14: {
+          if (tag !== 117) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 6: {
@@ -3105,15 +3179,25 @@ export const ValidPrepTaskConfig: MessageFns<ValidPrepTaskConfig> = {
         : isSet(object.archived_at)
           ? fromJsonTimestamp(object.archived_at)
           : undefined,
-      storageDurationInSeconds: isSet(object.storageDurationInSeconds)
-        ? Uint32RangeWithOptionalMax.fromJSON(object.storageDurationInSeconds)
-        : isSet(object.storage_duration_in_seconds)
-          ? Uint32RangeWithOptionalMax.fromJSON(object.storage_duration_in_seconds)
+      minStorageDurationInSeconds: isSet(object.minStorageDurationInSeconds)
+        ? globalThis.Number(object.minStorageDurationInSeconds)
+        : isSet(object.min_storage_duration_in_seconds)
+          ? globalThis.Number(object.min_storage_duration_in_seconds)
+          : 0,
+      maxStorageDurationInSeconds: isSet(object.maxStorageDurationInSeconds)
+        ? globalThis.Number(object.maxStorageDurationInSeconds)
+        : isSet(object.max_storage_duration_in_seconds)
+          ? globalThis.Number(object.max_storage_duration_in_seconds)
           : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
+          : undefined,
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
       id: isSet(object.id) ? globalThis.String(object.id) : '',
       storageType: isSet(object.storageType)
@@ -3144,11 +3228,17 @@ export const ValidPrepTaskConfig: MessageFns<ValidPrepTaskConfig> = {
     if (message.archivedAt !== undefined) {
       obj.archivedAt = message.archivedAt.toISOString();
     }
-    if (message.storageDurationInSeconds !== undefined) {
-      obj.storageDurationInSeconds = Uint32RangeWithOptionalMax.toJSON(message.storageDurationInSeconds);
+    if (message.minStorageDurationInSeconds !== 0) {
+      obj.minStorageDurationInSeconds = Math.round(message.minStorageDurationInSeconds);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      obj.maxStorageDurationInSeconds = Math.round(message.maxStorageDurationInSeconds);
+    }
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
     if (message.id !== '') {
       obj.id = message.id;
@@ -3182,14 +3272,10 @@ export const ValidPrepTaskConfig: MessageFns<ValidPrepTaskConfig> = {
     message.createdAt = object.createdAt ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
-    message.storageDurationInSeconds =
-      object.storageDurationInSeconds !== undefined && object.storageDurationInSeconds !== null
-        ? Uint32RangeWithOptionalMax.fromPartial(object.storageDurationInSeconds)
-        : undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
+    message.minStorageDurationInSeconds = object.minStorageDurationInSeconds ?? 0;
+    message.maxStorageDurationInSeconds = object.maxStorageDurationInSeconds ?? undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
     message.id = object.id ?? '';
     message.storageType = object.storageType ?? '';
     message.storageInstructions = object.storageInstructions ?? '';
@@ -4538,9 +4624,12 @@ export const MeasurementUnitConversionMismatch: MessageFns<MeasurementUnitConver
 function createBaseValidPreparation(): ValidPreparation {
   return {
     createdAt: undefined,
-    instrumentCount: undefined,
-    ingredientCount: undefined,
-    vesselCount: undefined,
+    minInstrumentCount: 0,
+    maxInstrumentCount: undefined,
+    minIngredientCount: 0,
+    maxIngredientCount: undefined,
+    minVesselCount: 0,
+    maxVesselCount: undefined,
     archivedAt: undefined,
     lastUpdatedAt: undefined,
     iconPath: '',
@@ -4565,14 +4654,23 @@ export const ValidPreparation: MessageFns<ValidPreparation> = {
     if (message.createdAt !== undefined) {
       Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(10).fork()).join();
     }
-    if (message.instrumentCount !== undefined) {
-      Uint16RangeWithOptionalMax.encode(message.instrumentCount, writer.uint32(18).fork()).join();
+    if (message.minInstrumentCount !== 0) {
+      writer.uint32(16).uint32(message.minInstrumentCount);
     }
-    if (message.ingredientCount !== undefined) {
-      Uint16RangeWithOptionalMax.encode(message.ingredientCount, writer.uint32(26).fork()).join();
+    if (message.maxInstrumentCount !== undefined) {
+      writer.uint32(168).uint32(message.maxInstrumentCount);
     }
-    if (message.vesselCount !== undefined) {
-      Uint16RangeWithOptionalMax.encode(message.vesselCount, writer.uint32(34).fork()).join();
+    if (message.minIngredientCount !== 0) {
+      writer.uint32(24).uint32(message.minIngredientCount);
+    }
+    if (message.maxIngredientCount !== undefined) {
+      writer.uint32(176).uint32(message.maxIngredientCount);
+    }
+    if (message.minVesselCount !== 0) {
+      writer.uint32(32).uint32(message.minVesselCount);
+    }
+    if (message.maxVesselCount !== undefined) {
+      writer.uint32(184).uint32(message.maxVesselCount);
     }
     if (message.archivedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.archivedAt), writer.uint32(42).fork()).join();
@@ -4641,27 +4739,51 @@ export const ValidPreparation: MessageFns<ValidPreparation> = {
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.instrumentCount = Uint16RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minInstrumentCount = reader.uint32();
+          continue;
+        }
+        case 21: {
+          if (tag !== 168) {
+            break;
+          }
+
+          message.maxInstrumentCount = reader.uint32();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.ingredientCount = Uint16RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minIngredientCount = reader.uint32();
+          continue;
+        }
+        case 22: {
+          if (tag !== 176) {
+            break;
+          }
+
+          message.maxIngredientCount = reader.uint32();
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.vesselCount = Uint16RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minVesselCount = reader.uint32();
+          continue;
+        }
+        case 23: {
+          if (tag !== 184) {
+            break;
+          }
+
+          message.maxVesselCount = reader.uint32();
           continue;
         }
         case 5: {
@@ -4808,20 +4930,35 @@ export const ValidPreparation: MessageFns<ValidPreparation> = {
         : isSet(object.created_at)
           ? fromJsonTimestamp(object.created_at)
           : undefined,
-      instrumentCount: isSet(object.instrumentCount)
-        ? Uint16RangeWithOptionalMax.fromJSON(object.instrumentCount)
-        : isSet(object.instrument_count)
-          ? Uint16RangeWithOptionalMax.fromJSON(object.instrument_count)
+      minInstrumentCount: isSet(object.minInstrumentCount)
+        ? globalThis.Number(object.minInstrumentCount)
+        : isSet(object.min_instrument_count)
+          ? globalThis.Number(object.min_instrument_count)
+          : 0,
+      maxInstrumentCount: isSet(object.maxInstrumentCount)
+        ? globalThis.Number(object.maxInstrumentCount)
+        : isSet(object.max_instrument_count)
+          ? globalThis.Number(object.max_instrument_count)
           : undefined,
-      ingredientCount: isSet(object.ingredientCount)
-        ? Uint16RangeWithOptionalMax.fromJSON(object.ingredientCount)
-        : isSet(object.ingredient_count)
-          ? Uint16RangeWithOptionalMax.fromJSON(object.ingredient_count)
+      minIngredientCount: isSet(object.minIngredientCount)
+        ? globalThis.Number(object.minIngredientCount)
+        : isSet(object.min_ingredient_count)
+          ? globalThis.Number(object.min_ingredient_count)
+          : 0,
+      maxIngredientCount: isSet(object.maxIngredientCount)
+        ? globalThis.Number(object.maxIngredientCount)
+        : isSet(object.max_ingredient_count)
+          ? globalThis.Number(object.max_ingredient_count)
           : undefined,
-      vesselCount: isSet(object.vesselCount)
-        ? Uint16RangeWithOptionalMax.fromJSON(object.vesselCount)
-        : isSet(object.vessel_count)
-          ? Uint16RangeWithOptionalMax.fromJSON(object.vessel_count)
+      minVesselCount: isSet(object.minVesselCount)
+        ? globalThis.Number(object.minVesselCount)
+        : isSet(object.min_vessel_count)
+          ? globalThis.Number(object.min_vessel_count)
+          : 0,
+      maxVesselCount: isSet(object.maxVesselCount)
+        ? globalThis.Number(object.maxVesselCount)
+        : isSet(object.max_vessel_count)
+          ? globalThis.Number(object.max_vessel_count)
           : undefined,
       archivedAt: isSet(object.archivedAt)
         ? fromJsonTimestamp(object.archivedAt)
@@ -4891,14 +5028,23 @@ export const ValidPreparation: MessageFns<ValidPreparation> = {
     if (message.createdAt !== undefined) {
       obj.createdAt = message.createdAt.toISOString();
     }
-    if (message.instrumentCount !== undefined) {
-      obj.instrumentCount = Uint16RangeWithOptionalMax.toJSON(message.instrumentCount);
+    if (message.minInstrumentCount !== 0) {
+      obj.minInstrumentCount = Math.round(message.minInstrumentCount);
     }
-    if (message.ingredientCount !== undefined) {
-      obj.ingredientCount = Uint16RangeWithOptionalMax.toJSON(message.ingredientCount);
+    if (message.maxInstrumentCount !== undefined) {
+      obj.maxInstrumentCount = Math.round(message.maxInstrumentCount);
     }
-    if (message.vesselCount !== undefined) {
-      obj.vesselCount = Uint16RangeWithOptionalMax.toJSON(message.vesselCount);
+    if (message.minIngredientCount !== 0) {
+      obj.minIngredientCount = Math.round(message.minIngredientCount);
+    }
+    if (message.maxIngredientCount !== undefined) {
+      obj.maxIngredientCount = Math.round(message.maxIngredientCount);
+    }
+    if (message.minVesselCount !== 0) {
+      obj.minVesselCount = Math.round(message.minVesselCount);
+    }
+    if (message.maxVesselCount !== undefined) {
+      obj.maxVesselCount = Math.round(message.maxVesselCount);
     }
     if (message.archivedAt !== undefined) {
       obj.archivedAt = message.archivedAt.toISOString();
@@ -4957,18 +5103,12 @@ export const ValidPreparation: MessageFns<ValidPreparation> = {
   fromPartial<I extends Exact<DeepPartial<ValidPreparation>, I>>(object: I): ValidPreparation {
     const message = createBaseValidPreparation();
     message.createdAt = object.createdAt ?? undefined;
-    message.instrumentCount =
-      object.instrumentCount !== undefined && object.instrumentCount !== null
-        ? Uint16RangeWithOptionalMax.fromPartial(object.instrumentCount)
-        : undefined;
-    message.ingredientCount =
-      object.ingredientCount !== undefined && object.ingredientCount !== null
-        ? Uint16RangeWithOptionalMax.fromPartial(object.ingredientCount)
-        : undefined;
-    message.vesselCount =
-      object.vesselCount !== undefined && object.vesselCount !== null
-        ? Uint16RangeWithOptionalMax.fromPartial(object.vesselCount)
-        : undefined;
+    message.minInstrumentCount = object.minInstrumentCount ?? 0;
+    message.maxInstrumentCount = object.maxInstrumentCount ?? undefined;
+    message.minIngredientCount = object.minIngredientCount ?? 0;
+    message.maxIngredientCount = object.maxIngredientCount ?? undefined;
+    message.minVesselCount = object.minVesselCount ?? 0;
+    message.maxVesselCount = object.maxVesselCount ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
     message.iconPath = object.iconPath ?? '';
@@ -5976,7 +6116,8 @@ function createBaseRecipe(): Recipe {
     inspiredByRecipeId: undefined,
     lastUpdatedAt: undefined,
     archivedAt: undefined,
-    estimatedPortions: undefined,
+    minEstimatedPortions: 0,
+    maxEstimatedPortions: undefined,
     pluralPortionName: '',
     description: '',
     name: '',
@@ -6010,8 +6151,11 @@ export const Recipe: MessageFns<Recipe> = {
     if (message.archivedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.archivedAt), writer.uint32(34).fork()).join();
     }
-    if (message.estimatedPortions !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.estimatedPortions, writer.uint32(42).fork()).join();
+    if (message.minEstimatedPortions !== 0) {
+      writer.uint32(45).float(message.minEstimatedPortions);
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      writer.uint32(189).float(message.maxEstimatedPortions);
     }
     if (message.pluralPortionName !== '') {
       writer.uint32(50).string(message.pluralPortionName);
@@ -6104,11 +6248,19 @@ export const Recipe: MessageFns<Recipe> = {
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 45) {
             break;
           }
 
-          message.estimatedPortions = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minEstimatedPortions = reader.float();
+          continue;
+        }
+        case 23: {
+          if (tag !== 189) {
+            break;
+          }
+
+          message.maxEstimatedPortions = reader.float();
           continue;
         }
         case 6: {
@@ -6270,10 +6422,15 @@ export const Recipe: MessageFns<Recipe> = {
         : isSet(object.archived_at)
           ? fromJsonTimestamp(object.archived_at)
           : undefined,
-      estimatedPortions: isSet(object.estimatedPortions)
-        ? Float32RangeWithOptionalMax.fromJSON(object.estimatedPortions)
-        : isSet(object.estimated_portions)
-          ? Float32RangeWithOptionalMax.fromJSON(object.estimated_portions)
+      minEstimatedPortions: isSet(object.minEstimatedPortions)
+        ? globalThis.Number(object.minEstimatedPortions)
+        : isSet(object.min_estimated_portions)
+          ? globalThis.Number(object.min_estimated_portions)
+          : 0,
+      maxEstimatedPortions: isSet(object.maxEstimatedPortions)
+        ? globalThis.Number(object.maxEstimatedPortions)
+        : isSet(object.max_estimated_portions)
+          ? globalThis.Number(object.max_estimated_portions)
           : undefined,
       pluralPortionName: isSet(object.pluralPortionName)
         ? globalThis.String(object.pluralPortionName)
@@ -6340,8 +6497,11 @@ export const Recipe: MessageFns<Recipe> = {
     if (message.archivedAt !== undefined) {
       obj.archivedAt = message.archivedAt.toISOString();
     }
-    if (message.estimatedPortions !== undefined) {
-      obj.estimatedPortions = Float32RangeWithOptionalMax.toJSON(message.estimatedPortions);
+    if (message.minEstimatedPortions !== 0) {
+      obj.minEstimatedPortions = message.minEstimatedPortions;
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      obj.maxEstimatedPortions = message.maxEstimatedPortions;
     }
     if (message.pluralPortionName !== '') {
       obj.pluralPortionName = message.pluralPortionName;
@@ -6403,10 +6563,8 @@ export const Recipe: MessageFns<Recipe> = {
     message.inspiredByRecipeId = object.inspiredByRecipeId ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
-    message.estimatedPortions =
-      object.estimatedPortions !== undefined && object.estimatedPortions !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.estimatedPortions)
-        : undefined;
+    message.minEstimatedPortions = object.minEstimatedPortions ?? 0;
+    message.maxEstimatedPortions = object.maxEstimatedPortions ?? undefined;
     message.pluralPortionName = object.pluralPortionName ?? '';
     message.description = object.description ?? '';
     message.name = object.name ?? '';
@@ -6677,8 +6835,10 @@ export const RecipeMedia: MessageFns<RecipeMedia> = {
 function createBaseRecipePrepTask(): RecipePrepTask {
   return {
     createdAt: undefined,
-    storageTemperatureInCelsius: undefined,
-    timeBufferBeforeRecipeInSeconds: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
+    minTimeBufferBeforeRecipeInSeconds: 0,
+    maxTimeBufferBeforeRecipeInSeconds: undefined,
     archivedAt: undefined,
     lastUpdatedAt: undefined,
     id: '',
@@ -6698,11 +6858,17 @@ export const RecipePrepTask: MessageFns<RecipePrepTask> = {
     if (message.createdAt !== undefined) {
       Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(10).fork()).join();
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(18).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(21).float(message.minStorageTemperatureInCelsius);
     }
-    if (message.timeBufferBeforeRecipeInSeconds !== undefined) {
-      Uint32RangeWithOptionalMax.encode(message.timeBufferBeforeRecipeInSeconds, writer.uint32(26).fork()).join();
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(125).float(message.maxStorageTemperatureInCelsius);
+    }
+    if (message.minTimeBufferBeforeRecipeInSeconds !== 0) {
+      writer.uint32(24).uint32(message.minTimeBufferBeforeRecipeInSeconds);
+    }
+    if (message.maxTimeBufferBeforeRecipeInSeconds !== undefined) {
+      writer.uint32(128).uint32(message.maxTimeBufferBeforeRecipeInSeconds);
     }
     if (message.archivedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.archivedAt), writer.uint32(34).fork()).join();
@@ -6756,19 +6922,35 @@ export const RecipePrepTask: MessageFns<RecipePrepTask> = {
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 21) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 15: {
+          if (tag !== 125) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.timeBufferBeforeRecipeInSeconds = Uint32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minTimeBufferBeforeRecipeInSeconds = reader.uint32();
+          continue;
+        }
+        case 16: {
+          if (tag !== 128) {
+            break;
+          }
+
+          message.maxTimeBufferBeforeRecipeInSeconds = reader.uint32();
           continue;
         }
         case 4: {
@@ -6875,15 +7057,25 @@ export const RecipePrepTask: MessageFns<RecipePrepTask> = {
         : isSet(object.created_at)
           ? fromJsonTimestamp(object.created_at)
           : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
           : undefined,
-      timeBufferBeforeRecipeInSeconds: isSet(object.timeBufferBeforeRecipeInSeconds)
-        ? Uint32RangeWithOptionalMax.fromJSON(object.timeBufferBeforeRecipeInSeconds)
-        : isSet(object.time_buffer_before_recipe_in_seconds)
-          ? Uint32RangeWithOptionalMax.fromJSON(object.time_buffer_before_recipe_in_seconds)
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
+          : undefined,
+      minTimeBufferBeforeRecipeInSeconds: isSet(object.minTimeBufferBeforeRecipeInSeconds)
+        ? globalThis.Number(object.minTimeBufferBeforeRecipeInSeconds)
+        : isSet(object.min_time_buffer_before_recipe_in_seconds)
+          ? globalThis.Number(object.min_time_buffer_before_recipe_in_seconds)
+          : 0,
+      maxTimeBufferBeforeRecipeInSeconds: isSet(object.maxTimeBufferBeforeRecipeInSeconds)
+        ? globalThis.Number(object.maxTimeBufferBeforeRecipeInSeconds)
+        : isSet(object.max_time_buffer_before_recipe_in_seconds)
+          ? globalThis.Number(object.max_time_buffer_before_recipe_in_seconds)
           : undefined,
       archivedAt: isSet(object.archivedAt)
         ? fromJsonTimestamp(object.archivedAt)
@@ -6928,11 +7120,17 @@ export const RecipePrepTask: MessageFns<RecipePrepTask> = {
     if (message.createdAt !== undefined) {
       obj.createdAt = message.createdAt.toISOString();
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
     }
-    if (message.timeBufferBeforeRecipeInSeconds !== undefined) {
-      obj.timeBufferBeforeRecipeInSeconds = Uint32RangeWithOptionalMax.toJSON(message.timeBufferBeforeRecipeInSeconds);
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
+    }
+    if (message.minTimeBufferBeforeRecipeInSeconds !== 0) {
+      obj.minTimeBufferBeforeRecipeInSeconds = Math.round(message.minTimeBufferBeforeRecipeInSeconds);
+    }
+    if (message.maxTimeBufferBeforeRecipeInSeconds !== undefined) {
+      obj.maxTimeBufferBeforeRecipeInSeconds = Math.round(message.maxTimeBufferBeforeRecipeInSeconds);
     }
     if (message.archivedAt !== undefined) {
       obj.archivedAt = message.archivedAt.toISOString();
@@ -6976,14 +7174,10 @@ export const RecipePrepTask: MessageFns<RecipePrepTask> = {
   fromPartial<I extends Exact<DeepPartial<RecipePrepTask>, I>>(object: I): RecipePrepTask {
     const message = createBaseRecipePrepTask();
     message.createdAt = object.createdAt ?? undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
-    message.timeBufferBeforeRecipeInSeconds =
-      object.timeBufferBeforeRecipeInSeconds !== undefined && object.timeBufferBeforeRecipeInSeconds !== null
-        ? Uint32RangeWithOptionalMax.fromPartial(object.timeBufferBeforeRecipeInSeconds)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
+    message.minTimeBufferBeforeRecipeInSeconds = object.minTimeBufferBeforeRecipeInSeconds ?? 0;
+    message.maxTimeBufferBeforeRecipeInSeconds = object.maxTimeBufferBeforeRecipeInSeconds ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
     message.id = object.id ?? '';
@@ -7391,8 +7585,10 @@ export const RecipeRating: MessageFns<RecipeRating> = {
 function createBaseRecipeStep(): RecipeStep {
   return {
     createdAt: undefined,
-    estimatedTimeInSeconds: undefined,
-    temperatureInCelsius: undefined,
+    minEstimatedTimeInSeconds: undefined,
+    maxEstimatedTimeInSeconds: undefined,
+    minTemperatureInCelsius: undefined,
+    maxTemperatureInCelsius: undefined,
     archivedAt: undefined,
     lastUpdatedAt: undefined,
     belongsToRecipe: '',
@@ -7419,11 +7615,17 @@ export const RecipeStep: MessageFns<RecipeStep> = {
     if (message.createdAt !== undefined) {
       Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(10).fork()).join();
     }
-    if (message.estimatedTimeInSeconds !== undefined) {
-      OptionalUint32Range.encode(message.estimatedTimeInSeconds, writer.uint32(18).fork()).join();
+    if (message.minEstimatedTimeInSeconds !== undefined) {
+      writer.uint32(16).uint32(message.minEstimatedTimeInSeconds);
     }
-    if (message.temperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.temperatureInCelsius, writer.uint32(26).fork()).join();
+    if (message.maxEstimatedTimeInSeconds !== undefined) {
+      writer.uint32(176).uint32(message.maxEstimatedTimeInSeconds);
+    }
+    if (message.minTemperatureInCelsius !== undefined) {
+      writer.uint32(29).float(message.minTemperatureInCelsius);
+    }
+    if (message.maxTemperatureInCelsius !== undefined) {
+      writer.uint32(189).float(message.maxTemperatureInCelsius);
     }
     if (message.archivedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.archivedAt), writer.uint32(34).fork()).join();
@@ -7498,19 +7700,35 @@ export const RecipeStep: MessageFns<RecipeStep> = {
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.estimatedTimeInSeconds = OptionalUint32Range.decode(reader, reader.uint32());
+          message.minEstimatedTimeInSeconds = reader.uint32();
+          continue;
+        }
+        case 22: {
+          if (tag !== 176) {
+            break;
+          }
+
+          message.maxEstimatedTimeInSeconds = reader.uint32();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 29) {
             break;
           }
 
-          message.temperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 23: {
+          if (tag !== 189) {
+            break;
+          }
+
+          message.maxTemperatureInCelsius = reader.float();
           continue;
         }
         case 4: {
@@ -7673,15 +7891,25 @@ export const RecipeStep: MessageFns<RecipeStep> = {
         : isSet(object.created_at)
           ? fromJsonTimestamp(object.created_at)
           : undefined,
-      estimatedTimeInSeconds: isSet(object.estimatedTimeInSeconds)
-        ? OptionalUint32Range.fromJSON(object.estimatedTimeInSeconds)
-        : isSet(object.estimated_time_in_seconds)
-          ? OptionalUint32Range.fromJSON(object.estimated_time_in_seconds)
+      minEstimatedTimeInSeconds: isSet(object.minEstimatedTimeInSeconds)
+        ? globalThis.Number(object.minEstimatedTimeInSeconds)
+        : isSet(object.min_estimated_time_in_seconds)
+          ? globalThis.Number(object.min_estimated_time_in_seconds)
           : undefined,
-      temperatureInCelsius: isSet(object.temperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.temperatureInCelsius)
-        : isSet(object.temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.temperature_in_celsius)
+      maxEstimatedTimeInSeconds: isSet(object.maxEstimatedTimeInSeconds)
+        ? globalThis.Number(object.maxEstimatedTimeInSeconds)
+        : isSet(object.max_estimated_time_in_seconds)
+          ? globalThis.Number(object.max_estimated_time_in_seconds)
+          : undefined,
+      minTemperatureInCelsius: isSet(object.minTemperatureInCelsius)
+        ? globalThis.Number(object.minTemperatureInCelsius)
+        : isSet(object.min_temperature_in_celsius)
+          ? globalThis.Number(object.min_temperature_in_celsius)
+          : undefined,
+      maxTemperatureInCelsius: isSet(object.maxTemperatureInCelsius)
+        ? globalThis.Number(object.maxTemperatureInCelsius)
+        : isSet(object.max_temperature_in_celsius)
+          ? globalThis.Number(object.max_temperature_in_celsius)
           : undefined,
       archivedAt: isSet(object.archivedAt)
         ? fromJsonTimestamp(object.archivedAt)
@@ -7749,11 +7977,17 @@ export const RecipeStep: MessageFns<RecipeStep> = {
     if (message.createdAt !== undefined) {
       obj.createdAt = message.createdAt.toISOString();
     }
-    if (message.estimatedTimeInSeconds !== undefined) {
-      obj.estimatedTimeInSeconds = OptionalUint32Range.toJSON(message.estimatedTimeInSeconds);
+    if (message.minEstimatedTimeInSeconds !== undefined) {
+      obj.minEstimatedTimeInSeconds = Math.round(message.minEstimatedTimeInSeconds);
     }
-    if (message.temperatureInCelsius !== undefined) {
-      obj.temperatureInCelsius = OptionalFloat32Range.toJSON(message.temperatureInCelsius);
+    if (message.maxEstimatedTimeInSeconds !== undefined) {
+      obj.maxEstimatedTimeInSeconds = Math.round(message.maxEstimatedTimeInSeconds);
+    }
+    if (message.minTemperatureInCelsius !== undefined) {
+      obj.minTemperatureInCelsius = message.minTemperatureInCelsius;
+    }
+    if (message.maxTemperatureInCelsius !== undefined) {
+      obj.maxTemperatureInCelsius = message.maxTemperatureInCelsius;
     }
     if (message.archivedAt !== undefined) {
       obj.archivedAt = message.archivedAt.toISOString();
@@ -7818,14 +8052,10 @@ export const RecipeStep: MessageFns<RecipeStep> = {
   fromPartial<I extends Exact<DeepPartial<RecipeStep>, I>>(object: I): RecipeStep {
     const message = createBaseRecipeStep();
     message.createdAt = object.createdAt ?? undefined;
-    message.estimatedTimeInSeconds =
-      object.estimatedTimeInSeconds !== undefined && object.estimatedTimeInSeconds !== null
-        ? OptionalUint32Range.fromPartial(object.estimatedTimeInSeconds)
-        : undefined;
-    message.temperatureInCelsius =
-      object.temperatureInCelsius !== undefined && object.temperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.temperatureInCelsius)
-        : undefined;
+    message.minEstimatedTimeInSeconds = object.minEstimatedTimeInSeconds ?? undefined;
+    message.maxEstimatedTimeInSeconds = object.maxEstimatedTimeInSeconds ?? undefined;
+    message.minTemperatureInCelsius = object.minTemperatureInCelsius ?? undefined;
+    message.maxTemperatureInCelsius = object.maxTemperatureInCelsius ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
     message.belongsToRecipe = object.belongsToRecipe ?? '';
@@ -8263,7 +8493,8 @@ function createBaseRecipeStepIngredient(): RecipeStepIngredient {
     quantityNotes: '',
     ingredientNotes: '',
     name: '',
-    quantity: undefined,
+    minQuantity: 0,
+    maxQuantity: undefined,
     measurementUnit: undefined,
     optionIndex: 0,
     optional: false,
@@ -8314,8 +8545,11 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
     if (message.name !== '') {
       writer.uint32(106).string(message.name);
     }
-    if (message.quantity !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.quantity, writer.uint32(114).fork()).join();
+    if (message.minQuantity !== 0) {
+      writer.uint32(117).float(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(173).float(message.maxQuantity);
     }
     if (message.measurementUnit !== undefined) {
       ValidMeasurementUnit.encode(message.measurementUnit, writer.uint32(122).fork()).join();
@@ -8450,11 +8684,19 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
           continue;
         }
         case 14: {
-          if (tag !== 114) {
+          if (tag !== 117) {
             break;
           }
 
-          message.quantity = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minQuantity = reader.float();
+          continue;
+        }
+        case 21: {
+          if (tag !== 173) {
+            break;
+          }
+
+          message.maxQuantity = reader.float();
           continue;
         }
         case 15: {
@@ -8569,7 +8811,16 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
           ? globalThis.String(object.ingredient_notes)
           : '',
       name: isSet(object.name) ? globalThis.String(object.name) : '',
-      quantity: isSet(object.quantity) ? Float32RangeWithOptionalMax.fromJSON(object.quantity) : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : 0,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       measurementUnit: isSet(object.measurementUnit)
         ? ValidMeasurementUnit.fromJSON(object.measurementUnit)
         : isSet(object.measurement_unit)
@@ -8636,8 +8887,11 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
     if (message.name !== '') {
       obj.name = message.name;
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Float32RangeWithOptionalMax.toJSON(message.quantity);
+    if (message.minQuantity !== 0) {
+      obj.minQuantity = message.minQuantity;
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = message.maxQuantity;
     }
     if (message.measurementUnit !== undefined) {
       obj.measurementUnit = ValidMeasurementUnit.toJSON(message.measurementUnit);
@@ -8681,10 +8935,8 @@ export const RecipeStepIngredient: MessageFns<RecipeStepIngredient> = {
     message.quantityNotes = object.quantityNotes ?? '';
     message.ingredientNotes = object.ingredientNotes ?? '';
     message.name = object.name ?? '';
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? 0;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.measurementUnit =
       object.measurementUnit !== undefined && object.measurementUnit !== null
         ? ValidMeasurementUnit.fromPartial(object.measurementUnit)
@@ -8709,7 +8961,8 @@ function createBaseRecipeStepInstrument(): RecipeStepInstrument {
     name: '',
     belongsToRecipeStep: '',
     id: '',
-    quantity: undefined,
+    minQuantity: 0,
+    maxQuantity: undefined,
     optionIndex: 0,
     preferenceRank: 0,
     optional: false,
@@ -8747,8 +9000,11 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
     if (message.id !== '') {
       writer.uint32(74).string(message.id);
     }
-    if (message.quantity !== undefined) {
-      Uint32RangeWithOptionalMax.encode(message.quantity, writer.uint32(82).fork()).join();
+    if (message.minQuantity !== 0) {
+      writer.uint32(80).uint32(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(128).uint32(message.maxQuantity);
     }
     if (message.optionIndex !== 0) {
       writer.uint32(88).uint32(message.optionIndex);
@@ -8848,11 +9104,19 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
           continue;
         }
         case 10: {
-          if (tag !== 82) {
+          if (tag !== 80) {
             break;
           }
 
-          message.quantity = Uint32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minQuantity = reader.uint32();
+          continue;
+        }
+        case 16: {
+          if (tag !== 128) {
+            break;
+          }
+
+          message.maxQuantity = reader.uint32();
           continue;
         }
         case 11: {
@@ -8935,7 +9199,16 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
           ? globalThis.String(object.belongs_to_recipe_step)
           : '',
       id: isSet(object.id) ? globalThis.String(object.id) : '',
-      quantity: isSet(object.quantity) ? Uint32RangeWithOptionalMax.fromJSON(object.quantity) : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : 0,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       optionIndex: isSet(object.optionIndex)
         ? globalThis.Number(object.optionIndex)
         : isSet(object.option_index)
@@ -8985,8 +9258,11 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
     if (message.id !== '') {
       obj.id = message.id;
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Uint32RangeWithOptionalMax.toJSON(message.quantity);
+    if (message.minQuantity !== 0) {
+      obj.minQuantity = Math.round(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = Math.round(message.maxQuantity);
     }
     if (message.optionIndex !== 0) {
       obj.optionIndex = Math.round(message.optionIndex);
@@ -9023,10 +9299,8 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
     message.name = object.name ?? '';
     message.belongsToRecipeStep = object.belongsToRecipeStep ?? '';
     message.id = object.id ?? '';
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Uint32RangeWithOptionalMax.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? 0;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.optionIndex = object.optionIndex ?? 0;
     message.preferenceRank = object.preferenceRank ?? 0;
     message.optional = object.optional ?? false;
@@ -9039,10 +9313,14 @@ export const RecipeStepInstrument: MessageFns<RecipeStepInstrument> = {
 function createBaseRecipeStepProduct(): RecipeStepProduct {
   return {
     createdAt: undefined,
-    storageTemperatureInCelsius: undefined,
-    storageDurationInSeconds: undefined,
-    measurementQuantity: undefined,
-    itemQuantity: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
+    minStorageDurationInSeconds: undefined,
+    maxStorageDurationInSeconds: undefined,
+    minMeasurementQuantity: undefined,
+    maxMeasurementQuantity: undefined,
+    minItemQuantity: undefined,
+    maxItemQuantity: undefined,
     archivedAt: undefined,
     lastUpdatedAt: undefined,
     measurementUnit: undefined,
@@ -9065,17 +9343,29 @@ export const RecipeStepProduct: MessageFns<RecipeStepProduct> = {
     if (message.createdAt !== undefined) {
       Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(10).fork()).join();
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(18).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(21).float(message.minStorageTemperatureInCelsius);
     }
-    if (message.storageDurationInSeconds !== undefined) {
-      OptionalUint32Range.encode(message.storageDurationInSeconds, writer.uint32(26).fork()).join();
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(165).float(message.maxStorageTemperatureInCelsius);
     }
-    if (message.measurementQuantity !== undefined) {
-      OptionalFloat32Range.encode(message.measurementQuantity, writer.uint32(34).fork()).join();
+    if (message.minStorageDurationInSeconds !== undefined) {
+      writer.uint32(24).uint32(message.minStorageDurationInSeconds);
     }
-    if (message.itemQuantity !== undefined) {
-      OptionalFloat32Range.encode(message.itemQuantity, writer.uint32(42).fork()).join();
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      writer.uint32(168).uint32(message.maxStorageDurationInSeconds);
+    }
+    if (message.minMeasurementQuantity !== undefined) {
+      writer.uint32(37).float(message.minMeasurementQuantity);
+    }
+    if (message.maxMeasurementQuantity !== undefined) {
+      writer.uint32(181).float(message.maxMeasurementQuantity);
+    }
+    if (message.minItemQuantity !== undefined) {
+      writer.uint32(45).float(message.minItemQuantity);
+    }
+    if (message.maxItemQuantity !== undefined) {
+      writer.uint32(189).float(message.maxItemQuantity);
     }
     if (message.archivedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.archivedAt), writer.uint32(50).fork()).join();
@@ -9138,35 +9428,67 @@ export const RecipeStepProduct: MessageFns<RecipeStepProduct> = {
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 21) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 20: {
+          if (tag !== 165) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.storageDurationInSeconds = OptionalUint32Range.decode(reader, reader.uint32());
+          message.minStorageDurationInSeconds = reader.uint32();
+          continue;
+        }
+        case 21: {
+          if (tag !== 168) {
+            break;
+          }
+
+          message.maxStorageDurationInSeconds = reader.uint32();
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 37) {
             break;
           }
 
-          message.measurementQuantity = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minMeasurementQuantity = reader.float();
+          continue;
+        }
+        case 22: {
+          if (tag !== 181) {
+            break;
+          }
+
+          message.maxMeasurementQuantity = reader.float();
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 45) {
             break;
           }
 
-          message.itemQuantity = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minItemQuantity = reader.float();
+          continue;
+        }
+        case 23: {
+          if (tag !== 189) {
+            break;
+          }
+
+          message.maxItemQuantity = reader.float();
           continue;
         }
         case 6: {
@@ -9297,25 +9619,45 @@ export const RecipeStepProduct: MessageFns<RecipeStepProduct> = {
         : isSet(object.created_at)
           ? fromJsonTimestamp(object.created_at)
           : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
           : undefined,
-      storageDurationInSeconds: isSet(object.storageDurationInSeconds)
-        ? OptionalUint32Range.fromJSON(object.storageDurationInSeconds)
-        : isSet(object.storage_duration_in_seconds)
-          ? OptionalUint32Range.fromJSON(object.storage_duration_in_seconds)
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
-      measurementQuantity: isSet(object.measurementQuantity)
-        ? OptionalFloat32Range.fromJSON(object.measurementQuantity)
-        : isSet(object.measurement_quantity)
-          ? OptionalFloat32Range.fromJSON(object.measurement_quantity)
+      minStorageDurationInSeconds: isSet(object.minStorageDurationInSeconds)
+        ? globalThis.Number(object.minStorageDurationInSeconds)
+        : isSet(object.min_storage_duration_in_seconds)
+          ? globalThis.Number(object.min_storage_duration_in_seconds)
           : undefined,
-      itemQuantity: isSet(object.itemQuantity)
-        ? OptionalFloat32Range.fromJSON(object.itemQuantity)
-        : isSet(object.item_quantity)
-          ? OptionalFloat32Range.fromJSON(object.item_quantity)
+      maxStorageDurationInSeconds: isSet(object.maxStorageDurationInSeconds)
+        ? globalThis.Number(object.maxStorageDurationInSeconds)
+        : isSet(object.max_storage_duration_in_seconds)
+          ? globalThis.Number(object.max_storage_duration_in_seconds)
+          : undefined,
+      minMeasurementQuantity: isSet(object.minMeasurementQuantity)
+        ? globalThis.Number(object.minMeasurementQuantity)
+        : isSet(object.min_measurement_quantity)
+          ? globalThis.Number(object.min_measurement_quantity)
+          : undefined,
+      maxMeasurementQuantity: isSet(object.maxMeasurementQuantity)
+        ? globalThis.Number(object.maxMeasurementQuantity)
+        : isSet(object.max_measurement_quantity)
+          ? globalThis.Number(object.max_measurement_quantity)
+          : undefined,
+      minItemQuantity: isSet(object.minItemQuantity)
+        ? globalThis.Number(object.minItemQuantity)
+        : isSet(object.min_item_quantity)
+          ? globalThis.Number(object.min_item_quantity)
+          : undefined,
+      maxItemQuantity: isSet(object.maxItemQuantity)
+        ? globalThis.Number(object.maxItemQuantity)
+        : isSet(object.max_item_quantity)
+          ? globalThis.Number(object.max_item_quantity)
           : undefined,
       archivedAt: isSet(object.archivedAt)
         ? fromJsonTimestamp(object.archivedAt)
@@ -9375,17 +9717,29 @@ export const RecipeStepProduct: MessageFns<RecipeStepProduct> = {
     if (message.createdAt !== undefined) {
       obj.createdAt = message.createdAt.toISOString();
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
     }
-    if (message.storageDurationInSeconds !== undefined) {
-      obj.storageDurationInSeconds = OptionalUint32Range.toJSON(message.storageDurationInSeconds);
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
-    if (message.measurementQuantity !== undefined) {
-      obj.measurementQuantity = OptionalFloat32Range.toJSON(message.measurementQuantity);
+    if (message.minStorageDurationInSeconds !== undefined) {
+      obj.minStorageDurationInSeconds = Math.round(message.minStorageDurationInSeconds);
     }
-    if (message.itemQuantity !== undefined) {
-      obj.itemQuantity = OptionalFloat32Range.toJSON(message.itemQuantity);
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      obj.maxStorageDurationInSeconds = Math.round(message.maxStorageDurationInSeconds);
+    }
+    if (message.minMeasurementQuantity !== undefined) {
+      obj.minMeasurementQuantity = message.minMeasurementQuantity;
+    }
+    if (message.maxMeasurementQuantity !== undefined) {
+      obj.maxMeasurementQuantity = message.maxMeasurementQuantity;
+    }
+    if (message.minItemQuantity !== undefined) {
+      obj.minItemQuantity = message.minItemQuantity;
+    }
+    if (message.maxItemQuantity !== undefined) {
+      obj.maxItemQuantity = message.maxItemQuantity;
     }
     if (message.archivedAt !== undefined) {
       obj.archivedAt = message.archivedAt.toISOString();
@@ -9438,22 +9792,14 @@ export const RecipeStepProduct: MessageFns<RecipeStepProduct> = {
   fromPartial<I extends Exact<DeepPartial<RecipeStepProduct>, I>>(object: I): RecipeStepProduct {
     const message = createBaseRecipeStepProduct();
     message.createdAt = object.createdAt ?? undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
-    message.storageDurationInSeconds =
-      object.storageDurationInSeconds !== undefined && object.storageDurationInSeconds !== null
-        ? OptionalUint32Range.fromPartial(object.storageDurationInSeconds)
-        : undefined;
-    message.measurementQuantity =
-      object.measurementQuantity !== undefined && object.measurementQuantity !== null
-        ? OptionalFloat32Range.fromPartial(object.measurementQuantity)
-        : undefined;
-    message.itemQuantity =
-      object.itemQuantity !== undefined && object.itemQuantity !== null
-        ? OptionalFloat32Range.fromPartial(object.itemQuantity)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
+    message.minStorageDurationInSeconds = object.minStorageDurationInSeconds ?? undefined;
+    message.maxStorageDurationInSeconds = object.maxStorageDurationInSeconds ?? undefined;
+    message.minMeasurementQuantity = object.minMeasurementQuantity ?? undefined;
+    message.maxMeasurementQuantity = object.maxMeasurementQuantity ?? undefined;
+    message.minItemQuantity = object.minItemQuantity ?? undefined;
+    message.maxItemQuantity = object.maxItemQuantity ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
     message.measurementUnit =
@@ -9478,7 +9824,8 @@ export const RecipeStepProduct: MessageFns<RecipeStepProduct> = {
 function createBaseRecipeStepVessel(): RecipeStepVessel {
   return {
     createdAt: undefined,
-    quantity: undefined,
+    minQuantity: 0,
+    maxQuantity: undefined,
     lastUpdatedAt: undefined,
     archivedAt: undefined,
     recipeStepProductId: undefined,
@@ -9500,8 +9847,11 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
     if (message.createdAt !== undefined) {
       Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(10).fork()).join();
     }
-    if (message.quantity !== undefined) {
-      Uint16RangeWithOptionalMax.encode(message.quantity, writer.uint32(18).fork()).join();
+    if (message.minQuantity !== 0) {
+      writer.uint32(16).uint32(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(128).uint32(message.maxQuantity);
     }
     if (message.lastUpdatedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.lastUpdatedAt), writer.uint32(26).fork()).join();
@@ -9561,11 +9911,19 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.quantity = Uint16RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minQuantity = reader.uint32();
+          continue;
+        }
+        case 16: {
+          if (tag !== 128) {
+            break;
+          }
+
+          message.maxQuantity = reader.uint32();
           continue;
         }
         case 3: {
@@ -9688,7 +10046,16 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
         : isSet(object.created_at)
           ? fromJsonTimestamp(object.created_at)
           : undefined,
-      quantity: isSet(object.quantity) ? Uint16RangeWithOptionalMax.fromJSON(object.quantity) : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : 0,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       lastUpdatedAt: isSet(object.lastUpdatedAt)
         ? fromJsonTimestamp(object.lastUpdatedAt)
         : isSet(object.last_updated_at)
@@ -9742,8 +10109,11 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
     if (message.createdAt !== undefined) {
       obj.createdAt = message.createdAt.toISOString();
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Uint16RangeWithOptionalMax.toJSON(message.quantity);
+    if (message.minQuantity !== 0) {
+      obj.minQuantity = Math.round(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = Math.round(message.maxQuantity);
     }
     if (message.lastUpdatedAt !== undefined) {
       obj.lastUpdatedAt = message.lastUpdatedAt.toISOString();
@@ -9793,10 +10163,8 @@ export const RecipeStepVessel: MessageFns<RecipeStepVessel> = {
   fromPartial<I extends Exact<DeepPartial<RecipeStepVessel>, I>>(object: I): RecipeStepVessel {
     const message = createBaseRecipeStepVessel();
     message.createdAt = object.createdAt ?? undefined;
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Uint16RangeWithOptionalMax.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? 0;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
     message.recipeStepProductId = object.recipeStepProductId ?? undefined;
@@ -9820,7 +10188,8 @@ function createBaseMeal(): Meal {
     createdAt: undefined,
     archivedAt: undefined,
     lastUpdatedAt: undefined,
-    estimatedPortions: undefined,
+    minEstimatedPortions: 0,
+    maxEstimatedPortions: undefined,
     id: '',
     description: '',
     createdByUser: '',
@@ -9841,8 +10210,11 @@ export const Meal: MessageFns<Meal> = {
     if (message.lastUpdatedAt !== undefined) {
       Timestamp.encode(toTimestamp(message.lastUpdatedAt), writer.uint32(26).fork()).join();
     }
-    if (message.estimatedPortions !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.estimatedPortions, writer.uint32(34).fork()).join();
+    if (message.minEstimatedPortions !== 0) {
+      writer.uint32(37).float(message.minEstimatedPortions);
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      writer.uint32(93).float(message.maxEstimatedPortions);
     }
     if (message.id !== '') {
       writer.uint32(42).string(message.id);
@@ -9897,11 +10269,19 @@ export const Meal: MessageFns<Meal> = {
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 37) {
             break;
           }
 
-          message.estimatedPortions = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minEstimatedPortions = reader.float();
+          continue;
+        }
+        case 11: {
+          if (tag !== 93) {
+            break;
+          }
+
+          message.maxEstimatedPortions = reader.float();
           continue;
         }
         case 5: {
@@ -9978,10 +10358,15 @@ export const Meal: MessageFns<Meal> = {
         : isSet(object.last_updated_at)
           ? fromJsonTimestamp(object.last_updated_at)
           : undefined,
-      estimatedPortions: isSet(object.estimatedPortions)
-        ? Float32RangeWithOptionalMax.fromJSON(object.estimatedPortions)
-        : isSet(object.estimated_portions)
-          ? Float32RangeWithOptionalMax.fromJSON(object.estimated_portions)
+      minEstimatedPortions: isSet(object.minEstimatedPortions)
+        ? globalThis.Number(object.minEstimatedPortions)
+        : isSet(object.min_estimated_portions)
+          ? globalThis.Number(object.min_estimated_portions)
+          : 0,
+      maxEstimatedPortions: isSet(object.maxEstimatedPortions)
+        ? globalThis.Number(object.maxEstimatedPortions)
+        : isSet(object.max_estimated_portions)
+          ? globalThis.Number(object.max_estimated_portions)
           : undefined,
       id: isSet(object.id) ? globalThis.String(object.id) : '',
       description: isSet(object.description) ? globalThis.String(object.description) : '',
@@ -10013,8 +10398,11 @@ export const Meal: MessageFns<Meal> = {
     if (message.lastUpdatedAt !== undefined) {
       obj.lastUpdatedAt = message.lastUpdatedAt.toISOString();
     }
-    if (message.estimatedPortions !== undefined) {
-      obj.estimatedPortions = Float32RangeWithOptionalMax.toJSON(message.estimatedPortions);
+    if (message.minEstimatedPortions !== 0) {
+      obj.minEstimatedPortions = message.minEstimatedPortions;
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      obj.maxEstimatedPortions = message.maxEstimatedPortions;
     }
     if (message.id !== '') {
       obj.id = message.id;
@@ -10045,10 +10433,8 @@ export const Meal: MessageFns<Meal> = {
     message.createdAt = object.createdAt ?? undefined;
     message.archivedAt = object.archivedAt ?? undefined;
     message.lastUpdatedAt = object.lastUpdatedAt ?? undefined;
-    message.estimatedPortions =
-      object.estimatedPortions !== undefined && object.estimatedPortions !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.estimatedPortions)
-        : undefined;
+    message.minEstimatedPortions = object.minEstimatedPortions ?? 0;
+    message.maxEstimatedPortions = object.maxEstimatedPortions ?? undefined;
     message.id = object.id ?? '';
     message.description = object.description ?? '';
     message.createdByUser = object.createdByUser ?? '';
@@ -10739,7 +11125,8 @@ function createBaseMealPlanGroceryListItem(): MealPlanGroceryListItem {
     status: 0,
     statusExplanation: '',
     id: '',
-    quantityNeeded: undefined,
+    minQuantityNeeded: 0,
+    maxQuantityNeeded: undefined,
     measurementUnit: undefined,
     ingredient: undefined,
     belongsToMealPlanOption: undefined,
@@ -10785,8 +11172,11 @@ export const MealPlanGroceryListItem: MessageFns<MealPlanGroceryListItem> = {
     if (message.id !== '') {
       writer.uint32(90).string(message.id);
     }
-    if (message.quantityNeeded !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.quantityNeeded, writer.uint32(98).fork()).join();
+    if (message.minQuantityNeeded !== 0) {
+      writer.uint32(101).float(message.minQuantityNeeded);
+    }
+    if (message.maxQuantityNeeded !== undefined) {
+      writer.uint32(165).float(message.maxQuantityNeeded);
     }
     if (message.measurementUnit !== undefined) {
       ValidMeasurementUnit.encode(message.measurementUnit, writer.uint32(106).fork()).join();
@@ -10908,11 +11298,19 @@ export const MealPlanGroceryListItem: MessageFns<MealPlanGroceryListItem> = {
           continue;
         }
         case 12: {
-          if (tag !== 98) {
+          if (tag !== 101) {
             break;
           }
 
-          message.quantityNeeded = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minQuantityNeeded = reader.float();
+          continue;
+        }
+        case 20: {
+          if (tag !== 165) {
+            break;
+          }
+
+          message.maxQuantityNeeded = reader.float();
           continue;
         }
         case 13: {
@@ -11029,10 +11427,15 @@ export const MealPlanGroceryListItem: MessageFns<MealPlanGroceryListItem> = {
           ? globalThis.String(object.status_explanation)
           : '',
       id: isSet(object.id) ? globalThis.String(object.id) : '',
-      quantityNeeded: isSet(object.quantityNeeded)
-        ? Float32RangeWithOptionalMax.fromJSON(object.quantityNeeded)
-        : isSet(object.quantity_needed)
-          ? Float32RangeWithOptionalMax.fromJSON(object.quantity_needed)
+      minQuantityNeeded: isSet(object.minQuantityNeeded)
+        ? globalThis.Number(object.minQuantityNeeded)
+        : isSet(object.min_quantity_needed)
+          ? globalThis.Number(object.min_quantity_needed)
+          : 0,
+      maxQuantityNeeded: isSet(object.maxQuantityNeeded)
+        ? globalThis.Number(object.maxQuantityNeeded)
+        : isSet(object.max_quantity_needed)
+          ? globalThis.Number(object.max_quantity_needed)
           : undefined,
       measurementUnit: isSet(object.measurementUnit)
         ? ValidMeasurementUnit.fromJSON(object.measurementUnit)
@@ -11103,8 +11506,11 @@ export const MealPlanGroceryListItem: MessageFns<MealPlanGroceryListItem> = {
     if (message.id !== '') {
       obj.id = message.id;
     }
-    if (message.quantityNeeded !== undefined) {
-      obj.quantityNeeded = Float32RangeWithOptionalMax.toJSON(message.quantityNeeded);
+    if (message.minQuantityNeeded !== 0) {
+      obj.minQuantityNeeded = message.minQuantityNeeded;
+    }
+    if (message.maxQuantityNeeded !== undefined) {
+      obj.maxQuantityNeeded = message.maxQuantityNeeded;
     }
     if (message.measurementUnit !== undefined) {
       obj.measurementUnit = ValidMeasurementUnit.toJSON(message.measurementUnit);
@@ -11149,10 +11555,8 @@ export const MealPlanGroceryListItem: MessageFns<MealPlanGroceryListItem> = {
     message.status = object.status ?? 0;
     message.statusExplanation = object.statusExplanation ?? '';
     message.id = object.id ?? '';
-    message.quantityNeeded =
-      object.quantityNeeded !== undefined && object.quantityNeeded !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.quantityNeeded)
-        : undefined;
+    message.minQuantityNeeded = object.minQuantityNeeded ?? 0;
+    message.maxQuantityNeeded = object.maxQuantityNeeded ?? undefined;
     message.measurementUnit =
       object.measurementUnit !== undefined && object.measurementUnit !== null
         ? ValidMeasurementUnit.fromPartial(object.measurementUnit)

@@ -13,7 +13,6 @@ import (
 
 	"github.com/primandproper/platform/database/filtering"
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -115,7 +114,7 @@ func buildRecipeStepForTestCreationWithInstrument(t *testing.T, ctx context.Cont
 			Name:                instrument.Name,
 			BelongsToRecipeStep: step.ID,
 			Optional:            false, // Required for SearchForRecipesWithInstrumentOwnership
-			Quantity:            numbers.MinRange[uint32]{Min: 1},
+			MinQuantity:         1,
 		},
 	}
 	return step

@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package mealplanning;
 
-import "common.proto";
 import "google/protobuf/timestamp.proto";
 import "uploaded_media/uploaded_media_messages.proto";
 
@@ -21,7 +20,8 @@ message ValidIngredient {
   google.protobuf.Timestamp created_at = 1;
   optional google.protobuf.Timestamp last_updated_at = 2;
   optional google.protobuf.Timestamp archived_at = 3;
-  common.OptionalFloat32Range storage_temperature_in_celsius = 4;
+  optional float min_storage_temperature_in_celsius = 4;
+  optional float max_storage_temperature_in_celsius = 39;
   string icon_path = 5;
   string warning = 6;
   string plural_name = 7;
@@ -83,7 +83,8 @@ message ValidIngredientMeasurementUnit {
   optional google.protobuf.Timestamp archived_at = 3;
   string notes = 4;
   string id = 5;
-  common.Float32RangeWithOptionalMax allowable_quantity = 6;
+  float min_allowable_quantity = 6;
+  optional float max_allowable_quantity = 9;
   ValidMeasurementUnit measurement_unit = 7;
   ValidIngredient ingredient = 8;
 }
@@ -102,8 +103,10 @@ message ValidPrepTaskConfig {
   google.protobuf.Timestamp created_at = 1;
   optional google.protobuf.Timestamp last_updated_at = 2;
   optional google.protobuf.Timestamp archived_at = 3;
-  common.Uint32RangeWithOptionalMax storage_duration_in_seconds = 4;
-  common.OptionalFloat32Range storage_temperature_in_celsius = 5;
+  uint32 min_storage_duration_in_seconds = 4;
+  optional uint32 max_storage_duration_in_seconds = 13;
+  optional float min_storage_temperature_in_celsius = 5;
+  optional float max_storage_temperature_in_celsius = 14;
   string id = 6;
   string storage_type = 7;
   string storage_instructions = 8;
@@ -188,27 +191,27 @@ message MeasurementUnitConversionMismatch {
 message ValidPreparation {
   google.protobuf.Timestamp created_at = 1;
   uint32 min_instrument_count = 2;
-  optional uint32 max_instrument_count = 3;
-  uint32 min_ingredient_count = 4;
-  optional uint32 max_ingredient_count = 5;
-  uint32 min_vessel_count = 6;
-  optional uint32 max_vessel_count = 7;
-  optional google.protobuf.Timestamp archived_at = 8;
-  optional google.protobuf.Timestamp last_updated_at = 9;
-  string icon_path = 10;
-  string past_tense = 11;
-  string id = 12;
-  string name = 13;
-  string description = 14;
-  string slug = 15;
-  bool restrict_to_ingredients = 16;
-  bool temperature_required = 17;
-  bool time_estimate_required = 18;
-  bool condition_expression_required = 19;
-  bool consumes_vessel = 20;
-  bool only_for_vessels = 21;
-  bool yields_nothing = 22;
-  repeated uploaded_media.UploadedMedia media = 23;
+  optional uint32 max_instrument_count = 21;
+  uint32 min_ingredient_count = 3;
+  optional uint32 max_ingredient_count = 22;
+  uint32 min_vessel_count = 4;
+  optional uint32 max_vessel_count = 23;
+  optional google.protobuf.Timestamp archived_at = 5;
+  optional google.protobuf.Timestamp last_updated_at = 6;
+  string icon_path = 7;
+  string past_tense = 8;
+  string id = 9;
+  string name = 10;
+  string description = 11;
+  string slug = 12;
+  bool restrict_to_ingredients = 13;
+  bool temperature_required = 14;
+  bool time_estimate_required = 15;
+  bool condition_expression_required = 16;
+  bool consumes_vessel = 17;
+  bool only_for_vessels = 18;
+  bool yields_nothing = 19;
+  repeated uploaded_media.UploadedMedia media = 20;
 }
 
 message ValidPreparationInstrument {
@@ -269,7 +272,8 @@ message Recipe {
   optional string inspired_by_recipe_id = 2;
   optional google.protobuf.Timestamp last_updated_at = 3;
   optional google.protobuf.Timestamp archived_at = 4;
-  common.Float32RangeWithOptionalMax estimated_portions = 5;
+  float min_estimated_portions = 5;
+  optional float max_estimated_portions = 23;
   string plural_portion_name = 6;
   string description = 7;
   string name = 8;
@@ -303,8 +307,10 @@ message RecipeMedia {
 
 message RecipePrepTask {
   google.protobuf.Timestamp created_at = 1;
-  common.OptionalFloat32Range storage_temperature_in_celsius = 2;
-  common.Uint32RangeWithOptionalMax time_buffer_before_recipe_in_seconds = 3;
+  optional float min_storage_temperature_in_celsius = 2;
+  optional float max_storage_temperature_in_celsius = 15;
+  uint32 min_time_buffer_before_recipe_in_seconds = 3;
+  optional uint32 max_time_buffer_before_recipe_in_seconds = 16;
   optional google.protobuf.Timestamp archived_at = 4;
   optional google.protobuf.Timestamp last_updated_at = 5;
   string id = 6;
@@ -342,8 +348,10 @@ message RecipeRating {
 
 message RecipeStep {
   google.protobuf.Timestamp created_at = 1;
-  common.OptionalUint32Range estimated_time_in_seconds = 2;
-  common.OptionalFloat32Range temperature_in_celsius = 3;
+  optional uint32 min_estimated_time_in_seconds = 2;
+  optional uint32 max_estimated_time_in_seconds = 22;
+  optional float min_temperature_in_celsius = 3;
+  optional float max_temperature_in_celsius = 23;
   optional google.protobuf.Timestamp archived_at = 4;
   optional google.protobuf.Timestamp last_updated_at = 5;
   string belongs_to_recipe = 6;
@@ -399,7 +407,8 @@ message RecipeStepIngredient {
   string quantity_notes = 11;
   string ingredient_notes = 12;
   string name = 13;
-  common.Float32RangeWithOptionalMax quantity = 14;
+  float min_quantity = 14;
+  optional float max_quantity = 21;
   ValidMeasurementUnit measurement_unit = 15;
   uint32 option_index = 16;
   bool optional = 17;
@@ -418,7 +427,8 @@ message RecipeStepInstrument {
   string name = 7;
   string belongs_to_recipe_step = 8;
   string id = 9;
-  common.Uint32RangeWithOptionalMax quantity = 10;
+  uint32 min_quantity = 10;
+  optional uint32 max_quantity = 16;
   uint32 option_index = 11;
   uint32 preference_rank = 12;
   bool optional = 13;
@@ -428,10 +438,14 @@ message RecipeStepInstrument {
 
 message RecipeStepProduct {
   google.protobuf.Timestamp created_at = 1;
-  common.OptionalFloat32Range storage_temperature_in_celsius = 2;
-  common.OptionalUint32Range storage_duration_in_seconds = 3;
-  common.OptionalFloat32Range measurement_quantity = 4;
-  common.OptionalFloat32Range item_quantity = 5;
+  optional float min_storage_temperature_in_celsius = 2;
+  optional float max_storage_temperature_in_celsius = 20;
+  optional uint32 min_storage_duration_in_seconds = 3;
+  optional uint32 max_storage_duration_in_seconds = 21;
+  optional float min_measurement_quantity = 4;
+  optional float max_measurement_quantity = 22;
+  optional float min_item_quantity = 5;
+  optional float max_item_quantity = 23;
   optional google.protobuf.Timestamp archived_at = 6;
   optional google.protobuf.Timestamp last_updated_at = 7;
   ValidMeasurementUnit measurement_unit = 8;
@@ -450,7 +464,8 @@ message RecipeStepProduct {
 
 message RecipeStepVessel {
   google.protobuf.Timestamp created_at = 1;
-  common.Uint16RangeWithOptionalMax quantity = 2;
+  uint32 min_quantity = 2;
+  optional uint32 max_quantity = 16;
   optional google.protobuf.Timestamp last_updated_at = 3;
   optional google.protobuf.Timestamp archived_at = 4;
   optional string recipe_step_product_id = 5;
@@ -470,7 +485,8 @@ message Meal {
   google.protobuf.Timestamp created_at = 1;
   optional google.protobuf.Timestamp archived_at = 2;
   optional google.protobuf.Timestamp last_updated_at = 3;
-  common.Float32RangeWithOptionalMax estimated_portions = 4;
+  float min_estimated_portions = 4;
+  optional float max_estimated_portions = 11;
   string id = 5;
   string description = 6;
   string created_by_user = 7;
@@ -527,7 +543,8 @@ message MealPlanGroceryListItem {
   MealPlanGroceryListItemStatus status = 9;
   string status_explanation = 10;
   string id = 11;
-  common.Float32RangeWithOptionalMax quantity_needed = 12;
+  float min_quantity_needed = 12;
+  optional float max_quantity_needed = 20;
   ValidMeasurementUnit measurement_unit = 13;
   ValidIngredient ingredient = 14;
   // Recipe context (optional - only set when item is part of a choice group)

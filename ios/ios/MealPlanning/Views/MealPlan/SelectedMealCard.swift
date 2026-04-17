@@ -47,14 +47,12 @@ struct SelectedMealCard: View {
             }
           }
 
-          if meal.hasEstimatedPortions {
-            Label(
-              "\(PortionsFormatter.formatScaled(meal.estimatedPortions, scale: scale)) servings",
-              systemImage: "person.2"
-            )
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-          }
+          Label(
+            "\(PortionsFormatter.formatScaled(min: meal.minEstimatedPortions, max: meal.hasMaxEstimatedPortions ? meal.maxEstimatedPortions : nil, scale: scale)) servings",
+            systemImage: "person.2"
+          )
+          .font(DSTheme.Typography.caption)
+          .foregroundColor(DSTheme.Colors.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -117,14 +115,12 @@ struct SelectedMealCard: View {
               }
             }
 
-            if meal.hasEstimatedPortions {
-              Label(
-                "\(PortionsFormatter.formatScaled(meal.estimatedPortions, scale: scale)) servings",
-                systemImage: "person.2"
-              )
-              .font(DSTheme.Typography.caption)
-              .foregroundColor(DSTheme.Colors.textSecondary)
-            }
+            Label(
+              "\(PortionsFormatter.formatScaled(min: meal.minEstimatedPortions, max: meal.hasMaxEstimatedPortions ? meal.maxEstimatedPortions : nil, scale: scale)) servings",
+              systemImage: "person.2"
+            )
+            .font(DSTheme.Typography.caption)
+            .foregroundColor(DSTheme.Colors.textSecondary)
           }
 
           Spacer()

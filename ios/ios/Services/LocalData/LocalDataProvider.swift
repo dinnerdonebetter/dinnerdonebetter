@@ -418,49 +418,21 @@ struct SeedOptionalFloat32Range: Codable {
 struct SeedFloat32RangeWithOptionalMax: Codable {
   let min: Float
   let max: Float?
-
-  func toProtobuf() -> Common_Float32RangeWithOptionalMax {
-    var pb = Common_Float32RangeWithOptionalMax()
-    pb.min = min
-    if let m = max { pb.max = m }
-    return pb
-  }
 }
 
 struct SeedOptionalUint32Range: Codable {
   let min: UInt32?
   let max: UInt32?
-
-  func toProtobuf() -> Common_OptionalUint32Range {
-    var pb = Common_OptionalUint32Range()
-    if let m = min { pb.min = m }
-    if let m = max { pb.max = m }
-    return pb
-  }
 }
 
 struct SeedOptionalFloat32RangePB: Codable {
   let min: Float?
   let max: Float?
-
-  func toProtobuf() -> Common_OptionalFloat32Range {
-    var pb = Common_OptionalFloat32Range()
-    if let m = min { pb.min = m }
-    if let m = max { pb.max = m }
-    return pb
-  }
 }
 
 struct SeedUint32RangeWithOptionalMax: Codable {
   let min: UInt32
   let max: UInt32?
-
-  func toProtobuf() -> Common_Uint32RangeWithOptionalMax {
-    var pb = Common_Uint32RangeWithOptionalMax()
-    pb.min = min
-    if let m = max { pb.max = m }
-    return pb
-  }
 }
 
 struct SeedUint16RangeWithOptionalMax: Codable {
@@ -506,7 +478,8 @@ struct SeedRecipe: Codable {
     pb.yieldsComponentType = mealComponentTypeFromString(yieldsComponentType ?? "")
     pb.status = status
     if let rid = inspiredByRecipeID { pb.inspiredByRecipeID = rid }
-    pb.estimatedPortions = estimatedPortions.toProtobuf()
+    pb.minEstimatedPortions = estimatedPortions.min
+    if let m = estimatedPortions.max { pb.maxEstimatedPortions = m }
     pb.eligibleForMeals = eligibleForMeals
     pb.steps = steps.map { $0.toProtobuf() }
     pb.media = (media ?? []).map { $0.toProtobuf() }
@@ -550,12 +523,13 @@ struct SeedRecipeStep: Codable {
     pb.notes = notes
     pb.explicitInstructions = explicitInstructions ?? ""
     pb.conditionExpression = conditionExpression ?? ""
-    if let t = estimatedTimeInSeconds { pb.estimatedTimeInSeconds = t.toProtobuf() }
+    if let t = estimatedTimeInSeconds {
+      if let m = t.min { pb.minEstimatedTimeInSeconds = m }
+      if let m = t.max { pb.maxEstimatedTimeInSeconds = m }
+    }
     if let t = temperatureInCelsius {
-      var r = Common_OptionalFloat32Range()
-      if let m = t.min { r.min = m }
-      if let m = t.max { r.max = m }
-      pb.temperatureInCelsius = r
+      if let m = t.min { pb.minTemperatureInCelsius = m }
+      if let m = t.max { pb.maxTemperatureInCelsius = m }
     }
     pb.optional = `optional`
     pb.startTimerAutomatically = startTimerAutomatically
@@ -601,7 +575,8 @@ struct SeedRecipeStepIngredient: Codable {
     pb.name = name
     if let ing = ingredient { pb.ingredient = ing.toProtobuf() }
     pb.measurementUnit = measurementUnit.toProtobuf()
-    pb.quantity = quantity.toProtobuf()
+    pb.minQuantity = quantity.min
+    if let m = quantity.max { pb.maxQuantity = m }
     pb.quantityNotes = quantityNotes ?? ""
     pb.ingredientNotes = ingredientNotes ?? ""
     if let rid = productOfRecipeID { pb.recipeStepProductRecipeID = rid }
@@ -645,7 +620,10 @@ struct SeedRecipeStepInstrument: Codable {
     if let inst = instrument { pb.instrument = inst.toProtobuf() }
     pb.notes = notes ?? ""
     if let pid = recipeStepProductID { pb.recipeStepProductID = pid }
-    if let q = quantity { pb.quantity = q.toProtobuf() }
+    if let q = quantity {
+      pb.minQuantity = q.min
+      if let m = q.max { pb.maxQuantity = m }
+    }
     pb.index = index
     pb.optionIndex = optionIndex ?? 0
     pb.preferenceRank = preferenceRank ?? 0
@@ -685,10 +663,8 @@ struct SeedRecipeStepVessel: Codable {
     pb.notes = notes ?? ""
     if let pid = recipeStepProductID { pb.recipeStepProductID = pid }
     if let q = quantity {
-      var r = Common_Uint16RangeWithOptionalMax()
-      r.min = UInt32(q.min)
-      if let m = q.max { r.max = UInt32(m) }
-      pb.quantity = r
+      pb.minQuantity = UInt32(q.min)
+      if let m = q.max { pb.maxQuantity = UInt32(m) }
     }
     pb.index = index
     pb.optionIndex = optionIndex ?? 0
@@ -732,16 +708,12 @@ struct SeedRecipeStepProduct: Codable {
     pb.quantityNotes = quantityNotes ?? ""
     if let mu = measurementUnit { pb.measurementUnit = mu.toProtobuf() }
     if let mq = measurementQuantity {
-      var r = Common_OptionalFloat32Range()
-      if let m = mq.min { r.min = m }
-      if let m = mq.max { r.max = m }
-      pb.measurementQuantity = r
+      if let m = mq.min { pb.minMeasurementQuantity = m }
+      if let m = mq.max { pb.maxMeasurementQuantity = m }
     }
     if let iq = itemQuantity {
-      var r = Common_OptionalFloat32Range()
-      if let m = iq.min { r.min = m }
-      if let m = iq.max { r.max = m }
-      pb.itemQuantity = r
+      if let m = iq.min { pb.minItemQuantity = m }
+      if let m = iq.max { pb.maxItemQuantity = m }
     }
     if let ci = containedInVesselIndex { pb.containedInVesselIndex = UInt32(ci) }
     pb.index = index
@@ -856,7 +828,12 @@ struct SeedRecipePrepTask: Codable {
     pb.storageType = storageType
     pb.optional = `optional`
     if let t = timeBufferBeforeRecipeInSeconds {
-      pb.timeBufferBeforeRecipeInSeconds = t.toProtobuf()
+      pb.minTimeBufferBeforeRecipeInSeconds = t.min
+      if let m = t.max { pb.maxTimeBufferBeforeRecipeInSeconds = m }
+    }
+    if let t = storageTemperatureInCelsius {
+      if let m = t.min { pb.minStorageTemperatureInCelsius = m }
+      if let m = t.max { pb.maxStorageTemperatureInCelsius = m }
     }
     pb.taskSteps = (recipeSteps ?? []).map { $0.toProtobuf() }
     pb.createdAt = dateToTimestamp(createdAt)
@@ -902,7 +879,8 @@ struct SeedMeal: Codable {
     pb.name = name
     pb.description_p = description
     pb.createdByUser = createdByUser
-    pb.estimatedPortions = estimatedPortions.toProtobuf()
+    pb.minEstimatedPortions = estimatedPortions.min
+    if let m = estimatedPortions.max { pb.maxEstimatedPortions = m }
     pb.eligibleForMealPlans = eligibleForMealPlans
     pb.components = components.map { $0.toProtobuf() }
     pb.createdAt = dateToTimestamp(createdAt)

@@ -31,15 +31,13 @@ type (
 	// a prepared ingredient can be stored under specific conditions.
 	// Example: "diced onion" can be stored for 72 hours in an airtight container at 0-4°C.
 	ValidPrepTaskConfig struct {
-		_ struct{} `json:"-"`
-
+		_                              struct{}         `json:"-"`
 		CreatedAt                      time.Time        `json:"createdAt"`
-		LastUpdatedAt                  *time.Time       `json:"lastUpdatedAt"`
+		MaxStorageTemperatureInCelsius *float32         `json:"maxStorageTemperatureInCelsius,omitempty"`
 		ArchivedAt                     *time.Time       `json:"archivedAt"`
 		MaxStorageDurationInSeconds    *uint32          `json:"maxStorageDurationInSeconds,omitempty"`
 		MinStorageTemperatureInCelsius *float32         `json:"minStorageTemperatureInCelsius,omitempty"`
-		MaxStorageTemperatureInCelsius *float32         `json:"maxStorageTemperatureInCelsius,omitempty"`
-		MinStorageDurationInSeconds    uint32           `json:"minStorageDurationInSeconds"`
+		LastUpdatedAt                  *time.Time       `json:"lastUpdatedAt"`
 		ID                             string           `json:"id"`
 		StorageType                    string           `json:"storageType"`
 		StorageInstructions            string           `json:"storageInstructions"`
@@ -47,32 +45,30 @@ type (
 		Source                         string           `json:"source"`
 		Preparation                    ValidPreparation `json:"preparation"`
 		Ingredient                     ValidIngredient  `json:"ingredient"`
+		MinStorageDurationInSeconds    uint32           `json:"minStorageDurationInSeconds"`
 	}
 
 	// ValidPrepTaskConfigCreationRequestInput represents what a user could set as input for creating valid ingredient preparation storage configs.
 	ValidPrepTaskConfigCreationRequestInput struct {
-		_ struct{} `json:"-"`
-
+		_                              struct{} `json:"-"`
 		MaxStorageDurationInSeconds    *uint32  `json:"maxStorageDurationInSeconds,omitempty"`
 		MinStorageTemperatureInCelsius *float32 `json:"minStorageTemperatureInCelsius,omitempty"`
 		MaxStorageTemperatureInCelsius *float32 `json:"maxStorageTemperatureInCelsius,omitempty"`
-		MinStorageDurationInSeconds    uint32   `json:"minStorageDurationInSeconds"`
 		StorageType                    string   `json:"storageType"`
 		StorageInstructions            string   `json:"storageInstructions"`
 		Notes                          string   `json:"notes"`
 		Source                         string   `json:"source"`
 		ValidPreparationID             string   `json:"validPreparationID"`
 		ValidIngredientID              string   `json:"validIngredientID"`
+		MinStorageDurationInSeconds    uint32   `json:"minStorageDurationInSeconds"`
 	}
 
 	// ValidPrepTaskConfigDatabaseCreationInput represents what a user could set as input for creating valid ingredient preparation storage configs.
 	ValidPrepTaskConfigDatabaseCreationInput struct {
-		_ struct{} `json:"-"`
-
+		_                              struct{} `json:"-"`
 		MaxStorageDurationInSeconds    *uint32  `json:"-"`
 		MinStorageTemperatureInCelsius *float32 `json:"-"`
 		MaxStorageTemperatureInCelsius *float32 `json:"-"`
-		MinStorageDurationInSeconds    uint32   `json:"-"`
 		ID                             string   `json:"-"`
 		StorageType                    string   `json:"-"`
 		StorageInstructions            string   `json:"-"`
@@ -80,6 +76,7 @@ type (
 		Source                         string   `json:"-"`
 		ValidPreparationID             string   `json:"-"`
 		ValidIngredientID              string   `json:"-"`
+		MinStorageDurationInSeconds    uint32   `json:"-"`
 	}
 
 	// ValidPrepTaskConfigUpdateRequestInput represents what a user could set as input for updating valid ingredient preparation storage configs.

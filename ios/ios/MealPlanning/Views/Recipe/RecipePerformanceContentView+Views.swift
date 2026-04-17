@@ -273,7 +273,7 @@ struct StepCardView: View {
       : false
 
     let hasTimerCondition =
-      step.estimatedTimeInSeconds.hasMin && step.estimatedTimeInSeconds.min > 0
+      step.hasMinEstimatedTimeInSeconds && step.minEstimatedTimeInSeconds > 0
     let hasConditionsOrTimer = hasCompletionConditions || hasTimerCondition
 
     return VStack(alignment: .leading, spacing: 12) {
@@ -311,7 +311,8 @@ struct StepCardView: View {
 
             if !isTimerActive,
               let stepTime = RecipeTimeEstimation.formatStepTime(
-                step.estimatedTimeInSeconds)
+                min: step.hasMinEstimatedTimeInSeconds ? step.minEstimatedTimeInSeconds : nil,
+                max: step.hasMaxEstimatedTimeInSeconds ? step.maxEstimatedTimeInSeconds : nil)
             {
               Label(stepTime, systemImage: "clock")
                 .font(.caption)
@@ -869,9 +870,9 @@ struct StepDetailsView: View {
           measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
         )
 
-        if ingredient.hasQuantity {
-          aggregated.addQuantity(ingredient.quantity)
-        }
+        aggregated.addQuantity(
+          min: ingredient.minQuantity, max: ingredient.hasMaxQuantity ? ingredient.maxQuantity : nil
+        )
 
         options.append(
           IngredientOption(
@@ -955,9 +956,9 @@ struct StepDetailsView: View {
           type: .instrument
         )
 
-        if instrument.hasQuantity {
-          aggregated.addQuantity(instrument.quantity)
-        }
+        aggregated.addQuantity(
+          min: instrument.minQuantity, max: instrument.hasMaxQuantity ? instrument.maxQuantity : nil
+        )
 
         options.append(
           InstrumentOption(
@@ -1041,9 +1042,8 @@ struct StepDetailsView: View {
           type: .vessel
         )
 
-        if vessel.hasQuantity {
-          aggregated.addQuantity(vessel.quantity)
-        }
+        aggregated.addQuantity(
+          min: vessel.minQuantity, max: vessel.hasMaxQuantity ? vessel.maxQuantity : nil)
 
         options.append(
           VesselOption(
@@ -1465,15 +1465,15 @@ struct StepProductsSectionView: View {
   {
     // Check if product is discrete (has ItemQuantity set)
     let isDiscrete =
-      product.hasItemQuantity && (product.itemQuantity.hasMin || product.itemQuantity.hasMax)
+      product.hasMinItemQuantity && (product.hasMinItemQuantity || product.hasMaxItemQuantity)
 
     if isDiscrete {
       // Discrete product: item quantity scales, per-item measurement stays constant
       var itemQtyStr = ""
-      if product.itemQuantity.hasMin {
-        let min = Float(product.itemQuantity.min) * scale
-        if product.itemQuantity.hasMax {
-          let max = Float(product.itemQuantity.max) * scale
+      if product.hasMinItemQuantity {
+        let min = Float(product.minItemQuantity) * scale
+        if product.hasMaxItemQuantity {
+          let max = Float(product.maxItemQuantity) * scale
           if min == max {
             itemQtyStr = formatQuantity(min)
           } else {
@@ -1486,10 +1486,10 @@ struct StepProductsSectionView: View {
 
       // Per-item measurement quantity does NOT scale (stays constant)
       var measurementQtyStr = ""
-      if product.hasMeasurementQuantity && product.measurementQuantity.hasMin {
-        let min = product.measurementQuantity.min  // Not scaled
-        if product.measurementQuantity.hasMax {
-          let max = product.measurementQuantity.max  // Not scaled
+      if product.hasMinMeasurementQuantity && product.hasMinMeasurementQuantity {
+        let min = product.minMeasurementQuantity  // Not scaled
+        if product.hasMaxMeasurementQuantity {
+          let max = product.maxMeasurementQuantity  // Not scaled
           if min == max {
             measurementQtyStr = formatQuantity(min)
           } else {
@@ -1503,7 +1503,7 @@ struct StepProductsSectionView: View {
       let unitName =
         product.hasMeasurementUnit
         ? MeasurementUnitFormatter.displayName(
-          for: product.measurementQuantity.min,
+          for: product.minMeasurementQuantity,
           unit: product.measurementUnit
         )
         : ""
@@ -1518,13 +1518,13 @@ struct StepProductsSectionView: View {
         // Fallback: just show name if quantities are missing
         return product.name
       }
-    } else if product.hasMeasurementQuantity && product.measurementQuantity.hasMin {
+    } else if product.hasMinMeasurementQuantity && product.hasMinMeasurementQuantity {
       // Continuous product: total measurement quantity scales
-      let min = product.measurementQuantity.min * scale
+      let min = product.minMeasurementQuantity * scale
       var qtyStr = formatQuantity(min)
 
-      if product.measurementQuantity.hasMax {
-        let max = product.measurementQuantity.max * scale
+      if product.hasMaxMeasurementQuantity {
+        let max = product.maxMeasurementQuantity * scale
         if min != max {
           qtyStr = "\(qtyStr)-\(formatQuantity(max))"
         }

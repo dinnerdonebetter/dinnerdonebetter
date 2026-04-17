@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -41,79 +40,83 @@ func init() {
 type (
 	// MealPlanGroceryListItem represents a meal plan grocery list item.
 	MealPlanGroceryListItem struct {
-		_                        struct{}                  `json:"-"`
-		CreatedAt                time.Time                 `json:"createdAt"`
-		QuantityNeeded           numbers.MinRange[float32] `json:"quantityNeeded"`
-		BelongsToMealPlanOption  *string                   `json:"belongsToMealPlanOption,omitempty"`
-		RecipeID                 *string                   `json:"recipeID,omitempty"`
-		ArchivedAt               *time.Time                `json:"archivedAt"`
-		LastUpdatedAt            *time.Time                `json:"lastUpdatedAt"`
-		PurchasedMeasurementUnit *ValidMeasurementUnit     `json:"purchasedMeasurementUnit"`
-		OptionIndex              *uint16                   `json:"optionIndex,omitempty"`
-		IngredientIndex          *uint16                   `json:"ingredientIndex,omitempty"`
-		RecipeStepID             *string                   `json:"recipeStepID,omitempty"`
-		PurchasedUPC             *string                   `json:"purchasedUPC"`
-		PurchasePrice            *float32                  `json:"purchasePrice"`
-		QuantityPurchased        *float32                  `json:"quantityPurchased"`
-		ID                       string                    `json:"id"`
-		StatusExplanation        string                    `json:"statusExplanation"`
-		Status                   string                    `json:"status"`
-		BelongsToMealPlan        string                    `json:"belongsToMealPlan"`
-		MeasurementUnit          ValidMeasurementUnit      `json:"measurementUnit"`
-		Ingredient               ValidIngredient           `json:"ingredient"`
+		_                        struct{}              `json:"-"`
+		CreatedAt                time.Time             `json:"createdAt"`
+		MaxQuantityNeeded        *float32              `json:"maxQuantityNeeded,omitempty"`
+		BelongsToMealPlanOption  *string               `json:"belongsToMealPlanOption,omitempty"`
+		RecipeID                 *string               `json:"recipeID,omitempty"`
+		ArchivedAt               *time.Time            `json:"archivedAt"`
+		LastUpdatedAt            *time.Time            `json:"lastUpdatedAt"`
+		PurchasedMeasurementUnit *ValidMeasurementUnit `json:"purchasedMeasurementUnit"`
+		OptionIndex              *uint16               `json:"optionIndex,omitempty"`
+		IngredientIndex          *uint16               `json:"ingredientIndex,omitempty"`
+		RecipeStepID             *string               `json:"recipeStepID,omitempty"`
+		PurchasedUPC             *string               `json:"purchasedUPC"`
+		PurchasePrice            *float32              `json:"purchasePrice"`
+		QuantityPurchased        *float32              `json:"quantityPurchased"`
+		ID                       string                `json:"id"`
+		StatusExplanation        string                `json:"statusExplanation"`
+		Status                   string                `json:"status"`
+		BelongsToMealPlan        string                `json:"belongsToMealPlan"`
+		MeasurementUnit          ValidMeasurementUnit  `json:"measurementUnit"`
+		Ingredient               ValidIngredient       `json:"ingredient"`
+		MinQuantityNeeded        float32               `json:"minQuantityNeeded"`
 	}
 
 	// MealPlanGroceryListItemCreationRequestInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		QuantityNeeded             numbers.MinRange[float32] `json:"quantityNeeded"`
-		PurchasedMeasurementUnitID *string                   `json:"purchasedMeasurementUnitID"`
-		PurchasedUPC               *string                   `json:"purchasedUPC"`
-		PurchasePrice              *float32                  `json:"purchasePrice"`
-		QuantityPurchased          *float32                  `json:"quantityPurchased"`
-		Status                     string                    `json:"status"`
-		BelongsToMealPlan          string                    `json:"belongsToMealPlan"`
-		ValidIngredientID          string                    `json:"validIngredientID"`
-		ValidMeasurementUnitID     string                    `json:"validMeasurementUnitID"`
-		StatusExplanation          string                    `json:"statusExplanation"`
+		MaxQuantityNeeded          *float32 `json:"maxQuantityNeeded,omitempty"`
+		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID"`
+		PurchasedUPC               *string  `json:"purchasedUPC"`
+		PurchasePrice              *float32 `json:"purchasePrice"`
+		QuantityPurchased          *float32 `json:"quantityPurchased"`
+		Status                     string   `json:"status"`
+		BelongsToMealPlan          string   `json:"belongsToMealPlan"`
+		ValidIngredientID          string   `json:"validIngredientID"`
+		ValidMeasurementUnitID     string   `json:"validMeasurementUnitID"`
+		StatusExplanation          string   `json:"statusExplanation"`
+		MinQuantityNeeded          float32  `json:"minQuantityNeeded"`
 	}
 
 	// MealPlanGroceryListItemDatabaseCreationInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemDatabaseCreationInput struct {
-		_                          struct{}                  `json:"-"`
-		QuantityNeeded             numbers.MinRange[float32] `json:"-"`
-		BelongsToMealPlanOption    *string                   `json:"-"`
-		PurchasePrice              *float32                  `json:"-"`
-		PurchasedMeasurementUnitID *string                   `json:"-"`
-		QuantityPurchased          *float32                  `json:"-"`
-		PurchasedUPC               *string                   `json:"-"`
-		OptionIndex                *uint16                   `json:"-"`
-		IngredientIndex            *uint16                   `json:"-"`
-		RecipeStepID               *string                   `json:"-"`
-		RecipeID                   *string                   `json:"-"`
-		Status                     string                    `json:"-"`
-		StatusExplanation          string                    `json:"-"`
-		ID                         string                    `json:"-"`
-		BelongsToMealPlan          string                    `json:"-"`
-		ValidIngredientID          string                    `json:"-"`
-		ValidMeasurementUnitID     string                    `json:"-"`
+		_                          struct{} `json:"-"`
+		MaxQuantityNeeded          *float32 `json:"-"`
+		BelongsToMealPlanOption    *string  `json:"-"`
+		PurchasePrice              *float32 `json:"-"`
+		PurchasedMeasurementUnitID *string  `json:"-"`
+		QuantityPurchased          *float32 `json:"-"`
+		PurchasedUPC               *string  `json:"-"`
+		OptionIndex                *uint16  `json:"-"`
+		IngredientIndex            *uint16  `json:"-"`
+		RecipeStepID               *string  `json:"-"`
+		RecipeID                   *string  `json:"-"`
+		Status                     string   `json:"-"`
+		StatusExplanation          string   `json:"-"`
+		ID                         string   `json:"-"`
+		BelongsToMealPlan          string   `json:"-"`
+		ValidIngredientID          string   `json:"-"`
+		ValidMeasurementUnitID     string   `json:"-"`
+		MinQuantityNeeded          float32  `json:"-"`
 	}
 
 	// MealPlanGroceryListItemUpdateRequestInput represents what a user could set as input for updating meal plan grocery list items.
 	MealPlanGroceryListItemUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		BelongsToMealPlan          *string                                      `json:"belongsToMealPlan,omitempty"`
-		ValidIngredientID          *string                                      `json:"validIngredientID,omitempty"`
-		ValidMeasurementUnitID     *string                                      `json:"validMeasurementUnitID,omitempty"`
-		StatusExplanation          *string                                      `json:"statusExplanation,omitempty"`
-		QuantityPurchased          *float32                                     `json:"quantityPurchased,omitempty"`
-		PurchasedMeasurementUnitID *string                                      `json:"purchasedMeasurementUnitID,omitempty"`
-		PurchasedUPC               *string                                      `json:"purchasedUPC,omitempty"`
-		PurchasePrice              *float32                                     `json:"purchasePrice,omitempty"`
-		Status                     *string                                      `json:"status,omitempty"`
-		QuantityNeeded             numbers.OpenRangeUpdateRequestInput[float32] `json:"quantityNeeded"`
+		BelongsToMealPlan          *string  `json:"belongsToMealPlan,omitempty"`
+		ValidIngredientID          *string  `json:"validIngredientID,omitempty"`
+		ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID,omitempty"`
+		StatusExplanation          *string  `json:"statusExplanation,omitempty"`
+		QuantityPurchased          *float32 `json:"quantityPurchased,omitempty"`
+		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID,omitempty"`
+		PurchasedUPC               *string  `json:"purchasedUPC,omitempty"`
+		PurchasePrice              *float32 `json:"purchasePrice,omitempty"`
+		Status                     *string  `json:"status,omitempty"`
+		MinQuantityNeeded          *float32 `json:"minQuantityNeeded,omitempty"`
+		MaxQuantityNeeded          *float32 `json:"maxQuantityNeeded,omitempty"`
 	}
 
 	// MealPlanGroceryListItemDataManager describes a structure capable of storing meal plan grocery list items permanently.
@@ -150,15 +153,15 @@ func (x *MealPlanGroceryListItem) Update(input *MealPlanGroceryListItemUpdateReq
 		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.ValidMeasurementUnitID}
 	}
 
-	if input.QuantityNeeded.Min != nil && *input.QuantityNeeded.Min != x.QuantityNeeded.Min {
-		x.QuantityNeeded.Min = *input.QuantityNeeded.Min
+	if input.MinQuantityNeeded != nil && *input.MinQuantityNeeded != x.MinQuantityNeeded {
+		x.MinQuantityNeeded = *input.MinQuantityNeeded
 	}
 
-	if input.QuantityNeeded.Max != nil {
-		x.QuantityNeeded.Max = input.QuantityNeeded.Max
-	} else if input.QuantityNeeded.Min != nil {
+	if input.MaxQuantityNeeded != nil {
+		x.MaxQuantityNeeded = input.MaxQuantityNeeded
+	} else if input.MinQuantityNeeded != nil {
 		// User sent quantity update with only min (single-value edit) — clear max
-		x.QuantityNeeded.Max = nil
+		x.MaxQuantityNeeded = nil
 	}
 
 	// was nil and now will not be nil
@@ -196,7 +199,7 @@ func (x *MealPlanGroceryListItemCreationRequestInput) ValidateWithContext(ctx co
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
-		validation.Field(&x.QuantityNeeded, validation.Required),
+		validation.Field(&x.MinQuantityNeeded, validation.Required),
 		validation.Field(&x.Status, validation.In(
 			MealPlanGroceryListItemStatusUnknown,
 			MealPlanGroceryListItemStatusAlreadyOwned,
@@ -218,7 +221,7 @@ func (x *MealPlanGroceryListItemDatabaseCreationInput) ValidateWithContext(ctx c
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
-		validation.Field(&x.QuantityNeeded, validation.Required),
+		validation.Field(&x.MinQuantityNeeded, validation.Required),
 		validation.Field(&x.Status, validation.In(
 			MealPlanGroceryListItemStatusUnknown,
 			MealPlanGroceryListItemStatusAlreadyOwned,

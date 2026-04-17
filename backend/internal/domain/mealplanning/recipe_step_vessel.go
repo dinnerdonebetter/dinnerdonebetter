@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -38,76 +37,80 @@ type (
 	RecipeStepVessel struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt            time.Time                `json:"createdAt"`
-		Quantity             numbers.MinRange[uint16] `json:"quantity"`
-		LastUpdatedAt        *time.Time               `json:"lastUpdatedAt"`
-		ArchivedAt           *time.Time               `json:"archivedAt"`
-		RecipeStepProductID  *string                  `json:"recipeStepProductID"`
-		Vessel               *ValidVessel             `json:"vessel"`
-		ID                   string                   `json:"id"`
-		Notes                string                   `json:"notes"`
-		BelongsToRecipeStep  string                   `json:"belongsToRecipeStep"`
-		VesselPreposition    string                   `json:"vesselPreposition"`
-		Name                 string                   `json:"name"`
-		Index                uint16                   `json:"index"`
-		OptionIndex          uint16                   `json:"optionIndex"`
-		UnavailableAfterStep bool                     `json:"unavailableAfterStep"`
-		ScaleFactor          float32                  `json:"scaleFactor"`
+		CreatedAt            time.Time    `json:"createdAt"`
+		MaxQuantity          *uint16      `json:"maxQuantity,omitempty"`
+		LastUpdatedAt        *time.Time   `json:"lastUpdatedAt"`
+		ArchivedAt           *time.Time   `json:"archivedAt"`
+		RecipeStepProductID  *string      `json:"recipeStepProductID"`
+		Vessel               *ValidVessel `json:"vessel"`
+		ID                   string       `json:"id"`
+		Notes                string       `json:"notes"`
+		BelongsToRecipeStep  string       `json:"belongsToRecipeStep"`
+		VesselPreposition    string       `json:"vesselPreposition"`
+		Name                 string       `json:"name"`
+		MinQuantity          uint16       `json:"minQuantity"`
+		Index                uint16       `json:"index"`
+		OptionIndex          uint16       `json:"optionIndex"`
+		UnavailableAfterStep bool         `json:"unavailableAfterStep"`
+		ScaleFactor          float32      `json:"scaleFactor"`
 	}
 
 	// RecipeStepVesselCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepVesselCreationRequestInput struct {
-		_                               struct{}                 `json:"-"`
-		Quantity                        numbers.MinRange[uint16] `json:"quantity"`
-		RecipeStepProductID             *string                  `json:"recipeStepProductID"`
-		ProductOfRecipeStepIndex        *uint64                  `json:"productOfRecipeStepIndex"`
-		ProductOfRecipeStepProductIndex *uint64                  `json:"productOfRecipeStepProductIndex"`
-		ValidPreparationVesselID        *string                  `json:"validPreparationVesselID"`
-		Index                           *uint16                  `json:"index,omitempty"`
-		Name                            string                   `json:"name"`
-		Notes                           string                   `json:"notes"`
-		VesselPreposition               string                   `json:"vesselPreposition"`
-		OptionIndex                     uint16                   `json:"optionIndex"`
-		UnavailableAfterStep            bool                     `json:"unavailableAfterStep"`
-		ScaleFactor                     float32                  `json:"scaleFactor"`
+		_                               struct{} `json:"-"`
+		MaxQuantity                     *uint16  `json:"maxQuantity,omitempty"`
+		RecipeStepProductID             *string  `json:"recipeStepProductID"`
+		ProductOfRecipeStepIndex        *uint64  `json:"productOfRecipeStepIndex"`
+		ProductOfRecipeStepProductIndex *uint64  `json:"productOfRecipeStepProductIndex"`
+		ValidPreparationVesselID        *string  `json:"validPreparationVesselID"`
+		Index                           *uint16  `json:"index,omitempty"`
+		Name                            string   `json:"name"`
+		Notes                           string   `json:"notes"`
+		VesselPreposition               string   `json:"vesselPreposition"`
+		MinQuantity                     uint16   `json:"minQuantity"`
+		OptionIndex                     uint16   `json:"optionIndex"`
+		UnavailableAfterStep            bool     `json:"unavailableAfterStep"`
+		ScaleFactor                     float32  `json:"scaleFactor"`
 	}
 
 	// RecipeStepVesselDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepVesselDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		VesselID                        *string                  `json:"-"`
-		ValidPreparationVesselID        *string                  `json:"-"`
-		RecipeStepProductID             *string                  `json:"-"`
-		ProductOfRecipeStepIndex        *uint64                  `json:"-"`
-		ProductOfRecipeStepProductIndex *uint64                  `json:"-"`
-		Quantity                        numbers.MinRange[uint16] `json:"-"`
-		ID                              string                   `json:"-"`
-		Notes                           string                   `json:"-"`
-		BelongsToRecipeStep             string                   `json:"-"`
-		VesselPreposition               string                   `json:"-"`
-		Name                            string                   `json:"-"`
-		Index                           uint16                   `json:"-"`
-		OptionIndex                     uint16                   `json:"-"`
-		UnavailableAfterStep            bool                     `json:"-"`
-		ScaleFactor                     float32                  `json:"-"`
+		VesselID                        *string `json:"-"`
+		ValidPreparationVesselID        *string `json:"-"`
+		RecipeStepProductID             *string `json:"-"`
+		ProductOfRecipeStepIndex        *uint64 `json:"-"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"-"`
+		MaxQuantity                     *uint16 `json:"-"`
+		ID                              string  `json:"-"`
+		Notes                           string  `json:"-"`
+		BelongsToRecipeStep             string  `json:"-"`
+		VesselPreposition               string  `json:"-"`
+		Name                            string  `json:"-"`
+		MinQuantity                     uint16  `json:"-"`
+		Index                           uint16  `json:"-"`
+		OptionIndex                     uint16  `json:"-"`
+		UnavailableAfterStep            bool    `json:"-"`
+		ScaleFactor                     float32 `json:"-"`
 	}
 
 	// RecipeStepVesselUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
 	RecipeStepVesselUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		RecipeStepProductID  *string                                     `json:"recipeStepProductID,omitempty"`
-		Name                 *string                                     `json:"name,omitempty"`
-		Notes                *string                                     `json:"notes,omitempty"`
-		BelongsToRecipeStep  *string                                     `json:"belongsToRecipeStep,omitempty"`
-		VesselID             *string                                     `json:"vesselID,omitempty"`
-		Quantity             numbers.OpenRangeUpdateRequestInput[uint16] `json:"quantity"`
-		Index                *uint16                                     `json:"index,omitempty"`
-		OptionIndex          *uint16                                     `json:"optionIndex,omitempty"`
-		VesselPreposition    *string                                     `json:"vesselPreposition,omitempty"`
-		UnavailableAfterStep *bool                                       `json:"unavailableAfterStep,omitempty"`
-		ScaleFactor          *float32                                    `json:"scaleFactor,omitempty"`
+		RecipeStepProductID  *string  `json:"recipeStepProductID,omitempty"`
+		Name                 *string  `json:"name,omitempty"`
+		Notes                *string  `json:"notes,omitempty"`
+		BelongsToRecipeStep  *string  `json:"belongsToRecipeStep,omitempty"`
+		VesselID             *string  `json:"vesselID,omitempty"`
+		MinQuantity          *uint16  `json:"minQuantity,omitempty"`
+		MaxQuantity          *uint16  `json:"maxQuantity,omitempty"`
+		Index                *uint16  `json:"index,omitempty"`
+		OptionIndex          *uint16  `json:"optionIndex,omitempty"`
+		VesselPreposition    *string  `json:"vesselPreposition,omitempty"`
+		UnavailableAfterStep *bool    `json:"unavailableAfterStep,omitempty"`
+		ScaleFactor          *float32 `json:"scaleFactor,omitempty"`
 	}
 
 	// RecipeStepVesselDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -144,12 +147,12 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 		x.BelongsToRecipeStep = *input.BelongsToRecipeStep
 	}
 
-	if input.Quantity.Min != nil && *input.Quantity.Min != x.Quantity.Min {
-		x.Quantity.Min = *input.Quantity.Min
+	if input.MinQuantity != nil && *input.MinQuantity != x.MinQuantity {
+		x.MinQuantity = *input.MinQuantity
 	}
 
-	if input.Quantity.Max != nil && x.Quantity.Max != nil && *input.Quantity.Max != *x.Quantity.Max {
-		x.Quantity.Max = input.Quantity.Max
+	if input.MaxQuantity != nil && (x.MaxQuantity == nil || *input.MaxQuantity != *x.MaxQuantity) {
+		x.MaxQuantity = input.MaxQuantity
 	}
 
 	if input.Index != nil && *input.Index != x.Index {
@@ -198,7 +201,7 @@ func (x *RecipeStepVesselCreationRequestInput) ValidateWithContext(ctx context.C
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Quantity, validation.Required),
+		validation.Field(&x.MinQuantity, validation.Required),
 	)
 	if validationErr != nil {
 		err = multierror.Append(err, validationErr)

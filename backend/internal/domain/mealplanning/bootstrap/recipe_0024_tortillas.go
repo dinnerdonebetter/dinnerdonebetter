@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 // TortillasRecipe creates the Simple Tortillas recipe.
@@ -169,41 +167,41 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientMeasurementUnitID: vimuID(flourCupVIMU),
 				Name:                             "all-purpose flour",
 				QuantityNotes:                    "300g, plus additional as needed",
-				Quantity:                         numbers.MinRange[float32]{Min: 2.5},
+				MinQuantity:                      2.5,
 			},
 			{
 				ValidIngredientPreparationID:     vipID(mixBakingPowderVIP),
 				ValidIngredientMeasurementUnitID: vimuID(bakingPowderTeaspoonVIMU),
 				Name:                             "baking powder",
-				Quantity:                         numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                      1,
 			},
 			{
 				ValidIngredientPreparationID:     vipID(mixSaltVIP),
 				ValidIngredientMeasurementUnitID: vimuID(saltTeaspoonVIMU),
 				Name:                             "table salt",
-				Quantity:                         numbers.MinRange[float32]{Min: 0.5},
+				MinQuantity:                      0.5,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(mixWhiskVPI),
 				Name:                         "whisk",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(mixMediumBowlVPV),
 				Name:                     "medium-sized bowl",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "dry ingredient mixture",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "dry ingredient mixture",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -224,14 +222,14 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dry ingredient mixture",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 			{
 				ValidIngredientPreparationID:     vipID(addLardVIP),
 				ValidIngredientMeasurementUnitID: vimuID(lardTablespoonVIMU),
 				Name:                             "lard",
 				QuantityNotes:                    "57g, room temperature (or butter, shortening, or vegetable oil)",
-				Quantity:                         numbers.MinRange[float32]{Min: 4},
+				MinQuantity:                      4,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -239,15 +237,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "bowl with dry ingredients",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "dry ingredients with fat",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "dry ingredients with fat",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -268,14 +266,14 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dry ingredients with fat",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(mixPastryBlenderVPI),
 				Name:                         "pastry blender or fingers",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -283,15 +281,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "bowl with dry ingredients and fat",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "flour-fat mixture",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "flour-fat mixture",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -314,22 +312,23 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ValidIngredientMeasurementUnitID: vimuID(waterCupVIMU),
 				Name:                             "water",
 				QuantityNotes:                    "200g to 227g",
-				Quantity:                         numbers.MinRange[float32]{Min: 0.875, Max: new(float32(1))},
+				MinQuantity:                      0.875,
+				MaxQuantity:                      new(float32(1)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(heatSmallSaucepanVPV),
 				Name:                     "small saucepan",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "hot water",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cupMeasurement.ID,
+				Name:                   "hot water",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(0.875)),
 				MaxMeasurementQuantity: new(float32(1)),
 			},
@@ -346,13 +345,14 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "flour-fat mixture",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "hot water",
-				Quantity:                        numbers.MinRange[float32]{Min: 0.875, Max: new(float32(1))},
+				MinQuantity:                     0.875,
+				MaxQuantity:                     new(float32(1)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -360,15 +360,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "bowl with flour-fat mixture",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "flour mixture with water",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "flour mixture with water",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -389,14 +389,14 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "flour mixture with water",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(stirForkVPI),
 				Name:                         "fork or whisk",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -404,15 +404,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "bowl with flour mixture and water",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "shaggy dough",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "shaggy dough",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -428,29 +428,29 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "shaggy dough",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(kneadBareHandsVPI),
 				Name:                         "hands",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(kneadCountertopVPV),
 				Name:                     "lightly floured counter",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "kneaded dough ball",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "kneaded dough ball",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -471,14 +471,14 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "kneaded dough ball",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(divideBareHandsVPI),
 				Name:                         "hands or knife",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -486,15 +486,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "countertop with dough",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "dough pieces",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "dough pieces",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 			{
@@ -515,14 +515,14 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dough pieces",
-				Quantity:                        numbers.MinRange[float32]{Min: 8},
+				MinQuantity:                     8,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(formBareHandsVPI),
 				Name:                         "hands",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -530,15 +530,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "countertop with dough pieces",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "flattened dough balls",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "flattened dough balls",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 			{
@@ -559,7 +559,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "flattened dough balls",
-				Quantity:                        numbers.MinRange[float32]{Min: 8},
+				MinQuantity:                     8,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -567,20 +567,20 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "countertop with dough balls",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 			{
 				ValidPreparationVesselID: vpvID(coverKitchenTowelVPV),
 				Name:                     "clean kitchen towel",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "covered dough balls",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "covered dough balls",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 			{
@@ -602,7 +602,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "covered dough balls",
-				Quantity:                        numbers.MinRange[float32]{Min: 8},
+				MinQuantity:                     8,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -610,7 +610,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "countertop with covered dough",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -623,10 +623,10 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "rested dough balls",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "rested dough balls",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 			{
@@ -647,7 +647,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 			{
 				ValidPreparationVesselID: vpvID(preheatCastIronSkilletVPV),
 				Name:                     "ungreased cast iron griddle or skillet",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
@@ -669,14 +669,14 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "rested dough balls",
-				Quantity:                        numbers.MinRange[float32]{Min: 8},
+				MinQuantity:                     8,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(rollRollingPinVPI),
 				Name:                         "rolling pin",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -684,15 +684,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "countertop with rested dough",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "raw tortilla rounds",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "raw tortilla rounds",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
@@ -711,7 +711,7 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(12)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "raw tortilla rounds",
-				Quantity:                        numbers.MinRange[float32]{Min: 8},
+				MinQuantity:                     8,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -719,15 +719,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(11)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "preheated skillet",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "cooked tortillas",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "cooked tortillas",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
@@ -743,22 +743,22 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 				ProductOfRecipeStepIndex:        new(uint64(13)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "cooked tortillas",
-				Quantity:                        numbers.MinRange[float32]{Min: 8},
+				MinQuantity:                     8,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(transferKitchenTowelVPV),
 				Name:                     "clean kitchen towel",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "Tortillas",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "Tortillas",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(8)),
 			},
 		},
@@ -766,17 +766,15 @@ func TortillasRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestI
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Tortillas",
-			Slug:                "tortillas",
-			Source:              "https://www.kingarthurbaking.com/recipes/simple-tortillas-recipe",
-			Description:         "This recipe for soft flour tortillas is quick and easy. Soft and tender, with just a little bit of \"chew,\" you can have these on the table in under an hour. The dough can also be made the day before and allowed to rest in the fridge overnight.",
-			YieldsComponentType: mealplanning.MealComponentTypesSide,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 8,
-			},
-			PortionName:       "tortilla",
-			PluralPortionName: "tortillas",
-			EligibleForMeals:  true,
+			Name:                 "Tortillas",
+			Slug:                 "tortillas",
+			Source:               "https://www.kingarthurbaking.com/recipes/simple-tortillas-recipe",
+			Description:          "This recipe for soft flour tortillas is quick and easy. Soft and tender, with just a little bit of \"chew,\" you can have these on the table in under an hour. The dough can also be made the day before and allowed to rest in the fridge overnight.",
+			YieldsComponentType:  mealplanning.MealComponentTypesSide,
+			MinEstimatedPortions: 8,
+			PortionName:          "tortilla",
+			PluralPortionName:    "tortillas",
+			EligibleForMeals:     true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step2a, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13,
 			},

@@ -6,7 +6,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 
-	"github.com/primandproper/platform/numbers"
 	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
 
@@ -68,11 +67,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: step1ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: onion,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  onion,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -104,11 +102,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: step2ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: carrot,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  carrot,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -140,11 +137,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: step3ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: celery,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  celery,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -176,11 +172,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: step4ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: salt,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  salt,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -212,11 +207,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: step5ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: onion,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  onion,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -245,10 +239,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option1ID, // First occurrence
 				RecipeID:                &recipe1ID,
 				RecipeStepID:            &step1ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(200)),
-					Min: 200,
-				},
+				MinQuantityNeeded:       200,
+
+				MaxQuantityNeeded: new(float32(200)),
 			},
 			carrot.ID: {
 				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
@@ -258,10 +251,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option2ID,
 				RecipeID:                &recipe2ID,
 				RecipeStepID:            &step2ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(100)),
-					Min: 100,
-				},
+				MinQuantityNeeded:       100,
+
+				MaxQuantityNeeded: new(float32(100)),
 			},
 			celery.ID: {
 				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
@@ -271,10 +263,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option3ID,
 				RecipeID:                &recipe3ID,
 				RecipeStepID:            &step3ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(100)),
-					Min: 100,
-				},
+				MinQuantityNeeded:       100,
+
+				MaxQuantityNeeded: new(float32(100)),
 			},
 			salt.ID: {
 				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
@@ -284,10 +275,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option4ID,
 				RecipeID:                &recipe4ID,
 				RecipeStepID:            &step4ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(100)),
-					Min: 100,
-				},
+				MinQuantityNeeded:       100,
+
+				MaxQuantityNeeded: new(float32(100)),
 			},
 		}
 
@@ -347,11 +337,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: step1ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: onion,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  onion,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -383,11 +372,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: step2ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: carrot,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  carrot,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -419,11 +407,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: step3ID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: celery,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  celery,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -452,10 +439,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option1ID,
 				RecipeID:                &recipe1ID,
 				RecipeStepID:            &step1ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(100)),
-					Min: 100,
-				},
+				MinQuantityNeeded:       100,
+
+				MaxQuantityNeeded: new(float32(100)),
 			},
 			carrot.ID: {
 				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
@@ -465,10 +451,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option2ID,
 				RecipeID:                &recipe2ID,
 				RecipeStepID:            &step2ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(200)),
-					Min: 200,
-				},
+				MinQuantityNeeded:       200,
+
+				MaxQuantityNeeded: new(float32(200)),
 			},
 			celery.ID: {
 				Status:                  mealplanning.MealPlanGroceryListItemStatusNeeds,
@@ -478,10 +463,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				BelongsToMealPlanOption: &option3ID,
 				RecipeID:                &recipe3ID,
 				RecipeStepID:            &step3ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(300)),
-					Min: 300,
-				},
+				MinQuantityNeeded:       300,
+
+				MaxQuantityNeeded: new(float32(300)),
 			},
 		}
 
@@ -533,11 +517,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: stepID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: onion,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  onion,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -561,8 +544,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.NoError(t, err)
 		require.Len(t, actual, 1)
 		// effectiveScale = 2.0 * 0.5 = 1.0, so 100 * 1.0 = 100
-		assert.Equal(t, float32(100), actual[0].QuantityNeeded.Min)
-		assert.Equal(t, float32(100), *actual[0].QuantityNeeded.Max)
+		assert.Equal(t, float32(100), actual[0].MinQuantityNeeded)
+		assert.Equal(t, float32(100), *actual[0].MaxQuantityNeeded)
 	})
 
 	T.Run("with option groups", func(t *testing.T) {
@@ -604,32 +587,29 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														// Option group: same index (0), different option_index
 														{
-															Ingredient: spaghetti,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  spaghetti,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
 														},
 														{
-															Ingredient: angelHair,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  angelHair,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     1,
 														},
 														// Non-option ingredient at different index
 														{
-															Ingredient: onion,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(50)),
-																Min: 50,
-															},
+															Ingredient:  onion,
+															MinQuantity: 50,
+
+															MaxQuantity:     new(float32(50)),
 															MeasurementUnit: *grams,
 															Index:           1,
 															OptionIndex:     0,
@@ -675,7 +655,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, uint16(0), *spaghettiItem.IngredientIndex)
 		assert.NotNil(t, spaghettiItem.OptionIndex)
 		assert.Equal(t, uint16(0), *spaghettiItem.OptionIndex)
-		assert.Equal(t, float32(100), spaghettiItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(100), spaghettiItem.MinQuantityNeeded)
 
 		// Verify angelHair is NOT present (was not selected, and optionIndex=1 is not the default)
 		_, ok = actualMap[angelHair.ID]
@@ -690,7 +670,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, recipeID, *onionItem.RecipeID)
 		assert.NotNil(t, onionItem.RecipeStepID)
 		assert.Equal(t, stepID, *onionItem.RecipeStepID)
-		assert.Equal(t, float32(50), onionItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(50), onionItem.MinQuantityNeeded)
 	})
 
 	T.Run("with option groups and aggregation", func(t *testing.T) {
@@ -735,32 +715,29 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														// Option group
 														{
-															Ingredient: spaghetti,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  spaghetti,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
 														},
 														{
-															Ingredient: angelHair,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(100)),
-																Min: 100,
-															},
+															Ingredient:  angelHair,
+															MinQuantity: 100,
+
+															MaxQuantity:     new(float32(100)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     1,
 														},
 														// Non-option ingredient
 														{
-															Ingredient: onion,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(50)),
-																Min: 50,
-															},
+															Ingredient:  onion,
+															MinQuantity: 50,
+
+															MaxQuantity:     new(float32(50)),
 															MeasurementUnit: *grams,
 															Index:           1,
 															OptionIndex:     0,
@@ -793,11 +770,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														// Same onion ingredient, should aggregate
 														{
-															Ingredient: onion,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(50)),
-																Min: 50,
-															},
+															Ingredient:  onion,
+															MinQuantity: 50,
+
+															MaxQuantity:     new(float32(50)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -832,7 +808,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		// Verify spaghetti (option group item - default selection)
 		spaghettiItem, ok := actualMap[spaghetti.ID]
 		assert.True(t, ok, "spaghetti item should exist (default optionIndex=0)")
-		assert.Equal(t, float32(100), spaghettiItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(100), spaghettiItem.MinQuantityNeeded)
 		assert.NotNil(t, spaghettiItem.BelongsToMealPlanOption)
 		assert.Equal(t, option1ID, *spaghettiItem.BelongsToMealPlanOption)
 
@@ -843,7 +819,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		// Verify onion (non-option item, should be aggregated)
 		onionItem, ok := actualMap[onion.ID]
 		assert.True(t, ok)
-		assert.Equal(t, float32(100), onionItem.QuantityNeeded.Min, "onion should be aggregated (50 + 50)")
+		assert.Equal(t, float32(100), onionItem.MinQuantityNeeded, "onion should be aggregated (50 + 50)")
 		// Should have context from first occurrence
 		assert.NotNil(t, onionItem.BelongsToMealPlanOption)
 		assert.Equal(t, option1ID, *onionItem.BelongsToMealPlanOption)
@@ -900,7 +876,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID:              fakes.BuildFakeID(),
 															Ingredient:      spaghetti,
 															MeasurementUnit: *grams,
-															Quantity:        numbers.MinRange[float32]{Min: 100},
+															MinQuantity:     100,
 															Index:           0,
 															OptionIndex:     0,
 														},
@@ -909,7 +885,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID:              fakes.BuildFakeID(),
 															Ingredient:      angelHair,
 															MeasurementUnit: *grams,
-															Quantity:        numbers.MinRange[float32]{Min: 100},
+															MinQuantity:     100,
 															Index:           0,
 															OptionIndex:     1,
 														},
@@ -918,7 +894,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID:              fakes.BuildFakeID(),
 															Ingredient:      onion,
 															MeasurementUnit: *grams,
-															Quantity:        numbers.MinRange[float32]{Min: 50},
+															MinQuantity:     50,
 															Index:           1,
 															OptionIndex:     0,
 														},
@@ -967,7 +943,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, uint16(0), *angelHairItem.IngredientIndex)
 		assert.NotNil(t, angelHairItem.OptionIndex)
 		assert.Equal(t, uint16(1), *angelHairItem.OptionIndex)
-		assert.Equal(t, float32(100), angelHairItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(100), angelHairItem.MinQuantityNeeded)
 
 		// Verify onion (non-option item)
 		onionItem, ok := actualMap[onion.ID]
@@ -978,7 +954,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, recipeID, *onionItem.RecipeID)
 		assert.NotNil(t, onionItem.RecipeStepID)
 		assert.Equal(t, stepID, *onionItem.RecipeStepID)
-		assert.Equal(t, float32(50), onionItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(50), onionItem.MinQuantityNeeded)
 	})
 
 	T.Run("with associated recipes", func(t *testing.T) {
@@ -1023,11 +999,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: mainStepID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: chicken,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(500)),
-																Min: 500,
-															},
+															Ingredient:  chicken,
+															MinQuantity: 500,
+
+															MaxQuantity:     new(float32(500)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -1044,21 +1019,19 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID: associatedStepID,
 															Ingredients: []*mealplanning.RecipeStepIngredient{
 																{
-																	Ingredient: oliveOil,
-																	Quantity: numbers.MinRange[float32]{
-																		Max: new(float32(100)),
-																		Min: 100,
-																	},
+																	Ingredient:  oliveOil,
+																	MinQuantity: 100,
+
+																	MaxQuantity:     new(float32(100)),
 																	MeasurementUnit: *grams,
 																	Index:           0,
 																	OptionIndex:     0,
 																},
 																{
-																	Ingredient: lemon,
-																	Quantity: numbers.MinRange[float32]{
-																		Max: new(float32(50)),
-																		Min: 50,
-																	},
+																	Ingredient:  lemon,
+																	MinQuantity: 50,
+
+																	MaxQuantity:     new(float32(50)),
 																	MeasurementUnit: *grams,
 																	Index:           1,
 																	OptionIndex:     0,
@@ -1099,7 +1072,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, mainRecipeID, *chickenItem.RecipeID)
 		assert.NotNil(t, chickenItem.RecipeStepID)
 		assert.Equal(t, mainStepID, *chickenItem.RecipeStepID)
-		assert.Equal(t, float32(500), chickenItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(500), chickenItem.MinQuantityNeeded)
 
 		// Verify oliveOil (from associated recipe)
 		oliveOilItem, ok := actualMap[oliveOil.ID]
@@ -1108,7 +1081,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, associatedRecipeID, *oliveOilItem.RecipeID)
 		assert.NotNil(t, oliveOilItem.RecipeStepID)
 		assert.Equal(t, associatedStepID, *oliveOilItem.RecipeStepID)
-		assert.Equal(t, float32(100), oliveOilItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(100), oliveOilItem.MinQuantityNeeded)
 
 		// Verify lemon (from associated recipe)
 		lemonItem, ok := actualMap[lemon.ID]
@@ -1117,7 +1090,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		assert.Equal(t, associatedRecipeID, *lemonItem.RecipeID)
 		assert.NotNil(t, lemonItem.RecipeStepID)
 		assert.Equal(t, associatedStepID, *lemonItem.RecipeStepID)
-		assert.Equal(t, float32(50), lemonItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(50), lemonItem.MinQuantityNeeded)
 	})
 
 	T.Run("with associated recipes and scaling", func(t *testing.T) {
@@ -1161,11 +1134,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: mainStepID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: chicken,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(500)),
-																Min: 500,
-															},
+															Ingredient:  chicken,
+															MinQuantity: 500,
+
+															MaxQuantity:     new(float32(500)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
@@ -1181,11 +1153,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID: associatedStepID,
 															Ingredients: []*mealplanning.RecipeStepIngredient{
 																{
-																	Ingredient: oliveOil,
-																	Quantity: numbers.MinRange[float32]{
-																		Max: new(float32(100)),
-																		Min: 100,
-																	},
+																	Ingredient:  oliveOil,
+																	MinQuantity: 100,
+
+																	MaxQuantity:     new(float32(100)),
 																	MeasurementUnit: *grams,
 																	Index:           0,
 																	OptionIndex:     0,
@@ -1222,12 +1193,12 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		// Verify chicken (from main recipe) - should be scaled: 500 * 1.5 * 2.0 = 1500
 		chickenItem, ok := actualMap[chicken.ID]
 		assert.True(t, ok, "chicken item should exist")
-		assert.Equal(t, float32(1500), chickenItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(1500), chickenItem.MinQuantityNeeded)
 
 		// Verify oliveOil (from associated recipe) - should also be scaled: 100 * 1.5 * 2.0 = 300
 		oliveOilItem, ok := actualMap[oliveOil.ID]
 		assert.True(t, ok, "oliveOil item should exist from associated recipe")
-		assert.Equal(t, float32(300), oliveOilItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(300), oliveOilItem.MinQuantityNeeded)
 	})
 
 	T.Run("with associated recipes and aggregation", func(t *testing.T) {
@@ -1270,21 +1241,19 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: mainStepID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: chicken,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(500)),
-																Min: 500,
-															},
+															Ingredient:  chicken,
+															MinQuantity: 500,
+
+															MaxQuantity:     new(float32(500)),
 															MeasurementUnit: *grams,
 															Index:           0,
 															OptionIndex:     0,
 														},
 														{
-															Ingredient: salt,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(10)),
-																Min: 10,
-															},
+															Ingredient:  salt,
+															MinQuantity: 10,
+
+															MaxQuantity:     new(float32(10)),
 															MeasurementUnit: *grams,
 															Index:           1,
 															OptionIndex:     0,
@@ -1300,11 +1269,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 															ID: associatedStepID,
 															Ingredients: []*mealplanning.RecipeStepIngredient{
 																{
-																	Ingredient: salt, // Same salt ingredient
-																	Quantity: numbers.MinRange[float32]{
-																		Max: new(float32(5)),
-																		Min: 5,
-																	},
+																	Ingredient:  salt, // Same salt ingredient
+																	MinQuantity: 5,
+
+																	MaxQuantity:     new(float32(5)),
 																	MeasurementUnit: *grams,
 																	Index:           0,
 																	OptionIndex:     0,
@@ -1341,12 +1309,12 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		// Verify chicken
 		chickenItem, ok := actualMap[chicken.ID]
 		assert.True(t, ok, "chicken item should exist")
-		assert.Equal(t, float32(500), chickenItem.QuantityNeeded.Min)
+		assert.Equal(t, float32(500), chickenItem.MinQuantityNeeded)
 
 		// Verify salt (should be aggregated: 10 + 5 = 15)
 		saltItem, ok := actualMap[salt.ID]
 		assert.True(t, ok, "salt item should exist and be aggregated")
-		assert.Equal(t, float32(15), saltItem.QuantityNeeded.Min, "salt should be aggregated from main recipe (10) and associated recipe (5)")
+		assert.Equal(t, float32(15), saltItem.MinQuantityNeeded, "salt should be aggregated from main recipe (10) and associated recipe (5)")
 	})
 
 	T.Run("rounds quantities to nearest tenth", func(t *testing.T) {
@@ -1386,21 +1354,19 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 													ID: stepID,
 													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
-															Ingredient: carrot,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(3.01)),
-																Min: 3.01,
-															},
+															Ingredient:  carrot,
+															MinQuantity: 3.01,
+
+															MaxQuantity:     new(float32(3.01)),
 															MeasurementUnit: *pounds,
 															Index:           0,
 															OptionIndex:     0,
 														},
 														{
-															Ingredient: thyme,
-															Quantity: numbers.MinRange[float32]{
-																Max: new(float32(1.5)),
-																Min: 1.5,
-															},
+															Ingredient:  thyme,
+															MinQuantity: 1.5,
+
+															MaxQuantity:     new(float32(1.5)),
 															MeasurementUnit: *sprigs,
 															Index:           1,
 															OptionIndex:     0,
@@ -1431,15 +1397,15 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		// 3.01 * 1.34 = 4.0334 -> should round to 4.0
 		carrotItem, ok := actualMap[carrot.ID]
 		assert.True(t, ok, "carrot item should exist")
-		assert.Equal(t, float32(4.0), carrotItem.QuantityNeeded.Min, "carrot quantity should be rounded to nearest tenth")
-		assert.NotNil(t, carrotItem.QuantityNeeded.Max)
-		assert.Equal(t, float32(4.0), *carrotItem.QuantityNeeded.Max)
+		assert.Equal(t, float32(4.0), carrotItem.MinQuantityNeeded, "carrot quantity should be rounded to nearest tenth")
+		assert.NotNil(t, carrotItem.MaxQuantityNeeded)
+		assert.Equal(t, float32(4.0), *carrotItem.MaxQuantityNeeded)
 
 		// 1.5 * 1.34 = 2.01 -> should round to 2.0
 		thymeItem, ok := actualMap[thyme.ID]
 		assert.True(t, ok, "thyme item should exist")
-		assert.Equal(t, float32(2.0), thymeItem.QuantityNeeded.Min, "thyme quantity should be rounded to nearest tenth")
-		assert.NotNil(t, thymeItem.QuantityNeeded.Max)
-		assert.Equal(t, float32(2.0), *thymeItem.QuantityNeeded.Max)
+		assert.Equal(t, float32(2.0), thymeItem.MinQuantityNeeded, "thyme quantity should be rounded to nearest tenth")
+		assert.NotNil(t, thymeItem.MaxQuantityNeeded)
+		assert.Equal(t, float32(2.0), *thymeItem.MaxQuantityNeeded)
 	})
 }

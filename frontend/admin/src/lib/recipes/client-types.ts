@@ -5,20 +5,6 @@
 
 import type { MealComponentType, RecipeStepProductType } from './client-enums';
 
-// Range types (minimal)
-export interface Float32Range {
-  min: number;
-  max?: number;
-}
-export interface Uint16Range {
-  min: number;
-  max?: number;
-}
-export interface Uint32Range {
-  min: number;
-  max?: number;
-}
-
 // API response types (from search endpoints)
 export interface ValidPreparation {
   id: string;
@@ -80,7 +66,8 @@ export interface RecipeStepIngredientCreationRequestInput {
   ingredientNotes: string;
   name: string;
   quantityNotes: string;
-  quantity: Float32Range | undefined;
+  minQuantity: number;
+  maxQuantity?: number;
   optionIndex: number;
   optional: boolean;
   toTaste: boolean;
@@ -95,17 +82,22 @@ export interface RecipeStepInstrumentCreationRequestInput {
   productOfRecipeStepProductIndex?: number;
   name: string;
   notes: string;
-  quantity: Float32Range | undefined;
+  minQuantity: number;
+  maxQuantity?: number;
   optionIndex: number;
   optional: boolean;
   preferenceRank: number;
 }
 
 export interface RecipeStepProductCreationRequestInput {
-  storageTemperatureInCelsius?: Float32Range;
-  storageDurationInSeconds?: Uint32Range;
-  measurementQuantity?: Float32Range;
-  itemQuantity?: Float32Range;
+  minStorageTemperatureInCelsius?: number;
+  maxStorageTemperatureInCelsius?: number;
+  minStorageDurationInSeconds?: number;
+  maxStorageDurationInSeconds?: number;
+  minMeasurementQuantity?: number;
+  maxMeasurementQuantity?: number;
+  minItemQuantity?: number;
+  maxItemQuantity?: number;
   measurementUnitId?: string;
   containedInVesselIndex?: number;
   quantityNotes: string;
@@ -122,7 +114,8 @@ export interface RecipeStepVesselCreationRequestInput {
   recipeStepProductId?: string;
   productOfRecipeStepIndex?: number;
   productOfRecipeStepProductIndex?: number;
-  quantity: Uint16Range | undefined;
+  minQuantity: number;
+  maxQuantity?: number;
   name: string;
   notes: string;
   vesselPreposition: string;
@@ -133,8 +126,10 @@ export interface RecipeStepVesselCreationRequestInput {
 }
 
 export interface RecipeStepCreationRequestInput {
-  estimatedTimeInSeconds?: Uint32Range;
-  temperatureInCelsius?: Float32Range;
+  minEstimatedTimeInSeconds?: number;
+  maxEstimatedTimeInSeconds?: number;
+  minTemperatureInCelsius?: number;
+  maxTemperatureInCelsius?: number;
   preparationId: string;
   notes: string;
   conditionExpression: string;
@@ -164,8 +159,10 @@ export interface RecipePrepTaskStepWithinRecipeCreationRequestInput {
 }
 
 export interface RecipePrepTaskWithinRecipeCreationRequestInput {
-  storageTemperatureInCelsius?: Float32Range;
-  timeBufferBeforeRecipeInSeconds?: Uint32Range;
+  minStorageTemperatureInCelsius?: number;
+  maxStorageTemperatureInCelsius?: number;
+  minTimeBufferBeforeRecipeInSeconds: number;
+  maxTimeBufferBeforeRecipeInSeconds?: number;
   storageType: string;
   name: string;
   description: string;
@@ -186,7 +183,8 @@ export interface RecipeCreationRequestInput {
   portionName: string;
   slug: string;
   yieldsComponentType: MealComponentType;
-  estimatedPortions: Float32Range | undefined;
+  minEstimatedPortions: number;
+  maxEstimatedPortions?: number;
   prepTasks: RecipePrepTaskWithinRecipeCreationRequestInput[];
   steps: RecipeStepCreationRequestInput[];
   alsoCreateMeal: boolean;

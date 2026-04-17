@@ -449,8 +449,7 @@ struct MealPlanningHomeContent: View {
     task: Mealplanning_MealPlanTask, mealPlan: Mealplanning_MealPlan
   ) -> Date? {
     guard task.hasRecipePrepTask,
-      task.recipePrepTask.hasTimeBufferBeforeRecipeInSeconds,
-      task.recipePrepTask.timeBufferBeforeRecipeInSeconds.hasMax,
+      task.recipePrepTask.hasMaxTimeBufferBeforeRecipeInSeconds,
       task.hasMealPlanOption
     else { return nil }
     let eventID = task.mealPlanOption.belongsToMealPlanEvent
@@ -459,7 +458,7 @@ struct MealPlanningHomeContent: View {
     else { return nil }
     let eventTime = HomeViewModel.timestampToDate(event.startsAt)
     return eventTime.addingTimeInterval(
-      -Double(task.recipePrepTask.timeBufferBeforeRecipeInSeconds.max))
+      -Double(task.recipePrepTask.maxTimeBufferBeforeRecipeInSeconds))
   }
 
 }

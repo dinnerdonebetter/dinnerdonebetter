@@ -4,7 +4,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertMealCreationRequestInputToMealDatabaseCreationInput creates a MealDatabaseCreationInput from a MealCreationRequestInput.
@@ -15,13 +14,11 @@ func ConvertMealCreationRequestInputToMealDatabaseCreationInput(input *mealplann
 	}
 
 	x := &mealplanning.MealDatabaseCreationInput{
-		ID:          identifiers.New(),
-		Name:        input.Name,
-		Description: input.Description,
-		EstimatedPortions: numbers.MinRange[float32]{
-			Min: input.EstimatedPortions.Min,
-			Max: input.EstimatedPortions.Max,
-		},
+		ID:                   identifiers.New(),
+		Name:                 input.Name,
+		Description:          input.Description,
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
 		Components:           convertedComponents,
 		EligibleForMealPlans: input.EligibleForMealPlans,
 	}
@@ -48,12 +45,10 @@ func ConvertMealToMealCreationRequestInput(meal *mealplanning.Meal) *mealplannin
 	}
 
 	return &mealplanning.MealCreationRequestInput{
-		Name:        meal.Name,
-		Description: meal.Description,
-		EstimatedPortions: numbers.MinRange[float32]{
-			Min: meal.EstimatedPortions.Min,
-			Max: meal.EstimatedPortions.Max,
-		},
+		Name:                 meal.Name,
+		Description:          meal.Description,
+		MinEstimatedPortions: meal.MinEstimatedPortions,
+		MaxEstimatedPortions: meal.MaxEstimatedPortions,
 		Components:           convertedComponents,
 		EligibleForMealPlans: meal.EligibleForMealPlans,
 	}
@@ -78,13 +73,11 @@ func ConvertMealToMealDatabaseCreationInput(meal *mealplanning.Meal) *mealplanni
 	}
 
 	return &mealplanning.MealDatabaseCreationInput{
-		ID:          meal.ID,
-		Name:        meal.Name,
-		Description: meal.Description,
-		EstimatedPortions: numbers.MinRange[float32]{
-			Min: meal.EstimatedPortions.Min,
-			Max: meal.EstimatedPortions.Max,
-		},
+		ID:                   meal.ID,
+		Name:                 meal.Name,
+		Description:          meal.Description,
+		MinEstimatedPortions: meal.MinEstimatedPortions,
+		MaxEstimatedPortions: meal.MaxEstimatedPortions,
 		CreatedByUser:        meal.CreatedByUser,
 		Components:           convertedComponents,
 		EligibleForMealPlans: meal.EligibleForMealPlans,
@@ -110,12 +103,10 @@ func ConvertMealToMealUpdateRequestInput(meal *mealplanning.Meal) *mealplanning.
 	}
 
 	return &mealplanning.MealUpdateRequestInput{
-		Name:        &meal.Name,
-		Description: &meal.Description,
-		EstimatedPortions: numbers.OpenRangeUpdateRequestInput[float32]{
-			Min: &meal.EstimatedPortions.Min,
-			Max: meal.EstimatedPortions.Max,
-		},
+		Name:                 &meal.Name,
+		Description:          &meal.Description,
+		MinEstimatedPortions: &meal.MinEstimatedPortions,
+		MaxEstimatedPortions: meal.MaxEstimatedPortions,
 		CreatedByUser:        &meal.CreatedByUser,
 		Components:           convertedComponents,
 		EligibleForMealPlans: &meal.EligibleForMealPlans,

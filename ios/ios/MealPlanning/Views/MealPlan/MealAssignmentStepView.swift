@@ -182,13 +182,13 @@ struct MealAssignmentStepView: View {
             }
           )
 
-          if meal.hasEstimatedPortions {
-            let scale = viewModel.mealScale(for: date)
-            let portionText = PortionsFormatter.formatScaled(meal.estimatedPortions, scale: scale)
-            Text("→ ~\(portionText) servings")
-              .font(DSTheme.Typography.body)
-              .foregroundColor(DSTheme.Colors.textSecondary)
-          }
+          let scale = viewModel.mealScale(for: date)
+          let portionText = PortionsFormatter.formatScaled(
+            min: meal.minEstimatedPortions,
+            max: meal.hasMaxEstimatedPortions ? meal.maxEstimatedPortions : nil, scale: scale)
+          Text("→ ~\(portionText) servings")
+            .font(DSTheme.Typography.body)
+            .foregroundColor(DSTheme.Colors.textSecondary)
         }
       }
       .padding()

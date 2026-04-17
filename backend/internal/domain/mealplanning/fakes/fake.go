@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
+	"github.com/primandproper/platform/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
@@ -44,77 +44,37 @@ func buildFakePassword() string {
 	return fake.Password(true, true, true, true, false, 32)
 }
 
-func BuildFakeFloat32RangeWithOptionalMax() numbers.MinRange[float32] {
-	minimum := float32(buildFakeNumber())
-	return numbers.MinRange[float32]{
-		Min: minimum,
-		Max: new(float32(buildFakeNumber()) + minimum),
-	}
-}
-
-func BuildFakeOptionalFloat32Range() numbers.OpenRange[float32] {
-	minimum := float32(buildFakeNumber())
-	return numbers.OpenRange[float32]{
-		Min: new(minimum),
-		Max: new(float32(buildFakeNumber()) + minimum),
-	}
-}
-
 // BuildFakeOptionalFloat32MinMax returns a fake (*float32, *float32) pair for flattened Min/Max fields.
-func BuildFakeOptionalFloat32MinMax() (*float32, *float32) {
-	minimum := float32(buildFakeNumber())
-	maximum := float32(buildFakeNumber()) + minimum
-	return &minimum, &maximum
+func BuildFakeOptionalFloat32MinMax() (minimum, maximum *float32) {
+	m := float32(buildFakeNumber())
+	maximum = pointer.To(float32(buildFakeNumber()) + m)
+	return &m, maximum
 }
 
 // BuildFakeOptionalUint32MinMax returns a fake (*uint32, *uint32) pair for flattened Min/Max fields.
-func BuildFakeOptionalUint32MinMax() (*uint32, *uint32) {
-	minimum := uint32(buildFakeNumber())
-	maximum := uint32(buildFakeNumber()) + minimum
-	return &minimum, &maximum
+func BuildFakeOptionalUint32MinMax() (minimum, maximum *uint32) {
+	m := uint32(buildFakeNumber())
+	maximum = pointer.To(uint32(buildFakeNumber()) + m)
+	return &m, maximum
+}
+
+// BuildFakeFloat32WithOptionalMax returns a (float32, *float32) pair: required min + optional max.
+func BuildFakeFloat32WithOptionalMax() (minimum float32, maximum *float32) {
+	minimum = float32(buildFakeNumber())
+	maximum = pointer.To(float32(buildFakeNumber()) + minimum)
+	return minimum, maximum
 }
 
 // BuildFakeUint32WithOptionalMax returns a (uint32, *uint32) pair: required min + optional max.
-func BuildFakeUint32WithOptionalMax() (uint32, *uint32) {
-	minimum := uint32(buildFakeNumber())
-	maximum := uint32(buildFakeNumber()) + minimum
-	return minimum, &maximum
+func BuildFakeUint32WithOptionalMax() (minimum uint32, maximum *uint32) {
+	minimum = uint32(buildFakeNumber())
+	maximum = pointer.To(uint32(buildFakeNumber()) + minimum)
+	return minimum, maximum
 }
 
-func BuildFakeOptionalUint32Range() numbers.OpenRange[uint32] {
-	minimum := uint32(buildFakeNumber())
-	return numbers.OpenRange[uint32]{
-		Min: new(minimum),
-		Max: new(uint32(buildFakeNumber()) + minimum),
-	}
-}
-
-func BuildFakeUint16RangeWithOptionalMax() numbers.MinRange[uint16] {
-	minimum := uint16(buildFakeNumber())
-	return numbers.MinRange[uint16]{
-		Min: minimum,
-		Max: new(uint16(buildFakeNumber()) + minimum),
-	}
-}
-
-func buildFakeUint16WithOptionalMax() (uint16, *uint16) {
-	minimum := uint16(buildFakeNumber())
-	maximum := uint16(buildFakeNumber()) + minimum
-	return minimum, &maximum
-}
-
-func BuildFakeUint32RangeWithOptionalMax() numbers.MinRange[uint32] {
-	minimum := uint32(buildFakeNumber())
-	return numbers.MinRange[uint32]{
-		Min: minimum,
-		Max: new(uint32(buildFakeNumber()) + minimum),
-	}
-}
-
-func BuildFakeUint32RangeWithOptionalMaxUpdateRequestInput() numbers.OpenRangeUpdateRequestInput[uint32] {
-	minimum := uint32(buildFakeNumber())
-	return numbers.OpenRangeUpdateRequestInput[uint32]{
-		Min: &minimum,
-		Max: new(uint32(buildFakeNumber()) + minimum),
-	}
+// BuildFakeUint16WithOptionalMax returns a (uint16, *uint16) pair: required min + optional max.
+func BuildFakeUint16WithOptionalMax() (minimum uint16, maximum *uint16) {
+	minimum = uint16(buildFakeNumber())
+	maximum = pointer.To(uint16(buildFakeNumber()) + minimum)
+	return minimum, maximum
 }

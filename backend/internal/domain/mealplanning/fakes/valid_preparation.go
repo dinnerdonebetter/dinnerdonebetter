@@ -11,9 +11,9 @@ import (
 
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
-	minIngredientCount, maxIngredientCount := buildFakeUint16WithOptionalMax()
-	minInstrumentCount, maxInstrumentCount := buildFakeUint16WithOptionalMax()
-	minVesselCount, maxVesselCount := buildFakeUint16WithOptionalMax()
+	minIngredientCount, maxIngredientCount := BuildFakeUint16WithOptionalMax()
+	minInstrumentCount, maxInstrumentCount := BuildFakeUint16WithOptionalMax()
+	minVesselCount, maxVesselCount := BuildFakeUint16WithOptionalMax()
 	return &types.ValidPreparation{
 		ID:                          BuildFakeID(),
 		Name:                        buildUniqueString(),

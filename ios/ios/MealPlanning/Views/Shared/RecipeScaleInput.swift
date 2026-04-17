@@ -5,22 +5,25 @@
 //  Scale input with TextField, +/- buttons, and optional portions display.
 //
 
-import SwiftProtobuf
 import SwiftUI
 
 struct RecipeScaleInput: View {
   @Binding var scale: Float
-  /// When provided and has portions, shows scaled yield (e.g. "~4 servings").
-  var estimatedPortions: Common_Float32RangeWithOptionalMax?
+  /// When provided, shows scaled yield (e.g. "~4 servings").
+  var estimatedPortionsMin: Float?
+  var estimatedPortionsMax: Float?
   @State private var scaleText: String = "1.0"
   @FocusState private var isScaleFocused: Bool
 
   private let range: ClosedRange<Float> = 0.25...4.0
   private let step: Float = 0.25
 
-  init(scale: Binding<Float>, estimatedPortions: Common_Float32RangeWithOptionalMax? = nil) {
+  init(
+    scale: Binding<Float>, estimatedPortionsMin: Float? = nil, estimatedPortionsMax: Float? = nil
+  ) {
     _scale = scale
-    self.estimatedPortions = estimatedPortions
+    self.estimatedPortionsMin = estimatedPortionsMin
+    self.estimatedPortionsMax = estimatedPortionsMax
   }
 
   var body: some View {
@@ -63,10 +66,12 @@ struct RecipeScaleInput: View {
           onDecrement: { adjustScale(by: -step) }, onIncrement: { adjustScale(by: step) })
       }
 
-      if let portions = estimatedPortions, portions.min > 0 {
-        Text("(~\(PortionsFormatter.formatScaled(portions, scale: scale)) servings)")
-          .font(DSTheme.Typography.caption)
-          .foregroundColor(DSTheme.Colors.textSecondary)
+      if let portionsMin = estimatedPortionsMin, portionsMin > 0 {
+        Text(
+          "(~\(PortionsFormatter.formatScaled(min: portionsMin, max: estimatedPortionsMax, scale: scale)) servings)"
+        )
+        .font(DSTheme.Typography.caption)
+        .foregroundColor(DSTheme.Colors.textSecondary)
       }
     }
     .onAppear {

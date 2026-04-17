@@ -256,9 +256,9 @@ struct RecipeOptionSelectionContent: View {
           measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
         )
 
-        if ingredient.hasQuantity {
-          aggregated.addQuantity(ingredient.quantity)
-        }
+        aggregated.addQuantity(
+          min: ingredient.minQuantity,
+          max: ingredient.hasMaxQuantity ? ingredient.maxQuantity : nil)
 
         options.append(
           IngredientOption(

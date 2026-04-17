@@ -8,12 +8,14 @@ import (
 )
 
 func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
+	minQty, maxQty := BuildFakeFloat32WithOptionalMax()
 	return &types.MealPlanGroceryListItem{
 		ID:                       BuildFakeID(),
 		BelongsToMealPlan:        BuildFakeID(),
 		Ingredient:               *BuildFakeValidIngredient(),
 		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
-		QuantityNeeded:           BuildFakeFloat32RangeWithOptionalMax(),
+		MinQuantityNeeded:        minQty,
+		MaxQuantityNeeded:        maxQty,
 		QuantityPurchased:        nil,
 		PurchasedMeasurementUnit: nil,
 		PurchasedUPC:             nil,

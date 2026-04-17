@@ -9,7 +9,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipevalidator"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability/logging"
 )
 
@@ -10421,7 +10420,7 @@ func createStirFriedGreenBeansBridgeEntries(ctx context.Context, repo mealplanni
 			ValidIngredientID:      ing.ID,
 			ValidMeasurementUnitID: unit.ID,
 			Notes:                  "",
-			AllowableQuantity:      numbers.MinRange[float32]{Min: 0},
+			MinAllowableQuantity:   0,
 		})
 		if vimuErr != nil {
 			return fmt.Errorf("failed to create VIMU for ingredient %s and unit %s: %w", ing.Name, unit.Name, vimuErr)
@@ -10976,7 +10975,7 @@ func createTortillasBridgeEntries(ctx context.Context, repo mealplanning.Reposit
 			ID:                     identifiers.New(),
 			ValidIngredientID:      ing.ID,
 			ValidMeasurementUnitID: unit.ID,
-			AllowableQuantity:      numbers.MinRange[float32]{Min: 0},
+			MinAllowableQuantity:   0,
 		})
 		if vimuErr != nil {
 			return fmt.Errorf("failed to create VIMU for ingredient %s and unit %s: %w", ing.Name, unit.Name, vimuErr)

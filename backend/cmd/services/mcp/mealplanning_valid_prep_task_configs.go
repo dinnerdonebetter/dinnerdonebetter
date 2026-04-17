@@ -17,18 +17,20 @@ type (
 )
 
 var validPrepTaskConfigsSchema = map[string]any{
-	"ID":                          stringField("The ID of the valid prep task config"),
-	"CreatedAt":                   timestampField("When the valid prep task config was created"),
-	"LastUpdatedAt":               timestampField("When the valid prep task config was last updated"),
-	"ArchivedAt":                  timestampField("When the valid prep task config was soft deleted"),
-	"StorageDurationInSeconds":    uint32RangeWithOptionalMaxSchema(),
-	"StorageTemperatureInCelsius": optionalFloat32RangeSchema(),
-	"StorageType":                 stringField("The type of storage container (e.g., covered, airtight, uncovered)"),
-	"StorageInstructions":         stringField("Instructions for how to store the prepped ingredient"),
-	"Notes":                       stringField("Additional notes about the prep task config"),
-	"Source":                      stringField("The source of this prep task config information"),
-	"Preparation":                 objectType(validPreparationsSchema),
-	"Ingredient":                  objectType(validIngredientsSchema),
+	"ID":                             stringField("The ID of the valid prep task config"),
+	"CreatedAt":                      timestampField("When the valid prep task config was created"),
+	"LastUpdatedAt":                  timestampField("When the valid prep task config was last updated"),
+	"ArchivedAt":                     timestampField("When the valid prep task config was soft deleted"),
+	"MinStorageDurationInSeconds":    uintField("Minimum storage duration in seconds (required)"),
+	"MaxStorageDurationInSeconds":    uintField("Maximum storage duration in seconds (optional)"),
+	"MinStorageTemperatureInCelsius": floatField("Minimum storage temperature in Celsius (optional)"),
+	"MaxStorageTemperatureInCelsius": floatField("Maximum storage temperature in Celsius (optional)"),
+	"StorageType":                    stringField("The type of storage container (e.g., covered, airtight, uncovered)"),
+	"StorageInstructions":            stringField("Instructions for how to store the prepped ingredient"),
+	"Notes":                          stringField("Additional notes about the prep task config"),
+	"Source":                         stringField("The source of this prep task config information"),
+	"Preparation":                    objectType(validPreparationsSchema),
+	"Ingredient":                     objectType(validIngredientsSchema),
 }
 
 var getValidPrepTaskConfigTool = &mcp.Tool{

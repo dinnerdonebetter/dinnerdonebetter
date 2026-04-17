@@ -20,18 +20,18 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *mealplanning
 		})
 	}
 	x := &mealplanning.RecipePrepTaskUpdateRequestInput{
-		Name:                        &input.Name,
-		Description:                 &input.Description,
-		Notes:                       &input.Notes,
-		ExplicitStorageInstructions: &input.ExplicitStorageInstructions,
-		Optional:                    &input.Optional,
-		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
-		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		Name:                               &input.Name,
+		Description:                        &input.Description,
+		Notes:                              &input.Notes,
+		ExplicitStorageInstructions:        &input.ExplicitStorageInstructions,
+		Optional:                           &input.Optional,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 		MinTimeBufferBeforeRecipeInSeconds: &input.MinTimeBufferBeforeRecipeInSeconds,
 		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
-		StorageType:     &input.StorageType,
-		BelongsToRecipe: &input.BelongsToRecipe,
-		TaskSteps:       taskSteps,
+		StorageType:                        &input.StorageType,
+		BelongsToRecipe:                    &input.BelongsToRecipe,
+		TaskSteps:                          taskSteps,
 	}
 
 	return x
@@ -49,17 +49,17 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 	}
 
 	x := &mealplanning.RecipePrepTaskDatabaseCreationInput{
-		ID:                              identifiers.New(),
-		Name:                            input.Name,
-		Description:                     input.Description,
-		Notes:                           input.Notes,
-		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
-		Optional:                        input.Optional,
-		StorageType:                     input.StorageType,
-		BelongsToRecipe:                 input.BelongsToRecipe,
-		TaskSteps:                       taskSteps,
-		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
-		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		ID:                                 identifiers.New(),
+		Name:                               input.Name,
+		Description:                        input.Description,
+		Notes:                              input.Notes,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Optional:                           input.Optional,
+		StorageType:                        input.StorageType,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		TaskSteps:                          taskSteps,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
 		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 	}
@@ -70,16 +70,16 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 // ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput(recipe *mealplanning.RecipeDatabaseCreationInput, input *mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput) (*mealplanning.RecipePrepTaskDatabaseCreationInput, error) {
 	x := &mealplanning.RecipePrepTaskDatabaseCreationInput{
-		ID:                              identifiers.New(),
-		Name:                            input.Name,
-		Description:                     input.Description,
-		Notes:                           input.Notes,
-		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
-		Optional:                        input.Optional,
-		StorageType:                     input.StorageType,
-		BelongsToRecipe:                 input.BelongsToRecipe,
-		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
-		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		ID:                                 identifiers.New(),
+		Name:                               input.Name,
+		Description:                        input.Description,
+		Notes:                              input.Notes,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Optional:                           input.Optional,
+		StorageType:                        input.StorageType,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
 		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 	}
@@ -109,19 +109,19 @@ func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *mealplann
 	}
 
 	return &mealplanning.RecipePrepTaskDatabaseCreationInput{
-		ID:                              input.ID,
-		Name:                            input.Name,
-		Description:                     input.Description,
-		Notes:                           input.Notes,
-		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
-		Optional:                        input.Optional,
-		StorageType:                     input.StorageType,
-		TaskSteps:                       taskSteps,
-		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
-		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		ID:                                 input.ID,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		Notes:                              input.Notes,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Optional:                           input.Optional,
+		StorageType:                        input.StorageType,
+		TaskSteps:                          taskSteps,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
 		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
-		BelongsToRecipe:                 input.BelongsToRecipe,
+		BelongsToRecipe:                    input.BelongsToRecipe,
 	}
 }
 
@@ -139,16 +139,16 @@ func ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(input *mealplanni
 	}
 
 	return &mealplanning.RecipePrepTaskCreationRequestInput{
-		Name:                            input.Name,
-		Description:                     input.Description,
-		Notes:                           input.Notes,
-		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
-		Optional:                        input.Optional,
-		StorageType:                     input.StorageType,
-		BelongsToRecipe:                 input.BelongsToRecipe,
-		RecipeSteps:                     taskSteps,
-		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
-		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		Notes:                              input.Notes,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Optional:                           input.Optional,
+		StorageType:                        input.StorageType,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		RecipeSteps:                        taskSteps,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
 		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 	}
@@ -161,16 +161,16 @@ func ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(recip
 	}
 
 	return &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                            input.Name,
-		Description:                     input.Description,
-		Notes:                           input.Notes,
-		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
-		Optional:                        input.Optional,
-		StorageType:                     input.StorageType,
-		BelongsToRecipe:                 input.BelongsToRecipe,
-		RecipeSteps:                     taskSteps,
-		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
-		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		Notes:                              input.Notes,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Optional:                           input.Optional,
+		StorageType:                        input.StorageType,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		RecipeSteps:                        taskSteps,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
 		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
 	}

@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 // GochujangButterPastaRecipe creates the Gochujang Butter Pasta recipe.
@@ -113,35 +111,29 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &minceGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				Name:                             "garlic cloves",
-				Quantity: numbers.MinRange[float32]{
-					Min: 12,
-				},
+				MinQuantity:                      12,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &minceKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &minceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "finely chopped garlic",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "finely chopped garlic",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(0.33)),
 			},
 		},
@@ -158,34 +150,28 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientMeasurementUnitID: &waterCupVIMU.ID,
 				QuantityNotes:                    "enough to cover spaghetti",
 				Name:                             "water",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                      4,
 			},
 			{
 				ValidIngredientPreparationID: &boilSaltVIP.ID,
 				QuantityNotes:                "generously",
 				Name:                         "salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &boilPotVPV.ID,
 				Name:                     "large pot",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "salted boiling water",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "salted boiling water",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(4)),
 			},
 			{
@@ -206,9 +192,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &addSpaghettiVIP.ID,
 				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "spaghetti or other long pasta",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -217,17 +201,15 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addPotVPV.ID,
 				Name:                            "large pot with salted boiling water",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "spaghetti in salted water",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "spaghetti in salted water",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -250,18 +232,14 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &boilSpaghettiVIP.ID,
 				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "pasta in salted water",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &boilWoodenSpoonVPI.ID,
 				Name:                         "wooden spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -269,9 +247,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pot",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -284,10 +260,10 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "cooked al dente spaghetti",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "cooked al dente spaghetti",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -310,9 +286,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &drainSpaghettiVIP.ID,
 				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "cooked al dente pasta",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -321,38 +295,32 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &drainPotVPV.ID,
 				Name:                            "large pot with spaghetti and cooking water",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ValidPreparationVesselID: &drainColanderVPV.ID,
 				Name:                     "colander",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 			{
 				ValidPreparationVesselID: &drainSmallBowlVPV.ID,
 				Name:                     "small bowl or measuring cup",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "drained spaghetti",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "drained spaghetti",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
-				Name:              "reserved pasta water",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             1,
-				MeasurementUnitID: &cupMeasurement.ID,
+				Name:                   "reserved pasta water",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  1,
+				MeasurementUnitID:      &cupMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -368,9 +336,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "drained spaghetti",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -378,17 +344,15 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "large pot (empty after draining)",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "spaghetti in pot",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "spaghetti in pot",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -409,35 +373,29 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &meltButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				Name:                             "unsalted butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 4,
-				},
+				MinQuantity:                      4,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &meltSpoonVPI.ID,
 				Name:                         "spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &meltSkilletVPV.ID,
 				Name:                     "skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "melted butter",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "melted butter",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -460,9 +418,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "melted butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:         new(uint64(0)),
@@ -470,26 +426,20 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &addGarlicVIP.ID,
 				ValidIngredientMeasurementUnitID: &garlicCloveVIMU.ID,
 				Name:                             "finely chopped garlic",
-				Quantity: numbers.MinRange[float32]{
-					Min: 12,
-				},
+				MinQuantity:                      12,
 			},
 			{
 				ValidIngredientPreparationID: &addSaltVIP.ID,
 				QuantityNotes:                "generously",
 				Name:                         "salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
+				MinQuantity:                  0,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &addSpoonVPI.ID,
 				Name:                         "spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -497,9 +447,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -512,10 +460,10 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "garlic in melted butter",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "garlic in melted butter",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -536,54 +484,42 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "garlic in melted butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ValidIngredientPreparationID:     &addGochujangVIP.ID,
 				ValidIngredientMeasurementUnitID: &gochujangCupVIMU.ID,
 				Name:                             "gochujang paste",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                      0.25,
 			},
 			{
 				ValidIngredientPreparationID:     &addHoneyVIP.ID,
 				ValidIngredientMeasurementUnitID: &honeyCupVIMU.ID,
 				Name:                             "honey",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
+				MinQuantity:                      0.25,
 			},
 			{
 				ValidIngredientPreparationID:     &addSherryVinegarVIP.ID,
 				ValidIngredientMeasurementUnitID: &sherryVinegarCupVIMU.ID,
 				Name:                             "sherry vinegar",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
-				Index:       new(uint16(4)),
-				OptionIndex: 0,
+				MinQuantity:                      0.25,
+				Index:                            new(uint16(4)),
+				OptionIndex:                      0,
 			},
 			{
 				ValidIngredientPreparationID:     &addRiceVinegarVIP.ID,
 				ValidIngredientMeasurementUnitID: &riceVinegarCupVIMU.ID,
 				Name:                             "rice vinegar",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0.25,
-				},
-				Index:       new(uint16(4)),
-				OptionIndex: 1,
+				MinQuantity:                      0.25,
+				Index:                            new(uint16(4)),
+				OptionIndex:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &addSpoonVPI.ID,
 				Name:                         "spoon or spatula",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -592,17 +528,15 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &addSkilletVPV.ID,
 				Name:                            "skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "gochujang butter mixture",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "gochujang butter mixture",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -625,18 +559,14 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "gochujang butter mixture",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &reduceSpoonVPI.ID,
 				Name:                         "spoon or spatula",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -644,9 +574,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -659,10 +587,10 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "reduced gochujang butter sauce",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "reduced gochujang butter sauce",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -683,9 +611,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "reduced gochujang butter sauce",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -693,17 +619,15 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepIndex:        new(uint64(9)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "gochujang butter sauce off heat",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "gochujang butter sauce off heat",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -726,53 +650,41 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ValidIngredientPreparationID:     &stirSpaghettiVIP.ID,
 				ValidIngredientMeasurementUnitID: &spaghettiPoundVIMU.ID,
 				Name:                             "spaghetti in pot",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &stirSauceVIP.ID,
 				Name:                            "gochujang butter sauce off heat",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 			{
 				ValidIngredientPreparationID:     &stirButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterTablespoonVIMU.ID,
 				Name:                             "remaining unsalted butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 2,
-				},
+				MinQuantity:                      2,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				Name:                            "reserved spaghetti cooking water",
 				QuantityNotes:                   "splashes as needed to thin sauce",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
+				MinQuantity:                     0,
 			},
 			{
 				ValidIngredientPreparationID: &stirSaltVIP.ID,
 				QuantityNotes:                "to taste",
 				Name:                         "salt and pepper",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				Optional: true,
+				MinQuantity:                  0,
+				Optional:                     true,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &stirSpoonVPI.ID,
 				Name:                         "spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -781,9 +693,7 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &stirPotVPV.ID,
 				Name:                            "large pot",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -796,23 +706,23 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "gochujang butter spaghetti",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &unitMeasurement.ID,
+				Name:                   "gochujang butter spaghetti",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Mince garlic",
-		Description:                 "Finely chop the garlic cloves. Minced garlic keeps 3 to 4 days in an airtight container in the refrigerator.",
-		Notes:                       "Having the garlic ready ahead of time speeds up the sauce-making step.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the minced garlic in an airtight container in the refrigerator for up to 3 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Mince garlic",
+		Description:                        "Finely chop the garlic cloves. Minced garlic keeps 3 to 4 days in an airtight container in the refrigerator.",
+		Notes:                              "Having the garlic ready ahead of time speeds up the sauce-making step.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the minced garlic in an airtight container in the refrigerator for up to 3 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -822,17 +732,15 @@ func GochujangButterPastaRecipe(enums *Enumerations) []*mealplanning.RecipeCreat
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Gochujang Butter Pasta",
-			Slug:                "gochujang-butter-pasta",
-			Description:         "Spaghetti with a spicy-sweet gochujang butter sauce, garlic, honey, and vinegar. Top with cilantro or scallions.",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 4,
-			},
-			Source:            "https://cooking.nytimes.com/recipes/1024066-gochujang-buttered-noodles",
-			PortionName:       "serving",
-			PluralPortionName: "servings",
-			EligibleForMeals:  true,
+			Name:                 "Gochujang Butter Pasta",
+			Slug:                 "gochujang-butter-pasta",
+			Description:          "Spaghetti with a spicy-sweet gochujang butter sauce, garlic, honey, and vinegar. Top with cilantro or scallions.",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			MinEstimatedPortions: 4,
+			Source:               "https://cooking.nytimes.com/recipes/1024066-gochujang-buttered-noodles",
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			EligibleForMeals:     true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11,
 			},

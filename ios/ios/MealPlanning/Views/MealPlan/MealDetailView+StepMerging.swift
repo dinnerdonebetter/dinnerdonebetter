@@ -91,14 +91,13 @@ struct UnifiedMealStep: Identifiable {
       for ing in source.step.ingredients where ing.hasIngredient {
         let key = "\(ing.ingredient.id)|\(ing.hasMeasurementUnit ? ing.measurementUnit.id : "")"
         let unit = ing.hasMeasurementUnit ? ing.measurementUnit : nil
-        if ing.hasQuantity {
-          let effectiveScale = source.scale * (ing.scaleFactor > 0 ? ing.scaleFactor : 1.0)
-          let min = ing.quantity.min * effectiveScale
-          let max = ing.quantity.hasMax ? ing.quantity.max * effectiveScale : nil
-          breakdown[key, default: []].append(
-            MergedIngredientSourcePart(sourceName: sourceName, min: min, max: max, unit: unit)
-          )
-        }
+        let effectiveScale = source.scale * (ing.scaleFactor > 0 ? ing.scaleFactor : 1.0)
+        let scaledMin = ing.minQuantity * effectiveScale
+        let scaledMax: Float? = ing.hasMaxQuantity ? ing.maxQuantity * effectiveScale : nil
+        breakdown[key, default: []].append(
+          MergedIngredientSourcePart(
+            sourceName: sourceName, min: scaledMin, max: scaledMax, unit: unit)
+        )
       }
     }
 
@@ -193,34 +192,33 @@ private func mergeStepIngredients(
       let key = "\(ing.ingredient.id)|\(ing.hasMeasurementUnit ? ing.measurementUnit.id : "")"
       if mergedByKey[key] == nil {
         var copy = ing
-        if ing.hasQuantity {
-          let effectiveScale = scale * (ing.scaleFactor > 0 ? ing.scaleFactor : 1.0)
-          var scaledQuantity = ing.quantity
-          scaledQuantity.min *= effectiveScale
-          if scaledQuantity.hasMax {
-            scaledQuantity.max *= effectiveScale
-          }
-          copy.quantity = scaledQuantity
-          totals[key] = (scaledQuantity.min, scaledQuantity.hasMax ? scaledQuantity.max : nil)
+        let effectiveScale = scale * (ing.scaleFactor > 0 ? ing.scaleFactor : 1.0)
+        let scaledMin = ing.minQuantity * effectiveScale
+        copy.minQuantity = scaledMin
+        if ing.hasMaxQuantity {
+          copy.maxQuantity = ing.maxQuantity * effectiveScale
+          totals[key] = (scaledMin, copy.maxQuantity)
+        } else {
+          totals[key] = (scaledMin, nil)
         }
         mergedByKey[key] = copy
-      } else if ing.hasQuantity {
+      } else {
         let effectiveScale = scale * (ing.scaleFactor > 0 ? ing.scaleFactor : 1.0)
         var (totalMin, totalMax) = totals[key] ?? (0, nil)
-        totalMin += ing.quantity.min * effectiveScale
-        if ing.quantity.hasMax {
-          totalMax = (totalMax ?? totalMin) + ing.quantity.max * effectiveScale
+        totalMin += ing.minQuantity * effectiveScale
+        if ing.hasMaxQuantity {
+          totalMax = (totalMax ?? totalMin) + ing.maxQuantity * effectiveScale
         } else {
           totalMax = nil
         }
         totals[key] = (totalMin, totalMax)
         guard var existing = mergedByKey[key] else { continue }
-        var newQuantity = Common_Float32RangeWithOptionalMax()
-        newQuantity.min = totalMin
+        existing.minQuantity = totalMin
         if let maxVal = totalMax {
-          newQuantity.max = maxVal
+          existing.maxQuantity = maxVal
+        } else {
+          existing.clearMaxQuantity()
         }
-        existing.quantity = newQuantity
         mergedByKey[key] = existing
       }
     }

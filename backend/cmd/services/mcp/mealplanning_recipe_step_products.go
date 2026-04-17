@@ -19,15 +19,15 @@ type (
 )
 
 var recipeStepProductsSchema = map[string]any{
-	"ID":                          stringField("The ID of the recipe step product"),
-	"CreatedAt":                   timestampField("When the recipe step product was created"),
-	"LastUpdatedAt":               timestampField("When the recipe step product was last updated"),
-	"ArchivedAt":                  timestampField("When the recipe step product was soft deleted"),
-	"BelongsToRecipeStep":         stringField("The ID of the recipe step this product belongs to"),
-	"Name":                        stringField("Name of the product"),
-	"Type":                        stringField("The type of product (e.g., 'ingredient', 'waste', 'intermediate')"),
-	"QuantityNotes":               stringField("Notes about the quantity"),
-	"StorageInstructions":         stringField("Storage instructions for the product"),
+	"ID":                             stringField("The ID of the recipe step product"),
+	"CreatedAt":                      timestampField("When the recipe step product was created"),
+	"LastUpdatedAt":                  timestampField("When the recipe step product was last updated"),
+	"ArchivedAt":                     timestampField("When the recipe step product was soft deleted"),
+	"BelongsToRecipeStep":            stringField("The ID of the recipe step this product belongs to"),
+	"Name":                           stringField("Name of the product"),
+	"Type":                           stringField("The type of product (e.g., 'ingredient', 'waste', 'intermediate')"),
+	"QuantityNotes":                  stringField("Notes about the quantity"),
+	"StorageInstructions":            stringField("Storage instructions for the product"),
 	"MeasurementUnit":                objectType(validMeasurementUnitsSchema),
 	"MinMeasurementQuantity":         floatField("Minimum measurement quantity"),
 	"MaxMeasurementQuantity":         floatField("Maximum measurement quantity"),
@@ -37,11 +37,11 @@ var recipeStepProductsSchema = map[string]any{
 	"MaxStorageTemperatureInCelsius": floatField("Maximum storage temperature in celsius"),
 	"MinStorageDurationInSeconds":    uintField("Minimum storage duration in seconds"),
 	"MaxStorageDurationInSeconds":    uintField("Maximum storage duration in seconds"),
-	"ContainedInVesselIndex":      uintField("The index of the vessel this product is contained in, if any"),
-	"Index":                       uintField("The display index/order of this product"),
-	"IsWaste":                     boolField("Whether this product is waste"),
-	"IsLiquid":                    boolField("Whether this product is a liquid"),
-	"Compostable":                 boolField("Whether this product is compostable"),
+	"ContainedInVesselIndex":         uintField("The index of the vessel this product is contained in, if any"),
+	"Index":                          uintField("The display index/order of this product"),
+	"IsWaste":                        boolField("Whether this product is waste"),
+	"IsLiquid":                       boolField("Whether this product is a liquid"),
+	"Compostable":                    boolField("Whether this product is compostable"),
 }
 
 var getRecipeStepProductTool = &mcp.Tool{

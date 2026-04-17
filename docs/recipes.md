@@ -59,15 +59,15 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 
 ## Portion and Yield Fields
 
-### `EstimatedPortions` ([Float32RangeWithOptionalMax](../../internal/platform/types/main.go))
+### `MinEstimatedPortions` / `MaxEstimatedPortions`
 
 - **Purpose**: Range of how many portions/servings the recipe yields
 - **Structure**:
-  - `Min` (float32): Minimum number of portions (required)
-  - `Max` (*float32): Maximum number of portions (optional)
+  - `MinEstimatedPortions` (float32): Minimum number of portions (required)
+  - `MaxEstimatedPortions` (*float32): Maximum number of portions (optional)
 - **Usage**: Helps users understand recipe scale and plan for different group sizes
-- **Logic**: If `Max` is null, serves exactly `Min` people. If `Max` is present, serves `Min` to `Max` people
-- **Example**: Min: 4, Max: 6 (serves 4-6 people) or Min: 4, Max: null (serves exactly 4 people)
+- **Logic**: If `MaxEstimatedPortions` is null, serves exactly `MinEstimatedPortions` people. If `MaxEstimatedPortions` is present, serves `Min` to `Max` people
+- **Example**: Min 4, Max 6 (serves 4-6 people) or Min 4, Max null (serves exactly 4 people)
 
 ### `PortionName` (string)
 
@@ -174,8 +174,8 @@ Discrete products represent countable items where the count should scale indepen
 
 **Fields:**
 
-- `ItemQuantity` (OptionalFloat32Range): The count of discrete items (e.g., 4 patties, 12 cookies, 8 slices)
-- `MeasurementQuantity` (OptionalFloat32Range): The weight/volume measurement **per item** (e.g., 4 ounces per patty)
+- `MinItemQuantity` / `MaxItemQuantity` (optional float32): The count of discrete items (e.g., 4 patties, 12 cookies, 8 slices)
+- `MinMeasurementQuantity` / `MaxMeasurementQuantity` (optional float32): The weight/volume measurement **per item** (e.g., 4 ounces per patty)
 - `MeasurementUnit` (ValidMeasurementUnit): The unit for the per-item measurement (e.g. ounce)
 
 **Example - Discrete Product:**
@@ -184,8 +184,8 @@ Discrete products represent countable items where the count should scale indepen
 {
   "name": "beef patties",
   "type": "ingredient",
-  "itemQuantity": { "min": 4 },
-  "measurementQuantity": { "min": 4 },
+  "minItemQuantity": 4,
+  "minMeasurementQuantity": 4,
   "measurementUnitId": "ounce"
 }
 ```
@@ -204,8 +204,8 @@ Continuous products represent bulk quantities where the total amount scales prop
 
 **Fields:**
 
-- `ItemQuantity` (OptionalFloat32Range): Not set (both `Min` and `Max` are null) - indicates continuous product
-- `MeasurementQuantity` (OptionalFloat32Range): The **total** weight/volume quantity (e.g., 16 ounces of sauce)
+- `MinItemQuantity` / `MaxItemQuantity` (optional float32): Both unset/null - indicates continuous product
+- `MinMeasurementQuantity` / `MaxMeasurementQuantity` (optional float32): The **total** weight/volume quantity (e.g., 16 ounces of sauce)
 - `MeasurementUnit` (ValidMeasurementUnit): The unit for the total measurement
 
 **Example - Continuous Product:**
@@ -214,13 +214,12 @@ Continuous products represent bulk quantities where the total amount scales prop
 {
   "name": "sauce",
   "type": "ingredient",
-  "itemQuantity": {},
-  "measurementQuantity": { "min": 16 },
+  "minMeasurementQuantity": 16,
   "measurementUnitId": "ounce"
 }
 ```
 
-This represents "16 ounces of sauce" (total quantity). Note: `itemQuantity` is an empty object (both `min` and `max` are null/omitted).
+This represents "16 ounces of sauce" (total quantity). Note: `minItemQuantity` and `maxItemQuantity` are both omitted, signalling a continuous product.
 
 **When to Use:**
 
@@ -230,7 +229,7 @@ This represents "16 ounces of sauce" (total quantity). Note: `itemQuantity` is a
 
 ### Determining Product Type
 
-A product is **discrete** if `ItemQuantity.Min` or `ItemQuantity.Max` is set (not null). A product is **continuous** if both `ItemQuantity.Min` and `ItemQuantity.Max` are null/omitted.
+A product is **discrete** if `MinItemQuantity` or `MaxItemQuantity` is set (not null). A product is **continuous** if both `MinItemQuantity` and `MaxItemQuantity` are null/omitted.
 
 ### Vessel Product Chaining
 

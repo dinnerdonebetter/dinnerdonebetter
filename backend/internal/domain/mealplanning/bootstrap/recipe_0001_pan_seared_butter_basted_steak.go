@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
@@ -129,37 +127,31 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &grindPeppercornsVIP.ID,
 				ValidIngredientMeasurementUnitID: &peppercornsGramVIMU.ID,
 				Name:                             "whole black peppercorns",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
+				MinQuantity:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &grindMortarAndPestleVPI.ID,
 				Name:                         "mortar and pestle",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 0,
+				MinQuantity:                  1,
+				Index:                        new(uint16(0)),
+				OptionIndex:                  0,
 			},
 			{
 				ValidPreparationInstrumentID: &grindSpiceGrinderVPI.ID,
 				Name:                         "spice grinder",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 1,
+				MinQuantity:                  1,
+				Index:                        new(uint16(0)),
+				OptionIndex:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "freshly ground black pepper",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "freshly ground black pepper",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 		},
@@ -175,37 +167,29 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &dryRibeyeVIP.ID,
 				ValidIngredientMeasurementUnitID: &ribeyeGramVIMU.ID,
 				Name:                             "bone-in ribeye steak",
-				Quantity: numbers.MinRange[float32]{
-					Min: 700,               // 24 ounces = ~680g, rounded to 700g
-					Max: new(float32(900)), // 32 ounces = ~907g, rounded to 900g
-				},
 			},
 			{
 				ValidIngredientPreparationID:     &dryPaperTowelsVIP.ID,
 				ValidIngredientMeasurementUnitID: &paperTowelsUnitVIMU.ID,
 				Name:                             "paper towels",
-				Quantity: numbers.MinRange[float32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                      1,
+				Index:                            new(uint16(1)),
+				OptionIndex:                      0,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &dryBareHandsVPI.ID,
 				Name:                         "bare hands",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "dried bone-in ribeye steak",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "dried bone-in ribeye steak",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(700)),
 				MaxMeasurementQuantity: new(float32(900)),
 			},
@@ -222,56 +206,48 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "dried bone-in ribeye steak",
-				Quantity: numbers.MinRange[float32]{
-					Min: 700,
-					Max: new(float32(900)),
-				},
+				MinQuantity:                     700,
+				MaxQuantity:                     new(float32(900)),
 			},
 			{
 				ValidIngredientPreparationID:     &seasonSaltVIP.ID,
 				ValidIngredientMeasurementUnitID: &saltGramVIMU.ID,
 				Name:                             "kosher salt",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				ToTaste:     true,
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                      0,
+				ToTaste:                          true,
+				Index:                            new(uint16(1)),
+				OptionIndex:                      0,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(0)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "freshly ground black pepper",
-				Quantity: numbers.MinRange[float32]{
-					Min: 0,
-				},
-				ToTaste:     true,
-				Index:       new(uint16(2)),
-				OptionIndex: 0,
+				MinQuantity:                     0,
+				ToTaste:                         true,
+				Index:                           new(uint16(2)),
+				OptionIndex:                     0,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &seasonSheetPanVPV.ID,
 				Name:                     "sheet pan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "seasoned bone-in ribeye steak",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "seasoned bone-in ribeye steak",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(700)),
 				MaxMeasurementQuantity: new(float32(900)),
 			},
 			{
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Name:  "sheet pan",
-				Index: 1,
+				Type:            mealplanning.RecipeStepProductVesselType,
+				Name:            "sheet pan",
+				Index:           1,
 				MinItemQuantity: new(float32(1)),
 			},
 		},
@@ -289,10 +265,8 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "seasoned bone-in ribeye steak",
-				Quantity: numbers.MinRange[float32]{
-					Min: 700,
-					Max: new(float32(900)),
-				},
+				MinQuantity:                     700,
+				MaxQuantity:                     new(float32(900)),
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -301,17 +275,15 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        &restSheetPanVPV.ID,
 				Name:                            "sheet pan",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "rested seasoned bone-in ribeye steak",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "rested seasoned bone-in ribeye steak",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(700)),
 				MaxMeasurementQuantity: new(float32(900)),
 			},
@@ -329,35 +301,28 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &sliceShallotVIP.ID,
 				ValidIngredientMeasurementUnitID: &shallotGramVIMU.ID,
 				Name:                             "shallot",
-				Quantity: numbers.MinRange[float32]{
-					Min: 28, // About 1 large shallot
-				},
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &sliceKnifeVPI.ID,
 				Name:                         "knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &sliceCuttingBoardVPV.ID,
 				Name:                     "cutting board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "finely sliced shallots",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "finely sliced shallots",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(28)),
 			},
 		},
@@ -374,53 +339,43 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ValidIngredientPreparationID:     &heatVegetableOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &vegetableOilMilliliterVIMU.ID,
 				Name:                             "vegetable oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 60, // 1/4 cup = 60 ml
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 0,
+				Index:                            new(uint16(0)),
+				OptionIndex:                      0,
 			},
 			{
 				ValidIngredientPreparationID:     &heatCanolaOilVIP.ID,
 				ValidIngredientMeasurementUnitID: &canolaOilMilliliterVIMU.ID,
 				Name:                             "canola oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 60, // 1/4 cup = 60 ml
-				},
-				Index:       new(uint16(0)),
-				OptionIndex: 1,
+				Index:                            new(uint16(0)),
+				OptionIndex:                      1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &heatStovetopVPI.ID,
 				Name:                         "stovetop",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &heatSkilletVPV.ID,
 				Name:                     "cast iron skillet",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "heated smoking oil",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &milliliterMeasurement.ID,
+				Name:                   "heated smoking oil",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &milliliterMeasurement.ID,
 				MinMeasurementQuantity: new(float32(60)),
 			},
 			{
-				Name:  "cast iron skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:            "cast iron skillet",
+				Type:            mealplanning.RecipeStepProductVesselType,
+				Index:           1,
 				MinItemQuantity: new(float32(1)),
 			},
 		},
@@ -445,29 +400,23 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(3)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "rested seasoned bone-in ribeye steak",
-				Quantity: numbers.MinRange[float32]{
-					Min: 700,
-					Max: new(float32(900)),
-				},
+				MinQuantity:                     700,
+				MaxQuantity:                     new(float32(900)),
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "heated smoking oil",
-				Quantity: numbers.MinRange[float32]{
-					Min: 60,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                     60,
+				Index:                           new(uint16(1)),
+				OptionIndex:                     0,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &panSearTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -476,24 +425,22 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Name:                            "cast iron skillet",
 				ProductOfRecipeStepIndex:        new(uint64(5)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "pan-seared bone-in ribeye steak",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "pan-seared bone-in ribeye steak",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(700)),
 				MaxMeasurementQuantity: new(float32(900)),
 			},
 			{
-				Name:  "cast iron skillet",
-				Type:  mealplanning.RecipeStepProductVesselType,
-				Index: 1,
+				Name:            "cast iron skillet",
+				Type:            mealplanning.RecipeStepProductVesselType,
+				Index:           1,
 				MinItemQuantity: new(float32(1)),
 			},
 		},
@@ -511,80 +458,63 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "pan-seared bone-in ribeye steak",
-				Quantity: numbers.MinRange[float32]{
-					Min: 700,
-					Max: new(float32(900)),
-				},
+				MinQuantity:                     700,
+				MaxQuantity:                     new(float32(900)),
 			},
 			{
 				ValidIngredientPreparationID:     &basteButterVIP.ID,
 				ValidIngredientMeasurementUnitID: &butterGramVIMU.ID,
 				Name:                             "unsalted butter",
-				Quantity: numbers.MinRange[float32]{
-					Min: 45, // 3 tablespoons = 45g
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				Index:                            new(uint16(1)),
+				OptionIndex:                      0,
 			},
 			{
 				ValidIngredientPreparationID:     &basteThymeVIP.ID,
 				ValidIngredientMeasurementUnitID: &thymeSprigVIMU.ID,
 				Name:                             "thyme",
-				Quantity: numbers.MinRange[float32]{
-					Min: 6,
-				},
-				Optional:    true,
-				Index:       new(uint16(2)),
-				OptionIndex: 0,
+				MinQuantity:                      6,
+				Optional:                         true,
+				Index:                            new(uint16(2)),
+				OptionIndex:                      0,
 			},
 			{
 				ValidIngredientPreparationID:     &basteRosemaryVIP.ID,
 				ValidIngredientMeasurementUnitID: &rosemarySprigVIMU.ID,
 				Name:                             "rosemary",
-				Quantity: numbers.MinRange[float32]{
-					Min: 6,
-				},
-				Optional:    true,
-				Index:       new(uint16(3)),
-				OptionIndex: 0,
+				MinQuantity:                      6,
+				Optional:                         true,
+				Index:                            new(uint16(3)),
+				OptionIndex:                      0,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "finely sliced shallots",
-				Quantity: numbers.MinRange[float32]{
-					Min: 28,
-				},
-				Optional:    true,
-				Index:       new(uint16(4)),
-				OptionIndex: 0,
+				MinQuantity:                     28,
+				Optional:                        true,
+				Index:                           new(uint16(4)),
+				OptionIndex:                     0,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &basteSpoonVPI.ID,
 				Name:                         "spoon",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 			{
 				ValidPreparationInstrumentID: &basteThermometerVPI.ID,
 				Name:                         "instant-read thermometer",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(1)),
-				OptionIndex: 0,
+				MinQuantity:                  1,
+				Index:                        new(uint16(1)),
+				OptionIndex:                  0,
 			},
 			{
 				ValidPreparationInstrumentID: &basteTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
-				Index:       new(uint16(2)),
-				OptionIndex: 0,
+				MinQuantity:                  1,
+				Index:                        new(uint16(2)),
+				OptionIndex:                  0,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -593,17 +523,15 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				Name:                            "cast iron skillet",
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "butter-basted bone-in ribeye steak",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "butter-basted bone-in ribeye steak",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(700)),
 				MaxMeasurementQuantity: new(float32(900)),
 			},
@@ -629,36 +557,30 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepIndex:        new(uint64(7)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "butter-basted bone-in ribeye steak",
-				Quantity: numbers.MinRange[float32]{
-					Min: 700,
-					Max: new(float32(900)),
-				},
+				MinQuantity:                     700,
+				MaxQuantity:                     new(float32(900)),
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &restTongsVPI.ID,
 				Name:                         "tongs",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &restPlateVPV.ID,
 				Name:                     "serving plate",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "rested pan-seared butter-basted bone-in ribeye steak",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "rested pan-seared butter-basted bone-in ribeye steak",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(700)),
 				MaxMeasurementQuantity: new(float32(900)),
 			},
@@ -676,36 +598,30 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    &carveRibeyeVIP.ID,
 				Name:                            "rested pan-seared butter-basted bone-in ribeye steak",
-				Quantity: numbers.MinRange[float32]{
-					Min: 700,
-					Max: new(float32(900)),
-				},
+				MinQuantity:                     700,
+				MaxQuantity:                     new(float32(900)),
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: &carveCarvingKnifeVPI.ID,
 				Name:                         "carving knife",
-				Quantity: numbers.MinRange[uint32]{
-					Min: 1,
-				},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: &carveCarvingBoardVPV.ID,
 				Name:                     "carving board",
-				Quantity: numbers.MinRange[uint16]{
-					Min: 1,
-				},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:              "carved pan-seared butter-basted bone-in ribeye steak",
-				Type:              mealplanning.RecipeStepProductIngredientType,
-				Index:             0,
-				MeasurementUnitID: &gramMeasurement.ID,
+				Name:                   "carved pan-seared butter-basted bone-in ribeye steak",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &gramMeasurement.ID,
 				MinMeasurementQuantity: new(float32(700)),
 				MaxMeasurementQuantity: new(float32(900)),
 			},
@@ -726,13 +642,13 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Season and dry-brine steak",
-		Description:                 "Grind pepper, pat the steak dry, season liberally, and refrigerate loosely covered on a wire rack for up to 3 days. This dry-brines the steak, improving seasoning penetration and surface dryness for a better sear.",
-		Notes:                       "The longer the steak sits uncovered in the fridge, the drier the surface will be, which promotes better browning.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the seasoned steak on a wire rack set in a rimmed baking sheet in the refrigerator, loosely covered, for up to 3 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeWireRack,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Season and dry-brine steak",
+		Description:                        "Grind pepper, pat the steak dry, season liberally, and refrigerate loosely covered on a wire rack for up to 3 days. This dry-brines the steak, improving seasoning penetration and surface dryness for a better sear.",
+		Notes:                              "The longer the steak sits uncovered in the fridge, the drier the surface will be, which promotes better browning.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the seasoned steak on a wire rack set in a rimmed baking sheet in the refrigerator, loosely covered, for up to 3 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeWireRack,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -745,21 +661,19 @@ func PanSearedButterBastedSteakRecipe(enums *Enumerations) []*mealplanning.Recip
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Pan-Seared Butter-Basted Steak",
-			Slug:                "pan-seared-butter-basted-steak",
-			Source:              "https://www.seriouseats.com/butter-basted-pan-seared-steaks-recipe",
-			Description:         "Thick and meaty pan-seared steak, slicked with butter and infused with flavor from aromatics. This recipe is designed for very large steaks, at least one and a half inches thick and weighing 24 to 32 ounces (700 to 900g) with the bone in.",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 2,
-				Max: new(float32(3)),
-			},
-			PortionName:       "serving",
-			PluralPortionName: "servings",
-			EligibleForMeals:  true,
-			Steps:             steps,
-			PrepTasks:         []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
-			AlsoCreateMeal:    false,
+			Name:                 "Pan-Seared Butter-Basted Steak",
+			Slug:                 "pan-seared-butter-basted-steak",
+			Source:               "https://www.seriouseats.com/butter-basted-pan-seared-steaks-recipe",
+			Description:          "Thick and meaty pan-seared steak, slicked with butter and infused with flavor from aromatics. This recipe is designed for very large steaks, at least one and a half inches thick and weighing 24 to 32 ounces (700 to 900g) with the bone in.",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			MinEstimatedPortions: 2,
+			MaxEstimatedPortions: new(float32(3)),
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			EligibleForMeals:     true,
+			Steps:                steps,
+			PrepTasks:            []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{prepTask1},
+			AlsoCreateMeal:       false,
 		},
 	}
 }

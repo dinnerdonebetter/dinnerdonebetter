@@ -500,7 +500,8 @@ struct TaskRow: View {
       task.hasRecipePrepTask
       && (!task.recipePrepTask.explicitStorageInstructions.isEmpty
         || !task.recipePrepTask.storageType.isEmpty
-        || task.recipePrepTask.hasStorageTemperatureInCelsius)
+        || task.recipePrepTask.hasMinStorageTemperatureInCelsius
+        || task.recipePrepTask.hasMaxStorageTemperatureInCelsius)
     let hasCountdown = eventStartTime != nil && task.status != .finished
     let (startDate, endDate) = taskTimeRange
 
@@ -524,13 +525,12 @@ struct TaskRow: View {
   private var taskTimeRange: (Date?, Date?) {
     guard let eventTime = eventStartTime else { return (nil, nil) }
     guard task.hasRecipePrepTask,
-      task.recipePrepTask.hasTimeBufferBeforeRecipeInSeconds,
-      task.recipePrepTask.timeBufferBeforeRecipeInSeconds.min > 0
+      task.recipePrepTask.minTimeBufferBeforeRecipeInSeconds > 0
     else {
       return (nil, eventTime)
     }
     let startTime = eventTime.addingTimeInterval(
-      -Double(task.recipePrepTask.timeBufferBeforeRecipeInSeconds.min))
+      -Double(task.recipePrepTask.minTimeBufferBeforeRecipeInSeconds))
     return (startTime, eventTime)
   }
 
@@ -539,7 +539,11 @@ struct TaskRow: View {
     let hasExplicit = !prepTask.explicitStorageInstructions.isEmpty
     let hasType = !prepTask.storageType.isEmpty
     let temp = formatStorageTemperature(
-      prepTask.storageTemperatureInCelsius, unit: viewModel.temperatureUnit)
+      min: prepTask.hasMinStorageTemperatureInCelsius
+        ? prepTask.minStorageTemperatureInCelsius : nil,
+      max: prepTask.hasMaxStorageTemperatureInCelsius
+        ? prepTask.maxStorageTemperatureInCelsius : nil,
+      unit: viewModel.temperatureUnit)
 
     if hasExplicit || hasType || !temp.isEmpty {
       VStack(alignment: .leading, spacing: DSTheme.Spacing.xs) {
@@ -609,11 +613,9 @@ struct TaskRow: View {
     }
   }
 
-  private func formatStorageTemperature(_ range: Common_OptionalFloat32Range, unit: String)
+  private func formatStorageTemperature(min minVal: Float?, max maxVal: Float?, unit: String)
     -> String
   {
-    let hasMin = range.hasMin
-    let hasMax = range.hasMax
     let useFahrenheit = unit == "fahrenheit"
 
     func formatCelsius(_ c: Float) -> String {
@@ -624,9 +626,7 @@ struct TaskRow: View {
       return "\(Int(c.rounded()))°C"
     }
 
-    if hasMin && hasMax {
-      let minVal = range.min
-      let maxVal = range.max
+    if let minVal = minVal, let maxVal = maxVal {
       if minVal == maxVal {
         return formatCelsius(minVal)
       }
@@ -637,11 +637,11 @@ struct TaskRow: View {
       }
       return "\(Int(minVal.rounded()))–\(Int(maxVal.rounded()))°C"
     }
-    if hasMax {
-      return "below \(formatCelsius(range.max))"
+    if let maxVal = maxVal {
+      return "below \(formatCelsius(maxVal))"
     }
-    if hasMin {
-      return "above \(formatCelsius(range.min))"
+    if let minVal = minVal {
+      return "above \(formatCelsius(minVal))"
     }
     return ""
   }

@@ -7,14 +7,16 @@
 package payments
 
 import (
-	filtering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
-	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	filtering "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/filtering"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

@@ -2,8 +2,6 @@ package bootstrap
 
 import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-
-	"github.com/primandproper/platform/numbers"
 )
 
 // StirFriedGreenBeansRecipe creates the Stir-Fried Green Beans recipe.
@@ -173,29 +171,29 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientPreparationID:     vipID(trimGreenBeansVIP),
 				ValidIngredientMeasurementUnitID: vimuID(greenBeansPoundVIMU),
 				Name:                             "green beans, washed and dried",
-				Quantity:                         numbers.MinRange[float32]{Min: 0.5},
+				MinQuantity:                      0.5,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(trimKnifeVPI),
 				Name:                         "knife",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(trimCuttingBoardVPV),
 				Name:                     "cutting board",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "stemmed green beans",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:                   "stemmed green beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(0.5)),
 			},
 		},
@@ -212,22 +210,22 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(snapGreenBeansVIP),
 				Name:                            "stemmed green beans",
-				Quantity:                        numbers.MinRange[float32]{Min: 0.5},
+				MinQuantity:                     0.5,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(snapCuttingBoardVPV),
 				Name:                     "cutting board",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "snapped green beans",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &poundMeasurement.ID,
+				Name:                   "snapped green beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &poundMeasurement.ID,
 				MinMeasurementQuantity: new(float32(0.5)),
 			},
 		},
@@ -243,29 +241,29 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientPreparationID:     vipID(smashGarlicVIP),
 				ValidIngredientMeasurementUnitID: vimuID(garlicCloveVIMU),
 				Name:                             "garlic cloves, peeled",
-				Quantity:                         numbers.MinRange[float32]{Min: 2},
+				MinQuantity:                      2,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(smashCleaverVPI),
 				Name:                         "cleaver",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
 			{
 				ValidPreparationVesselID: vpvID(smashCuttingBoardVPV),
 				Name:                     "cutting board",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "smashed garlic",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &cloveMeasurement.ID,
+				Name:                   "smashed garlic",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &cloveMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 			},
 		},
@@ -282,7 +280,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 			{
 				ValidPreparationVesselID: vpvID(preheatWokVPV),
 				Name:                     "wok",
-				Quantity:                 numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:              1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -312,7 +310,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ValidIngredientPreparationID:     vipID(swirlLardVIP),
 				ValidIngredientMeasurementUnitID: vimuID(lardTablespoonVIMU),
 				Name:                             "lard",
-				Quantity:                         numbers.MinRange[float32]{Min: 2},
+				MinQuantity:                      2,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -321,15 +319,15 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidPreparationVesselID:        vpvID(swirlWokVPV),
 				Name:                            "preheated wok",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "oil in wok",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "oil in wok",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -350,14 +348,14 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(4)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "oil in wok",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(2)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(addGarlicVIP),
 				Name:                            "smashed garlic",
-				Quantity:                        numbers.MinRange[float32]{Min: 2},
+				MinQuantity:                     2,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -366,15 +364,15 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(addWokVPV),
 				Name:                            "wok with oil",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "garlic in wok",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "garlic in wok",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -397,14 +395,14 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(stirGarlicVIP),
 				Name:                            "garlic in wok",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(stirSpatulaVPI),
 				Name:                         "spatula or wooden spoon",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -413,15 +411,15 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(stirWokVPV),
 				Name:                            "wok with garlic",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "stirred garlic in wok",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "stirred garlic in wok",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -442,14 +440,14 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(6)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "stirred garlic in wok",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 			{
 				ProductOfRecipeStepIndex:        new(uint64(1)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(tossGreenBeansVIP),
 				Name:                            "snapped green beans",
-				Quantity:                        numbers.MinRange[float32]{Min: 0.5},
+				MinQuantity:                     0.5,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -458,15 +456,15 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(tossWokVPV),
 				Name:                            "wok with stirred garlic",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "green beans in wok",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "green beans in wok",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -490,19 +488,19 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(stirGreenBeansVIP),
 				Name:                            "green beans in wok",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(stirSpatulaVPI),
 				Name:                         "spatula",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 			{
 				ValidPreparationInstrumentID: vpiID(stirWoodenSpoonVPI),
 				Name:                         "wooden spoon",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -511,7 +509,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(stirWokVPV),
 				Name:                            "wok with green beans",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -524,10 +522,10 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "stir-fried green beans",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "stir-fried green beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -548,19 +546,19 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(8)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "stir-fried green beans",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 			{
 				ValidIngredientPreparationID:     vipID(addSaltVIP),
 				ValidIngredientMeasurementUnitID: vimuID(saltTeaspoonVIMU),
 				Name:                             "salt, or to taste",
-				Quantity:                         numbers.MinRange[float32]{Min: 0.5},
+				MinQuantity:                      0.5,
 			},
 			{
 				ValidIngredientPreparationID:     vipID(addStockVIP),
 				ValidIngredientMeasurementUnitID: vimuID(stockTablespoonVIMU),
 				Name:                             "vegetable stock",
-				Quantity:                         numbers.MinRange[float32]{Min: 5},
+				MinQuantity:                      5,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -569,15 +567,15 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(addWokVPV),
 				Name:                            "wok with stir-fried green beans",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "green beans with salt and stock",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "green beans with salt and stock",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -599,14 +597,14 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(stirGreenBeansVIP),
 				Name:                            "green beans with salt and stock",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 			{
 				ValidPreparationInstrumentID: vpiID(stirSpatulaVPI),
 				Name:                         "spatula or wooden spoon",
-				Quantity:                     numbers.MinRange[uint32]{Min: 1},
+				MinQuantity:                  1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -615,15 +613,15 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(stirWokVPV),
 				Name:                            "wok with seasoned green beans",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "coated green beans",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "coated green beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -644,7 +642,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepIndex:        new(uint64(10)),
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				Name:                            "coated green beans",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -653,15 +651,15 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(coverWokVPV),
 				Name:                            "wok with coated green beans",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "covered green beans",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "covered green beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(1)),
 			},
 			{
@@ -683,7 +681,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(0)),
 				ValidIngredientPreparationID:    vipID(restGreenBeansVIP),
 				Name:                            "covered green beans",
-				Quantity:                        numbers.MinRange[float32]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		Vessels: []*mealplanning.RecipeStepVesselCreationRequestInput{
@@ -692,7 +690,7 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 				ProductOfRecipeStepProductIndex: new(uint64(1)),
 				ValidPreparationVesselID:        vpvID(restWokVPV),
 				Name:                            "covered wok",
-				Quantity:                        numbers.MinRange[uint16]{Min: 1},
+				MinQuantity:                     1,
 			},
 		},
 		CompletionConditions: []*mealplanning.RecipeStepCompletionConditionCreationRequestInput{
@@ -705,10 +703,10 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 		},
 		Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 			{
-				Name:                "Stir-Fried Green Beans",
-				Type:                mealplanning.RecipeStepProductIngredientType,
-				Index:               0,
-				MeasurementUnitID:   &unitMeasurement.ID,
+				Name:                   "Stir-Fried Green Beans",
+				Type:                   mealplanning.RecipeStepProductIngredientType,
+				Index:                  0,
+				MeasurementUnitID:      &unitMeasurement.ID,
 				MinMeasurementQuantity: new(float32(2)),
 				MaxMeasurementQuantity: new(float32(3)),
 			},
@@ -716,13 +714,13 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 	}
 
 	prepTask1 := &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                        "Trim and snap green beans",
-		Description:                 "Stem the green beans, removing the tough stem end, and snap each bean in half. Prepared green beans keep 3-4 days in an airtight container in the fridge.",
-		Notes:                       "Having the beans trimmed and snapped ahead of time makes the stir-fry come together very quickly.",
-		Optional:                    true,
-		ExplicitStorageInstructions: "Store the trimmed and snapped green beans in an airtight container in the refrigerator for up to 3 days.",
-		StorageType:                 mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
-		MaxStorageTemperatureInCelsius: new(float32(4)),
+		Name:                               "Trim and snap green beans",
+		Description:                        "Stem the green beans, removing the tough stem end, and snap each bean in half. Prepared green beans keep 3-4 days in an airtight container in the fridge.",
+		Notes:                              "Having the beans trimmed and snapped ahead of time makes the stir-fry come together very quickly.",
+		Optional:                           true,
+		ExplicitStorageInstructions:        "Store the trimmed and snapped green beans in an airtight container in the refrigerator for up to 3 days.",
+		StorageType:                        mealplanning.RecipePrepTaskStorageTypeAirtightContainer,
+		MaxStorageTemperatureInCelsius:     new(float32(4)),
 		MinTimeBufferBeforeRecipeInSeconds: 0,
 		MaxTimeBufferBeforeRecipeInSeconds: new(uint32(259200)),
 		RecipeSteps: []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -733,18 +731,16 @@ func StirFriedGreenBeansRecipe(enums *Enumerations) []*mealplanning.RecipeCreati
 
 	return []*mealplanning.RecipeCreationRequestInput{
 		{
-			Name:                "Stir-Fried Green Beans",
-			Slug:                "stir-fried-green-beans",
-			Source:              "https://www.seriouseats.com/stir-fried-green-beans-recipe",
-			Description:         "Green beans, when prepared correctly, are outrageously good. With their crispness still intact after being quickly stir-fried in a hot wok, they are a perfect vessel for your favorite sauces and dips.",
-			YieldsComponentType: mealplanning.MealComponentTypesSide,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: 2,
-				Max: new(float32(3)),
-			},
-			PortionName:       "serving",
-			PluralPortionName: "servings",
-			EligibleForMeals:  true,
+			Name:                 "Stir-Fried Green Beans",
+			Slug:                 "stir-fried-green-beans",
+			Source:               "https://www.seriouseats.com/stir-fried-green-beans-recipe",
+			Description:          "Green beans, when prepared correctly, are outrageously good. With their crispness still intact after being quickly stir-fried in a hot wok, they are a perfect vessel for your favorite sauces and dips.",
+			YieldsComponentType:  mealplanning.MealComponentTypesSide,
+			MinEstimatedPortions: 2,
+			MaxEstimatedPortions: new(float32(3)),
+			PortionName:          "serving",
+			PluralPortionName:    "servings",
+			EligibleForMeals:     true,
 			Steps: []*mealplanning.RecipeStepCreationRequestInput{
 				step0, step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12,
 			},

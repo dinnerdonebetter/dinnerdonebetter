@@ -4,8 +4,6 @@ import (
 	"math"
 	"testing"
 
-	"github.com/primandproper/platform/numbers"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,14 +16,14 @@ func TestRecipeStepInstrument_Update(T *testing.T) {
 
 		x := &RecipeStepInstrument{
 			RecipeStepProductID: new(t.Name()),
-			Quantity:            numbers.MinRange[uint32]{Max: new(uint32(321))},
+			MaxQuantity:         new(uint32(321)),
 		}
 		input := &RecipeStepInstrumentUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 		input.Optional = new(true)
 		input.RecipeStepProductID = new("whatever")
-		input.Quantity.Max = new(uint32(123))
+		input.MaxQuantity = new(uint32(123))
 
 		x.Update(input)
 	})
@@ -55,10 +53,9 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			Notes:                        t.Name(),
 			PreferenceRank:               uint8(fake.Number(1, math.MaxUint8)),
 			Optional:                     fake.Bool(),
-			Quantity: numbers.MinRange[uint32]{
-				Max: new(fake.Uint32()),
-				Min: fake.Uint32(),
-			},
+			MinQuantity:                  fake.Uint32(),
+
+			MaxQuantity: new(fake.Uint32()),
 			ScaleFactor: 0.5,
 		}
 
@@ -76,10 +73,9 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			Notes:                           t.Name(),
 			PreferenceRank:                  uint8(fake.Number(1, math.MaxUint8)),
 			Optional:                        fake.Bool(),
-			Quantity: numbers.MinRange[uint32]{
-				Max: new(fake.Uint32()),
-				Min: fake.Uint32(),
-			},
+			MinQuantity:                     fake.Uint32(),
+
+			MaxQuantity: new(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -136,10 +132,9 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			Notes:               new(t.Name()),
 			PreferenceRank:      new(uint8(fake.Number(1, math.MaxUint8))),
 			Optional:            new(fake.Bool()),
-			Quantity: numbers.OpenRangeUpdateRequestInput[uint32]{
-				Min: new(fake.Uint32()),
-				Max: new(fake.Uint32()),
-			},
+			MinQuantity:         new(fake.Uint32()),
+
+			MaxQuantity: new(fake.Uint32()),
 			ScaleFactor: new(float32(0.5)),
 		}
 
