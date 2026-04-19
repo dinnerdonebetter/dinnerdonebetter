@@ -664,7 +664,7 @@ func (q *repository) CreateMealComponent(ctx context.Context, querier database.S
 	// create the meal.
 	if err := q.generatedQuerier.CreateMealComponent(ctx, querier, &generated.CreateMealComponentParams{
 		ID:                identifiers.New(),
-		MealID:            mealID,
+		BelongsToMeal:     mealID,
 		RecipeID:          input.RecipeID,
 		MealComponentType: generated.ComponentType(input.ComponentType),
 		RecipeScale:       database.StringFromFloat32(input.RecipeScale),

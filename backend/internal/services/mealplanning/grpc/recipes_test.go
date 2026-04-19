@@ -1689,11 +1689,11 @@ func TestServiceImpl_GetRecipeRating(T *testing.T) {
 		s := buildServiceImplForRecipesTest(t)
 
 		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On(reflection.GetMethodName(mrm.ReadRecipeRating), testutils.ContextMatcher, exampleResult.RecipeID, exampleResult.ID).Return(exampleResult, nil)
+		mrm.On(reflection.GetMethodName(mrm.ReadRecipeRating), testutils.ContextMatcher, exampleResult.BelongsToRecipe, exampleResult.ID).Return(exampleResult, nil)
 		s.recipeManager = mrm
 
 		result, err := s.GetRecipeRating(ctx, &mealplanninggrpc.GetRecipeRatingRequest{
-			RecipeId:       exampleResult.RecipeID,
+			RecipeId:       exampleResult.BelongsToRecipe,
 			RecipeRatingId: exampleResult.ID,
 		})
 		assert.Equal(t, exampleResult.ID, result.Result.Id)

@@ -72,7 +72,7 @@ func TestUserIngredientPreferenceDatabaseCreationInput_Validate(T *testing.T) {
 		x := &UserIngredientPreferenceDatabaseCreationInput{
 			ValidIngredientID: t.Name(),
 			Rating:            minRating,
-			BelongsToUser:     t.Name(),
+			CreatedByUser:     t.Name(),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

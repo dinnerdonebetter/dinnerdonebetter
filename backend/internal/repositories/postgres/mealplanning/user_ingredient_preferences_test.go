@@ -35,7 +35,7 @@ func createUserIngredientPreferenceForTest(t *testing.T, ctx context.Context, ex
 	assert.NoError(t, err)
 	assert.Equal(t, exampleUserIngredientPreference, created)
 
-	userIngredientPreference, err := dbc.GetUserIngredientPreference(ctx, created.ID, dbInput.BelongsToUser)
+	userIngredientPreference, err := dbc.GetUserIngredientPreference(ctx, created.ID, dbInput.CreatedByUser)
 	exampleUserIngredientPreference.CreatedAt = userIngredientPreference.CreatedAt
 	exampleUserIngredientPreference.Ingredient = userIngredientPreference.Ingredient
 
@@ -66,7 +66,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
 
 	exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-	exampleUserIngredientPreference.BelongsToUser = user.ID
+	exampleUserIngredientPreference.CreatedByUser = user.ID
 	exampleUserIngredientPreference.Ingredient = *ingredient
 	createdUserIngredientPreferences := []*types.UserIngredientPreference{}
 
@@ -77,7 +77,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	ingredient2 := createValidIngredientForTest(t, ctx, nil, dbc)
 	updatedUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 	updatedUserIngredientPreference.ID = createdUserIngredientPreferences[0].ID
-	updatedUserIngredientPreference.BelongsToUser = user.ID
+	updatedUserIngredientPreference.CreatedByUser = user.ID
 	updatedUserIngredientPreference.Ingredient = *ingredient2
 	assert.NoError(t, dbc.UpdateUserIngredientPreference(ctx, updatedUserIngredientPreference))
 
@@ -85,7 +85,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	for range exampleQuantity {
 		input := fakes.BuildFakeUserIngredientPreference()
 		ingredient3 := createValidIngredientForTest(t, ctx, nil, dbc)
-		input.BelongsToUser = user.ID
+		input.CreatedByUser = user.ID
 		input.Ingredient = *ingredient3
 		createdUserIngredientPreferences = append(createdUserIngredientPreferences, createUserIngredientPreferenceForTest(t, ctx, input, dbc))
 	}
@@ -228,7 +228,7 @@ func TestQuerier_Integration_UserIngredientPreferences_CursorBasedPagination(t *
 		CreateItem: func(ctx context.Context, i int) *types.UserIngredientPreference {
 			ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
 			userIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-			userIngredientPreference.BelongsToUser = user.ID
+			userIngredientPreference.CreatedByUser = user.ID
 			userIngredientPreference.Ingredient = *ingredient
 			return createUserIngredientPreferenceForTest(t, ctx, userIngredientPreference, dbc)
 		},

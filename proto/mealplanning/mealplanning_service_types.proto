@@ -1478,7 +1478,6 @@ message RecipeRatingUpdateRequestInput {
   optional float instructions = 5;
   optional float overall = 6;
   optional string notes = 7;
-  optional string by_user = 8;
 }
 
 message RecipeStepCompletionConditionCreationRequestInput {

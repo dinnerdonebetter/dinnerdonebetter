@@ -588,18 +588,18 @@ CREATE TABLE IF NOT EXISTS recipe_prep_task_steps (
 
 CREATE TABLE IF NOT EXISTS recipe_ratings (
     id TEXT NOT NULL PRIMARY KEY,
-    recipe_id TEXT NOT NULL REFERENCES recipes("id") ON DELETE CASCADE,
+    belongs_to_recipe TEXT NOT NULL REFERENCES recipes("id") ON DELETE CASCADE,
     taste NUMERIC(14,2),
     difficulty NUMERIC(14,2),
     cleanup NUMERIC(14,2),
     instructions NUMERIC(14,2),
     overall NUMERIC(14,2),
     notes TEXT DEFAULT ''::TEXT NOT NULL,
-    by_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE,
+    created_by_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
-    UNIQUE(by_user, recipe_id)
+    UNIQUE(created_by_user, belongs_to_recipe)
 );
 
 -- =============================================================================
@@ -622,7 +622,7 @@ CREATE TABLE IF NOT EXISTS meals (
 
 CREATE TABLE IF NOT EXISTS meal_components (
     id TEXT NOT NULL PRIMARY KEY,
-    meal_id TEXT NOT NULL REFERENCES meals("id") ON DELETE CASCADE,
+    belongs_to_meal TEXT NOT NULL REFERENCES meals("id") ON DELETE CASCADE,
     recipe_id TEXT NOT NULL REFERENCES recipes("id") ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
@@ -999,8 +999,8 @@ CREATE INDEX idx_prep_task_steps_task ON recipe_prep_task_steps (belongs_to_reci
 CREATE INDEX idx_prep_task_steps_step ON recipe_prep_task_steps (belongs_to_recipe_step);
 
 -- Recipe ratings indexes
-CREATE INDEX idx_recipe_ratings_recipe ON recipe_ratings (recipe_id) WHERE archived_at IS NULL;
-CREATE INDEX idx_recipe_ratings_user ON recipe_ratings (by_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_ratings_recipe ON recipe_ratings (belongs_to_recipe) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_ratings_user ON recipe_ratings (created_by_user) WHERE archived_at IS NULL;
 
 -- Meals indexes
 CREATE INDEX idx_meals_archived_at ON meals (archived_at) WHERE archived_at IS NULL;
@@ -1013,10 +1013,10 @@ CREATE INDEX idx_meals_created_at_id ON meals (created_at, id) WHERE archived_at
 CREATE INDEX idx_meals_indexing_needed ON meals (last_indexed_at) WHERE archived_at IS NULL;
 
 -- Meal components indexes
-CREATE INDEX idx_meal_components_meal ON meal_components (meal_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_components_meal ON meal_components (belongs_to_meal) WHERE archived_at IS NULL;
 CREATE INDEX idx_meal_components_recipe ON meal_components (recipe_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_meal_components_type ON meal_components (meal_component_type) WHERE archived_at IS NULL;
-CREATE INDEX idx_meal_components_meal_recipe ON meal_components (meal_id, recipe_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_components_meal_recipe ON meal_components (belongs_to_meal, recipe_id) WHERE archived_at IS NULL;
 
 -- Meal plans indexes
 CREATE INDEX idx_meal_plans_archived_at ON meal_plans (archived_at) WHERE archived_at IS NULL;

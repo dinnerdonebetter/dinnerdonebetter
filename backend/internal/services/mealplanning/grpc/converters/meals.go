@@ -455,7 +455,7 @@ func ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(input *mealpl
 		Ingredient:    ConvertValidIngredientToGRPCValidIngredient(&input.Ingredient),
 		Id:            input.ID,
 		Notes:         input.Notes,
-		BelongsToUser: input.BelongsToUser,
+		BelongsToUser: input.CreatedByUser,
 		Rating:        int32(input.Rating),
 		Allergy:       input.Allergy,
 	}
@@ -469,7 +469,7 @@ func ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(input *mealpl
 		Ingredient:    *ConvertGRPCValidIngredientToValidIngredient(input.Ingredient),
 		ID:            input.Id,
 		Notes:         input.Notes,
-		BelongsToUser: input.BelongsToUser,
+		CreatedByUser: input.BelongsToUser,
 		Rating:        int8(input.Rating),
 		Allergy:       input.Allergy,
 	}

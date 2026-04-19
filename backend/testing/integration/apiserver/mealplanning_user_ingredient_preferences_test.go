@@ -28,14 +28,14 @@ func createUserIngredientPreferenceForTest(t *testing.T, clientToUse client.Clie
 	})
 	require.NoError(t, err)
 	converted := settingsconverters.ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(createdUserIngredientPreference.Created[0])
-	assertRoughEquality(t, exampleUserIngredientPreference, converted, defaultIgnoredFields("ID", "BelongsToUser", "Ingredient")...)
+	assertRoughEquality(t, exampleUserIngredientPreference, converted, defaultIgnoredFields("ID", "CreatedByUser", "Ingredient")...)
 
 	res, err := clientToUse.GetUserIngredientPreference(ctx, &settingssvc.GetUserIngredientPreferenceRequest{UserIngredientPreferenceId: createdUserIngredientPreference.Created[0].Id})
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
 	serviceSetting := settingsconverters.ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(res.Result)
-	assertRoughEquality(t, converted, serviceSetting, defaultIgnoredFields("ID", "BelongsToUser", "Ingredient")...)
+	assertRoughEquality(t, converted, serviceSetting, defaultIgnoredFields("ID", "CreatedByUser", "Ingredient")...)
 
 	return serviceSetting
 }
@@ -118,7 +118,7 @@ func TestUserIngredientPreferences_Reading(T *testing.T) {
 
 		converted := settingsconverters.ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(retrieved.Result)
 
-		assertRoughEquality(t, created, converted, defaultIgnoredFields("ID", "BelongsToUser", "Ingredient")...)
+		assertRoughEquality(t, created, converted, defaultIgnoredFields("ID", "CreatedByUser", "Ingredient")...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -211,7 +211,7 @@ func TestUserIngredientPreferences_Updating(T *testing.T) {
 		// Ensure UpdatedAt was set
 		require.NotNil(t, updated.LastUpdatedAt)
 
-		assertRoughEquality(t, created, updated, defaultIgnoredFields("ID", "BelongsToUser", "Ingredient")...)
+		assertRoughEquality(t, created, updated, defaultIgnoredFields("ID", "CreatedByUser", "Ingredient")...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

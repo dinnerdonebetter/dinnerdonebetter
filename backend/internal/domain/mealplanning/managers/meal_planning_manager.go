@@ -1584,7 +1584,7 @@ func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context
 	}
 
 	convertedInput := converters.ConvertUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceDatabaseCreationInput(input)
-	convertedInput.BelongsToUser = ownerID
+	convertedInput.CreatedByUser = ownerID
 
 	created, err := m.db.CreateUserIngredientPreference(ctx, convertedInput)
 	if err != nil {

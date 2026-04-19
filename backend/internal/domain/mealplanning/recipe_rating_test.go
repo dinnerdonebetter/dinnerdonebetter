@@ -30,8 +30,8 @@ func TestRecipeRatingCreationRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		x := &RecipeRatingCreationRequestInput{
-			RecipeID:   t.Name(),
-			Difficulty: 1.0,
+			BelongsToRecipe: t.Name(),
+			Difficulty:      1.0,
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -55,10 +55,10 @@ func TestRecipeRatingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		x := &RecipeRatingDatabaseCreationInput{
-			ID:         t.Name(),
-			RecipeID:   t.Name(),
-			ByUser:     t.Name(),
-			Difficulty: 1.0,
+			ID:              t.Name(),
+			BelongsToRecipe: t.Name(),
+			CreatedByUser:   t.Name(),
+			Difficulty:      1.0,
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -82,9 +82,8 @@ func TestRecipeRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := t.Context()
 		x := &RecipeRatingUpdateRequestInput{
-			ByUser:     new(t.Name()),
-			RecipeID:   new(t.Name()),
-			Difficulty: new(float32(1.0)),
+			BelongsToRecipe: new(t.Name()),
+			Difficulty:      new(float32(1.0)),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

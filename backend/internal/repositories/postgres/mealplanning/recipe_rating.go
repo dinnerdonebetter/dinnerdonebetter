@@ -72,18 +72,18 @@ func (q *repository) GetRecipeRating(ctx context.Context, recipeID, recipeRating
 	}
 
 	recipeRating := &types.RecipeRating{
-		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-		Notes:         result.Notes,
-		ID:            result.ID,
-		RecipeID:      result.RecipeID,
-		ByUser:        result.ByUser,
-		Taste:         database.Float32FromNullString(result.Taste),
-		Instructions:  database.Float32FromNullString(result.Instructions),
-		Overall:       database.Float32FromNullString(result.Overall),
-		Cleanup:       database.Float32FromNullString(result.Cleanup),
-		Difficulty:    database.Float32FromNullString(result.Difficulty),
+		CreatedAt:       result.CreatedAt,
+		LastUpdatedAt:   database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:      database.TimePointerFromNullTime(result.ArchivedAt),
+		Notes:           result.Notes,
+		ID:              result.ID,
+		BelongsToRecipe: result.BelongsToRecipe,
+		CreatedByUser:   result.CreatedByUser,
+		Taste:           database.Float32FromNullString(result.Taste),
+		Instructions:    database.Float32FromNullString(result.Instructions),
+		Overall:         database.Float32FromNullString(result.Overall),
+		Cleanup:         database.Float32FromNullString(result.Cleanup),
+		Difficulty:      database.Float32FromNullString(result.Difficulty),
 	}
 
 	return recipeRating, nil
@@ -115,7 +115,7 @@ func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID str
 	)
 
 	results, err := q.generatedQuerier.GetRecipeRatingsForRecipe(ctx, q.readDB, &generated.GetRecipeRatingsForRecipeParams{
-		RecipeID:        recipeID,
+		BelongsToRecipe: recipeID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -134,18 +134,18 @@ func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID str
 			totalCount = uint64(result.TotalCount)
 		}
 		data = append(data, &types.RecipeRating{
-			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			Notes:         result.Notes,
-			ID:            result.ID,
-			RecipeID:      result.RecipeID,
-			ByUser:        result.ByUser,
-			Taste:         database.Float32FromNullString(result.Taste),
-			Instructions:  database.Float32FromNullString(result.Instructions),
-			Overall:       database.Float32FromNullString(result.Overall),
-			Cleanup:       database.Float32FromNullString(result.Cleanup),
-			Difficulty:    database.Float32FromNullString(result.Difficulty),
+			CreatedAt:       result.CreatedAt,
+			LastUpdatedAt:   database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:      database.TimePointerFromNullTime(result.ArchivedAt),
+			Notes:           result.Notes,
+			ID:              result.ID,
+			BelongsToRecipe: result.BelongsToRecipe,
+			CreatedByUser:   result.CreatedByUser,
+			Taste:           database.Float32FromNullString(result.Taste),
+			Instructions:    database.Float32FromNullString(result.Instructions),
+			Overall:         database.Float32FromNullString(result.Overall),
+			Cleanup:         database.Float32FromNullString(result.Cleanup),
+			Difficulty:      database.Float32FromNullString(result.Difficulty),
 		})
 	}
 
@@ -186,7 +186,7 @@ func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string,
 	)
 
 	results, err := q.generatedQuerier.GetRecipeRatingsForUser(ctx, q.readDB, &generated.GetRecipeRatingsForUserParams{
-		ByUser:          userID,
+		CreatedByUser:   userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -205,18 +205,18 @@ func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string,
 			totalCount = uint64(result.TotalCount)
 		}
 		data = append(data, &types.RecipeRating{
-			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-			Notes:         result.Notes,
-			ID:            result.ID,
-			RecipeID:      result.RecipeID,
-			ByUser:        result.ByUser,
-			Taste:         database.Float32FromNullString(result.Taste),
-			Instructions:  database.Float32FromNullString(result.Instructions),
-			Overall:       database.Float32FromNullString(result.Overall),
-			Cleanup:       database.Float32FromNullString(result.Cleanup),
-			Difficulty:    database.Float32FromNullString(result.Difficulty),
+			CreatedAt:       result.CreatedAt,
+			LastUpdatedAt:   database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:      database.TimePointerFromNullTime(result.ArchivedAt),
+			Notes:           result.Notes,
+			ID:              result.ID,
+			BelongsToRecipe: result.BelongsToRecipe,
+			CreatedByUser:   result.CreatedByUser,
+			Taste:           database.Float32FromNullString(result.Taste),
+			Instructions:    database.Float32FromNullString(result.Instructions),
+			Overall:         database.Float32FromNullString(result.Overall),
+			Cleanup:         database.Float32FromNullString(result.Cleanup),
+			Difficulty:      database.Float32FromNullString(result.Difficulty),
 		})
 	}
 
@@ -244,30 +244,30 @@ func (q *repository) CreateRecipeRating(ctx context.Context, input *types.Recipe
 
 	// create the recipe rating.
 	if err := q.generatedQuerier.CreateRecipeRating(ctx, q.writeDB, &generated.CreateRecipeRatingParams{
-		ID:           input.ID,
-		RecipeID:     input.RecipeID,
-		Notes:        input.Notes,
-		ByUser:       input.ByUser,
-		Taste:        database.NullStringFromFloat32(input.Taste),
-		Difficulty:   database.NullStringFromFloat32(input.Difficulty),
-		Cleanup:      database.NullStringFromFloat32(input.Cleanup),
-		Instructions: database.NullStringFromFloat32(input.Instructions),
-		Overall:      database.NullStringFromFloat32(input.Overall),
+		ID:              input.ID,
+		BelongsToRecipe: input.BelongsToRecipe,
+		Notes:           input.Notes,
+		CreatedByUser:   input.CreatedByUser,
+		Taste:           database.NullStringFromFloat32(input.Taste),
+		Difficulty:      database.NullStringFromFloat32(input.Difficulty),
+		Cleanup:         database.NullStringFromFloat32(input.Cleanup),
+		Instructions:    database.NullStringFromFloat32(input.Instructions),
+		Overall:         database.NullStringFromFloat32(input.Overall),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe rating creation query")
 	}
 
 	x := &types.RecipeRating{
-		ID:           input.ID,
-		RecipeID:     input.RecipeID,
-		Taste:        input.Taste,
-		Difficulty:   input.Difficulty,
-		Cleanup:      input.Cleanup,
-		Instructions: input.Instructions,
-		Overall:      input.Overall,
-		Notes:        input.Notes,
-		ByUser:       input.ByUser,
-		CreatedAt:    q.CurrentTime(),
+		ID:              input.ID,
+		BelongsToRecipe: input.BelongsToRecipe,
+		Taste:           input.Taste,
+		Difficulty:      input.Difficulty,
+		Cleanup:         input.Cleanup,
+		Instructions:    input.Instructions,
+		Overall:         input.Overall,
+		Notes:           input.Notes,
+		CreatedByUser:   input.CreatedByUser,
+		CreatedAt:       q.CurrentTime(),
 	}
 
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, x.ID)
@@ -288,14 +288,14 @@ func (q *repository) UpdateRecipeRating(ctx context.Context, updated *types.Reci
 	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeRating(ctx, q.writeDB, &generated.UpdateRecipeRatingParams{
-		RecipeID:     updated.RecipeID,
-		Taste:        database.NullStringFromFloat32(updated.Taste),
-		Difficulty:   database.NullStringFromFloat32(updated.Difficulty),
-		Cleanup:      database.NullStringFromFloat32(updated.Cleanup),
-		Instructions: database.NullStringFromFloat32(updated.Instructions),
-		Overall:      database.NullStringFromFloat32(updated.Overall),
-		Notes:        updated.Notes,
-		ID:           updated.ID,
+		BelongsToRecipe: updated.BelongsToRecipe,
+		Taste:           database.NullStringFromFloat32(updated.Taste),
+		Difficulty:      database.NullStringFromFloat32(updated.Difficulty),
+		Cleanup:         database.NullStringFromFloat32(updated.Cleanup),
+		Instructions:    database.NullStringFromFloat32(updated.Instructions),
+		Overall:         database.NullStringFromFloat32(updated.Overall),
+		Notes:           updated.Notes,
+		ID:              updated.ID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating")
 	}

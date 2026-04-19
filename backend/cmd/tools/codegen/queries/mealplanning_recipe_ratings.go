@@ -9,7 +9,6 @@ import (
 
 const (
 	recipeRatingsTableName = "recipe_ratings"
-	byUserColumn           = "by_user"
 )
 
 func init() {
@@ -18,14 +17,14 @@ func init() {
 
 var recipeRatingsColumns = []string{
 	idColumn,
-	recipeIDColumn,
+	belongsToRecipeColumn,
 	"taste",
 	"difficulty",
 	"cleanup",
 	"instructions",
 	"overall",
 	notesColumn,
-	byUserColumn,
+	createdByUserColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -105,12 +104,12 @@ GROUP BY %s.%s
 					strings.Join(applyToEach(recipeRatingsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", recipeRatingsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(recipeRatingsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn)),
-					buildTotalCountSelect(recipeRatingsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn)),
+					buildFilterCountSelect(recipeRatingsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, belongsToRecipeColumn, belongsToRecipeColumn)),
+					buildTotalCountSelect(recipeRatingsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, belongsToRecipeColumn, belongsToRecipeColumn)),
 					recipeRatingsTableName,
 					recipeRatingsTableName, archivedAtColumn,
-					recipeRatingsTableName, recipeIDColumn, recipeIDColumn,
-					buildFilterConditions(recipeRatingsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn)),
+					recipeRatingsTableName, belongsToRecipeColumn, belongsToRecipeColumn,
+					buildFilterConditions(recipeRatingsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, belongsToRecipeColumn, belongsToRecipeColumn)),
 					recipeRatingsTableName, idColumn,
 					buildCursorLimitClause(recipeRatingsTableName),
 				)),
@@ -134,12 +133,12 @@ GROUP BY %s.%s
 					strings.Join(applyToEach(recipeRatingsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", recipeRatingsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(recipeRatingsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn)),
-					buildTotalCountSelect(recipeRatingsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn)),
+					buildFilterCountSelect(recipeRatingsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, createdByUserColumn, createdByUserColumn)),
+					buildTotalCountSelect(recipeRatingsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, createdByUserColumn, createdByUserColumn)),
 					recipeRatingsTableName,
 					recipeRatingsTableName, archivedAtColumn,
-					recipeRatingsTableName, byUserColumn, byUserColumn,
-					buildFilterConditions(recipeRatingsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn)),
+					recipeRatingsTableName, createdByUserColumn, createdByUserColumn,
+					buildFilterConditions(recipeRatingsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, createdByUserColumn, createdByUserColumn)),
 					recipeRatingsTableName, idColumn,
 					buildCursorLimitClause(recipeRatingsTableName),
 				)),
@@ -173,7 +172,7 @@ WHERE %s.%s IS NULL
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 					recipeRatingsTableName,
-					strings.Join(applyToEach(filterForUpdate(recipeRatingsColumns, "by_user"), func(i int, s string) string {
+					strings.Join(applyToEach(filterForUpdate(recipeRatingsColumns, createdByUserColumn), func(i int, s string) string {
 						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 					}), ",\n\t"),
 					lastUpdatedAtColumn, currentTimeExpression,

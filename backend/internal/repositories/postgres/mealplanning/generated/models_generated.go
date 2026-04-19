@@ -872,18 +872,18 @@ type PreparationMedia struct {
 }
 
 type RecipeRatings struct {
-	ID            string
-	RecipeID      string
-	Taste         sql.NullString
-	Difficulty    sql.NullString
-	Cleanup       sql.NullString
-	Instructions  sql.NullString
-	Overall       sql.NullString
-	Notes         string
-	ByUser        string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
+	ID              string
+	BelongsToRecipe string
+	Taste           sql.NullString
+	Difficulty      sql.NullString
+	Cleanup         sql.NullString
+	Instructions    sql.NullString
+	Overall         sql.NullString
+	Notes           string
+	CreatedByUser   string
+	CreatedAt       time.Time
+	LastUpdatedAt   sql.NullTime
+	ArchivedAt      sql.NullTime
 }
 
 type RecipeStepImages struct {

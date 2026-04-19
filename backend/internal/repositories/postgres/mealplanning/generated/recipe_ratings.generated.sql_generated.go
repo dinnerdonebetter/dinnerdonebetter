@@ -42,14 +42,14 @@ func (q *Queries) CheckRecipeRatingExistence(ctx context.Context, db DBTX, id st
 const createRecipeRating = `-- name: CreateRecipeRating :exec
 INSERT INTO recipe_ratings (
 	id,
-	recipe_id,
+	belongs_to_recipe,
 	taste,
 	difficulty,
 	cleanup,
 	instructions,
 	overall,
 	notes,
-	by_user
+	created_by_user
 ) VALUES (
 	$1,
 	$2,
@@ -64,28 +64,28 @@ INSERT INTO recipe_ratings (
 `
 
 type CreateRecipeRatingParams struct {
-	ID           string
-	RecipeID     string
-	Taste        sql.NullString
-	Difficulty   sql.NullString
-	Cleanup      sql.NullString
-	Instructions sql.NullString
-	Overall      sql.NullString
-	Notes        string
-	ByUser       string
+	ID              string
+	BelongsToRecipe string
+	Taste           sql.NullString
+	Difficulty      sql.NullString
+	Cleanup         sql.NullString
+	Instructions    sql.NullString
+	Overall         sql.NullString
+	Notes           string
+	CreatedByUser   string
 }
 
 func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRecipeRatingParams) error {
 	_, err := db.ExecContext(ctx, createRecipeRating,
 		arg.ID,
-		arg.RecipeID,
+		arg.BelongsToRecipe,
 		arg.Taste,
 		arg.Difficulty,
 		arg.Cleanup,
 		arg.Instructions,
 		arg.Overall,
 		arg.Notes,
-		arg.ByUser,
+		arg.CreatedByUser,
 	)
 	return err
 }
@@ -93,14 +93,14 @@ func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRe
 const getRecipeRating = `-- name: GetRecipeRating :one
 SELECT
 	recipe_ratings.id,
-	recipe_ratings.recipe_id,
+	recipe_ratings.belongs_to_recipe,
 	recipe_ratings.taste,
 	recipe_ratings.difficulty,
 	recipe_ratings.cleanup,
 	recipe_ratings.instructions,
 	recipe_ratings.overall,
 	recipe_ratings.notes,
-	recipe_ratings.by_user,
+	recipe_ratings.created_by_user,
 	recipe_ratings.created_at,
 	recipe_ratings.last_updated_at,
 	recipe_ratings.archived_at
@@ -114,14 +114,14 @@ func (q *Queries) GetRecipeRating(ctx context.Context, db DBTX, id string) (*Rec
 	var i RecipeRatings
 	err := row.Scan(
 		&i.ID,
-		&i.RecipeID,
+		&i.BelongsToRecipe,
 		&i.Taste,
 		&i.Difficulty,
 		&i.Cleanup,
 		&i.Instructions,
 		&i.Overall,
 		&i.Notes,
-		&i.ByUser,
+		&i.CreatedByUser,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -132,14 +132,14 @@ func (q *Queries) GetRecipeRating(ctx context.Context, db DBTX, id string) (*Rec
 const getRecipeRatingsForRecipe = `-- name: GetRecipeRatingsForRecipe :many
 SELECT
 	recipe_ratings.id,
-	recipe_ratings.recipe_id,
+	recipe_ratings.belongs_to_recipe,
 	recipe_ratings.taste,
 	recipe_ratings.difficulty,
 	recipe_ratings.cleanup,
 	recipe_ratings.instructions,
 	recipe_ratings.overall,
 	recipe_ratings.notes,
-	recipe_ratings.by_user,
+	recipe_ratings.created_by_user,
 	recipe_ratings.created_at,
 	recipe_ratings.last_updated_at,
 	recipe_ratings.archived_at,
@@ -159,18 +159,18 @@ SELECT
 				OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 			AND (NOT COALESCE($5, false)::boolean OR recipe_ratings.archived_at = NULL)
-			AND recipe_ratings.recipe_id = $6
+			AND recipe_ratings.belongs_to_recipe = $6
 	) AS filtered_count,
 	(
 		SELECT COUNT(recipe_ratings.id)
 		FROM recipe_ratings
 		WHERE recipe_ratings.archived_at IS NULL
-			AND recipe_ratings.recipe_id = $6
+			AND recipe_ratings.belongs_to_recipe = $6
 	) AS total_count
 FROM recipe_ratings
 WHERE
 	recipe_ratings.archived_at IS NULL AND
-	recipe_ratings.recipe_id = $6
+	recipe_ratings.belongs_to_recipe = $6
 	AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -182,7 +182,7 @@ WHERE
 		OR recipe_ratings.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR recipe_ratings.archived_at = NULL)
-	AND recipe_ratings.recipe_id = $6
+	AND recipe_ratings.belongs_to_recipe = $6
 	AND recipe_ratings.id > COALESCE($7, '')
 GROUP BY recipe_ratings.id
 ORDER BY recipe_ratings.id ASC
@@ -195,26 +195,26 @@ type GetRecipeRatingsForRecipeParams struct {
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	IncludeArchived sql.NullBool
-	RecipeID        string
+	BelongsToRecipe string
 	Cursor          sql.NullString
 	ResultLimit     interface{}
 }
 
 type GetRecipeRatingsForRecipeRow struct {
-	ID            string
-	RecipeID      string
-	Taste         sql.NullString
-	Difficulty    sql.NullString
-	Cleanup       sql.NullString
-	Instructions  sql.NullString
-	Overall       sql.NullString
-	Notes         string
-	ByUser        string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	FilteredCount int64
-	TotalCount    int64
+	ID              string
+	BelongsToRecipe string
+	Taste           sql.NullString
+	Difficulty      sql.NullString
+	Cleanup         sql.NullString
+	Instructions    sql.NullString
+	Overall         sql.NullString
+	Notes           string
+	CreatedByUser   string
+	CreatedAt       time.Time
+	LastUpdatedAt   sql.NullTime
+	ArchivedAt      sql.NullTime
+	FilteredCount   int64
+	TotalCount      int64
 }
 
 func (q *Queries) GetRecipeRatingsForRecipe(ctx context.Context, db DBTX, arg *GetRecipeRatingsForRecipeParams) ([]*GetRecipeRatingsForRecipeRow, error) {
@@ -224,7 +224,7 @@ func (q *Queries) GetRecipeRatingsForRecipe(ctx context.Context, db DBTX, arg *G
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.RecipeID,
+		arg.BelongsToRecipe,
 		arg.Cursor,
 		arg.ResultLimit,
 	)
@@ -237,14 +237,14 @@ func (q *Queries) GetRecipeRatingsForRecipe(ctx context.Context, db DBTX, arg *G
 		var i GetRecipeRatingsForRecipeRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.RecipeID,
+			&i.BelongsToRecipe,
 			&i.Taste,
 			&i.Difficulty,
 			&i.Cleanup,
 			&i.Instructions,
 			&i.Overall,
 			&i.Notes,
-			&i.ByUser,
+			&i.CreatedByUser,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -267,14 +267,14 @@ func (q *Queries) GetRecipeRatingsForRecipe(ctx context.Context, db DBTX, arg *G
 const getRecipeRatingsForUser = `-- name: GetRecipeRatingsForUser :many
 SELECT
 	recipe_ratings.id,
-	recipe_ratings.recipe_id,
+	recipe_ratings.belongs_to_recipe,
 	recipe_ratings.taste,
 	recipe_ratings.difficulty,
 	recipe_ratings.cleanup,
 	recipe_ratings.instructions,
 	recipe_ratings.overall,
 	recipe_ratings.notes,
-	recipe_ratings.by_user,
+	recipe_ratings.created_by_user,
 	recipe_ratings.created_at,
 	recipe_ratings.last_updated_at,
 	recipe_ratings.archived_at,
@@ -294,18 +294,18 @@ SELECT
 				OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 			AND (NOT COALESCE($5, false)::boolean OR recipe_ratings.archived_at = NULL)
-			AND recipe_ratings.by_user = $6
+			AND recipe_ratings.created_by_user = $6
 	) AS filtered_count,
 	(
 		SELECT COUNT(recipe_ratings.id)
 		FROM recipe_ratings
 		WHERE recipe_ratings.archived_at IS NULL
-			AND recipe_ratings.by_user = $6
+			AND recipe_ratings.created_by_user = $6
 	) AS total_count
 FROM recipe_ratings
 WHERE
 	recipe_ratings.archived_at IS NULL AND
-	recipe_ratings.by_user = $6
+	recipe_ratings.created_by_user = $6
 	AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -317,7 +317,7 @@ WHERE
 		OR recipe_ratings.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE($5, false)::boolean OR recipe_ratings.archived_at = NULL)
-	AND recipe_ratings.by_user = $6
+	AND recipe_ratings.created_by_user = $6
 	AND recipe_ratings.id > COALESCE($7, '')
 GROUP BY recipe_ratings.id
 ORDER BY recipe_ratings.id ASC
@@ -330,26 +330,26 @@ type GetRecipeRatingsForUserParams struct {
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	IncludeArchived sql.NullBool
-	ByUser          string
+	CreatedByUser   string
 	Cursor          sql.NullString
 	ResultLimit     interface{}
 }
 
 type GetRecipeRatingsForUserRow struct {
-	ID            string
-	RecipeID      string
-	Taste         sql.NullString
-	Difficulty    sql.NullString
-	Cleanup       sql.NullString
-	Instructions  sql.NullString
-	Overall       sql.NullString
-	Notes         string
-	ByUser        string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	FilteredCount int64
-	TotalCount    int64
+	ID              string
+	BelongsToRecipe string
+	Taste           sql.NullString
+	Difficulty      sql.NullString
+	Cleanup         sql.NullString
+	Instructions    sql.NullString
+	Overall         sql.NullString
+	Notes           string
+	CreatedByUser   string
+	CreatedAt       time.Time
+	LastUpdatedAt   sql.NullTime
+	ArchivedAt      sql.NullTime
+	FilteredCount   int64
+	TotalCount      int64
 }
 
 func (q *Queries) GetRecipeRatingsForUser(ctx context.Context, db DBTX, arg *GetRecipeRatingsForUserParams) ([]*GetRecipeRatingsForUserRow, error) {
@@ -359,7 +359,7 @@ func (q *Queries) GetRecipeRatingsForUser(ctx context.Context, db DBTX, arg *Get
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
-		arg.ByUser,
+		arg.CreatedByUser,
 		arg.Cursor,
 		arg.ResultLimit,
 	)
@@ -372,14 +372,14 @@ func (q *Queries) GetRecipeRatingsForUser(ctx context.Context, db DBTX, arg *Get
 		var i GetRecipeRatingsForUserRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.RecipeID,
+			&i.BelongsToRecipe,
 			&i.Taste,
 			&i.Difficulty,
 			&i.Cleanup,
 			&i.Instructions,
 			&i.Overall,
 			&i.Notes,
-			&i.ByUser,
+			&i.CreatedByUser,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -401,7 +401,7 @@ func (q *Queries) GetRecipeRatingsForUser(ctx context.Context, db DBTX, arg *Get
 
 const updateRecipeRating = `-- name: UpdateRecipeRating :execrows
 UPDATE recipe_ratings SET
-	recipe_id = $1,
+	belongs_to_recipe = $1,
 	taste = $2,
 	difficulty = $3,
 	cleanup = $4,
@@ -414,19 +414,19 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeRatingParams struct {
-	RecipeID     string
-	Taste        sql.NullString
-	Difficulty   sql.NullString
-	Cleanup      sql.NullString
-	Instructions sql.NullString
-	Overall      sql.NullString
-	Notes        string
-	ID           string
+	BelongsToRecipe string
+	Taste           sql.NullString
+	Difficulty      sql.NullString
+	Cleanup         sql.NullString
+	Instructions    sql.NullString
+	Overall         sql.NullString
+	Notes           string
+	ID              string
 }
 
 func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) (int64, error) {
 	result, err := db.ExecContext(ctx, updateRecipeRating,
-		arg.RecipeID,
+		arg.BelongsToRecipe,
 		arg.Taste,
 		arg.Difficulty,
 		arg.Cleanup,

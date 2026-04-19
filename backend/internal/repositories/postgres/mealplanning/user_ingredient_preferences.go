@@ -84,7 +84,7 @@ func (q *repository) GetUserIngredientPreference(ctx context.Context, userIngred
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:            result.ID,
 		Notes:         result.Notes,
-		BelongsToUser: result.BelongsToUser,
+		CreatedByUser: result.BelongsToUser,
 		Rating:        int8(result.Rating),
 		Allergy:       result.Allergy,
 		Ingredient: mealplanning.ValidIngredient{
@@ -181,7 +181,7 @@ func (q *repository) GetUserIngredientPreferences(ctx context.Context, userID st
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:            result.ID,
 			Notes:         result.Notes,
-			BelongsToUser: result.BelongsToUser,
+			CreatedByUser: result.BelongsToUser,
 			Rating:        int8(result.Rating),
 			Allergy:       result.Allergy,
 			Ingredient: mealplanning.ValidIngredient{
@@ -285,7 +285,7 @@ func (q *repository) CreateUserIngredientPreference(ctx context.Context, input *
 			ID:            id,
 			Ingredient:    validIngredientID,
 			Notes:         input.Notes,
-			BelongsToUser: input.BelongsToUser,
+			BelongsToUser: input.CreatedByUser,
 			Rating:        int16(input.Rating),
 			Allergy:       input.Allergy,
 		}); err != nil {
@@ -298,7 +298,7 @@ func (q *repository) CreateUserIngredientPreference(ctx context.Context, input *
 			Rating:        input.Rating,
 			Notes:         input.Notes,
 			Allergy:       input.Allergy,
-			BelongsToUser: input.BelongsToUser,
+			CreatedByUser: input.CreatedByUser,
 			Ingredient:    mealplanning.ValidIngredient{ID: input.ValidIngredientID},
 			CreatedAt:     q.CurrentTime(),
 		}
@@ -330,7 +330,7 @@ func (q *repository) UpdateUserIngredientPreference(ctx context.Context, updated
 		Ingredient:    updated.Ingredient.ID,
 		Notes:         updated.Notes,
 		ID:            updated.ID,
-		BelongsToUser: updated.BelongsToUser,
+		BelongsToUser: updated.CreatedByUser,
 		Rating:        int16(updated.Rating),
 		Allergy:       updated.Allergy,
 	}); err != nil {

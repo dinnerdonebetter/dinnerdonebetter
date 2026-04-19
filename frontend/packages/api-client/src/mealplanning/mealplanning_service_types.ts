@@ -1550,7 +1550,6 @@ export interface RecipeRatingUpdateRequestInput {
   instructions?: number | undefined;
   overall?: number | undefined;
   notes?: string | undefined;
-  byUser?: string | undefined;
 }
 
 export interface RecipeStepCompletionConditionCreationRequestInput {
@@ -29380,7 +29379,6 @@ function createBaseRecipeRatingUpdateRequestInput(): RecipeRatingUpdateRequestIn
     instructions: undefined,
     overall: undefined,
     notes: undefined,
-    byUser: undefined,
   };
 }
 
@@ -29406,9 +29404,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
     }
     if (message.notes !== undefined) {
       writer.uint32(58).string(message.notes);
-    }
-    if (message.byUser !== undefined) {
-      writer.uint32(66).string(message.byUser);
     }
     return writer;
   },
@@ -29476,14 +29471,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
           message.notes = reader.string();
           continue;
         }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.byUser = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -29506,11 +29493,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
       instructions: isSet(object.instructions) ? globalThis.Number(object.instructions) : undefined,
       overall: isSet(object.overall) ? globalThis.Number(object.overall) : undefined,
       notes: isSet(object.notes) ? globalThis.String(object.notes) : undefined,
-      byUser: isSet(object.byUser)
-        ? globalThis.String(object.byUser)
-        : isSet(object.by_user)
-          ? globalThis.String(object.by_user)
-          : undefined,
     };
   },
 
@@ -29537,9 +29519,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
     if (message.notes !== undefined) {
       obj.notes = message.notes;
     }
-    if (message.byUser !== undefined) {
-      obj.byUser = message.byUser;
-    }
     return obj;
   },
 
@@ -29557,7 +29536,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
     message.instructions = object.instructions ?? undefined;
     message.overall = object.overall ?? undefined;
     message.notes = object.notes ?? undefined;
-    message.byUser = object.byUser ?? undefined;
     return message;
   },
 };

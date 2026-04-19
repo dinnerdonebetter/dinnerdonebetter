@@ -383,7 +383,7 @@ func (s *serviceImpl) CreateRecipeRating(ctx context.Context, request *mealplann
 	}
 
 	input := converters.ConvertGRPCRecipeRatingCreationRequestInputToRecipeRatingCreationRequestInput(request.Input)
-	input.ByUser = sessionContextData.GetUserID()
+	input.CreatedByUser = sessionContextData.GetUserID()
 
 	created, err := s.recipeManager.CreateRecipeRating(ctx, request.RecipeId, input)
 	if err != nil {

@@ -7692,15 +7692,6 @@ public struct Mealplanning_RecipeRatingUpdateRequestInput: Sendable {
   /// Clears the value of `notes`. Subsequent reads from it will return its default value.
   public mutating func clearNotes() {self._notes = nil}
 
-  public var byUser: String {
-    get {return _byUser ?? String()}
-    set {_byUser = newValue}
-  }
-  /// Returns true if `byUser` has been explicitly set.
-  public var hasByUser: Bool {return self._byUser != nil}
-  /// Clears the value of `byUser`. Subsequent reads from it will return its default value.
-  public mutating func clearByUser() {self._byUser = nil}
-
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -7712,7 +7703,6 @@ public struct Mealplanning_RecipeRatingUpdateRequestInput: Sendable {
   fileprivate var _instructions: Float? = nil
   fileprivate var _overall: Float? = nil
   fileprivate var _notes: String? = nil
-  fileprivate var _byUser: String? = nil
 }
 
 public struct Mealplanning_RecipeStepCompletionConditionCreationRequestInput: Sendable {
@@ -27686,7 +27676,7 @@ extension Mealplanning_RecipeRatingCreationRequestInput: SwiftProtobuf.Message, 
 
 extension Mealplanning_RecipeRatingUpdateRequestInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeRatingUpdateRequestInput"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{1}taste\0\u{1}difficulty\0\u{1}cleanup\0\u{1}instructions\0\u{1}overall\0\u{1}notes\0\u{3}by_user\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}recipe_id\0\u{1}taste\0\u{1}difficulty\0\u{1}cleanup\0\u{1}instructions\0\u{1}overall\0\u{1}notes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -27701,7 +27691,6 @@ extension Mealplanning_RecipeRatingUpdateRequestInput: SwiftProtobuf.Message, Sw
       case 5: try { try decoder.decodeSingularFloatField(value: &self._instructions) }()
       case 6: try { try decoder.decodeSingularFloatField(value: &self._overall) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._notes) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self._byUser) }()
       default: break
       }
     }
@@ -27733,9 +27722,6 @@ extension Mealplanning_RecipeRatingUpdateRequestInput: SwiftProtobuf.Message, Sw
     try { if let v = self._notes {
       try visitor.visitSingularStringField(value: v, fieldNumber: 7)
     } }()
-    try { if let v = self._byUser {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -27747,7 +27733,6 @@ extension Mealplanning_RecipeRatingUpdateRequestInput: SwiftProtobuf.Message, Sw
     if lhs._instructions != rhs._instructions {return false}
     if lhs._overall != rhs._overall {return false}
     if lhs._notes != rhs._notes {return false}
-    if lhs._byUser != rhs._byUser {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

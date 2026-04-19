@@ -164,22 +164,22 @@ func ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationReques
 
 func ConvertGRPCRecipeRatingCreationRequestInputToRecipeRatingCreationRequestInput(input *mealplanningsvc.RecipeRatingCreationRequestInput) *mealplanning.RecipeRatingCreationRequestInput {
 	return &mealplanning.RecipeRatingCreationRequestInput{
-		RecipeID:     input.RecipeId,
-		Notes:        input.Notes,
-		ByUser:       input.ByUser,
-		Taste:        input.Taste,
-		Difficulty:   input.Difficulty,
-		Cleanup:      input.Cleanup,
-		Instructions: input.Instructions,
-		Overall:      input.Overall,
+		BelongsToRecipe: input.RecipeId,
+		Notes:           input.Notes,
+		CreatedByUser:   input.ByUser,
+		Taste:           input.Taste,
+		Difficulty:      input.Difficulty,
+		Cleanup:         input.Cleanup,
+		Instructions:    input.Instructions,
+		Overall:         input.Overall,
 	}
 }
 
 func ConvertRecipeRatingCreationRequestInputToGRPCRecipeRatingCreationRequestInput(input *mealplanning.RecipeRatingCreationRequestInput) *mealplanningsvc.RecipeRatingCreationRequestInput {
 	return &mealplanningsvc.RecipeRatingCreationRequestInput{
-		RecipeId:     input.RecipeID,
+		RecipeId:     input.BelongsToRecipe,
 		Notes:        input.Notes,
-		ByUser:       input.ByUser,
+		ByUser:       input.CreatedByUser,
 		Taste:        input.Taste,
 		Difficulty:   input.Difficulty,
 		Cleanup:      input.Cleanup,
@@ -1300,10 +1300,10 @@ func ConvertRecipeRatingToGRPCRecipeRating(input *mealplanning.RecipeRating) *me
 		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		RecipeId:      input.RecipeID,
+		RecipeId:      input.BelongsToRecipe,
 		Id:            input.ID,
 		Notes:         input.Notes,
-		ByUser:        input.ByUser,
+		ByUser:        input.CreatedByUser,
 		Taste:         input.Taste,
 		Instructions:  input.Instructions,
 		Overall:       input.Overall,
@@ -1314,18 +1314,18 @@ func ConvertRecipeRatingToGRPCRecipeRating(input *mealplanning.RecipeRating) *me
 
 func ConvertGRPCRecipeRatingToRecipeRating(input *mealplanningsvc.RecipeRating) *mealplanning.RecipeRating {
 	return &mealplanning.RecipeRating{
-		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		RecipeID:      input.RecipeId,
-		ID:            input.Id,
-		Notes:         input.Notes,
-		ByUser:        input.ByUser,
-		Taste:         input.Taste,
-		Instructions:  input.Instructions,
-		Overall:       input.Overall,
-		Cleanup:       input.Cleanup,
-		Difficulty:    input.Difficulty,
+		CreatedAt:       grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:   grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:      grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		BelongsToRecipe: input.RecipeId,
+		ID:              input.Id,
+		Notes:           input.Notes,
+		CreatedByUser:   input.ByUser,
+		Taste:           input.Taste,
+		Instructions:    input.Instructions,
+		Overall:         input.Overall,
+		Cleanup:         input.Cleanup,
+		Difficulty:      input.Difficulty,
 	}
 }
 
@@ -1436,27 +1436,25 @@ func ConvertRecipePrepTaskStepUpdateRequestInputToGRPCRecipePrepTaskStepUpdateRe
 
 func ConvertGRPCRecipeRatingUpdateRequestInputToRecipeRatingUpdateRequestInput(input *mealplanningsvc.RecipeRatingUpdateRequestInput) *mealplanning.RecipeRatingUpdateRequestInput {
 	return &mealplanning.RecipeRatingUpdateRequestInput{
-		RecipeID:     input.RecipeId,
-		Taste:        input.Taste,
-		Difficulty:   input.Difficulty,
-		Cleanup:      input.Cleanup,
-		Instructions: input.Instructions,
-		Overall:      input.Overall,
-		Notes:        input.Notes,
-		ByUser:       input.ByUser,
+		BelongsToRecipe: input.RecipeId,
+		Taste:           input.Taste,
+		Difficulty:      input.Difficulty,
+		Cleanup:         input.Cleanup,
+		Instructions:    input.Instructions,
+		Overall:         input.Overall,
+		Notes:           input.Notes,
 	}
 }
 
 func ConvertRecipeRatingUpdateRequestInputToGRPCRecipeRatingUpdateRequestInput(input *mealplanning.RecipeRatingUpdateRequestInput) *mealplanningsvc.RecipeRatingUpdateRequestInput {
 	return &mealplanningsvc.RecipeRatingUpdateRequestInput{
-		RecipeId:     input.RecipeID,
+		RecipeId:     input.BelongsToRecipe,
 		Taste:        input.Taste,
 		Difficulty:   input.Difficulty,
 		Cleanup:      input.Cleanup,
 		Instructions: input.Instructions,
 		Overall:      input.Overall,
 		Notes:        input.Notes,
-		ByUser:       input.ByUser,
 	}
 }
 

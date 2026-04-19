@@ -10,16 +10,16 @@ import (
 // BuildFakeRecipeRating builds a faked valid ingredient.
 func BuildFakeRecipeRating() *types.RecipeRating {
 	return &types.RecipeRating{
-		CreatedAt:    BuildFakeTime(),
-		Notes:        buildUniqueString(),
-		ID:           BuildFakeID(),
-		RecipeID:     BuildFakeID(),
-		ByUser:       BuildFakeID(),
-		Taste:        float32(buildFakeNumber()),
-		Instructions: float32(buildFakeNumber()),
-		Overall:      float32(buildFakeNumber()),
-		Cleanup:      float32(buildFakeNumber()),
-		Difficulty:   float32(buildFakeNumber()),
+		CreatedAt:       BuildFakeTime(),
+		Notes:           buildUniqueString(),
+		ID:              BuildFakeID(),
+		BelongsToRecipe: BuildFakeID(),
+		CreatedByUser:   BuildFakeID(),
+		Taste:           float32(buildFakeNumber()),
+		Instructions:    float32(buildFakeNumber()),
+		Overall:         float32(buildFakeNumber()),
+		Cleanup:         float32(buildFakeNumber()),
+		Difficulty:      float32(buildFakeNumber()),
 	}
 }
 
