@@ -18,7 +18,7 @@ import (
 	"github.com/samber/do/v2"
 )
 
-// RegisterManagers registers all meal planning managers with the injector.
+// RegisterManagers registers the meal planning manager with the injector.
 func RegisterManagers(i do.Injector) {
 	do.Provide[mealPlanTaskCreatorWorker](i, func(i do.Injector) (mealPlanTaskCreatorWorker, error) {
 		return BuildMealPlanTaskCreatorWorker(do.MustInvoke[*mealplantaskcreator.Worker](i)), nil
@@ -36,37 +36,11 @@ func RegisterManagers(i do.Injector) {
 			do.MustInvoke[mealplanning.Repository](i),
 			do.MustInvoke[*msgconfig.QueuesConfig](i),
 			do.MustInvoke[messagequeue.PublisherProvider](i),
+			do.MustInvoke[recipeanalysis.RecipeAnalyzer](i),
 			do.MustInvoke[*textsearchcfg.Config](i),
 			do.MustInvoke[metrics.Provider](i),
 			do.MustInvoke[mealPlanGroceryListInitializerWorker](i),
 			do.MustInvoke[mealPlanTaskCreatorWorker](i),
-		)
-	})
-
-	do.Provide[RecipeManager](i, func(i do.Injector) (RecipeManager, error) {
-		return NewRecipeManager(
-			do.MustInvoke[context.Context](i),
-			do.MustInvoke[logging.Logger](i),
-			do.MustInvoke[tracing.TracerProvider](i),
-			do.MustInvoke[mealplanning.Repository](i),
-			do.MustInvoke[*msgconfig.QueuesConfig](i),
-			do.MustInvoke[messagequeue.PublisherProvider](i),
-			do.MustInvoke[recipeanalysis.RecipeAnalyzer](i),
-			do.MustInvoke[*textsearchcfg.Config](i),
-			do.MustInvoke[metrics.Provider](i),
-		)
-	})
-
-	do.Provide[ValidEnumerationsManager](i, func(i do.Injector) (ValidEnumerationsManager, error) {
-		return NewValidEnumerationsManager(
-			do.MustInvoke[context.Context](i),
-			do.MustInvoke[logging.Logger](i),
-			do.MustInvoke[tracing.TracerProvider](i),
-			do.MustInvoke[mealplanning.ValidEnumerationDataManager](i),
-			do.MustInvoke[*msgconfig.QueuesConfig](i),
-			do.MustInvoke[messagequeue.PublisherProvider](i),
-			do.MustInvoke[*textsearchcfg.Config](i),
-			do.MustInvoke[metrics.Provider](i),
 		)
 	})
 }

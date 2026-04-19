@@ -225,7 +225,7 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 	logger = logger.WithValue(mealplanningkeys.RecipeIDKey, recipeID)
 
 	// Verify user owns the recipe
-	recipe, err := s.recipeManager.ReadRecipe(ctx, recipeID)
+	recipe, err := s.mealPlanningManager.ReadRecipe(ctx, recipeID)
 	if err != nil || recipe == nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("recipe not found or access denied: %w", err),
@@ -350,7 +350,7 @@ func (s *serviceImpl) UploadRecipeImage(stream grpc.ClientStreamingServer[mealpl
 		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
 
-	if err = s.recipeManager.AddRecipeImage(ctx, recipeID, created.ID, userID); err != nil {
+	if err = s.mealPlanningManager.AddRecipeImage(ctx, recipeID, created.ID, userID); err != nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add recipe image")
 	}
 
@@ -399,7 +399,7 @@ func (s *serviceImpl) UploadPreparationMedia(stream grpc.ClientStreamingServer[m
 	logger = logger.WithValue(mealplanningkeys.ValidPreparationIDKey, validPreparationID)
 
 	// Verify preparation exists
-	_, err = s.validEnumerationsManager.ReadValidPreparation(ctx, validPreparationID)
+	_, err = s.mealPlanningManager.ReadValidPreparation(ctx, validPreparationID)
 	if err != nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("preparation not found: %w", err),
@@ -523,7 +523,7 @@ func (s *serviceImpl) UploadPreparationMedia(stream grpc.ClientStreamingServer[m
 		forIngredientID = &v
 	}
 
-	if err = s.validEnumerationsManager.AddPreparationMedia(ctx, validPreparationID, forIngredientID, created.ID, 0); err != nil {
+	if err = s.mealPlanningManager.AddPreparationMedia(ctx, validPreparationID, forIngredientID, created.ID, 0); err != nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add preparation media")
 	}
 
@@ -572,7 +572,7 @@ func (s *serviceImpl) UploadIngredientMedia(stream grpc.ClientStreamingServer[me
 	logger = logger.WithValue(mealplanningkeys.ValidIngredientIDKey, validIngredientID)
 
 	// Verify ingredient exists
-	_, err = s.validEnumerationsManager.ReadValidIngredient(ctx, validIngredientID)
+	_, err = s.mealPlanningManager.ReadValidIngredient(ctx, validIngredientID)
 	if err != nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("ingredient not found: %w", err),
@@ -691,7 +691,7 @@ func (s *serviceImpl) UploadIngredientMedia(stream grpc.ClientStreamingServer[me
 		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
 
-	if err = s.validEnumerationsManager.AddIngredientMedia(ctx, validIngredientID, created.ID, 0); err != nil {
+	if err = s.mealPlanningManager.AddIngredientMedia(ctx, validIngredientID, created.ID, 0); err != nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add ingredient media")
 	}
 
@@ -750,7 +750,7 @@ func (s *serviceImpl) UploadRecipeStepImage(stream grpc.ClientStreamingServer[me
 	})
 
 	// Verify user owns the recipe
-	recipe, err := s.recipeManager.ReadRecipe(ctx, recipeID)
+	recipe, err := s.mealPlanningManager.ReadRecipe(ctx, recipeID)
 	if err != nil || recipe == nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("recipe not found or access denied: %w", err),
@@ -765,7 +765,7 @@ func (s *serviceImpl) UploadRecipeStepImage(stream grpc.ClientStreamingServer[me
 	}
 
 	// Verify step exists and belongs to recipe
-	_, err = s.recipeManager.ReadRecipeStep(ctx, recipeID, recipeStepID)
+	_, err = s.mealPlanningManager.ReadRecipeStep(ctx, recipeID, recipeStepID)
 	if err != nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("recipe step not found: %w", err),
@@ -884,7 +884,7 @@ func (s *serviceImpl) UploadRecipeStepImage(stream grpc.ClientStreamingServer[me
 		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create uploaded media record")
 	}
 
-	if err = s.recipeManager.AddRecipeStepImage(ctx, recipeStepID, created.ID, userID); err != nil {
+	if err = s.mealPlanningManager.AddRecipeStepImage(ctx, recipeStepID, created.ID, userID); err != nil {
 		return errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add recipe step image")
 	}
 

@@ -785,18 +785,15 @@ func TestServiceImpl_GetMermaidDiagramForMeal(T *testing.T) {
 
 		mmpm := &mockmanagers.MockMealPlanningManager{}
 		mmpm.On(reflection.GetMethodName(mmpm.ReadMeal), testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
+		mmpm.On(reflection.GetMethodName(mmpm.MealMermaid), testutils.ContextMatcher, exampleMeal).Return(exampleMermaidDiagram, nil)
 		s.mealPlanningManager = mmpm
-
-		mrm := &mockmanagers.MockRecipeManager{}
-		mrm.On(reflection.GetMethodName(mrm.MealMermaid), testutils.ContextMatcher, exampleMeal).Return(exampleMermaidDiagram, nil)
-		s.recipeManager = mrm
 
 		result, err := s.GetMermaidDiagramForMeal(ctx, &mealplanninggrpc.GetMermaidDiagramForMealRequest{MealId: exampleMeal.ID})
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, exampleMermaidDiagram, result.Response)
 
-		mock.AssertExpectationsForObjects(t, mmpm, mrm)
+		mock.AssertExpectationsForObjects(t, mmpm)
 	})
 }
 

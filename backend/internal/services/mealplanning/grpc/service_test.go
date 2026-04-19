@@ -53,8 +53,6 @@ func TestNewService(t *testing.T) {
 
 		logger := loggingnoop.NewLogger()
 		tracerProvider := tracingnoop.NewTracerProvider()
-		recipeManager := &mockmanagers.MockRecipeManager{}
-		validEnumerationsManager := &mockmanagers.MockValidEnumerationsManager{}
 		mealPlanningManager := &mockmanagers.MockMealPlanningManager{}
 		mealPlanFinalizerWorker := &mealplanfinalizer.Worker{}
 		mealPlanGroceryListInitializerWorker := &mealplangrocerylistinitializer.Worker{}
@@ -66,8 +64,6 @@ func TestNewService(t *testing.T) {
 		service := NewService(
 			logger,
 			tracerProvider,
-			recipeManager,
-			validEnumerationsManager,
 			mealPlanningManager,
 			mealPlanFinalizerWorker,
 			mealPlanGroceryListInitializerWorker,
@@ -85,8 +81,6 @@ func TestNewService(t *testing.T) {
 		assert.True(t, ok)
 		assert.NotNil(t, impl.logger)
 		assert.NotNil(t, impl.tracer)
-		assert.Equal(t, recipeManager, impl.recipeManager)
-		assert.Equal(t, validEnumerationsManager, impl.validEnumerationsManager)
 		assert.Equal(t, mealPlanningManager, impl.mealPlanningManager)
 		assert.Equal(t, mealPlanFinalizerWorker, impl.mealPlanFinalizerWorker)
 		assert.Equal(t, mealPlanGroceryListInitializerWorker, impl.mealPlanGroceryListInitializerWorker)

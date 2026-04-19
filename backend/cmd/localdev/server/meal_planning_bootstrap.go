@@ -36,8 +36,8 @@ func bootstrapEnumerationsAndRecipes(ctx context.Context, repo mealplanning.Repo
 	}
 	logger.Info("Enumerations created successfully!")
 
-	// Create RecipeManager to create the first recipe
-	logger.Info("Creating RecipeManager...")
+	// Create MealPlanningManager to create the first recipe.
+	logger.Info("Creating MealPlanningManager...")
 	queueCfg := &msgconfig.QueuesConfig{
 		DataChangesTopicName: "data_changes",
 	}
@@ -46,7 +46,7 @@ func bootstrapEnumerationsAndRecipes(ctx context.Context, repo mealplanning.Repo
 	searchConfig := &textsearchcfg.Config{}
 	metricsProvider := metricsnoop.NewMetricsProvider()
 
-	recipeManager, recipeManagerErr := managers.NewRecipeManager(
+	mealPlanningManager, managerErr := managers.NewMealPlanningManager(
 		ctx,
 		logger,
 		tracerProvider,
@@ -56,11 +56,13 @@ func bootstrapEnumerationsAndRecipes(ctx context.Context, repo mealplanning.Repo
 		recipeAnalyzer,
 		searchConfig,
 		metricsProvider,
+		nil, // groceryListInitializer — not needed; bootstrap never finalizes meal plans
+		nil, // taskCreator — not needed; bootstrap never finalizes meal plans
 	)
-	if recipeManagerErr != nil {
-		return fmt.Errorf("failed to create recipe manager: %w", recipeManagerErr)
+	if managerErr != nil {
+		return fmt.Errorf("failed to create meal planning manager: %w", managerErr)
 	}
-	logger.Info("RecipeManager created successfully!")
+	logger.Info("MealPlanningManager created successfully!")
 
 	logger.Info("Creating remaining bootstrap recipes...")
 
@@ -72,7 +74,7 @@ func bootstrapEnumerationsAndRecipes(ctx context.Context, repo mealplanning.Repo
 	// Create recipes without prerequisites
 	for i, recipe := range allRecipes {
 		logger.Info(fmt.Sprintf("Creating recipe %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
-		r, createErr := recipeManager.CreateRecipe(ctx, adminUserID, recipe)
+		r, createErr := mealPlanningManager.CreateRecipe(ctx, adminUserID, recipe)
 		if createErr != nil {
 			return fmt.Errorf("failed to create recipe #%d %s: %w", i, recipe.Name, createErr)
 		}
@@ -94,7 +96,7 @@ func bootstrapEnumerationsAndRecipes(ctx context.Context, repo mealplanning.Repo
 		resolveEmptyRecipeIDs(recipe, createdRecipes)
 
 		logger.Info(fmt.Sprintf("Creating recipe with prerequisites %d: %s (%d steps)", i+1, recipe.Name, len(recipe.Steps)))
-		r, createErr := recipeManager.CreateRecipe(ctx, adminUserID, recipe)
+		r, createErr := mealPlanningManager.CreateRecipe(ctx, adminUserID, recipe)
 		if createErr != nil {
 			return fmt.Errorf("failed to create recipe with prerequisites #%d %s: %w", i, recipe.Name, createErr)
 		}
@@ -107,7 +109,7 @@ func bootstrapEnumerationsAndRecipes(ctx context.Context, repo mealplanning.Repo
 
 	// Approve all bootstrap recipes
 	for _, r := range recipes {
-		if err := recipeManager.UpdateRecipeStatus(ctx, r.ID, mealplanning.RecipeStatusApproved); err != nil {
+		if err := mealPlanningManager.UpdateRecipeStatus(ctx, r.ID, mealplanning.RecipeStatusApproved); err != nil {
 			return fmt.Errorf("failed to approve recipe %s: %w", r.Name, err)
 		}
 	}

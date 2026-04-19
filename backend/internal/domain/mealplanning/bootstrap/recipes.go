@@ -6,7 +6,7 @@ import (
 
 // AllRecipes returns all bootstrap recipe creation inputs that do not have prerequisites.
 // Each recipe is created with the provided userID as the creator.
-// Note: PanSearedButterBastedSteakRecipe is excluded as it's created separately using RecipeManager.
+// Note: PanSearedButterBastedSteakRecipe is excluded as it's created separately using MealPlanningManager.
 func AllRecipes(enums *Enumerations) []*mealplanning.RecipeCreationRequestInput {
 	var recipes []*mealplanning.RecipeCreationRequestInput
 

@@ -28,7 +28,7 @@ func (s *serviceImpl) verifyRecipeOwnership(ctx context.Context, recipeID string
 	}
 	userID := sessionContextData.GetUserID()
 
-	recipe, err := s.recipeManager.ReadRecipe(ctx, recipeID)
+	recipe, err := s.mealPlanningManager.ReadRecipe(ctx, recipeID)
 	if err != nil || recipe == nil {
 		return "", errorsgrpc.PrepareAndLogGRPCStatus(
 			fmt.Errorf("recipe not found or access denied: %w", err),
@@ -58,7 +58,7 @@ func (s *serviceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.A
 		return nil, err
 	}
 
-	if err = s.recipeManager.ArchiveRecipe(ctx, request.RecipeId, userID); err != nil {
+	if err = s.mealPlanningManager.ArchiveRecipe(ctx, request.RecipeId, userID); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe")
 	}
 
@@ -88,7 +88,7 @@ func (s *serviceImpl) ArchiveRecipePrepTask(ctx context.Context, request *mealpl
 		return nil, err
 	}
 
-	if err := s.recipeManager.ArchiveRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId); err != nil {
+	if err := s.mealPlanningManager.ArchiveRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe prep task")
 	}
 
@@ -110,7 +110,7 @@ func (s *serviceImpl) ArchiveRecipeRating(ctx context.Context, request *mealplan
 		mealplanningkeys.RecipeRatingIDKey: request.RecipeRatingId,
 	}, span, s.logger)
 
-	if err := s.recipeManager.ArchiveRecipeRating(ctx, request.RecipeId, request.RecipeRatingId); err != nil {
+	if err := s.mealPlanningManager.ArchiveRecipeRating(ctx, request.RecipeId, request.RecipeRatingId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe rating")
 	}
 
@@ -136,7 +136,7 @@ func (s *serviceImpl) ArchiveRecipeStep(ctx context.Context, request *mealplanni
 		return nil, err
 	}
 
-	if err := s.recipeManager.ArchiveRecipeStep(ctx, request.RecipeId, request.RecipeStepId); err != nil {
+	if err := s.mealPlanningManager.ArchiveRecipeStep(ctx, request.RecipeId, request.RecipeStepId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step")
 	}
 
@@ -163,7 +163,7 @@ func (s *serviceImpl) ArchiveRecipeStepCompletionCondition(ctx context.Context, 
 		return nil, err
 	}
 
-	if err := s.recipeManager.ArchiveRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId); err != nil {
+	if err := s.mealPlanningManager.ArchiveRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step completion condition")
 	}
 
@@ -190,7 +190,7 @@ func (s *serviceImpl) ArchiveRecipeStepIngredient(ctx context.Context, request *
 		return nil, err
 	}
 
-	if err := s.recipeManager.ArchiveRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId); err != nil {
+	if err := s.mealPlanningManager.ArchiveRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step ingredient")
 	}
 
@@ -217,7 +217,7 @@ func (s *serviceImpl) ArchiveRecipeStepInstrument(ctx context.Context, request *
 		return nil, err
 	}
 
-	if err := s.recipeManager.ArchiveRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId); err != nil {
+	if err := s.mealPlanningManager.ArchiveRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step instrument")
 	}
 
@@ -244,7 +244,7 @@ func (s *serviceImpl) ArchiveRecipeStepProduct(ctx context.Context, request *mea
 		return nil, err
 	}
 
-	if err := s.recipeManager.ArchiveRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId); err != nil {
+	if err := s.mealPlanningManager.ArchiveRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step product")
 	}
 
@@ -271,7 +271,7 @@ func (s *serviceImpl) ArchiveRecipeStepVessel(ctx context.Context, request *meal
 		return nil, err
 	}
 
-	if err := s.recipeManager.ArchiveRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId); err != nil {
+	if err := s.mealPlanningManager.ArchiveRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step vessel")
 	}
 
@@ -297,7 +297,7 @@ func (s *serviceImpl) CloneRecipe(ctx context.Context, request *mealplanning.Clo
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
 	}
 
-	cloned, err := s.recipeManager.CloneRecipe(ctx, request.RecipeId, sessionContextData.GetUserID())
+	cloned, err := s.mealPlanningManager.CloneRecipe(ctx, request.RecipeId, sessionContextData.GetUserID())
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "cloning recipe")
 	}
@@ -325,7 +325,7 @@ func (s *serviceImpl) CreateRecipe(ctx context.Context, request *mealplanning.Cr
 
 	input := converters.ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipe(ctx, sessionContextData.GetUserID(), input)
+	created, err := s.mealPlanningManager.CreateRecipe(ctx, sessionContextData.GetUserID(), input)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe")
 	}
@@ -354,7 +354,7 @@ func (s *serviceImpl) CreateRecipePrepTask(ctx context.Context, request *mealpla
 
 	input := converters.ConvertGRPCRecipePrepTaskCreationRequestInputToRecipePrepTaskCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipePrepTask(ctx, request.RecipeId, input)
+	created, err := s.mealPlanningManager.CreateRecipePrepTask(ctx, request.RecipeId, input)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe prep task")
 	}
@@ -385,7 +385,7 @@ func (s *serviceImpl) CreateRecipeRating(ctx context.Context, request *mealplann
 	input := converters.ConvertGRPCRecipeRatingCreationRequestInputToRecipeRatingCreationRequestInput(request.Input)
 	input.CreatedByUser = sessionContextData.GetUserID()
 
-	created, err := s.recipeManager.CreateRecipeRating(ctx, request.RecipeId, input)
+	created, err := s.mealPlanningManager.CreateRecipeRating(ctx, request.RecipeId, input)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe rating")
 	}
@@ -414,7 +414,7 @@ func (s *serviceImpl) CreateRecipeStep(ctx context.Context, request *mealplannin
 
 	recipeStepInput := converters.ConvertGRPCRecipeStepCreationRequestInputToRecipeStepCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipeStep(ctx, request.RecipeId, recipeStepInput)
+	created, err := s.mealPlanningManager.CreateRecipeStep(ctx, request.RecipeId, recipeStepInput)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step")
 	}
@@ -444,7 +444,7 @@ func (s *serviceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, r
 
 	creationInput := converters.ConvertGRPCRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, creationInput)
+	created, err := s.mealPlanningManager.CreateRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, creationInput)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step completion condition")
 	}
@@ -474,7 +474,7 @@ func (s *serviceImpl) CreateRecipeStepIngredient(ctx context.Context, request *m
 
 	creationInput := converters.ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, creationInput)
+	created, err := s.mealPlanningManager.CreateRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, creationInput)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step ingredient")
 	}
@@ -504,7 +504,7 @@ func (s *serviceImpl) CreateRecipeStepInstrument(ctx context.Context, request *m
 
 	creationInput := converters.ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, creationInput)
+	created, err := s.mealPlanningManager.CreateRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, creationInput)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step instrument")
 	}
@@ -534,7 +534,7 @@ func (s *serviceImpl) CreateRecipeStepProduct(ctx context.Context, request *meal
 
 	creationInput := converters.ConvertGRPCRecipeStepProductCreationRequestInputToRecipeStepProductCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, creationInput)
+	created, err := s.mealPlanningManager.CreateRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, creationInput)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step product")
 	}
@@ -564,7 +564,7 @@ func (s *serviceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealp
 
 	creationInput := converters.ConvertGRPCRecipeStepVesselCreationRequestInputToRecipeStepVesselCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, creationInput)
+	created, err := s.mealPlanningManager.CreateRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, creationInput)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step vessel")
 	}
@@ -587,7 +587,7 @@ func (s *serviceImpl) GetMermaidDiagramForRecipe(ctx context.Context, request *m
 		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
-	mermaidDiagram, err := s.recipeManager.RecipeMermaid(ctx, request.RecipeId)
+	mermaidDiagram, err := s.mealPlanningManager.RecipeMermaid(ctx, request.RecipeId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to generate mermaid diagram")
 	}
@@ -610,7 +610,7 @@ func (s *serviceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRe
 		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
-	recipe, err := s.recipeManager.ReadRecipe(ctx, request.RecipeId)
+	recipe, err := s.mealPlanningManager.ReadRecipe(ctx, request.RecipeId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe")
 	}
@@ -634,7 +634,7 @@ func (s *serviceImpl) EstimateRecipePrepTasks(ctx context.Context, request *meal
 		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
-	estimatedPrepSteps, err := s.recipeManager.RecipeEstimatedPrepSteps(ctx, request.RecipeId)
+	estimatedPrepSteps, err := s.mealPlanningManager.RecipeEstimatedPrepSteps(ctx, request.RecipeId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to estimate prep steps")
 	}
@@ -661,7 +661,7 @@ func (s *serviceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanni
 		mealplanningkeys.RecipePrepTaskIDKey: request.RecipePrepTaskId,
 	}, span, s.logger)
 
-	recipePrepTask, err := s.recipeManager.ReadRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId)
+	recipePrepTask, err := s.mealPlanningManager.ReadRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe prep task")
 	}
@@ -687,7 +687,7 @@ func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipePrepTasks, err := s.recipeManager.ListRecipePrepTask(ctx, request.RecipeId, filter)
+	recipePrepTasks, err := s.mealPlanningManager.ListRecipePrepTask(ctx, request.RecipeId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe prep tasks")
 	}
@@ -715,7 +715,7 @@ func (s *serviceImpl) GetRecipeRating(ctx context.Context, request *mealplanning
 		mealplanningkeys.RecipeRatingIDKey: request.RecipeRatingId,
 	}, span, s.logger)
 
-	recipeRating, err := s.recipeManager.ReadRecipeRating(ctx, request.RecipeId, request.RecipeRatingId)
+	recipeRating, err := s.mealPlanningManager.ReadRecipeRating(ctx, request.RecipeId, request.RecipeRatingId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe rating")
 	}
@@ -741,7 +741,7 @@ func (s *serviceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeRatings, err := s.recipeManager.ListRecipeRatings(ctx, request.RecipeId, filter)
+	recipeRatings, err := s.mealPlanningManager.ListRecipeRatings(ctx, request.RecipeId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe ratings")
 	}
@@ -768,7 +768,7 @@ func (s *serviceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.G
 		mealplanningkeys.RecipeStepIDKey: request.RecipeStepId,
 	}, span, s.logger)
 
-	recipeStep, err := s.recipeManager.ReadRecipeStep(ctx, request.RecipeId, request.RecipeStepId)
+	recipeStep, err := s.mealPlanningManager.ReadRecipeStep(ctx, request.RecipeId, request.RecipeStepId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step")
 	}
@@ -793,7 +793,7 @@ func (s *serviceImpl) GetRecipeStepCompletionCondition(ctx context.Context, requ
 		mealplanningkeys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionId,
 	}, span, s.logger)
 
-	recipeStepCompletionCondition, err := s.recipeManager.ReadRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId)
+	recipeStepCompletionCondition, err := s.mealPlanningManager.ReadRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step completion condition")
 	}
@@ -820,7 +820,7 @@ func (s *serviceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepCompletionConditions, err := s.recipeManager.ListRecipeStepCompletionConditions(ctx, request.RecipeId, request.RecipeStepId, filter)
+	recipeStepCompletionConditions, err := s.mealPlanningManager.ListRecipeStepCompletionConditions(ctx, request.RecipeId, request.RecipeStepId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step completion conditions")
 	}
@@ -848,7 +848,7 @@ func (s *serviceImpl) GetRecipeStepIngredient(ctx context.Context, request *meal
 		mealplanningkeys.RecipeStepIngredientIDKey: request.RecipeStepIngredientId,
 	}, span, s.logger)
 
-	recipeStepIngredient, err := s.recipeManager.ReadRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId)
+	recipeStepIngredient, err := s.mealPlanningManager.ReadRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step ingredient")
 	}
@@ -875,7 +875,7 @@ func (s *serviceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepIngredients, err := s.recipeManager.ListRecipeStepIngredients(ctx, request.RecipeId, request.RecipeStepId, filter)
+	recipeStepIngredients, err := s.mealPlanningManager.ListRecipeStepIngredients(ctx, request.RecipeId, request.RecipeStepId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step ingredients")
 	}
@@ -903,7 +903,7 @@ func (s *serviceImpl) GetRecipeStepInstrument(ctx context.Context, request *meal
 		mealplanningkeys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentId,
 	}, span, s.logger)
 
-	recipeStepInstrument, err := s.recipeManager.ReadRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId)
+	recipeStepInstrument, err := s.mealPlanningManager.ReadRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step instrument")
 	}
@@ -930,7 +930,7 @@ func (s *serviceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepInstruments, err := s.recipeManager.ListRecipeStepInstruments(ctx, request.RecipeId, request.RecipeStepId, filter)
+	recipeStepInstruments, err := s.mealPlanningManager.ListRecipeStepInstruments(ctx, request.RecipeId, request.RecipeStepId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step instruments")
 	}
@@ -958,7 +958,7 @@ func (s *serviceImpl) GetRecipeStepProduct(ctx context.Context, request *mealpla
 		mealplanningkeys.RecipeStepProductIDKey: request.RecipeStepProductId,
 	}, span, s.logger)
 
-	recipeStepProduct, err := s.recipeManager.ReadRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId)
+	recipeStepProduct, err := s.mealPlanningManager.ReadRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step")
 	}
@@ -985,7 +985,7 @@ func (s *serviceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepProducts, err := s.recipeManager.ListRecipeStepProducts(ctx, request.RecipeId, request.RecipeStepId, filter)
+	recipeStepProducts, err := s.mealPlanningManager.ListRecipeStepProducts(ctx, request.RecipeId, request.RecipeStepId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step product")
 	}
@@ -1013,7 +1013,7 @@ func (s *serviceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplan
 		mealplanningkeys.RecipeStepVesselIDKey: request.RecipeStepVesselId,
 	}, span, s.logger)
 
-	recipeStepVessel, err := s.recipeManager.ReadRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId)
+	recipeStepVessel, err := s.mealPlanningManager.ReadRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step")
 	}
@@ -1040,7 +1040,7 @@ func (s *serviceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeStepVessels, err := s.recipeManager.ListRecipeStepVessels(ctx, request.RecipeId, request.RecipeStepId, filter)
+	recipeStepVessels, err := s.mealPlanningManager.ListRecipeStepVessels(ctx, request.RecipeId, request.RecipeStepId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step vessels")
 	}
@@ -1069,7 +1069,7 @@ func (s *serviceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipeSteps, err := s.recipeManager.ListRecipeSteps(ctx, request.RecipeId, filter)
+	recipeSteps, err := s.mealPlanningManager.ListRecipeSteps(ctx, request.RecipeId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step vessels")
 	}
@@ -1096,7 +1096,7 @@ func (s *serviceImpl) GetRecipeLists(ctx context.Context, request *mealplanning.
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	lists, err := s.recipeManager.ListRecipeLists(ctx, filter)
+	lists, err := s.mealPlanningManager.ListRecipeLists(ctx, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching recipe lists")
 	}
@@ -1128,7 +1128,7 @@ func (s *serviceImpl) CreateRecipeList(ctx context.Context, request *mealplannin
 
 	input := converters.ConvertGRPCRecipeListCreationRequestInputToRecipeListCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipeList(ctx, sessionContextData.GetUserID(), input)
+	created, err := s.mealPlanningManager.CreateRecipeList(ctx, sessionContextData.GetUserID(), input)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe list")
 	}
@@ -1157,7 +1157,7 @@ func (s *serviceImpl) UpdateRecipeList(ctx context.Context, request *mealplannin
 	}
 
 	input := converters.ConvertGRPCRecipeListUpdateRequestInputToRecipeListUpdateRequestInput(request.Input)
-	if err = s.recipeManager.UpdateRecipeList(ctx, request.RecipeListId, sessionContextData.GetUserID(), input); err != nil {
+	if err = s.mealPlanningManager.UpdateRecipeList(ctx, request.RecipeListId, sessionContextData.GetUserID(), input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating recipe list")
 	}
 
@@ -1183,7 +1183,7 @@ func (s *serviceImpl) ArchiveRecipeList(ctx context.Context, request *mealplanni
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
 	}
 
-	if err = s.recipeManager.ArchiveRecipeList(ctx, request.RecipeListId, sessionContextData.GetUserID()); err != nil {
+	if err = s.mealPlanningManager.ArchiveRecipeList(ctx, request.RecipeListId, sessionContextData.GetUserID()); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe list")
 	}
 
@@ -1207,7 +1207,7 @@ func (s *serviceImpl) GetRecipeListItems(ctx context.Context, request *mealplann
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	items, err := s.recipeManager.ListRecipeListItems(ctx, request.RecipeListId, filter)
+	items, err := s.mealPlanningManager.ListRecipeListItems(ctx, request.RecipeListId, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching recipe list items")
 	}
@@ -1237,7 +1237,7 @@ func (s *serviceImpl) CreateRecipeListItem(ctx context.Context, request *mealpla
 
 	input := converters.ConvertGRPCRecipeListItemCreationRequestInputToRecipeListItemCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.AddRecipeToRecipeList(ctx, request.Input.BelongsToRecipeList, input.RecipeID, input.Notes)
+	created, err := s.mealPlanningManager.AddRecipeToRecipeList(ctx, request.Input.BelongsToRecipeList, input.RecipeID, input.Notes)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe list item")
 	}
@@ -1262,7 +1262,7 @@ func (s *serviceImpl) UpdateRecipeListItem(ctx context.Context, request *mealpla
 
 	input := converters.ConvertGRPCRecipeListItemUpdateRequestInputToRecipeListItemUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipeListItem(ctx, request.RecipeListItemId, request.Input.GetBelongsToRecipeList(), request.Input.GetRecipeId(), input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeListItem(ctx, request.RecipeListItemId, request.Input.GetBelongsToRecipeList(), request.Input.GetRecipeId(), input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating recipe list item")
 	}
 
@@ -1284,7 +1284,7 @@ func (s *serviceImpl) ArchiveRecipeListItem(ctx context.Context, request *mealpl
 		mealplanningkeys.RecipeListIDKey:     request.RecipeListId,
 	}, span, s.logger)
 
-	if err := s.recipeManager.RemoveRecipeFromRecipeList(ctx, request.RecipeListId, request.RecipeListItemId); err != nil {
+	if err := s.mealPlanningManager.RemoveRecipeFromRecipeList(ctx, request.RecipeListId, request.RecipeListItemId); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe list item")
 	}
 
@@ -1306,7 +1306,7 @@ func (s *serviceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetR
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipes, err := s.recipeManager.ListRecipes(ctx, request.Status, filter)
+	recipes, err := s.mealPlanningManager.ListRecipes(ctx, request.Status, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching list of recipes")
 	}
@@ -1335,7 +1335,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipes, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
+	recipes, err := s.mealPlanningManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes")
 	}
@@ -1364,7 +1364,7 @@ func (s *serviceImpl) SearchForMealEligibleRecipes(ctx context.Context, request 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipes, err := s.recipeManager.SearchForMealEligibleRecipes(ctx, request.Query, filter)
+	recipes, err := s.mealPlanningManager.SearchForMealEligibleRecipes(ctx, request.Query, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes")
 	}
@@ -1398,7 +1398,7 @@ func (s *serviceImpl) SearchForRecipesWithInstrumentOwnership(ctx context.Contex
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	recipes, err := s.recipeManager.SearchRecipesWithInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.Query, filter)
+	recipes, err := s.mealPlanningManager.SearchRecipesWithInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.Query, filter)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes with instrument ownership")
 	}
@@ -1430,11 +1430,11 @@ func (s *serviceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.Up
 
 	input := converters.ConvertGRPCRecipeUpdateRequestInputToRecipeUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipe(ctx, request.RecipeId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipe(ctx, request.RecipeId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe")
 	}
 
-	updated, err := s.recipeManager.ReadRecipe(ctx, request.RecipeId)
+	updated, err := s.mealPlanningManager.ReadRecipe(ctx, request.RecipeId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe")
 	}
@@ -1457,11 +1457,11 @@ func (s *serviceImpl) UpdateRecipeStatus(ctx context.Context, request *mealplann
 		mealplanningkeys.RecipeIDKey: request.RecipeId,
 	}, span, s.logger)
 
-	if err := s.recipeManager.UpdateRecipeStatus(ctx, request.RecipeId, request.NewStatus); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeStatus(ctx, request.RecipeId, request.NewStatus); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe")
 	}
 
-	updated, err := s.recipeManager.ReadRecipe(ctx, request.RecipeId)
+	updated, err := s.mealPlanningManager.ReadRecipe(ctx, request.RecipeId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe")
 	}
@@ -1491,11 +1491,11 @@ func (s *serviceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealpla
 
 	input := converters.ConvertGRPCRecipePrepTaskUpdateRequestInputToRecipePrepTaskUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe prep task")
 	}
 
-	updated, err := s.recipeManager.ReadRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId)
+	updated, err := s.mealPlanningManager.ReadRecipePrepTask(ctx, request.RecipeId, request.RecipePrepTaskId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe prep task")
 	}
@@ -1521,11 +1521,11 @@ func (s *serviceImpl) UpdateRecipeRating(ctx context.Context, request *mealplann
 
 	input := converters.ConvertGRPCRecipeRatingUpdateRequestInputToRecipeRatingUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipeRating(ctx, request.RecipeId, request.RecipeRatingId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeRating(ctx, request.RecipeId, request.RecipeRatingId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe rating")
 	}
 
-	updated, err := s.recipeManager.ReadRecipeRating(ctx, request.RecipeId, request.RecipeRatingId)
+	updated, err := s.mealPlanningManager.ReadRecipeRating(ctx, request.RecipeId, request.RecipeRatingId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe rating")
 	}
@@ -1555,11 +1555,11 @@ func (s *serviceImpl) UpdateRecipeStep(ctx context.Context, request *mealplannin
 
 	input := converters.ConvertGRPCRecipeStepUpdateRequestInputToRecipeStepUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipeStep(ctx, request.RecipeId, request.RecipeStepId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeStep(ctx, request.RecipeId, request.RecipeStepId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step")
 	}
 
-	updated, err := s.recipeManager.ReadRecipeStep(ctx, request.RecipeId, request.RecipeStepId)
+	updated, err := s.mealPlanningManager.ReadRecipeStep(ctx, request.RecipeId, request.RecipeStepId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step")
 	}
@@ -1590,11 +1590,11 @@ func (s *serviceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, r
 
 	input := converters.ConvertGRPCRecipeStepCompletionConditionUpdateRequestInputToRecipeStepCompletionConditionUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step completion condition")
 	}
 
-	updated, err := s.recipeManager.ReadRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId)
+	updated, err := s.mealPlanningManager.ReadRecipeStepCompletionCondition(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepCompletionConditionId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step completion condition")
 	}
@@ -1625,11 +1625,11 @@ func (s *serviceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *m
 
 	input := converters.ConvertGRPCRecipeStepIngredientUpdateRequestInputToRecipeStepIngredientUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step ingredient")
 	}
 
-	updated, err := s.recipeManager.ReadRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId)
+	updated, err := s.mealPlanningManager.ReadRecipeStepIngredient(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepIngredientId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step ingredient")
 	}
@@ -1660,11 +1660,11 @@ func (s *serviceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *m
 
 	input := converters.ConvertGRPCRecipeStepInstrumentUpdateRequestInputToRecipeStepInstrumentUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step instrument")
 	}
 
-	updated, err := s.recipeManager.ReadRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId)
+	updated, err := s.mealPlanningManager.ReadRecipeStepInstrument(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepInstrumentId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step instrument")
 	}
@@ -1695,11 +1695,11 @@ func (s *serviceImpl) UpdateRecipeStepProduct(ctx context.Context, request *meal
 
 	input := converters.ConvertGRPCRecipeStepProductUpdateRequestInputToRecipeStepProductUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step product")
 	}
 
-	updated, err := s.recipeManager.ReadRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId)
+	updated, err := s.mealPlanningManager.ReadRecipeStepProduct(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepProductId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step product")
 	}
@@ -1730,11 +1730,11 @@ func (s *serviceImpl) UpdateRecipeStepVessel(ctx context.Context, request *mealp
 
 	input := converters.ConvertGRPCRecipeStepVesselUpdateRequestInputToRecipeStepVesselUpdateRequestInput(request.Input)
 
-	if err := s.recipeManager.UpdateRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId, input); err != nil {
+	if err := s.mealPlanningManager.UpdateRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId, input); err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step vessel")
 	}
 
-	updated, err := s.recipeManager.ReadRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId)
+	updated, err := s.mealPlanningManager.ReadRecipeStepVessel(ctx, request.RecipeId, request.RecipeStepId, request.RecipeStepVesselId)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step vessel")
 	}

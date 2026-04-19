@@ -648,7 +648,7 @@ func (s *serviceImpl) GetMermaidDiagramForMeal(ctx context.Context, request *mea
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal")
 	}
 
-	mermaidDiagram, err := s.recipeManager.MealMermaid(ctx, meal)
+	mermaidDiagram, err := s.mealPlanningManager.MealMermaid(ctx, meal)
 	if err != nil {
 		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to generate mermaid diagram")
 	}

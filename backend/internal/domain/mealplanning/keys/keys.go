@@ -133,9 +133,9 @@ const (
 	// RecipeStepVesselIDKey is the standard key for referring to a recipe step vessel's ID.
 	RecipeStepVesselIDKey = RecipeStepVesselKey + idSuffix
 
-	// UserIngredientPreferenceKey is the standard key for referring to an user ingredient preference.
+	// UserIngredientPreferenceKey is the standard key for referring to a user ingredient preference.
 	UserIngredientPreferenceKey = "user_ingredient_preference"
-	// UserIngredientPreferenceIDKey is the standard key for referring to an user ingredient preference's ID.
+	// UserIngredientPreferenceIDKey is the standard key for referring to a user ingredient preference's ID.
 	UserIngredientPreferenceIDKey = UserIngredientPreferenceKey + idSuffix
 
 	// ValidIngredientKey is the standard key for referring to a valid ingredient.
