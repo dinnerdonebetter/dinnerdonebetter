@@ -11,13 +11,11 @@ import Foundation
 enum AppEnvironment: String, CaseIterable {
   case local
   case production
-  case offline
 
   var displayName: String {
     switch self {
     case .local: return "Local"
     case .production: return "Production"
-    case .offline: return "Offline"
     }
   }
 
@@ -25,7 +23,6 @@ enum AppEnvironment: String, CaseIterable {
     switch self {
     case .local: return "localhost"
     case .production: return Branding.publicDomain
-    case .offline: return "Bundled data"
     }
   }
 
@@ -33,11 +30,8 @@ enum AppEnvironment: String, CaseIterable {
     switch self {
     case .local: return "laptopcomputer"
     case .production: return "globe"
-    case .offline: return "airplane"
     }
   }
-
-  var isOffline: Bool { self == .offline }
 }
 
 struct APIConfiguration {
@@ -71,8 +65,6 @@ struct APIConfiguration {
       return "http://localhost:8000"
     case .production:
       return Branding.productionAPIURL
-    case .offline:
-      return "http://offline.invalid"
     }
   }
 
@@ -84,8 +76,6 @@ struct APIConfiguration {
       return "http://localhost:3000"
     case .production:
       return Branding.productionWebURL
-    case .offline:
-      return "http://offline.invalid"
     }
   }
 
@@ -96,8 +86,6 @@ struct APIConfiguration {
       return "0.0.0.0"
     case .production:
       return Branding.productionGRPCDomain
-    case .offline:
-      return "offline.invalid"
     }
   }
 
@@ -108,8 +96,6 @@ struct APIConfiguration {
       return 8001
     case .production:
       return 443
-    case .offline:
-      return 0
     }
   }
 
@@ -117,7 +103,7 @@ struct APIConfiguration {
   /// Local development uses plaintext; remote environments use TLS.
   static var grpcUsesTLS: Bool {
     switch currentEnvironment {
-    case .local, .offline:
+    case .local:
       return false
     case .production:
       return true
@@ -137,8 +123,6 @@ struct APIConfiguration {
       return "http://localhost:8000/uploads"
     case .production:
       return Branding.productionMediaURL
-    case .offline:
-      return ""
     }
   }
 

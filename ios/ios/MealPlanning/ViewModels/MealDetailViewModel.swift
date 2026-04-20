@@ -33,14 +33,6 @@ class MealDetailViewModel {
     isLoading = true
     errorMessage = nil
 
-    if APIConfiguration.currentEnvironment.isOffline {
-      let provider = LocalDataProvider.shared
-      provider.loadIfNeeded()
-      self.meal = provider.getMeal(id: mealID)
-      isLoading = false
-      return
-    }
-
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(

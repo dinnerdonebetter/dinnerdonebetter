@@ -276,8 +276,10 @@ func formatStepIngredientDisplay(
     measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
   )
 
-  aggregated.addQuantity(
-    min: ingredient.minQuantity, max: ingredient.hasMaxQuantity ? ingredient.maxQuantity : nil)
+  if ingredient.minQuantity != 0 || ingredient.hasMaxQuantity {
+    aggregated.addQuantity(
+      min: ingredient.minQuantity, max: ingredient.hasMaxQuantity ? ingredient.maxQuantity : nil)
+  }
 
   var result: String
   if let quantityText = aggregated.quantityText(scale: scale) {

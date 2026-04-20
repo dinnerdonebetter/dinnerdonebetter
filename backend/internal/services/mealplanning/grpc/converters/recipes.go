@@ -472,7 +472,6 @@ func ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCr
 		VesselIndex:                      grpcconverters.ConvertUint32PointerToUint16Pointer(input.VesselIndex),
 		ProductPercentageToUse:           input.ProductPercentageToUse,
 		RecipeStepProductRecipeID:        input.RecipeStepProductRecipeId,
-		RecipeStepProductRecipeSlug:      input.RecipeStepProductRecipeSlug,
 		IngredientNotes:                  input.IngredientNotes,
 		Name:                             input.Name,
 		QuantityNotes:                    input.QuantityNotes,
