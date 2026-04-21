@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"math"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -107,16 +106,6 @@ type (
 		CreateValidIngredientGroup(ctx context.Context, input *ValidIngredientGroupDatabaseCreationInput) (*ValidIngredientGroup, error)
 		UpdateValidIngredientGroup(ctx context.Context, updated *ValidIngredientGroup) error
 		ArchiveValidIngredientGroup(ctx context.Context, validIngredientID string) error
-	}
-
-	// ValidIngredientGroupDataService describes a structure capable of serving traffic related to valid ingredient groups.
-	ValidIngredientGroupDataService interface {
-		SearchValidIngredientGroupsHandler(http.ResponseWriter, *http.Request)
-		ListValidIngredientGroupsHandler(http.ResponseWriter, *http.Request)
-		CreateValidIngredientGroupHandler(http.ResponseWriter, *http.Request)
-		ReadValidIngredientGroupHandler(http.ResponseWriter, *http.Request)
-		UpdateValidIngredientGroupHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidIngredientGroupHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

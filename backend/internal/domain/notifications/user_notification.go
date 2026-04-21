@@ -3,7 +3,6 @@ package notifications
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -78,14 +77,6 @@ type (
 		GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[UserNotification], error)
 		CreateUserNotification(ctx context.Context, input *UserNotificationDatabaseCreationInput) (*UserNotification, error)
 		UpdateUserNotification(ctx context.Context, updated *UserNotification) error
-	}
-
-	// UserNotificationDataService describes a structure capable of serving traffic related to user notifications.
-	UserNotificationDataService interface {
-		ListUserNotificationsHandler(http.ResponseWriter, *http.Request)
-		CreateUserNotificationHandler(http.ResponseWriter, *http.Request)
-		ReadUserNotificationHandler(http.ResponseWriter, *http.Request)
-		UpdateUserNotificationHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

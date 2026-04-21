@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -143,17 +142,6 @@ type (
 		ArchiveValidPreparation(ctx context.Context, validPreparationID string) error
 		GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*ValidPreparation, error)
-	}
-
-	// ValidPreparationDataService describes a structure capable of serving traffic related to valid preparations.
-	ValidPreparationDataService interface {
-		SearchValidPreparationsHandler(http.ResponseWriter, *http.Request)
-		ListValidPreparationsHandler(http.ResponseWriter, *http.Request)
-		CreateValidPreparationHandler(http.ResponseWriter, *http.Request)
-		ReadValidPreparationHandler(http.ResponseWriter, *http.Request)
-		RandomValidPreparationHandler(http.ResponseWriter, *http.Request)
-		UpdateValidPreparationHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidPreparationHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

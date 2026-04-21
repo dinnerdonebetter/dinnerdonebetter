@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -252,18 +251,6 @@ type (
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error
 		GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetValidIngredientsWithIDs(ctx context.Context, ids []string) ([]*ValidIngredient, error)
-	}
-
-	// ValidIngredientDataService describes a structure capable of serving traffic related to valid ingredients.
-	ValidIngredientDataService interface {
-		SearchValidIngredientsHandler(http.ResponseWriter, *http.Request)
-		ListValidIngredientsHandler(http.ResponseWriter, *http.Request)
-		CreateValidIngredientHandler(http.ResponseWriter, *http.Request)
-		ReadValidIngredientHandler(http.ResponseWriter, *http.Request)
-		RandomValidIngredientHandler(http.ResponseWriter, *http.Request)
-		UpdateValidIngredientHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidIngredientHandler(http.ResponseWriter, *http.Request)
-		SearchValidIngredientsByPreparationAndIngredientNameHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

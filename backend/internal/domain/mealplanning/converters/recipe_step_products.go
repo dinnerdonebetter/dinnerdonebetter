@@ -94,12 +94,17 @@ func ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(recipeStepP
 
 // ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput builds a RecipeStepProductDatabaseCreationInput from a RecipeStepProduct.
 func ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductDatabaseCreationInput {
+	var measurementUnitID *string
+	if recipeStepProduct.MeasurementUnit != nil {
+		measurementUnitID = &recipeStepProduct.MeasurementUnit.ID
+	}
+
 	return &types.RecipeStepProductDatabaseCreationInput{
 		ID:                             recipeStepProduct.ID,
 		Name:                           recipeStepProduct.Name,
 		Type:                           recipeStepProduct.Type,
 		QuantityNotes:                  recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:              &recipeStepProduct.MeasurementUnit.ID,
+		MeasurementUnitID:              measurementUnitID,
 		BelongsToRecipeStep:            recipeStepProduct.BelongsToRecipeStep,
 		Compostable:                    recipeStepProduct.Compostable,
 		MinMeasurementQuantity:         recipeStepProduct.MinMeasurementQuantity,

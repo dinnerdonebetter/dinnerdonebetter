@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -122,15 +121,6 @@ type (
 		CreateRecipeStepInstrument(ctx context.Context, input *RecipeStepInstrumentDatabaseCreationInput) (*RecipeStepInstrument, error)
 		UpdateRecipeStepInstrument(ctx context.Context, updated *RecipeStepInstrument) error
 		ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error
-	}
-
-	// RecipeStepInstrumentDataService describes a structure capable of serving traffic related to recipe step instruments.
-	RecipeStepInstrumentDataService interface {
-		ListRecipeStepInstrumentsHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

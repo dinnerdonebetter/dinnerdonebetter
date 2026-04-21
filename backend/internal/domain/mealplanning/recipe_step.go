@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/uploadedmedia"
@@ -140,16 +139,6 @@ type (
 		CreateRecipeStep(ctx context.Context, input *RecipeStepDatabaseCreationInput) (*RecipeStep, error)
 		UpdateRecipeStep(ctx context.Context, updated *RecipeStep) error
 		ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error
-	}
-
-	// RecipeStepDataService describes a structure capable of serving traffic related to recipe steps.
-	RecipeStepDataService interface {
-		ListRecipeStepsHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeStepHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeStepHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeStepHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeStepHandler(http.ResponseWriter, *http.Request)
-		RecipeStepImageUploadHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

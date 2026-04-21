@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -78,15 +77,6 @@ type (
 		CreateAccountInstrumentOwnership(ctx context.Context, input *AccountInstrumentOwnershipDatabaseCreationInput) (*AccountInstrumentOwnership, error)
 		UpdateAccountInstrumentOwnership(ctx context.Context, updated *AccountInstrumentOwnership) error
 		ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error
-	}
-
-	// AccountInstrumentOwnershipDataService describes a structure capable of serving traffic related to account instrument ownerships.
-	AccountInstrumentOwnershipDataService interface {
-		ListAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
-		CreateAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
-		ReadAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
-		UpdateAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
-		ArchiveAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

@@ -3,7 +3,6 @@ package settings
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -82,16 +81,6 @@ type (
 		CreateServiceSettingConfiguration(ctx context.Context, input *ServiceSettingConfigurationDatabaseCreationInput) (*ServiceSettingConfiguration, error)
 		UpdateServiceSettingConfiguration(ctx context.Context, updated *ServiceSettingConfiguration) error
 		ArchiveServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) error
-	}
-
-	// ServiceSettingConfigurationDataService describes a structure capable of serving traffic related to service settings.
-	ServiceSettingConfigurationDataService interface {
-		CreateServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
-		GetServiceSettingConfigurationsForUserHandler(http.ResponseWriter, *http.Request)
-		GetServiceSettingConfigurationsForAccountHandler(http.ResponseWriter, *http.Request)
-		GetServiceSettingConfigurationsForUserByNameHandler(http.ResponseWriter, *http.Request)
-		UpdateServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
-		ArchiveServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

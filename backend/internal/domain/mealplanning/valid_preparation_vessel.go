@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -79,17 +78,6 @@ type (
 		CreateValidPreparationVessel(ctx context.Context, input *ValidPreparationVesselDatabaseCreationInput) (*ValidPreparationVessel, error)
 		UpdateValidPreparationVessel(ctx context.Context, updated *ValidPreparationVessel) error
 		ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error
-	}
-
-	// ValidPreparationVesselDataService describes a structure capable of serving traffic related to valid preparation instruments.
-	ValidPreparationVesselDataService interface {
-		ListValidPreparationVesselsHandler(http.ResponseWriter, *http.Request)
-		CreateValidPreparationVesselHandler(http.ResponseWriter, *http.Request)
-		ReadValidPreparationVesselHandler(http.ResponseWriter, *http.Request)
-		UpdateValidPreparationVesselHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidPreparationVesselHandler(http.ResponseWriter, *http.Request)
-		SearchValidPreparationVesselsByPreparationHandler(http.ResponseWriter, *http.Request)
-		SearchValidPreparationVesselsByVesselHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

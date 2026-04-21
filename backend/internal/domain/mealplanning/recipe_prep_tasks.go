@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -137,15 +136,6 @@ type (
 		CreateRecipePrepTask(ctx context.Context, input *RecipePrepTaskDatabaseCreationInput) (*RecipePrepTask, error)
 		UpdateRecipePrepTask(ctx context.Context, updated *RecipePrepTask) error
 		ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error
-	}
-
-	// RecipePrepTaskDataService describes a structure capable of serving traffic related to recipes.
-	RecipePrepTaskDataService interface {
-		ListRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
-		CreateRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
-		ReadRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

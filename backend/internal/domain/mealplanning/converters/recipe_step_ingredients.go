@@ -88,22 +88,29 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input
 
 // ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput builds a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredient.
 func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientDatabaseCreationInput {
+	var ingredientID *string
+	if input.Ingredient != nil {
+		ingredientID = &input.Ingredient.ID
+	}
+
 	return &mealplanning.RecipeStepIngredientDatabaseCreationInput{
-		ID:                     input.ID,
-		Name:                   input.Name,
-		Optional:               input.Optional,
-		IngredientID:           &input.Ingredient.ID,
-		MeasurementUnitID:      input.MeasurementUnit.ID,
-		MinQuantity:            input.MinQuantity,
-		MaxQuantity:            input.MaxQuantity,
-		QuantityNotes:          input.QuantityNotes,
-		IngredientNotes:        input.IngredientNotes,
-		BelongsToRecipeStep:    input.BelongsToRecipeStep,
-		Index:                  input.Index,
-		OptionIndex:            input.OptionIndex,
-		VesselIndex:            input.VesselIndex,
-		ToTaste:                input.ToTaste,
-		ProductPercentageToUse: input.ProductPercentageToUse,
-		ScaleFactor:            scaleFactorOrDefault(input.ScaleFactor),
+		ID:                        input.ID,
+		Name:                      input.Name,
+		Optional:                  input.Optional,
+		IngredientID:              ingredientID,
+		MeasurementUnitID:         input.MeasurementUnit.ID,
+		MinQuantity:               input.MinQuantity,
+		MaxQuantity:               input.MaxQuantity,
+		QuantityNotes:             input.QuantityNotes,
+		IngredientNotes:           input.IngredientNotes,
+		BelongsToRecipeStep:       input.BelongsToRecipeStep,
+		RecipeStepProductRecipeID: input.RecipeStepProductRecipeID,
+		RecipeStepProductID:       input.RecipeStepProductID,
+		Index:                     input.Index,
+		OptionIndex:               input.OptionIndex,
+		VesselIndex:               input.VesselIndex,
+		ToTaste:                   input.ToTaste,
+		ProductPercentageToUse:    input.ProductPercentageToUse,
+		ScaleFactor:               scaleFactorOrDefault(input.ScaleFactor),
 	}
 }

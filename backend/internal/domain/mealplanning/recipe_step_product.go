@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -146,15 +145,6 @@ type (
 		CreateRecipeStepProduct(ctx context.Context, input *RecipeStepProductDatabaseCreationInput) (*RecipeStepProduct, error)
 		UpdateRecipeStepProduct(ctx context.Context, updated *RecipeStepProduct) error
 		ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error
-	}
-
-	// RecipeStepProductDataService describes a structure capable of serving traffic related to recipe step products.
-	RecipeStepProductDataService interface {
-		ListRecipeStepProductsHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeStepProductHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeStepProductHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeStepProductHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeStepProductHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

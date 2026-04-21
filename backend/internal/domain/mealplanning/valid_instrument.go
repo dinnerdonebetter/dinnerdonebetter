@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -120,17 +119,6 @@ type (
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
 		GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*ValidInstrument, error)
-	}
-
-	// ValidInstrumentDataService describes a structure capable of serving traffic related to valid instruments.
-	ValidInstrumentDataService interface {
-		SearchValidInstrumentsHandler(http.ResponseWriter, *http.Request)
-		ListValidInstrumentsHandler(http.ResponseWriter, *http.Request)
-		CreateValidInstrumentHandler(http.ResponseWriter, *http.Request)
-		ReadValidInstrumentHandler(http.ResponseWriter, *http.Request)
-		RandomValidInstrumentHandler(http.ResponseWriter, *http.Request)
-		UpdateValidInstrumentHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidInstrumentHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

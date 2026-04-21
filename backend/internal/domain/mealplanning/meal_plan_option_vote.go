@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -122,15 +121,6 @@ type (
 		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVotesDatabaseCreationInput) ([]*MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, updated *MealPlanOptionVote) error
 		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error
-	}
-
-	// MealPlanOptionVoteDataService describes a structure capable of serving traffic related to meal plan option votes.
-	MealPlanOptionVoteDataService interface {
-		ListMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
-		CreateMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
-		ReadMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
-		UpdateMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
-		ArchiveMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

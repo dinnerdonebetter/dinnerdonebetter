@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -127,15 +126,6 @@ type (
 		CreateMealPlanGroceryListItem(ctx context.Context, input *MealPlanGroceryListItemDatabaseCreationInput) (*MealPlanGroceryListItem, error)
 		UpdateMealPlanGroceryListItem(ctx context.Context, updated *MealPlanGroceryListItem) error
 		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error
-	}
-
-	// MealPlanGroceryListItemDataService describes a structure capable of serving traffic related to meal plan grocery list items.
-	MealPlanGroceryListItemDataService interface {
-		ListMealPlanGroceryListItemsByMealPlanHandler(http.ResponseWriter, *http.Request)
-		CreateMealPlanGroceryListItemHandler(http.ResponseWriter, *http.Request)
-		ReadMealPlanGroceryListItemHandler(http.ResponseWriter, *http.Request)
-		UpdateMealPlanGroceryListItemHandler(http.ResponseWriter, *http.Request)
-		ArchiveMealPlanGroceryListItemHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

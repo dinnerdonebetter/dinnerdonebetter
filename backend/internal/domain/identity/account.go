@@ -3,7 +3,6 @@ package identity
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -125,20 +124,6 @@ type (
 		UpdateAccount(ctx context.Context, updated *Account) error
 		UpdateAccountBillingFields(ctx context.Context, accountID string, billingStatus, subscriptionPlanID, paymentProcessorCustomerID *string, lastPaymentProviderSyncOccurredAt *time.Time) error
 		ArchiveAccount(ctx context.Context, accountID string, userID string) error
-	}
-
-	// AccountDataService describes a structure capable of serving traffic related to accounts.
-	AccountDataService interface {
-		ListAccountsHandler(http.ResponseWriter, *http.Request)
-		CreateAccountHandler(http.ResponseWriter, *http.Request)
-		CurrentInfoHandler(http.ResponseWriter, *http.Request)
-		ReadAccountHandler(http.ResponseWriter, *http.Request)
-		UpdateAccountHandler(http.ResponseWriter, *http.Request)
-		ArchiveAccountHandler(http.ResponseWriter, *http.Request)
-		RemoveMemberHandler(http.ResponseWriter, *http.Request)
-		MarkAsDefaultAccountHandler(http.ResponseWriter, *http.Request)
-		ModifyMemberPermissionsHandler(http.ResponseWriter, *http.Request)
-		TransferAccountOwnershipHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

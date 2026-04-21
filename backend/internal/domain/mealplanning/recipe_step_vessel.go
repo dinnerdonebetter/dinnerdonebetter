@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -121,15 +120,6 @@ type (
 		CreateRecipeStepVessel(ctx context.Context, input *RecipeStepVesselDatabaseCreationInput) (*RecipeStepVessel, error)
 		UpdateRecipeStepVessel(ctx context.Context, updated *RecipeStepVessel) error
 		ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error
-	}
-
-	// RecipeStepVesselDataService describes a structure capable of serving traffic related to recipe step instruments.
-	RecipeStepVesselDataService interface {
-		ListRecipeStepVesselsHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeStepVesselHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeStepVesselHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeStepVesselHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeStepVesselHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

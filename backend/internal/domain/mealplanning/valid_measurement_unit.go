@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -134,17 +133,6 @@ type (
 		ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error
 		GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*ValidMeasurementUnit, error)
-	}
-
-	// ValidMeasurementUnitDataService describes a structure capable of serving traffic related to valid measurement units.
-	ValidMeasurementUnitDataService interface {
-		SearchValidMeasurementUnitsHandler(http.ResponseWriter, *http.Request)
-		SearchValidMeasurementUnitsByIngredientIDHandler(http.ResponseWriter, *http.Request)
-		ListValidMeasurementUnitsHandler(http.ResponseWriter, *http.Request)
-		CreateValidMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		ReadValidMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		UpdateValidMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidMeasurementUnitHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

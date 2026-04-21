@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -84,17 +83,6 @@ type (
 		CreateValidIngredientMeasurementUnit(ctx context.Context, input *ValidIngredientMeasurementUnitDatabaseCreationInput) (*ValidIngredientMeasurementUnit, error)
 		UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *ValidIngredientMeasurementUnit) error
 		ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error
-	}
-
-	// ValidIngredientMeasurementUnitDataService describes a structure capable of serving traffic related to valid ingredient measurement units.
-	ValidIngredientMeasurementUnitDataService interface {
-		ListValidIngredientMeasurementUnitsHandler(http.ResponseWriter, *http.Request)
-		CreateValidIngredientMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		ReadValidIngredientMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		UpdateValidIngredientMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidIngredientMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		SearchValidIngredientMeasurementUnitsByIngredientHandler(http.ResponseWriter, *http.Request)
-		SearchValidIngredientMeasurementUnitsByMeasurementUnitHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

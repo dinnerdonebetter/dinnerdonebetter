@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -106,18 +105,6 @@ type (
 		CreateValidPrepTaskConfig(ctx context.Context, input *ValidPrepTaskConfigDatabaseCreationInput) (*ValidPrepTaskConfig, error)
 		UpdateValidPrepTaskConfig(ctx context.Context, updated *ValidPrepTaskConfig) error
 		ArchiveValidPrepTaskConfig(ctx context.Context, validIngredientPreparationStorageConfigID string) error
-	}
-
-	// ValidPrepTaskConfigDataService describes a structure capable of serving traffic related to valid ingredient preparation storage configs.
-	ValidPrepTaskConfigDataService interface {
-		ListValidPrepTaskConfigsHandler(http.ResponseWriter, *http.Request)
-		CreateValidPrepTaskConfigHandler(http.ResponseWriter, *http.Request)
-		ReadValidPrepTaskConfigHandler(http.ResponseWriter, *http.Request)
-		UpdateValidPrepTaskConfigHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidPrepTaskConfigHandler(http.ResponseWriter, *http.Request)
-		ListValidPrepTaskConfigsForIngredientHandler(http.ResponseWriter, *http.Request)
-		ListValidPrepTaskConfigsForPreparationHandler(http.ResponseWriter, *http.Request)
-		ListValidPrepTaskConfigsForIngredientAndPreparationHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

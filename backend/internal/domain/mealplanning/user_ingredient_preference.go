@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -86,14 +85,6 @@ type (
 		CreateUserIngredientPreference(ctx context.Context, input *UserIngredientPreferenceDatabaseCreationInput) ([]*UserIngredientPreference, error)
 		UpdateUserIngredientPreference(ctx context.Context, updated *UserIngredientPreference) error
 		ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error
-	}
-
-	// UserIngredientPreferenceDataService describes a structure capable of serving traffic related to user ingredient preferences.
-	UserIngredientPreferenceDataService interface {
-		ListUserIngredientPreferencesHandler(http.ResponseWriter, *http.Request)
-		CreateUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
-		UpdateUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
-		ArchiveUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -94,15 +93,6 @@ type (
 		UpdateMealPlanOption(ctx context.Context, updated *MealPlanOption) error
 		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error
 		FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, accountID string) (changed bool, err error)
-	}
-
-	// MealPlanOptionDataService describes a structure capable of serving traffic related to meal plan options.
-	MealPlanOptionDataService interface {
-		ListMealPlanOptionHandler(http.ResponseWriter, *http.Request)
-		CreateMealPlanOptionHandler(http.ResponseWriter, *http.Request)
-		ReadMealPlanOptionHandler(http.ResponseWriter, *http.Request)
-		UpdateMealPlanOptionHandler(http.ResponseWriter, *http.Request)
-		ArchiveMealPlanOptionHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

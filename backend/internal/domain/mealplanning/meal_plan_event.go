@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -107,15 +106,6 @@ type (
 		UpdateMealPlanEvent(ctx context.Context, updated *MealPlanEvent) error
 		SwapMealPlanEvents(ctx context.Context, mealPlanID, mealPlanEventIDA, mealPlanEventIDB string) error
 		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error
-	}
-
-	// MealPlanEventDataService describes a structure capable of serving traffic related to meal plans.
-	MealPlanEventDataService interface {
-		ListMealPlanEventHandler(http.ResponseWriter, *http.Request)
-		CreateMealPlanEventHandler(http.ResponseWriter, *http.Request)
-		ReadMealPlanEventHandler(http.ResponseWriter, *http.Request)
-		UpdateMealPlanEventHandler(http.ResponseWriter, *http.Request)
-		ArchiveMealPlanEventHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

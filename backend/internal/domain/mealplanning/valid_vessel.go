@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -166,17 +165,6 @@ type (
 		ArchiveValidVessel(ctx context.Context, validVesselID string) error
 		GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*ValidVessel, error)
-	}
-
-	// ValidVesselDataService describes a structure capable of serving traffic related to valid vessels.
-	ValidVesselDataService interface {
-		SearchValidVesselsHandler(http.ResponseWriter, *http.Request)
-		ListValidVesselsHandler(http.ResponseWriter, *http.Request)
-		CreateValidVesselHandler(http.ResponseWriter, *http.Request)
-		ReadValidVesselHandler(http.ResponseWriter, *http.Request)
-		RandomValidVesselHandler(http.ResponseWriter, *http.Request)
-		UpdateValidVesselHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidVesselHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

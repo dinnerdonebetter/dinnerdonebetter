@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -158,15 +157,6 @@ type (
 		GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		GetMealsWithIDs(ctx context.Context, ids []string) ([]*Meal, error)
 		AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error
-	}
-
-	// MealDataService describes a structure capable of serving traffic related to meals.
-	MealDataService interface {
-		ListMealsHandler(http.ResponseWriter, *http.Request)
-		CreateMealHandler(http.ResponseWriter, *http.Request)
-		ReadMealHandler(http.ResponseWriter, *http.Request)
-		SearchMealsHandler(http.ResponseWriter, *http.Request)
-		ArchiveMealHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

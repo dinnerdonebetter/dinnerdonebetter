@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -102,15 +101,6 @@ type (
 		CreateRecipeRating(ctx context.Context, input *RecipeRatingDatabaseCreationInput) (*RecipeRating, error)
 		UpdateRecipeRating(ctx context.Context, updated *RecipeRating) error
 		ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error
-	}
-
-	// RecipeRatingDataService describes a structure capable of serving traffic related to recipe ratings.
-	RecipeRatingDataService interface {
-		ListRecipeRatingsHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeRatingHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeRatingHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeRatingHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeRatingHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
