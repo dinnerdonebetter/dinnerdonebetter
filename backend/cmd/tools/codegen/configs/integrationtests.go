@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"time"
 
-	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	authservice "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	dataprivacycfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/dataprivacy/config"
@@ -13,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
 	analyticscfg "github.com/primandproper/platform/analytics/config"
+	tokenscfg "github.com/primandproper/platform/authentication/tokens/config"
 	circuitbreakingcfg "github.com/primandproper/platform/circuitbreaking/config"
 	encryptioncfg "github.com/primandproper/platform/cryptography/encryption/config"
 	databasecfg "github.com/primandproper/platform/database/config"
@@ -159,6 +159,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				TokenLifetime:         5 * time.Minute,
 				Tokens: tokenscfg.Config{
 					Provider:                tokenscfg.ProviderPASETO,
+					Issuer:                  "dinner-done-better",
 					Audience:                "https://api.dinnerdonebetter.dev",
 					Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				},

@@ -268,7 +268,7 @@ FROM
 	meal_plan_options
 	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
 	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
-	JOIN meal_components ON meal_plan_options.meal_id = meal_components.meal_id
+	JOIN meal_components ON meal_plan_options.meal_id = meal_components.belongs_to_meal
 	JOIN meals ON meal_plan_options.meal_id = meals.id
 WHERE
 	meal_plans.archived_at IS NULL

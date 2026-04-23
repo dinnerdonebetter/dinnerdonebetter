@@ -61,15 +61,6 @@ class PerformRecipeViewModel {
     isLoading = true
     errorMessage = nil
 
-    if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
-      provider.loadIfNeeded()
-      self.recipe = provider.getRecipe(id: recipeID)
-      buildProductIDToStepIndexMapping()
-      isLoading = false
-      return
-    }
-
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(
@@ -237,41 +228,41 @@ class PerformRecipeViewModel {
   }
 
   private func stepHasTimer(_ step: Mealplanning_RecipeStep) -> Bool {
-    step.estimatedTimeInSeconds.hasMin && step.estimatedTimeInSeconds.min > 0
+    step.hasMinEstimatedTimeInSeconds && step.minEstimatedTimeInSeconds > 0
   }
 
   /// Display total (max when both min/max exist, else min) - for "elapsed / total" display
   private func stepTimerDurationSeconds(_ step: Mealplanning_RecipeStep) -> UInt32? {
-    guard step.estimatedTimeInSeconds.hasMin, step.estimatedTimeInSeconds.min > 0 else {
+    guard step.hasMinEstimatedTimeInSeconds, step.minEstimatedTimeInSeconds > 0 else {
       return nil
     }
-    if step.estimatedTimeInSeconds.hasMax,
-      step.estimatedTimeInSeconds.max >= step.estimatedTimeInSeconds.min
+    if step.hasMaxEstimatedTimeInSeconds,
+      step.maxEstimatedTimeInSeconds >= step.minEstimatedTimeInSeconds
     {
-      return step.estimatedTimeInSeconds.max
+      return step.maxEstimatedTimeInSeconds
     }
-    return step.estimatedTimeInSeconds.min
+    return step.minEstimatedTimeInSeconds
   }
 
   /// Done threshold - step auto-completes when elapsed >= this (max when both exist, else min)
   private func stepTimerDoneThresholdSeconds(_ step: Mealplanning_RecipeStep) -> UInt32? {
-    guard step.estimatedTimeInSeconds.hasMin, step.estimatedTimeInSeconds.min > 0 else {
+    guard step.hasMinEstimatedTimeInSeconds, step.minEstimatedTimeInSeconds > 0 else {
       return nil
     }
-    if step.estimatedTimeInSeconds.hasMax,
-      step.estimatedTimeInSeconds.max >= step.estimatedTimeInSeconds.min
+    if step.hasMaxEstimatedTimeInSeconds,
+      step.maxEstimatedTimeInSeconds >= step.minEstimatedTimeInSeconds
     {
-      return step.estimatedTimeInSeconds.max
+      return step.maxEstimatedTimeInSeconds
     }
-    return step.estimatedTimeInSeconds.min
+    return step.minEstimatedTimeInSeconds
   }
 
   /// Min threshold - user can skip only when elapsed >= this
   private func stepTimerMinSeconds(_ step: Mealplanning_RecipeStep) -> UInt32? {
-    guard step.estimatedTimeInSeconds.hasMin, step.estimatedTimeInSeconds.min > 0 else {
+    guard step.hasMinEstimatedTimeInSeconds, step.minEstimatedTimeInSeconds > 0 else {
       return nil
     }
-    return step.estimatedTimeInSeconds.min
+    return step.minEstimatedTimeInSeconds
   }
 
   func stepCompletionConditionIdentifier(
@@ -369,7 +360,6 @@ class PerformRecipeViewModel {
       return false
     }
 
-    let stepName = step.hasPreparation ? step.preparation.name : stepID
     let nonOptionalConditions = step.completionConditions.enumerated().filter {
       !$0.element.optional
     }
@@ -444,16 +434,6 @@ class PerformRecipeViewModel {
   /// Can the user press "Complete Step" to mark this step done?
   /// Requires: wash hands + prerequisites + all non-optional conditions + timer condition (if step has timer)
   func canCompleteStep(recipeID: String, stepID: String) -> Bool {
-    let recipeName = recipe?.name ?? "???"
-    let stepName: String = {
-      if let step = stepFor(recipeID: recipeID, stepID: stepID),
-        step.hasPreparation
-      {
-        return step.preparation.name
-      }
-      return stepID
-    }()
-
     if !washHandsCompleted {
       return false
     }
@@ -569,15 +549,6 @@ class PerformRecipeViewModel {
 
   func toggleStep(recipeID: String, stepID: String) {
     let currentStepKey = stepKey(recipeID: recipeID, stepID: stepID)
-    let recipeName = recipe?.name ?? "???"
-    let stepName: String = {
-      if let step = stepFor(recipeID: recipeID, stepID: stepID),
-        step.hasPreparation
-      {
-        return step.preparation.name
-      }
-      return stepID
-    }()
 
     // Basic checks: wash hands + prerequisites (NOT completion conditions)
     guard canStartStep(recipeID: recipeID, stepID: stepID) else {
@@ -731,7 +702,7 @@ class PerformRecipeViewModel {
       return false
     }
     // If step has max time, auto-expire the timer when max is reached
-    if step.estimatedTimeInSeconds.hasMax,
+    if step.hasMaxEstimatedTimeInSeconds,
       let doneThreshold = stepTimerDoneThresholdSeconds(step),
       let startDate = stepTimerStartTimes[key]
     {
@@ -767,12 +738,12 @@ class PerformRecipeViewModel {
     guard let step = stepFor(recipeID: recipeID, stepID: stepID) else {
       return nil
     }
-    guard step.estimatedTimeInSeconds.hasMax,
-      step.estimatedTimeInSeconds.max >= step.estimatedTimeInSeconds.min
+    guard step.hasMaxEstimatedTimeInSeconds,
+      step.maxEstimatedTimeInSeconds >= step.minEstimatedTimeInSeconds
     else {
       return nil
     }
-    return step.estimatedTimeInSeconds.max
+    return step.maxEstimatedTimeInSeconds
   }
 
   func canSkipStepTimer(recipeID: String, stepID: String) -> Bool {
@@ -810,7 +781,7 @@ class PerformRecipeViewModel {
         continue
       }
       // If step has max time, check elapsed; otherwise it's always active until explicitly skipped
-      if step.estimatedTimeInSeconds.hasMax,
+      if step.hasMaxEstimatedTimeInSeconds,
         let doneThreshold = stepTimerDoneThresholdSeconds(step)
       {
         if Date().timeIntervalSince(startDate) < Double(doneThreshold) {
@@ -863,7 +834,7 @@ class PerformRecipeViewModel {
     {
       let elapsed = Date().timeIntervalSince(startDate)
       // Only auto-complete timer if step has a defined max time; steps with only min require explicit skip
-      if elapsed >= Double(doneThreshold) && step.estimatedTimeInSeconds.hasMax {
+      if elapsed >= Double(doneThreshold) && step.hasMaxEstimatedTimeInSeconds {
         completeTimerCondition(recipeID: recipeID, stepID: stepID)
         if canCompleteStep(recipeID: recipeID, stepID: stepID) {
           markStepComplete(recipeID: recipeID, stepID: stepID)

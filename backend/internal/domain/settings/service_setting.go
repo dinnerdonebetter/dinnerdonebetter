@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"slices"
 	"time"
 
@@ -80,15 +79,6 @@ type (
 		GetServiceSettings(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSetting], error)
 		SearchForServiceSettings(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSetting], error)
 		ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error
-	}
-
-	// ServiceSettingDataService describes a structure capable of serving traffic related to service settings.
-	ServiceSettingDataService interface {
-		CreateServiceSettingHandler(http.ResponseWriter, *http.Request)
-		SearchServiceSettingsHandler(http.ResponseWriter, *http.Request)
-		ListServiceSettingsHandler(http.ResponseWriter, *http.Request)
-		ReadServiceSettingHandler(http.ResponseWriter, *http.Request)
-		ArchiveServiceSettingHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

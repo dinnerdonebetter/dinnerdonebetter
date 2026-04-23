@@ -49,25 +49,25 @@ export const QueryFilter: MessageFns<QueryFilter> = {
       writer.uint32(10).string(message.sortBy);
     }
     if (message.createdAfter !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAfter), writer.uint32(26).fork()).join();
+      Timestamp.encode(toTimestamp(message.createdAfter), writer.uint32(18).fork()).join();
     }
     if (message.createdBefore !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdBefore), writer.uint32(34).fork()).join();
+      Timestamp.encode(toTimestamp(message.createdBefore), writer.uint32(26).fork()).join();
     }
     if (message.updatedAfter !== undefined) {
-      Timestamp.encode(toTimestamp(message.updatedAfter), writer.uint32(42).fork()).join();
+      Timestamp.encode(toTimestamp(message.updatedAfter), writer.uint32(34).fork()).join();
     }
     if (message.updatedBefore !== undefined) {
-      Timestamp.encode(toTimestamp(message.updatedBefore), writer.uint32(50).fork()).join();
+      Timestamp.encode(toTimestamp(message.updatedBefore), writer.uint32(42).fork()).join();
     }
     if (message.maxResponseSize !== undefined) {
-      writer.uint32(56).uint32(message.maxResponseSize);
+      writer.uint32(48).uint32(message.maxResponseSize);
     }
     if (message.includeArchived !== undefined) {
-      writer.uint32(64).bool(message.includeArchived);
+      writer.uint32(56).bool(message.includeArchived);
     }
     if (message.cursor !== undefined) {
-      writer.uint32(74).string(message.cursor);
+      writer.uint32(66).string(message.cursor);
     }
     return writer;
   },
@@ -87,12 +87,20 @@ export const QueryFilter: MessageFns<QueryFilter> = {
           message.sortBy = reader.string();
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.createdAfter = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
         case 3: {
           if (tag !== 26) {
             break;
           }
 
-          message.createdAfter = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.createdBefore = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 4: {
@@ -100,7 +108,7 @@ export const QueryFilter: MessageFns<QueryFilter> = {
             break;
           }
 
-          message.createdBefore = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.updatedAfter = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 5: {
@@ -108,15 +116,15 @@ export const QueryFilter: MessageFns<QueryFilter> = {
             break;
           }
 
-          message.updatedAfter = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.updatedBefore = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 48) {
             break;
           }
 
-          message.updatedBefore = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.maxResponseSize = reader.uint32();
           continue;
         }
         case 7: {
@@ -124,19 +132,11 @@ export const QueryFilter: MessageFns<QueryFilter> = {
             break;
           }
 
-          message.maxResponseSize = reader.uint32();
-          continue;
-        }
-        case 8: {
-          if (tag !== 64) {
-            break;
-          }
-
           message.includeArchived = reader.bool();
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
+        case 8: {
+          if (tag !== 66) {
             break;
           }
 

@@ -166,7 +166,7 @@ struct GroceryListView: View {
               event: "grocery_item_edit_tapped",
               properties: ["item_id": item.id])
             itemForEditSheet = item
-            quantityText = item.hasQuantityNeeded ? String(item.quantityNeeded.min) : ""
+            quantityText = String(item.minQuantityNeeded)
           }
         )
       }
@@ -262,7 +262,8 @@ private struct GroceryListItemRow: View {
   private var displayText: String {
     formatIngredientWithQuantity(
       name: item.ingredient.name,
-      quantityNeeded: item.hasQuantityNeeded ? item.quantityNeeded : nil,
+      minQuantityNeeded: item.minQuantityNeeded,
+      maxQuantityNeeded: item.hasMaxQuantityNeeded ? item.maxQuantityNeeded : nil,
       unit: item.measurementUnit
     )
   }
@@ -346,17 +347,17 @@ private struct GroceryListItemRow: View {
 
 private func formatIngredientWithQuantity(
   name: String,
-  quantityNeeded: Common_Float32RangeWithOptionalMax?,
+  minQuantityNeeded: Float,
+  maxQuantityNeeded: Float?,
   unit: Mealplanning_ValidMeasurementUnit
 ) -> String {
-  guard let q = quantityNeeded else { return name }
-  let unitName = MeasurementUnitFormatter.displayName(for: q.min, unit: unit)
+  let unitName = MeasurementUnitFormatter.displayName(for: minQuantityNeeded, unit: unit)
   let unitSuffix = unitName.isEmpty ? "" : " \(unitName)"
   let quantityStr: String
-  if q.hasMax && q.min != q.max {
-    quantityStr = "\(formatNumber(q.min))–\(formatNumber(q.max))\(unitSuffix)"
+  if let maxVal = maxQuantityNeeded, minQuantityNeeded != maxVal {
+    quantityStr = "\(formatNumber(minQuantityNeeded))–\(formatNumber(maxVal))\(unitSuffix)"
   } else {
-    quantityStr = "\(formatNumber(q.min))\(unitSuffix)"
+    quantityStr = "\(formatNumber(minQuantityNeeded))\(unitSuffix)"
   }
   return "\(name) (\(quantityStr))"
 }
@@ -388,10 +389,8 @@ extension Mealplanning_MealPlanGroceryListItem: Identifiable {
   var ingredient = Mealplanning_ValidIngredient()
   ingredient.name = "Chicken Breast"
   item.ingredient = ingredient
-  var quantity = Common_Float32RangeWithOptionalMax()
-  quantity.min = 2.0
-  quantity.max = 4.0
-  item.quantityNeeded = quantity
+  item.minQuantityNeeded = 2.0
+  item.maxQuantityNeeded = 4.0
   item.status = .needs
 
   return NavigationStack {

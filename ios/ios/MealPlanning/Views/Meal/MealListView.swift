@@ -163,14 +163,12 @@ struct MealCard: View {
             .foregroundColor(DSTheme.Colors.textSecondary)
           }
 
-          if meal.hasEstimatedPortions {
-            Label(
-              "\(PortionsFormatter.format(meal.estimatedPortions)) servings",
-              systemImage: "person.2"
-            )
-            .font(DSTheme.Typography.caption)
-            .foregroundColor(DSTheme.Colors.textSecondary)
-          }
+          Label(
+            "\(PortionsFormatter.format(min: meal.minEstimatedPortions, max: meal.hasMaxEstimatedPortions ? meal.maxEstimatedPortions : nil)) servings",
+            systemImage: "person.2"
+          )
+          .font(DSTheme.Typography.caption)
+          .foregroundColor(DSTheme.Colors.textSecondary)
         }
 
         // Component type breakdown (when available)

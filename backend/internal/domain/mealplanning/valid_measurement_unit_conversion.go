@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -96,16 +95,6 @@ type (
 		GetValidMeasurementUnitConversionsForUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidMeasurementUnitConversion], error)
 		GetValidMeasurementUnitConversionsForIngredients(ctx context.Context, validIngredientIDs []string) ([]*ValidMeasurementUnitConversion, error)
 		GetMeasurementUnitConversionMismatches(ctx context.Context) ([]*MeasurementUnitConversionMismatch, error)
-	}
-
-	// ValidMeasurementUnitConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.
-	ValidMeasurementUnitConversionDataService interface {
-		ValidMeasurementUnitConversionsFromMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		ValidMeasurementUnitConversionsToMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		CreateValidMeasurementUnitConversionHandler(http.ResponseWriter, *http.Request)
-		ReadValidMeasurementUnitConversionHandler(http.ResponseWriter, *http.Request)
-		UpdateValidMeasurementUnitConversionHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidMeasurementUnitConversionHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

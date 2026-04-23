@@ -5,18 +5,19 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 )
 
 // BuildFakeValidIngredientMeasurementUnit builds a faked valid ingredient measurement unit.
 func BuildFakeValidIngredientMeasurementUnit() *mealplanning.ValidIngredientMeasurementUnit {
+	minQty, maxQty := BuildFakeFloat32WithOptionalMax()
 	return &mealplanning.ValidIngredientMeasurementUnit{
-		ID:                BuildFakeID(),
-		Notes:             buildUniqueString(),
-		MeasurementUnit:   *BuildFakeValidMeasurementUnit(),
-		Ingredient:        *BuildFakeValidIngredient(),
-		AllowableQuantity: BuildFakeFloat32RangeWithOptionalMax(),
-		CreatedAt:         BuildFakeTime(),
+		ID:                   BuildFakeID(),
+		Notes:                buildUniqueString(),
+		MeasurementUnit:      *BuildFakeValidMeasurementUnit(),
+		Ingredient:           *BuildFakeValidIngredient(),
+		MinAllowableQuantity: minQty,
+		MaxAllowableQuantity: maxQty,
+		CreatedAt:            BuildFakeTime(),
 	}
 }
 
@@ -45,10 +46,8 @@ func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *mealplanning.V
 		Notes:                  &validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID: &validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:      &validIngredientMeasurementUnit.Ingredient.ID,
-		AllowableQuantity: numbers.OpenRangeUpdateRequestInput[float32]{
-			Min: &validIngredientMeasurementUnit.AllowableQuantity.Min,
-			Max: validIngredientMeasurementUnit.AllowableQuantity.Max,
-		},
+		MinAllowableQuantity:   &validIngredientMeasurementUnit.MinAllowableQuantity,
+		MaxAllowableQuantity:   validIngredientMeasurementUnit.MaxAllowableQuantity,
 	}
 }
 

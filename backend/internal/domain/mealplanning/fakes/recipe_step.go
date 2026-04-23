@@ -65,24 +65,31 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		},
 	}
 
+	minEstimatedTime := uint32(buildFakeNumber())
+	maxEstimatedTime := uint32(buildFakeNumber()) + minEstimatedTime
+	minTemperature := float32(buildFakeNumber())
+	maxTemperature := float32(buildFakeNumber()) + minTemperature
+
 	return &types.RecipeStep{
-		ID:                      recipeStepID,
-		Index:                   fake.Uint32(),
-		Preparation:             *BuildFakeValidPreparation(),
-		EstimatedTimeInSeconds:  BuildFakeOptionalUint32Range(),
-		TemperatureInCelsius:    BuildFakeOptionalFloat32Range(),
-		Notes:                   buildUniqueString(),
-		Products:                products,
-		Optional:                false,
-		CreatedAt:               BuildFakeTime(),
-		BelongsToRecipe:         BuildFakeID(),
-		Ingredients:             ingredients,
-		ExplicitInstructions:    buildUniqueString(),
-		ConditionExpression:     buildUniqueString(),
-		Instruments:             instruments,
-		Vessels:                 vessels,
-		CompletionConditions:    completionConditions,
-		StartTimerAutomatically: fake.Bool(),
+		ID:                        recipeStepID,
+		Index:                     fake.Uint32(),
+		Preparation:               *BuildFakeValidPreparation(),
+		MinEstimatedTimeInSeconds: &minEstimatedTime,
+		MaxEstimatedTimeInSeconds: &maxEstimatedTime,
+		MinTemperatureInCelsius:   &minTemperature,
+		MaxTemperatureInCelsius:   &maxTemperature,
+		Notes:                     buildUniqueString(),
+		Products:                  products,
+		Optional:                  false,
+		CreatedAt:                 BuildFakeTime(),
+		BelongsToRecipe:           BuildFakeID(),
+		Ingredients:               ingredients,
+		ExplicitInstructions:      buildUniqueString(),
+		ConditionExpression:       buildUniqueString(),
+		Instruments:               instruments,
+		Vessels:                   vessels,
+		CompletionConditions:      completionConditions,
+		StartTimerAutomatically:   fake.Bool(),
 	}
 }
 

@@ -67,10 +67,10 @@ func (g *groceryListCreator) processRecipeIngredients(
 				scaleFactor = 1.0
 			}
 			effectiveScale := recipeScale.Mul(decimal.NewFromFloat32(scaleFactor))
-			minQty := float32(effectiveScale.Mul(decimal.NewFromFloat32(ingredient.Quantity.Min)).Truncate(2).InexactFloat64())
+			minQty := float32(effectiveScale.Mul(decimal.NewFromFloat32(ingredient.MinQuantity)).Truncate(2).InexactFloat64())
 			var maxQty *float32
-			if ingredient.Quantity.Max != nil {
-				maximum := float32(effectiveScale.Mul(decimal.NewFromFloat32(*ingredient.Quantity.Max)).Truncate(2).InexactFloat64())
+			if ingredient.MaxQuantity != nil {
+				maximum := float32(effectiveScale.Mul(decimal.NewFromFloat32(*ingredient.MaxQuantity)).Truncate(2).InexactFloat64())
 				maxQty = &maximum
 			}
 
@@ -99,11 +99,11 @@ func (g *groceryListCreator) processRecipeIngredients(
 				// Aggregate with existing item if same ingredient+unit (e.g. vegetable oil in step 6 and step 7)
 				aggregationKey := fmt.Sprintf("%s:%s", ingredient.Ingredient.ID, ingredient.MeasurementUnit.ID)
 				if existing, ok := aggregatedInputs[aggregationKey]; ok {
-					existing.QuantityNeeded.Min += minQty
-					if existing.QuantityNeeded.Max != nil && maxQty != nil {
-						*existing.QuantityNeeded.Max += *maxQty
+					existing.MinQuantityNeeded += minQty
+					if existing.MaxQuantityNeeded != nil && maxQty != nil {
+						*existing.MaxQuantityNeeded += *maxQty
 					} else if maxQty != nil {
-						existing.QuantityNeeded.Max = maxQty
+						existing.MaxQuantityNeeded = maxQty
 					}
 					continue
 				}
@@ -113,11 +113,11 @@ func (g *groceryListCreator) processRecipeIngredients(
 					if existing.ValidIngredientID == ingredient.Ingredient.ID &&
 						existing.ValidMeasurementUnitID == ingredient.MeasurementUnit.ID &&
 						existing.BelongsToMealPlanOption != nil && *existing.BelongsToMealPlanOption == optionID {
-						existing.QuantityNeeded.Min += minQty
-						if existing.QuantityNeeded.Max != nil && maxQty != nil {
-							*existing.QuantityNeeded.Max += *maxQty
+						existing.MinQuantityNeeded += minQty
+						if existing.MaxQuantityNeeded != nil && maxQty != nil {
+							*existing.MaxQuantityNeeded += *maxQty
 						} else if maxQty != nil {
-							existing.QuantityNeeded.Max = maxQty
+							existing.MaxQuantityNeeded = maxQty
 						}
 						merged = true
 						break
@@ -141,10 +141,8 @@ func (g *groceryListCreator) processRecipeIngredients(
 					IngredientIndex:         &ingredientIndex,
 					OptionIndex:             &optionIndex,
 					ID:                      identifiers.New(),
-					QuantityNeeded: numbers.MinRange[float32]{
-						Max: maxQty,
-						Min: minQty,
-					},
+					MinQuantityNeeded:       minQty,
+					MaxQuantityNeeded:       maxQty,
 				})
 			} else {
 				// This ingredient is not part of an option group - aggregate by (ingredient, unit)
@@ -160,18 +158,16 @@ func (g *groceryListCreator) processRecipeIngredients(
 						ValidIngredientID:       ingredient.Ingredient.ID,
 						BelongsToMealPlan:       mealPlanID,
 						ID:                      identifiers.New(),
-						QuantityNeeded: numbers.MinRange[float32]{
-							Max: maxQty,
-							Min: minQty,
-						},
+						MinQuantityNeeded:       minQty,
+						MaxQuantityNeeded:       maxQty,
 					}
 				} else {
-					existing.QuantityNeeded.Min += minQty
+					existing.MinQuantityNeeded += minQty
 
-					if existing.QuantityNeeded.Max != nil && maxQty != nil {
-						*existing.QuantityNeeded.Max += *maxQty
+					if existing.MaxQuantityNeeded != nil && maxQty != nil {
+						*existing.MaxQuantityNeeded += *maxQty
 					} else if maxQty != nil {
-						existing.QuantityNeeded.Max = maxQty
+						existing.MaxQuantityNeeded = maxQty
 					}
 				}
 			}
@@ -301,10 +297,10 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 
 	// Round quantities to the nearest tenth for cleaner grocery list display
 	for _, item := range dbInputs {
-		item.QuantityNeeded.Min = numbers.RoundToDecimalPlaces(item.QuantityNeeded.Min, 1)
-		if item.QuantityNeeded.Max != nil {
-			rounded := numbers.RoundToDecimalPlaces(*item.QuantityNeeded.Max, 1)
-			item.QuantityNeeded.Max = &rounded
+		item.MinQuantityNeeded = numbers.RoundToDecimalPlaces(item.MinQuantityNeeded, 1)
+		if item.MaxQuantityNeeded != nil {
+			rounded := numbers.RoundToDecimalPlaces(*item.MaxQuantityNeeded, 1)
+			item.MaxQuantityNeeded = &rounded
 		}
 	}
 

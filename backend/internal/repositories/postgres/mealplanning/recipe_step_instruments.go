@@ -11,7 +11,6 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
-	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
 )
@@ -101,10 +100,8 @@ func (q *repository) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 		LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 		RecipeStepProductID: database.StringPointerFromNullString(result.RecipeStepProductID),
 		ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
-		Quantity: numbers.MinRange[uint32]{
-			Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
-			Min: uint32(result.MinimumQuantity),
-		},
+		MinQuantity:         uint32(result.MinimumQuantity),
+		MaxQuantity:         database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 		Notes:               result.Notes,
 		Name:                result.Name,
 		BelongsToRecipeStep: result.BelongsToRecipeStep,
@@ -201,15 +198,13 @@ func (q *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 			Name:                result.Name,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
 			ID:                  result.ID,
-			Quantity: numbers.MinRange[uint32]{
-				Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
-				Min: uint32(result.MinimumQuantity),
-			},
-			Index:          uint16(result.Index),
-			OptionIndex:    uint16(result.OptionIndex),
-			PreferenceRank: uint8(result.PreferenceRank),
-			Optional:       result.Optional,
-			ScaleFactor:    scaleFactor,
+			MinQuantity:         uint32(result.MinimumQuantity),
+			MaxQuantity:         database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+			Index:               uint16(result.Index),
+			OptionIndex:         uint16(result.OptionIndex),
+			PreferenceRank:      uint8(result.PreferenceRank),
+			Optional:            result.Optional,
+			ScaleFactor:         scaleFactor,
 		}
 
 		if result.ValidInstrumentID.Valid {
@@ -277,15 +272,13 @@ func (q *repository) getRecipeStepInstrumentsForRecipe(ctx context.Context, reci
 			Name:                result.Name,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
 			ID:                  result.ID,
-			Quantity: numbers.MinRange[uint32]{
-				Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
-				Min: uint32(result.MinimumQuantity),
-			},
-			Index:          uint16(result.Index),
-			OptionIndex:    uint16(result.OptionIndex),
-			PreferenceRank: uint8(result.PreferenceRank),
-			Optional:       result.Optional,
-			ScaleFactor:    scaleFactor,
+			MinQuantity:         uint32(result.MinimumQuantity),
+			MaxQuantity:         database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+			Index:               uint16(result.Index),
+			OptionIndex:         uint16(result.OptionIndex),
+			PreferenceRank:      uint8(result.PreferenceRank),
+			Optional:            result.Optional,
+			ScaleFactor:         scaleFactor,
 		}
 
 		if result.ValidInstrumentID.Valid {
@@ -331,11 +324,11 @@ func (q *repository) createRecipeStepInstrument(ctx context.Context, querier dat
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		InstrumentID:        database.NullStringFromStringPointer(input.InstrumentID),
 		RecipeStepProductID: database.NullStringFromStringPointer(input.RecipeStepProductID),
-		MaximumQuantity:     database.NullInt32FromUint32Pointer(input.Quantity.Max),
+		MaximumQuantity:     database.NullInt32FromUint32Pointer(input.MaxQuantity),
 		PreferenceRank:      int32(input.PreferenceRank),
 		Index:               int32(input.Index),
 		OptionIndex:         int32(input.OptionIndex),
-		MinimumQuantity:     int32(input.Quantity.Min),
+		MinimumQuantity:     int32(input.MinQuantity),
 		Optional:            input.Optional,
 		ScaleFactor:         database.StringFromFloat32(input.ScaleFactor),
 	}); err != nil {
@@ -353,7 +346,8 @@ func (q *repository) createRecipeStepInstrument(ctx context.Context, querier dat
 		Optional:            input.Optional,
 		Index:               input.Index,
 		OptionIndex:         input.OptionIndex,
-		Quantity:            input.Quantity,
+		MinQuantity:         input.MinQuantity,
+		MaxQuantity:         input.MaxQuantity,
 		ScaleFactor:         input.ScaleFactor,
 		CreatedAt:           q.CurrentTime(),
 	}
@@ -397,8 +391,8 @@ func (q *repository) UpdateRecipeStepInstrument(ctx context.Context, updated *me
 		Optional:            updated.Optional,
 		Index:               int32(updated.Index),
 		OptionIndex:         int32(updated.OptionIndex),
-		MinimumQuantity:     int32(updated.Quantity.Min),
-		MaximumQuantity:     database.NullInt32FromUint32Pointer(updated.Quantity.Max),
+		MinimumQuantity:     int32(updated.MinQuantity),
+		MaximumQuantity:     database.NullInt32FromUint32Pointer(updated.MaxQuantity),
 		BelongsToRecipeStep: updated.BelongsToRecipeStep,
 		ID:                  updated.ID,
 		ScaleFactor:         database.StringFromFloat32(updated.ScaleFactor),

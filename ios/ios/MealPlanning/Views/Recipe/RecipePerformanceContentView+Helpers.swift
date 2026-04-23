@@ -7,36 +7,11 @@
 
 // swiftlint:disable file_length
 
-import SwiftProtobuf
 import SwiftUI
 
 // MARK: - Helper Types
 
 enum DiscreteQuantityScaling {
-  static func scaled(
-    _ quantity: Common_Uint32RangeWithOptionalMax,
-    scale: Float
-  ) -> Common_Uint32RangeWithOptionalMax {
-    var scaledQuantity = quantity
-    scaledQuantity.min = quantity.min
-    if quantity.hasMax {
-      scaledQuantity.max = scale > 1 ? scaledMax(quantity.max, scale: scale) : quantity.max
-    }
-    return scaledQuantity
-  }
-
-  static func scaled(
-    _ quantity: Common_Uint16RangeWithOptionalMax,
-    scale: Float
-  ) -> Common_Uint16RangeWithOptionalMax {
-    var scaledQuantity = quantity
-    scaledQuantity.min = quantity.min
-    if quantity.hasMax {
-      scaledQuantity.max = scale > 1 ? scaledMax(quantity.max, scale: scale) : quantity.max
-    }
-    return scaledQuantity
-  }
-
   static func scaledMax(_ value: UInt32, scale: Float) -> UInt32 {
     let scaled = ceil(Double(value) * Double(scale))
     if scaled >= Double(UInt32.max) {
@@ -98,31 +73,15 @@ struct AggregatedInstrumentVessel: Identifiable {
     self.sourceRecipeName = sourceRecipeName
   }
 
-  mutating func addQuantity(_ quantity: Common_Uint32RangeWithOptionalMax) {
+  mutating func addQuantity(min: UInt32, max: UInt32?) {
     hasAnyQuantity = true
-    totalMin += quantity.min
+    totalMin += min
 
-    if quantity.hasMax {
+    if let max = max {
       if let currentMax = totalMax {
-        totalMax = currentMax + quantity.max
+        totalMax = currentMax + max
       } else {
-        totalMax = quantity.max
-      }
-    } else {
-      // If any quantity doesn't have a max, the total doesn't have a max
-      totalMax = nil
-    }
-  }
-
-  mutating func addQuantity(_ quantity: Common_Uint16RangeWithOptionalMax) {
-    hasAnyQuantity = true
-    totalMin += quantity.min
-
-    if quantity.hasMax {
-      if let currentMax = totalMax {
-        totalMax = currentMax + quantity.max
-      } else {
-        totalMax = quantity.max
+        totalMax = max
       }
     } else {
       // If any quantity doesn't have a max, the total doesn't have a max
@@ -188,15 +147,15 @@ struct AggregatedIngredient: Identifiable {
     self.sourceRecipeName = sourceRecipeName
   }
 
-  mutating func addQuantity(_ quantity: Common_Float32RangeWithOptionalMax) {
+  mutating func addQuantity(min: Float, max: Float?) {
     hasAnyQuantity = true
-    totalMin += quantity.min
+    totalMin += min
 
-    if quantity.hasMax {
+    if let max = max {
       if let currentMax = totalMax {
-        totalMax = currentMax + quantity.max
+        totalMax = currentMax + max
       } else {
-        totalMax = quantity.max
+        totalMax = max
       }
     } else {
       // If any quantity doesn't have a max, the total doesn't have a max
@@ -317,8 +276,9 @@ func formatStepIngredientDisplay(
     measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
   )
 
-  if ingredient.hasQuantity {
-    aggregated.addQuantity(ingredient.quantity)
+  if ingredient.minQuantity != 0 || ingredient.hasMaxQuantity {
+    aggregated.addQuantity(
+      min: ingredient.minQuantity, max: ingredient.hasMaxQuantity ? ingredient.maxQuantity : nil)
   }
 
   var result: String
@@ -379,8 +339,10 @@ extension RecipePerformanceContentView {
               )
             }
 
-            if instrument.hasQuantity, var current = regularAggregated[itemID] {
-              current.addQuantity(instrument.quantity)
+            if var current = regularAggregated[itemID] {
+              current.addQuantity(
+                min: instrument.minQuantity,
+                max: instrument.hasMaxQuantity ? instrument.maxQuantity : nil)
               regularAggregated[itemID] = current
             }
           }
@@ -427,8 +389,11 @@ extension RecipePerformanceContentView {
                 type: .instrument
               )
             }
-            if selectedOption.instrument.hasQuantity, var current = regularAggregated[itemID] {
-              current.addQuantity(selectedOption.instrument.quantity)
+            if var current = regularAggregated[itemID] {
+              current.addQuantity(
+                min: selectedOption.instrument.minQuantity,
+                max: selectedOption.instrument.hasMaxQuantity
+                  ? selectedOption.instrument.maxQuantity : nil)
               regularAggregated[itemID] = current
             }
           }
@@ -458,8 +423,9 @@ extension RecipePerformanceContentView {
               )
             }
 
-            if vessel.hasQuantity, var current = regularAggregated[itemID] {
-              current.addQuantity(vessel.quantity)
+            if var current = regularAggregated[itemID] {
+              current.addQuantity(
+                min: vessel.minQuantity, max: vessel.hasMaxQuantity ? vessel.maxQuantity : nil)
               regularAggregated[itemID] = current
             }
           }
@@ -506,8 +472,10 @@ extension RecipePerformanceContentView {
                 type: .vessel
               )
             }
-            if selectedOption.vessel.hasQuantity, var current = regularAggregated[itemID] {
-              current.addQuantity(selectedOption.vessel.quantity)
+            if var current = regularAggregated[itemID] {
+              current.addQuantity(
+                min: selectedOption.vessel.minQuantity,
+                max: selectedOption.vessel.hasMaxQuantity ? selectedOption.vessel.maxQuantity : nil)
               regularAggregated[itemID] = current
             }
           }
@@ -542,8 +510,10 @@ extension RecipePerformanceContentView {
                 )
               }
 
-              if instrument.hasQuantity, var current = regularAggregated[itemID] {
-                current.addQuantity(instrument.quantity)
+              if var current = regularAggregated[itemID] {
+                current.addQuantity(
+                  min: instrument.minQuantity,
+                  max: instrument.hasMaxQuantity ? instrument.maxQuantity : nil)
                 regularAggregated[itemID] = current
               }
             }
@@ -597,8 +567,11 @@ extension RecipePerformanceContentView {
                   sourceRecipeName: associatedRecipe.name
                 )
               }
-              if selectedOption.instrument.hasQuantity, var current = regularAggregated[itemID] {
-                current.addQuantity(selectedOption.instrument.quantity)
+              if var current = regularAggregated[itemID] {
+                current.addQuantity(
+                  min: selectedOption.instrument.minQuantity,
+                  max: selectedOption.instrument.hasMaxQuantity
+                    ? selectedOption.instrument.maxQuantity : nil)
                 regularAggregated[itemID] = current
               }
             }
@@ -629,8 +602,9 @@ extension RecipePerformanceContentView {
                 )
               }
 
-              if vessel.hasQuantity, var current = regularAggregated[itemID] {
-                current.addQuantity(vessel.quantity)
+              if var current = regularAggregated[itemID] {
+                current.addQuantity(
+                  min: vessel.minQuantity, max: vessel.hasMaxQuantity ? vessel.maxQuantity : nil)
                 regularAggregated[itemID] = current
               }
             }
@@ -684,8 +658,11 @@ extension RecipePerformanceContentView {
                   sourceRecipeName: associatedRecipe.name
                 )
               }
-              if selectedOption.vessel.hasQuantity, var current = regularAggregated[itemID] {
-                current.addQuantity(selectedOption.vessel.quantity)
+              if var current = regularAggregated[itemID] {
+                current.addQuantity(
+                  min: selectedOption.vessel.minQuantity,
+                  max: selectedOption.vessel.hasMaxQuantity
+                    ? selectedOption.vessel.maxQuantity : nil)
                 regularAggregated[itemID] = current
               }
             }
@@ -739,8 +716,10 @@ extension RecipePerformanceContentView {
             )
           }
 
-          if ingredient.hasQuantity, var current = regularAggregated[key] {
-            current.addQuantity(ingredient.quantity)
+          if var current = regularAggregated[key] {
+            current.addQuantity(
+              min: ingredient.minQuantity,
+              max: ingredient.hasMaxQuantity ? ingredient.maxQuantity : nil)
             regularAggregated[key] = current
           }
         }
@@ -777,8 +756,11 @@ extension RecipePerformanceContentView {
                   ? selectedOption.ingredient.measurementUnit : nil
               )
             }
-            if selectedOption.ingredient.hasQuantity, var current = regularAggregated[key] {
-              current.addQuantity(selectedOption.ingredient.quantity)
+            if var current = regularAggregated[key] {
+              current.addQuantity(
+                min: selectedOption.ingredient.minQuantity,
+                max: selectedOption.ingredient.hasMaxQuantity
+                  ? selectedOption.ingredient.maxQuantity : nil)
               regularAggregated[key] = current
             }
           }
@@ -815,8 +797,10 @@ extension RecipePerformanceContentView {
               )
             }
 
-            if ingredient.hasQuantity, var current = regularAggregated[key] {
-              current.addQuantity(ingredient.quantity)
+            if var current = regularAggregated[key] {
+              current.addQuantity(
+                min: ingredient.minQuantity,
+                max: ingredient.hasMaxQuantity ? ingredient.maxQuantity : nil)
               regularAggregated[key] = current
             }
           }
@@ -871,8 +855,11 @@ extension RecipePerformanceContentView {
                   sourceRecipeName: associatedRecipe.name
                 )
               }
-              if selectedOption.ingredient.hasQuantity, var current = regularAggregated[key] {
-                current.addQuantity(selectedOption.ingredient.quantity)
+              if var current = regularAggregated[key] {
+                current.addQuantity(
+                  min: selectedOption.ingredient.minQuantity,
+                  max: selectedOption.ingredient.hasMaxQuantity
+                    ? selectedOption.ingredient.maxQuantity : nil)
                 regularAggregated[key] = current
               }
             }
@@ -952,9 +939,9 @@ extension RecipePerformanceContentView {
           measurementUnit: ingredient.hasMeasurementUnit ? ingredient.measurementUnit : nil
         )
 
-        if ingredient.hasQuantity {
-          aggregated.addQuantity(ingredient.quantity)
-        }
+        aggregated.addQuantity(
+          min: ingredient.minQuantity, max: ingredient.hasMaxQuantity ? ingredient.maxQuantity : nil
+        )
 
         options.append(
           IngredientOption(
@@ -1041,9 +1028,9 @@ extension RecipePerformanceContentView {
           type: .instrument
         )
 
-        if instrument.hasQuantity {
-          aggregated.addQuantity(instrument.quantity)
-        }
+        aggregated.addQuantity(
+          min: instrument.minQuantity, max: instrument.hasMaxQuantity ? instrument.maxQuantity : nil
+        )
 
         options.append(
           InstrumentOption(
@@ -1129,9 +1116,8 @@ extension RecipePerformanceContentView {
           type: .vessel
         )
 
-        if vessel.hasQuantity {
-          aggregated.addQuantity(vessel.quantity)
-        }
+        aggregated.addQuantity(
+          min: vessel.minQuantity, max: vessel.hasMaxQuantity ? vessel.maxQuantity : nil)
 
         options.append(
           VesselOption(

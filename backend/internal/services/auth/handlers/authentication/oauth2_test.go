@@ -8,13 +8,13 @@ import (
 	"time"
 
 	mockauthn "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/mock"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/paseto"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	identitymanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager/mock"
 	oauthmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/testutils"
 
+	"github.com/primandproper/platform/authentication/tokens/paseto"
 	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	"github.com/primandproper/platform/observability/tracing"
 	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
@@ -58,7 +58,7 @@ func TestProvideOAuth2ServerImplementation(T *testing.T) {
 
 		ctx := t.Context()
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
-		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracerProvider, t.Name(), signingKey)
+		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracerProvider, "dinner-done-better", t.Name(), signingKey)
 		require.NoError(t, err)
 
 		cfg := &OAuth2Config{
@@ -189,12 +189,10 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"CredentialsAreValid",
+			"PasswordMatches",
 			testutils.ContextMatcher,
 			user.HashedPassword,
 			"password",
-			"",
-			"",
 		).Return(true, nil)
 
 		dataManager := &identitymanagermock.IdentityDataManager{}
@@ -250,12 +248,10 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"CredentialsAreValid",
+			"PasswordMatches",
 			testutils.ContextMatcher,
 			user.HashedPassword,
 			"wrong-password",
-			"",
-			"",
 		).Return(false, nil)
 
 		dataManager := &identitymanagermock.IdentityDataManager{}
@@ -286,12 +282,10 @@ func TestBuildPasswordAuthorizationHandler(T *testing.T) {
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"CredentialsAreValid",
+			"PasswordMatches",
 			testutils.ContextMatcher,
 			user.HashedPassword,
 			"password",
-			"",
-			"",
 		).Return(false, errors.New("validation error"))
 
 		dataManager := &identitymanagermock.IdentityDataManager{}
@@ -325,11 +319,11 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 		tracer := tracing.NewTracerForTest("test")
 
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
-		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracingnoop.NewTracerProvider(), t.Name(), signingKey)
+		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracingnoop.NewTracerProvider(), "dinner-done-better", t.Name(), signingKey)
 		require.NoError(t, err)
 
 		user := fakes.BuildFakeUser()
-		token, _, err := tokenIssuer.IssueToken(ctx, user, time.Hour, "", "")
+		token, _, err := tokenIssuer.IssueToken(ctx, user.ID, time.Hour, nil)
 		require.NoError(t, err)
 
 		req := &http.Request{
@@ -356,7 +350,7 @@ func TestBuildUserAuthorizationHandler(T *testing.T) {
 		tracer := tracing.NewTracerForTest("test")
 
 		signingKey := random.MustGenerateRawBytes(ctx, 32)
-		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracingnoop.NewTracerProvider(), t.Name(), signingKey)
+		tokenIssuer, err := paseto.NewPASETOSigner(logger, tracingnoop.NewTracerProvider(), "dinner-done-better", t.Name(), signingKey)
 		require.NoError(t, err)
 
 		req := &http.Request{

@@ -13,7 +13,6 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/numbers"
 	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
 	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
@@ -87,11 +86,10 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
-																Ingredient: onion,
-																Quantity: numbers.MinRange[float32]{
-																	Max: new(float32(100)),
-																	Min: 100,
-																},
+																Ingredient:  onion,
+																MinQuantity: 100,
+
+																MaxQuantity:     new(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -116,11 +114,10 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
-																Ingredient: carrot,
-																Quantity: numbers.MinRange[float32]{
-																	Max: new(float32(100)),
-																	Min: 100,
-																},
+																Ingredient:  carrot,
+																MinQuantity: 100,
+
+																MaxQuantity:     new(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -145,11 +142,10 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
-																Ingredient: celery,
-																Quantity: numbers.MinRange[float32]{
-																	Max: new(float32(100)),
-																	Min: 100,
-																},
+																Ingredient:  celery,
+																MinQuantity: 100,
+
+																MaxQuantity:     new(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -174,11 +170,10 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
-																Ingredient: salt,
-																Quantity: numbers.MinRange[float32]{
-																	Max: new(float32(100)),
-																	Min: 100,
-																},
+																Ingredient:  salt,
+																MinQuantity: 100,
+
+																MaxQuantity:     new(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -203,11 +198,10 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
-																Ingredient: onion,
-																Quantity: numbers.MinRange[float32]{
-																	Max: new(float32(100)),
-																	Min: 100,
-																},
+																Ingredient:  onion,
+																MinQuantity: 100,
+
+																MaxQuantity:     new(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -235,40 +229,36 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(200)),
-					Min: 200,
-				},
+				MinQuantityNeeded:      200,
+
+				MaxQuantityNeeded: new(float32(200)),
 			},
 			{
 				Status:                 mealplanning.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(100)),
-					Min: 100,
-				},
+				MinQuantityNeeded:      100,
+
+				MaxQuantityNeeded: new(float32(100)),
 			},
 			{
 				Status:                 mealplanning.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(100)),
-					Min: 100,
-				},
+				MinQuantityNeeded:      100,
+
+				MaxQuantityNeeded: new(float32(100)),
 			},
 			{
 				Status:                 mealplanning.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
-				QuantityNeeded: numbers.MinRange[float32]{
-					Max: new(float32(100)),
-					Min: 100,
-				},
+				MinQuantityNeeded:      100,
+
+				MaxQuantityNeeded: new(float32(100)),
 			},
 		}
 

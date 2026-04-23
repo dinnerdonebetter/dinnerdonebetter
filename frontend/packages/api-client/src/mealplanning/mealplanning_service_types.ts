@@ -7,17 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
 import { Comment, CommentCreationRequestInput } from '../comments/comments_messages';
-import {
-  Float32RangeWithOptionalMax,
-  Float32RangeWithOptionalMaxUpdateRequestInput,
-  OptionalFloat32Range,
-  OptionalUint32Range,
-  ResponseDetails,
-  Uint16RangeWithOptionalMax,
-  Uint16RangeWithOptionalMaxUpdateRequestInput,
-  Uint32RangeWithOptionalMax,
-  Uint32RangeWithOptionalMaxUpdateRequestInput,
-} from '../common';
+import { ResponseDetails } from '../common';
 import { Pagination, QueryFilter } from '../filtering';
 import { Timestamp } from '../google/protobuf/timestamp';
 import { UploadRequest } from '../uploaded_media/uploaded_media_messages';
@@ -94,7 +84,8 @@ import {
 export const protobufPackage = 'mealplanning';
 
 export interface ValidIngredientCreationRequestInput {
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
   warning: string;
   iconPath: string;
   pluralName: string;
@@ -150,14 +141,16 @@ export interface ValidIngredientMeasurementUnitCreationRequestInput {
   notes: string;
   validMeasurementUnitId: string;
   validIngredientId: string;
-  allowableQuantity: Float32RangeWithOptionalMax | undefined;
+  minAllowableQuantity: number;
+  maxAllowableQuantity?: number | undefined;
 }
 
 export interface ValidIngredientMeasurementUnitUpdateRequestInput {
   notes?: string | undefined;
   validMeasurementUnitId?: string | undefined;
   validIngredientId?: string | undefined;
-  allowableQuantity?: Float32RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minAllowableQuantity?: number | undefined;
+  maxAllowableQuantity?: number | undefined;
 }
 
 export interface ValidIngredientPreparationCreationRequestInput {
@@ -173,8 +166,10 @@ export interface ValidIngredientPreparationUpdateRequestInput {
 }
 
 export interface ValidPrepTaskConfigCreationRequestInput {
-  storageDurationInSeconds: Uint32RangeWithOptionalMax | undefined;
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
+  minStorageDurationInSeconds: number;
+  maxStorageDurationInSeconds?: number | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
   storageType: string;
   storageInstructions: string;
   notes: string;
@@ -184,8 +179,10 @@ export interface ValidPrepTaskConfigCreationRequestInput {
 }
 
 export interface ValidPrepTaskConfigUpdateRequestInput {
-  storageDurationInSeconds: Uint32RangeWithOptionalMaxUpdateRequestInput | undefined;
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
+  minStorageDurationInSeconds?: number | undefined;
+  maxStorageDurationInSeconds?: number | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
   storageType?: string | undefined;
   storageInstructions?: string | undefined;
   notes?: string | undefined;
@@ -244,7 +241,8 @@ export interface ValidIngredientUpdateRequestInput {
   pluralName?: string | undefined;
   animalDerived?: boolean | undefined;
   restrictToPreparations?: boolean | undefined;
-  storageTemperatureInCelsius?: OptionalFloat32Range | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
   storageInstructions?: string | undefined;
   slug?: string | undefined;
   containsAlcohol?: boolean | undefined;
@@ -323,9 +321,12 @@ export interface ValidMeasurementUnitUpdateRequestInput {
 }
 
 export interface ValidPreparationCreationRequestInput {
-  instrumentCount: Uint16RangeWithOptionalMax | undefined;
-  ingredientCount: Uint16RangeWithOptionalMax | undefined;
-  vesselCount: Uint16RangeWithOptionalMax | undefined;
+  minInstrumentCount: number;
+  maxInstrumentCount?: number | undefined;
+  minIngredientCount: number;
+  maxIngredientCount?: number | undefined;
+  minVesselCount: number;
+  maxVesselCount?: number | undefined;
   iconPath: string;
   pastTense: string;
   slug: string;
@@ -353,9 +354,12 @@ export interface ValidPreparationInstrumentUpdateRequestInput {
 }
 
 export interface ValidPreparationUpdateRequestInput {
-  instrumentCount?: Uint16RangeWithOptionalMaxUpdateRequestInput | undefined;
-  ingredientCount?: Uint16RangeWithOptionalMaxUpdateRequestInput | undefined;
-  vesselCount?: Uint16RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minInstrumentCount?: number | undefined;
+  maxInstrumentCount?: number | undefined;
+  minIngredientCount?: number | undefined;
+  maxIngredientCount?: number | undefined;
+  minVesselCount?: number | undefined;
+  maxVesselCount?: number | undefined;
   name?: string | undefined;
   description?: string | undefined;
   iconPath?: string | undefined;
@@ -1440,7 +1444,8 @@ export interface RecipeCreationRequestInput {
   portionName: string;
   slug: string;
   yieldsComponentType: MealComponentType;
-  estimatedPortions: Float32RangeWithOptionalMax | undefined;
+  minEstimatedPortions: number;
+  maxEstimatedPortions?: number | undefined;
   prepTasks: RecipePrepTaskWithinRecipeCreationRequestInput[];
   steps: RecipeStepCreationRequestInput[];
   alsoCreateMeal: boolean;
@@ -1466,8 +1471,10 @@ export interface RecipeMediaUpdateRequestInput {
 }
 
 export interface RecipePrepTaskCreationRequestInput {
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
-  timeBufferBeforeRecipeInSeconds: Uint32RangeWithOptionalMax | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
+  minTimeBufferBeforeRecipeInSeconds: number;
+  maxTimeBufferBeforeRecipeInSeconds?: number | undefined;
   storageType: string;
   explicitStorageInstructions: string;
   notes: string;
@@ -1501,15 +1508,19 @@ export interface RecipePrepTaskUpdateRequestInput {
   name?: string | undefined;
   optional?: boolean | undefined;
   description?: string | undefined;
-  storageTemperatureInCelsius?: OptionalFloat32Range | undefined;
-  timeBufferBeforeRecipeInSeconds?: Uint32RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
+  minTimeBufferBeforeRecipeInSeconds?: number | undefined;
+  maxTimeBufferBeforeRecipeInSeconds?: number | undefined;
   belongsToRecipe?: string | undefined;
   taskSteps: RecipePrepTaskStepUpdateRequestInput[];
 }
 
 export interface RecipePrepTaskWithinRecipeCreationRequestInput {
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
-  timeBufferBeforeRecipeInSeconds: Uint32RangeWithOptionalMax | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
+  minTimeBufferBeforeRecipeInSeconds: number;
+  maxTimeBufferBeforeRecipeInSeconds?: number | undefined;
   storageType: string;
   name: string;
   description: string;
@@ -1539,7 +1550,6 @@ export interface RecipeRatingUpdateRequestInput {
   instructions?: number | undefined;
   overall?: number | undefined;
   notes?: string | undefined;
-  byUser?: string | undefined;
 }
 
 export interface RecipeStepCompletionConditionCreationRequestInput {
@@ -1570,8 +1580,10 @@ export interface RecipeStepCompletionConditionUpdateRequestInput {
 }
 
 export interface RecipeStepCreationRequestInput {
-  estimatedTimeInSeconds: OptionalUint32Range | undefined;
-  temperatureInCelsius: OptionalFloat32Range | undefined;
+  minEstimatedTimeInSeconds?: number | undefined;
+  maxEstimatedTimeInSeconds?: number | undefined;
+  minTemperatureInCelsius?: number | undefined;
+  maxTemperatureInCelsius?: number | undefined;
   preparationId: string;
   notes: string;
   conditionExpression: string;
@@ -1596,7 +1608,8 @@ export interface RecipeStepIngredientCreationRequestInput {
   ingredientNotes: string;
   name: string;
   quantityNotes: string;
-  quantity: Float32RangeWithOptionalMax | undefined;
+  minQuantity: number;
+  maxQuantity?: number | undefined;
   optionIndex: number;
   optional: boolean;
   toTaste: boolean;
@@ -1615,7 +1628,8 @@ export interface RecipeStepIngredientUpdateRequestInput {
   quantityNotes?: string | undefined;
   ingredientNotes?: string | undefined;
   belongsToRecipeStep?: string | undefined;
-  quantity?: Float32RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minQuantity?: number | undefined;
+  maxQuantity?: number | undefined;
   optionIndex?: number | undefined;
   vesselIndex?: number | undefined;
   toTaste?: boolean | undefined;
@@ -1629,7 +1643,8 @@ export interface RecipeStepInstrumentCreationRequestInput {
   recipeStepProductId?: string | undefined;
   productOfRecipeStepIndex?: number | undefined;
   productOfRecipeStepProductIndex?: number | undefined;
-  quantity: Uint32RangeWithOptionalMax | undefined;
+  minQuantity: number;
+  maxQuantity?: number | undefined;
   notes: string;
   name: string;
   optionIndex: number;
@@ -1649,16 +1664,21 @@ export interface RecipeStepInstrumentUpdateRequestInput {
   name?: string | undefined;
   optional?: boolean | undefined;
   optionIndex?: number | undefined;
-  quantity?: Uint32RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minQuantity?: number | undefined;
+  maxQuantity?: number | undefined;
   index?: number | undefined;
   scaleFactor?: number | undefined;
 }
 
 export interface RecipeStepProductCreationRequestInput {
-  storageTemperatureInCelsius: OptionalFloat32Range | undefined;
-  storageDurationInSeconds: OptionalUint32Range | undefined;
-  measurementQuantity: OptionalFloat32Range | undefined;
-  itemQuantity: OptionalFloat32Range | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
+  minStorageDurationInSeconds?: number | undefined;
+  maxStorageDurationInSeconds?: number | undefined;
+  minMeasurementQuantity?: number | undefined;
+  maxMeasurementQuantity?: number | undefined;
+  minItemQuantity?: number | undefined;
+  maxItemQuantity?: number | undefined;
   measurementUnitId?: string | undefined;
   containedInVesselIndex?: number | undefined;
   quantityNotes: string;
@@ -1677,10 +1697,14 @@ export interface RecipeStepProductUpdateRequestInput {
   measurementUnitId?: string | undefined;
   quantityNotes?: string | undefined;
   belongsToRecipeStep?: string | undefined;
-  storageTemperatureInCelsius?: OptionalFloat32Range | undefined;
-  storageDurationInSeconds?: OptionalUint32Range | undefined;
-  measurementQuantity?: OptionalFloat32Range | undefined;
-  itemQuantity?: OptionalFloat32Range | undefined;
+  minStorageTemperatureInCelsius?: number | undefined;
+  maxStorageTemperatureInCelsius?: number | undefined;
+  minStorageDurationInSeconds?: number | undefined;
+  maxStorageDurationInSeconds?: number | undefined;
+  minMeasurementQuantity?: number | undefined;
+  maxMeasurementQuantity?: number | undefined;
+  minItemQuantity?: number | undefined;
+  maxItemQuantity?: number | undefined;
   compostable?: boolean | undefined;
   storageInstructions?: string | undefined;
   isLiquid?: boolean | undefined;
@@ -1690,8 +1714,10 @@ export interface RecipeStepProductUpdateRequestInput {
 }
 
 export interface RecipeStepUpdateRequestInput {
-  estimatedTimeInSeconds?: OptionalUint32Range | undefined;
-  temperatureInCelsius?: OptionalFloat32Range | undefined;
+  minEstimatedTimeInSeconds?: number | undefined;
+  maxEstimatedTimeInSeconds?: number | undefined;
+  minTemperatureInCelsius?: number | undefined;
+  maxTemperatureInCelsius?: number | undefined;
   notes?: string | undefined;
   preparation?: ValidPreparation | undefined;
   index?: number | undefined;
@@ -1706,7 +1732,8 @@ export interface RecipeStepVesselCreationRequestInput {
   recipeStepProductId?: string | undefined;
   productOfRecipeStepIndex?: number | undefined;
   productOfRecipeStepProductIndex?: number | undefined;
-  quantity: Uint16RangeWithOptionalMax | undefined;
+  minQuantity: number;
+  maxQuantity?: number | undefined;
   name: string;
   notes: string;
   vesselPreposition: string;
@@ -1723,7 +1750,8 @@ export interface RecipeStepVesselUpdateRequestInput {
   notes?: string | undefined;
   belongsToRecipeStep?: string | undefined;
   vesselId?: string | undefined;
-  quantity?: Uint16RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minQuantity?: number | undefined;
+  maxQuantity?: number | undefined;
   vesselPreposition?: string | undefined;
   unavailableAfterStep?: boolean | undefined;
   index?: number | undefined;
@@ -1738,7 +1766,8 @@ export interface RecipeUpdateRequestInput {
   sourceIsbn?: string | undefined;
   description?: string | undefined;
   inspiredByRecipeId?: string | undefined;
-  estimatedPortions?: Float32RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minEstimatedPortions?: number | undefined;
+  maxEstimatedPortions?: number | undefined;
   portionName?: string | undefined;
   pluralPortionName?: string | undefined;
   eligibleForMeals?: boolean | undefined;
@@ -2326,7 +2355,8 @@ export interface MealComponentUpdateRequestInput {
 }
 
 export interface MealCreationRequestInput {
-  estimatedPortions: Float32RangeWithOptionalMax | undefined;
+  minEstimatedPortions: number;
+  maxEstimatedPortions?: number | undefined;
   name: string;
   description: string;
   components: MealComponentCreationRequestInput[];
@@ -2367,7 +2397,8 @@ export interface MealPlanGroceryListItemCreationRequestInput {
   validIngredientId: string;
   validMeasurementUnitId: string;
   statusExplanation: string;
-  quantityNeeded: Float32RangeWithOptionalMax | undefined;
+  minQuantityNeeded: number;
+  maxQuantityNeeded?: number | undefined;
 }
 
 export interface MealPlanGroceryListItemUpdateRequestInput {
@@ -2380,7 +2411,8 @@ export interface MealPlanGroceryListItemUpdateRequestInput {
   purchasedUpc?: string | undefined;
   purchasePrice?: number | undefined;
   status?: MealPlanGroceryListItemStatus | undefined;
-  quantityNeeded?: Float32RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minQuantityNeeded?: number | undefined;
+  maxQuantityNeeded?: number | undefined;
 }
 
 export interface MealPlanRecipeOptionSelectionCreationRequestInput {
@@ -2497,7 +2529,8 @@ export interface MealUpdateRequestInput {
   name?: string | undefined;
   description?: string | undefined;
   createdByUser?: string | undefined;
-  estimatedPortions?: Float32RangeWithOptionalMaxUpdateRequestInput | undefined;
+  minEstimatedPortions?: number | undefined;
+  maxEstimatedPortions?: number | undefined;
   eligibleForMealPlans?: boolean | undefined;
   components: MealComponentUpdateRequestInput[];
 }
@@ -3251,7 +3284,8 @@ export interface AddCommentToRecipeResponse {
 
 function createBaseValidIngredientCreationRequestInput(): ValidIngredientCreationRequestInput {
   return {
-    storageTemperatureInCelsius: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
     warning: '',
     iconPath: '',
     pluralName: '',
@@ -3289,8 +3323,11 @@ function createBaseValidIngredientCreationRequestInput(): ValidIngredientCreatio
 
 export const ValidIngredientCreationRequestInput: MessageFns<ValidIngredientCreationRequestInput> = {
   encode(message: ValidIngredientCreationRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(10).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(13).float(message.minStorageTemperatureInCelsius);
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(277).float(message.maxStorageTemperatureInCelsius);
     }
     if (message.warning !== '') {
       writer.uint32(18).string(message.warning);
@@ -3399,11 +3436,19 @@ export const ValidIngredientCreationRequestInput: MessageFns<ValidIngredientCrea
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 13) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 34: {
+          if (tag !== 277) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 2: {
@@ -3673,10 +3718,15 @@ export const ValidIngredientCreationRequestInput: MessageFns<ValidIngredientCrea
 
   fromJSON(object: any): ValidIngredientCreationRequestInput {
     return {
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
+          : undefined,
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
       warning: isSet(object.warning) ? globalThis.String(object.warning) : '',
       iconPath: isSet(object.iconPath)
@@ -3827,8 +3877,11 @@ export const ValidIngredientCreationRequestInput: MessageFns<ValidIngredientCrea
 
   toJSON(message: ValidIngredientCreationRequestInput): unknown {
     const obj: any = {};
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
     if (message.warning !== '') {
       obj.warning = message.warning;
@@ -3938,10 +3991,8 @@ export const ValidIngredientCreationRequestInput: MessageFns<ValidIngredientCrea
     object: I,
   ): ValidIngredientCreationRequestInput {
     const message = createBaseValidIngredientCreationRequestInput();
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
     message.warning = object.warning ?? '';
     message.iconPath = object.iconPath ?? '';
     message.pluralName = object.pluralName ?? '';
@@ -4261,7 +4312,13 @@ export const ValidIngredientGroupUpdateRequestInput: MessageFns<ValidIngredientG
 };
 
 function createBaseValidIngredientMeasurementUnitCreationRequestInput(): ValidIngredientMeasurementUnitCreationRequestInput {
-  return { notes: '', validMeasurementUnitId: '', validIngredientId: '', allowableQuantity: undefined };
+  return {
+    notes: '',
+    validMeasurementUnitId: '',
+    validIngredientId: '',
+    minAllowableQuantity: 0,
+    maxAllowableQuantity: undefined,
+  };
 }
 
 export const ValidIngredientMeasurementUnitCreationRequestInput: MessageFns<ValidIngredientMeasurementUnitCreationRequestInput> =
@@ -4279,8 +4336,11 @@ export const ValidIngredientMeasurementUnitCreationRequestInput: MessageFns<Vali
       if (message.validIngredientId !== '') {
         writer.uint32(26).string(message.validIngredientId);
       }
-      if (message.allowableQuantity !== undefined) {
-        Float32RangeWithOptionalMax.encode(message.allowableQuantity, writer.uint32(34).fork()).join();
+      if (message.minAllowableQuantity !== 0) {
+        writer.uint32(37).float(message.minAllowableQuantity);
+      }
+      if (message.maxAllowableQuantity !== undefined) {
+        writer.uint32(45).float(message.maxAllowableQuantity);
       }
       return writer;
     },
@@ -4317,11 +4377,19 @@ export const ValidIngredientMeasurementUnitCreationRequestInput: MessageFns<Vali
             continue;
           }
           case 4: {
-            if (tag !== 34) {
+            if (tag !== 37) {
               break;
             }
 
-            message.allowableQuantity = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+            message.minAllowableQuantity = reader.float();
+            continue;
+          }
+          case 5: {
+            if (tag !== 45) {
+              break;
+            }
+
+            message.maxAllowableQuantity = reader.float();
             continue;
           }
         }
@@ -4346,10 +4414,15 @@ export const ValidIngredientMeasurementUnitCreationRequestInput: MessageFns<Vali
           : isSet(object.valid_ingredient_id)
             ? globalThis.String(object.valid_ingredient_id)
             : '',
-        allowableQuantity: isSet(object.allowableQuantity)
-          ? Float32RangeWithOptionalMax.fromJSON(object.allowableQuantity)
-          : isSet(object.allowable_quantity)
-            ? Float32RangeWithOptionalMax.fromJSON(object.allowable_quantity)
+        minAllowableQuantity: isSet(object.minAllowableQuantity)
+          ? globalThis.Number(object.minAllowableQuantity)
+          : isSet(object.min_allowable_quantity)
+            ? globalThis.Number(object.min_allowable_quantity)
+            : 0,
+        maxAllowableQuantity: isSet(object.maxAllowableQuantity)
+          ? globalThis.Number(object.maxAllowableQuantity)
+          : isSet(object.max_allowable_quantity)
+            ? globalThis.Number(object.max_allowable_quantity)
             : undefined,
       };
     },
@@ -4365,8 +4438,11 @@ export const ValidIngredientMeasurementUnitCreationRequestInput: MessageFns<Vali
       if (message.validIngredientId !== '') {
         obj.validIngredientId = message.validIngredientId;
       }
-      if (message.allowableQuantity !== undefined) {
-        obj.allowableQuantity = Float32RangeWithOptionalMax.toJSON(message.allowableQuantity);
+      if (message.minAllowableQuantity !== 0) {
+        obj.minAllowableQuantity = message.minAllowableQuantity;
+      }
+      if (message.maxAllowableQuantity !== undefined) {
+        obj.maxAllowableQuantity = message.maxAllowableQuantity;
       }
       return obj;
     },
@@ -4383,10 +4459,8 @@ export const ValidIngredientMeasurementUnitCreationRequestInput: MessageFns<Vali
       message.notes = object.notes ?? '';
       message.validMeasurementUnitId = object.validMeasurementUnitId ?? '';
       message.validIngredientId = object.validIngredientId ?? '';
-      message.allowableQuantity =
-        object.allowableQuantity !== undefined && object.allowableQuantity !== null
-          ? Float32RangeWithOptionalMax.fromPartial(object.allowableQuantity)
-          : undefined;
+      message.minAllowableQuantity = object.minAllowableQuantity ?? 0;
+      message.maxAllowableQuantity = object.maxAllowableQuantity ?? undefined;
       return message;
     },
   };
@@ -4396,7 +4470,8 @@ function createBaseValidIngredientMeasurementUnitUpdateRequestInput(): ValidIngr
     notes: undefined,
     validMeasurementUnitId: undefined,
     validIngredientId: undefined,
-    allowableQuantity: undefined,
+    minAllowableQuantity: undefined,
+    maxAllowableQuantity: undefined,
   };
 }
 
@@ -4415,11 +4490,11 @@ export const ValidIngredientMeasurementUnitUpdateRequestInput: MessageFns<ValidI
       if (message.validIngredientId !== undefined) {
         writer.uint32(26).string(message.validIngredientId);
       }
-      if (message.allowableQuantity !== undefined) {
-        Float32RangeWithOptionalMaxUpdateRequestInput.encode(
-          message.allowableQuantity,
-          writer.uint32(34).fork(),
-        ).join();
+      if (message.minAllowableQuantity !== undefined) {
+        writer.uint32(37).float(message.minAllowableQuantity);
+      }
+      if (message.maxAllowableQuantity !== undefined) {
+        writer.uint32(45).float(message.maxAllowableQuantity);
       }
       return writer;
     },
@@ -4456,11 +4531,19 @@ export const ValidIngredientMeasurementUnitUpdateRequestInput: MessageFns<ValidI
             continue;
           }
           case 4: {
-            if (tag !== 34) {
+            if (tag !== 37) {
               break;
             }
 
-            message.allowableQuantity = Float32RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+            message.minAllowableQuantity = reader.float();
+            continue;
+          }
+          case 5: {
+            if (tag !== 45) {
+              break;
+            }
+
+            message.maxAllowableQuantity = reader.float();
             continue;
           }
         }
@@ -4485,10 +4568,15 @@ export const ValidIngredientMeasurementUnitUpdateRequestInput: MessageFns<ValidI
           : isSet(object.valid_ingredient_id)
             ? globalThis.String(object.valid_ingredient_id)
             : undefined,
-        allowableQuantity: isSet(object.allowableQuantity)
-          ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.allowableQuantity)
-          : isSet(object.allowable_quantity)
-            ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.allowable_quantity)
+        minAllowableQuantity: isSet(object.minAllowableQuantity)
+          ? globalThis.Number(object.minAllowableQuantity)
+          : isSet(object.min_allowable_quantity)
+            ? globalThis.Number(object.min_allowable_quantity)
+            : undefined,
+        maxAllowableQuantity: isSet(object.maxAllowableQuantity)
+          ? globalThis.Number(object.maxAllowableQuantity)
+          : isSet(object.max_allowable_quantity)
+            ? globalThis.Number(object.max_allowable_quantity)
             : undefined,
       };
     },
@@ -4504,8 +4592,11 @@ export const ValidIngredientMeasurementUnitUpdateRequestInput: MessageFns<ValidI
       if (message.validIngredientId !== undefined) {
         obj.validIngredientId = message.validIngredientId;
       }
-      if (message.allowableQuantity !== undefined) {
-        obj.allowableQuantity = Float32RangeWithOptionalMaxUpdateRequestInput.toJSON(message.allowableQuantity);
+      if (message.minAllowableQuantity !== undefined) {
+        obj.minAllowableQuantity = message.minAllowableQuantity;
+      }
+      if (message.maxAllowableQuantity !== undefined) {
+        obj.maxAllowableQuantity = message.maxAllowableQuantity;
       }
       return obj;
     },
@@ -4522,10 +4613,8 @@ export const ValidIngredientMeasurementUnitUpdateRequestInput: MessageFns<ValidI
       message.notes = object.notes ?? undefined;
       message.validMeasurementUnitId = object.validMeasurementUnitId ?? undefined;
       message.validIngredientId = object.validIngredientId ?? undefined;
-      message.allowableQuantity =
-        object.allowableQuantity !== undefined && object.allowableQuantity !== null
-          ? Float32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.allowableQuantity)
-          : undefined;
+      message.minAllowableQuantity = object.minAllowableQuantity ?? undefined;
+      message.maxAllowableQuantity = object.maxAllowableQuantity ?? undefined;
       return message;
     },
   };
@@ -4747,8 +4836,10 @@ export const ValidIngredientPreparationUpdateRequestInput: MessageFns<ValidIngre
 
 function createBaseValidPrepTaskConfigCreationRequestInput(): ValidPrepTaskConfigCreationRequestInput {
   return {
-    storageDurationInSeconds: undefined,
-    storageTemperatureInCelsius: undefined,
+    minStorageDurationInSeconds: 0,
+    maxStorageDurationInSeconds: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
     storageType: '',
     storageInstructions: '',
     notes: '',
@@ -4760,11 +4851,17 @@ function createBaseValidPrepTaskConfigCreationRequestInput(): ValidPrepTaskConfi
 
 export const ValidPrepTaskConfigCreationRequestInput: MessageFns<ValidPrepTaskConfigCreationRequestInput> = {
   encode(message: ValidPrepTaskConfigCreationRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.storageDurationInSeconds !== undefined) {
-      Uint32RangeWithOptionalMax.encode(message.storageDurationInSeconds, writer.uint32(10).fork()).join();
+    if (message.minStorageDurationInSeconds !== 0) {
+      writer.uint32(8).uint32(message.minStorageDurationInSeconds);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(18).fork()).join();
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      writer.uint32(72).uint32(message.maxStorageDurationInSeconds);
+    }
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(21).float(message.minStorageTemperatureInCelsius);
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(85).float(message.maxStorageTemperatureInCelsius);
     }
     if (message.storageType !== '') {
       writer.uint32(26).string(message.storageType);
@@ -4795,19 +4892,35 @@ export const ValidPrepTaskConfigCreationRequestInput: MessageFns<ValidPrepTaskCo
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.storageDurationInSeconds = Uint32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minStorageDurationInSeconds = reader.uint32();
+          continue;
+        }
+        case 9: {
+          if (tag !== 72) {
+            break;
+          }
+
+          message.maxStorageDurationInSeconds = reader.uint32();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 21) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 10: {
+          if (tag !== 85) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 3: {
@@ -4869,15 +4982,25 @@ export const ValidPrepTaskConfigCreationRequestInput: MessageFns<ValidPrepTaskCo
 
   fromJSON(object: any): ValidPrepTaskConfigCreationRequestInput {
     return {
-      storageDurationInSeconds: isSet(object.storageDurationInSeconds)
-        ? Uint32RangeWithOptionalMax.fromJSON(object.storageDurationInSeconds)
-        : isSet(object.storage_duration_in_seconds)
-          ? Uint32RangeWithOptionalMax.fromJSON(object.storage_duration_in_seconds)
+      minStorageDurationInSeconds: isSet(object.minStorageDurationInSeconds)
+        ? globalThis.Number(object.minStorageDurationInSeconds)
+        : isSet(object.min_storage_duration_in_seconds)
+          ? globalThis.Number(object.min_storage_duration_in_seconds)
+          : 0,
+      maxStorageDurationInSeconds: isSet(object.maxStorageDurationInSeconds)
+        ? globalThis.Number(object.maxStorageDurationInSeconds)
+        : isSet(object.max_storage_duration_in_seconds)
+          ? globalThis.Number(object.max_storage_duration_in_seconds)
           : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
+          : undefined,
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
       storageType: isSet(object.storageType)
         ? globalThis.String(object.storageType)
@@ -4906,11 +5029,17 @@ export const ValidPrepTaskConfigCreationRequestInput: MessageFns<ValidPrepTaskCo
 
   toJSON(message: ValidPrepTaskConfigCreationRequestInput): unknown {
     const obj: any = {};
-    if (message.storageDurationInSeconds !== undefined) {
-      obj.storageDurationInSeconds = Uint32RangeWithOptionalMax.toJSON(message.storageDurationInSeconds);
+    if (message.minStorageDurationInSeconds !== 0) {
+      obj.minStorageDurationInSeconds = Math.round(message.minStorageDurationInSeconds);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      obj.maxStorageDurationInSeconds = Math.round(message.maxStorageDurationInSeconds);
+    }
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
     if (message.storageType !== '') {
       obj.storageType = message.storageType;
@@ -4942,14 +5071,10 @@ export const ValidPrepTaskConfigCreationRequestInput: MessageFns<ValidPrepTaskCo
     object: I,
   ): ValidPrepTaskConfigCreationRequestInput {
     const message = createBaseValidPrepTaskConfigCreationRequestInput();
-    message.storageDurationInSeconds =
-      object.storageDurationInSeconds !== undefined && object.storageDurationInSeconds !== null
-        ? Uint32RangeWithOptionalMax.fromPartial(object.storageDurationInSeconds)
-        : undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
+    message.minStorageDurationInSeconds = object.minStorageDurationInSeconds ?? 0;
+    message.maxStorageDurationInSeconds = object.maxStorageDurationInSeconds ?? undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
     message.storageType = object.storageType ?? '';
     message.storageInstructions = object.storageInstructions ?? '';
     message.notes = object.notes ?? '';
@@ -4962,8 +5087,10 @@ export const ValidPrepTaskConfigCreationRequestInput: MessageFns<ValidPrepTaskCo
 
 function createBaseValidPrepTaskConfigUpdateRequestInput(): ValidPrepTaskConfigUpdateRequestInput {
   return {
-    storageDurationInSeconds: undefined,
-    storageTemperatureInCelsius: undefined,
+    minStorageDurationInSeconds: undefined,
+    maxStorageDurationInSeconds: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
     storageType: undefined,
     storageInstructions: undefined,
     notes: undefined,
@@ -4975,14 +5102,17 @@ function createBaseValidPrepTaskConfigUpdateRequestInput(): ValidPrepTaskConfigU
 
 export const ValidPrepTaskConfigUpdateRequestInput: MessageFns<ValidPrepTaskConfigUpdateRequestInput> = {
   encode(message: ValidPrepTaskConfigUpdateRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.storageDurationInSeconds !== undefined) {
-      Uint32RangeWithOptionalMaxUpdateRequestInput.encode(
-        message.storageDurationInSeconds,
-        writer.uint32(10).fork(),
-      ).join();
+    if (message.minStorageDurationInSeconds !== undefined) {
+      writer.uint32(8).uint32(message.minStorageDurationInSeconds);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(18).fork()).join();
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      writer.uint32(72).uint32(message.maxStorageDurationInSeconds);
+    }
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(21).float(message.minStorageTemperatureInCelsius);
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(85).float(message.maxStorageTemperatureInCelsius);
     }
     if (message.storageType !== undefined) {
       writer.uint32(26).string(message.storageType);
@@ -5013,22 +5143,35 @@ export const ValidPrepTaskConfigUpdateRequestInput: MessageFns<ValidPrepTaskConf
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.storageDurationInSeconds = Uint32RangeWithOptionalMaxUpdateRequestInput.decode(
-            reader,
-            reader.uint32(),
-          );
+          message.minStorageDurationInSeconds = reader.uint32();
+          continue;
+        }
+        case 9: {
+          if (tag !== 72) {
+            break;
+          }
+
+          message.maxStorageDurationInSeconds = reader.uint32();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 21) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 10: {
+          if (tag !== 85) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 3: {
@@ -5090,15 +5233,25 @@ export const ValidPrepTaskConfigUpdateRequestInput: MessageFns<ValidPrepTaskConf
 
   fromJSON(object: any): ValidPrepTaskConfigUpdateRequestInput {
     return {
-      storageDurationInSeconds: isSet(object.storageDurationInSeconds)
-        ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.storageDurationInSeconds)
-        : isSet(object.storage_duration_in_seconds)
-          ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.storage_duration_in_seconds)
+      minStorageDurationInSeconds: isSet(object.minStorageDurationInSeconds)
+        ? globalThis.Number(object.minStorageDurationInSeconds)
+        : isSet(object.min_storage_duration_in_seconds)
+          ? globalThis.Number(object.min_storage_duration_in_seconds)
           : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      maxStorageDurationInSeconds: isSet(object.maxStorageDurationInSeconds)
+        ? globalThis.Number(object.maxStorageDurationInSeconds)
+        : isSet(object.max_storage_duration_in_seconds)
+          ? globalThis.Number(object.max_storage_duration_in_seconds)
+          : undefined,
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
+          : undefined,
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
       storageType: isSet(object.storageType)
         ? globalThis.String(object.storageType)
@@ -5127,13 +5280,17 @@ export const ValidPrepTaskConfigUpdateRequestInput: MessageFns<ValidPrepTaskConf
 
   toJSON(message: ValidPrepTaskConfigUpdateRequestInput): unknown {
     const obj: any = {};
-    if (message.storageDurationInSeconds !== undefined) {
-      obj.storageDurationInSeconds = Uint32RangeWithOptionalMaxUpdateRequestInput.toJSON(
-        message.storageDurationInSeconds,
-      );
+    if (message.minStorageDurationInSeconds !== undefined) {
+      obj.minStorageDurationInSeconds = Math.round(message.minStorageDurationInSeconds);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      obj.maxStorageDurationInSeconds = Math.round(message.maxStorageDurationInSeconds);
+    }
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
     if (message.storageType !== undefined) {
       obj.storageType = message.storageType;
@@ -5165,14 +5322,10 @@ export const ValidPrepTaskConfigUpdateRequestInput: MessageFns<ValidPrepTaskConf
     object: I,
   ): ValidPrepTaskConfigUpdateRequestInput {
     const message = createBaseValidPrepTaskConfigUpdateRequestInput();
-    message.storageDurationInSeconds =
-      object.storageDurationInSeconds !== undefined && object.storageDurationInSeconds !== null
-        ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.storageDurationInSeconds)
-        : undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
+    message.minStorageDurationInSeconds = object.minStorageDurationInSeconds ?? undefined;
+    message.maxStorageDurationInSeconds = object.maxStorageDurationInSeconds ?? undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
     message.storageType = object.storageType ?? undefined;
     message.storageInstructions = object.storageInstructions ?? undefined;
     message.notes = object.notes ?? undefined;
@@ -5739,7 +5892,8 @@ function createBaseValidIngredientUpdateRequestInput(): ValidIngredientUpdateReq
     pluralName: undefined,
     animalDerived: undefined,
     restrictToPreparations: undefined,
-    storageTemperatureInCelsius: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
     storageInstructions: undefined,
     slug: undefined,
     containsAlcohol: undefined,
@@ -5815,8 +5969,11 @@ export const ValidIngredientUpdateRequestInput: MessageFns<ValidIngredientUpdate
     if (message.restrictToPreparations !== undefined) {
       writer.uint32(152).bool(message.restrictToPreparations);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(162).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(165).float(message.minStorageTemperatureInCelsius);
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(277).float(message.maxStorageTemperatureInCelsius);
     }
     if (message.storageInstructions !== undefined) {
       writer.uint32(170).string(message.storageInstructions);
@@ -6020,11 +6177,19 @@ export const ValidIngredientUpdateRequestInput: MessageFns<ValidIngredientUpdate
           continue;
         }
         case 20: {
-          if (tag !== 162) {
+          if (tag !== 165) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 34: {
+          if (tag !== 277) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 21: {
@@ -6225,10 +6390,15 @@ export const ValidIngredientUpdateRequestInput: MessageFns<ValidIngredientUpdate
         : isSet(object.restrict_to_preparations)
           ? globalThis.Boolean(object.restrict_to_preparations)
           : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
+          : undefined,
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
       storageInstructions: isSet(object.storageInstructions)
         ? globalThis.String(object.storageInstructions)
@@ -6353,8 +6523,11 @@ export const ValidIngredientUpdateRequestInput: MessageFns<ValidIngredientUpdate
     if (message.restrictToPreparations !== undefined) {
       obj.restrictToPreparations = message.restrictToPreparations;
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
+    }
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
     if (message.storageInstructions !== undefined) {
       obj.storageInstructions = message.storageInstructions;
@@ -6426,10 +6599,8 @@ export const ValidIngredientUpdateRequestInput: MessageFns<ValidIngredientUpdate
     message.pluralName = object.pluralName ?? undefined;
     message.animalDerived = object.animalDerived ?? undefined;
     message.restrictToPreparations = object.restrictToPreparations ?? undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
     message.storageInstructions = object.storageInstructions ?? undefined;
     message.slug = object.slug ?? undefined;
     message.containsAlcohol = object.containsAlcohol ?? undefined;
@@ -7551,9 +7722,12 @@ export const ValidMeasurementUnitUpdateRequestInput: MessageFns<ValidMeasurement
 
 function createBaseValidPreparationCreationRequestInput(): ValidPreparationCreationRequestInput {
   return {
-    instrumentCount: undefined,
-    ingredientCount: undefined,
-    vesselCount: undefined,
+    minInstrumentCount: 0,
+    maxInstrumentCount: undefined,
+    minIngredientCount: 0,
+    maxIngredientCount: undefined,
+    minVesselCount: 0,
+    maxVesselCount: undefined,
     iconPath: '',
     pastTense: '',
     slug: '',
@@ -7571,14 +7745,23 @@ function createBaseValidPreparationCreationRequestInput(): ValidPreparationCreat
 
 export const ValidPreparationCreationRequestInput: MessageFns<ValidPreparationCreationRequestInput> = {
   encode(message: ValidPreparationCreationRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.instrumentCount !== undefined) {
-      Uint16RangeWithOptionalMax.encode(message.instrumentCount, writer.uint32(10).fork()).join();
+    if (message.minInstrumentCount !== 0) {
+      writer.uint32(8).uint32(message.minInstrumentCount);
     }
-    if (message.ingredientCount !== undefined) {
-      Uint16RangeWithOptionalMax.encode(message.ingredientCount, writer.uint32(18).fork()).join();
+    if (message.maxInstrumentCount !== undefined) {
+      writer.uint32(128).uint32(message.maxInstrumentCount);
     }
-    if (message.vesselCount !== undefined) {
-      Uint16RangeWithOptionalMax.encode(message.vesselCount, writer.uint32(26).fork()).join();
+    if (message.minIngredientCount !== 0) {
+      writer.uint32(16).uint32(message.minIngredientCount);
+    }
+    if (message.maxIngredientCount !== undefined) {
+      writer.uint32(136).uint32(message.maxIngredientCount);
+    }
+    if (message.minVesselCount !== 0) {
+      writer.uint32(24).uint32(message.minVesselCount);
+    }
+    if (message.maxVesselCount !== undefined) {
+      writer.uint32(144).uint32(message.maxVesselCount);
     }
     if (message.iconPath !== '') {
       writer.uint32(34).string(message.iconPath);
@@ -7627,27 +7810,51 @@ export const ValidPreparationCreationRequestInput: MessageFns<ValidPreparationCr
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.instrumentCount = Uint16RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minInstrumentCount = reader.uint32();
+          continue;
+        }
+        case 16: {
+          if (tag !== 128) {
+            break;
+          }
+
+          message.maxInstrumentCount = reader.uint32();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.ingredientCount = Uint16RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minIngredientCount = reader.uint32();
+          continue;
+        }
+        case 17: {
+          if (tag !== 136) {
+            break;
+          }
+
+          message.maxIngredientCount = reader.uint32();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.vesselCount = Uint16RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minVesselCount = reader.uint32();
+          continue;
+        }
+        case 18: {
+          if (tag !== 144) {
+            break;
+          }
+
+          message.maxVesselCount = reader.uint32();
           continue;
         }
         case 4: {
@@ -7757,20 +7964,35 @@ export const ValidPreparationCreationRequestInput: MessageFns<ValidPreparationCr
 
   fromJSON(object: any): ValidPreparationCreationRequestInput {
     return {
-      instrumentCount: isSet(object.instrumentCount)
-        ? Uint16RangeWithOptionalMax.fromJSON(object.instrumentCount)
-        : isSet(object.instrument_count)
-          ? Uint16RangeWithOptionalMax.fromJSON(object.instrument_count)
+      minInstrumentCount: isSet(object.minInstrumentCount)
+        ? globalThis.Number(object.minInstrumentCount)
+        : isSet(object.min_instrument_count)
+          ? globalThis.Number(object.min_instrument_count)
+          : 0,
+      maxInstrumentCount: isSet(object.maxInstrumentCount)
+        ? globalThis.Number(object.maxInstrumentCount)
+        : isSet(object.max_instrument_count)
+          ? globalThis.Number(object.max_instrument_count)
           : undefined,
-      ingredientCount: isSet(object.ingredientCount)
-        ? Uint16RangeWithOptionalMax.fromJSON(object.ingredientCount)
-        : isSet(object.ingredient_count)
-          ? Uint16RangeWithOptionalMax.fromJSON(object.ingredient_count)
+      minIngredientCount: isSet(object.minIngredientCount)
+        ? globalThis.Number(object.minIngredientCount)
+        : isSet(object.min_ingredient_count)
+          ? globalThis.Number(object.min_ingredient_count)
+          : 0,
+      maxIngredientCount: isSet(object.maxIngredientCount)
+        ? globalThis.Number(object.maxIngredientCount)
+        : isSet(object.max_ingredient_count)
+          ? globalThis.Number(object.max_ingredient_count)
           : undefined,
-      vesselCount: isSet(object.vesselCount)
-        ? Uint16RangeWithOptionalMax.fromJSON(object.vesselCount)
-        : isSet(object.vessel_count)
-          ? Uint16RangeWithOptionalMax.fromJSON(object.vessel_count)
+      minVesselCount: isSet(object.minVesselCount)
+        ? globalThis.Number(object.minVesselCount)
+        : isSet(object.min_vessel_count)
+          ? globalThis.Number(object.min_vessel_count)
+          : 0,
+      maxVesselCount: isSet(object.maxVesselCount)
+        ? globalThis.Number(object.maxVesselCount)
+        : isSet(object.max_vessel_count)
+          ? globalThis.Number(object.max_vessel_count)
           : undefined,
       iconPath: isSet(object.iconPath)
         ? globalThis.String(object.iconPath)
@@ -7825,14 +8047,23 @@ export const ValidPreparationCreationRequestInput: MessageFns<ValidPreparationCr
 
   toJSON(message: ValidPreparationCreationRequestInput): unknown {
     const obj: any = {};
-    if (message.instrumentCount !== undefined) {
-      obj.instrumentCount = Uint16RangeWithOptionalMax.toJSON(message.instrumentCount);
+    if (message.minInstrumentCount !== 0) {
+      obj.minInstrumentCount = Math.round(message.minInstrumentCount);
     }
-    if (message.ingredientCount !== undefined) {
-      obj.ingredientCount = Uint16RangeWithOptionalMax.toJSON(message.ingredientCount);
+    if (message.maxInstrumentCount !== undefined) {
+      obj.maxInstrumentCount = Math.round(message.maxInstrumentCount);
     }
-    if (message.vesselCount !== undefined) {
-      obj.vesselCount = Uint16RangeWithOptionalMax.toJSON(message.vesselCount);
+    if (message.minIngredientCount !== 0) {
+      obj.minIngredientCount = Math.round(message.minIngredientCount);
+    }
+    if (message.maxIngredientCount !== undefined) {
+      obj.maxIngredientCount = Math.round(message.maxIngredientCount);
+    }
+    if (message.minVesselCount !== 0) {
+      obj.minVesselCount = Math.round(message.minVesselCount);
+    }
+    if (message.maxVesselCount !== undefined) {
+      obj.maxVesselCount = Math.round(message.maxVesselCount);
     }
     if (message.iconPath !== '') {
       obj.iconPath = message.iconPath;
@@ -7882,18 +8113,12 @@ export const ValidPreparationCreationRequestInput: MessageFns<ValidPreparationCr
     object: I,
   ): ValidPreparationCreationRequestInput {
     const message = createBaseValidPreparationCreationRequestInput();
-    message.instrumentCount =
-      object.instrumentCount !== undefined && object.instrumentCount !== null
-        ? Uint16RangeWithOptionalMax.fromPartial(object.instrumentCount)
-        : undefined;
-    message.ingredientCount =
-      object.ingredientCount !== undefined && object.ingredientCount !== null
-        ? Uint16RangeWithOptionalMax.fromPartial(object.ingredientCount)
-        : undefined;
-    message.vesselCount =
-      object.vesselCount !== undefined && object.vesselCount !== null
-        ? Uint16RangeWithOptionalMax.fromPartial(object.vesselCount)
-        : undefined;
+    message.minInstrumentCount = object.minInstrumentCount ?? 0;
+    message.maxInstrumentCount = object.maxInstrumentCount ?? undefined;
+    message.minIngredientCount = object.minIngredientCount ?? 0;
+    message.maxIngredientCount = object.maxIngredientCount ?? undefined;
+    message.minVesselCount = object.minVesselCount ?? 0;
+    message.maxVesselCount = object.maxVesselCount ?? undefined;
     message.iconPath = object.iconPath ?? '';
     message.pastTense = object.pastTense ?? '';
     message.slug = object.slug ?? '';
@@ -8127,9 +8352,12 @@ export const ValidPreparationInstrumentUpdateRequestInput: MessageFns<ValidPrepa
 
 function createBaseValidPreparationUpdateRequestInput(): ValidPreparationUpdateRequestInput {
   return {
-    instrumentCount: undefined,
-    ingredientCount: undefined,
-    vesselCount: undefined,
+    minInstrumentCount: undefined,
+    maxInstrumentCount: undefined,
+    minIngredientCount: undefined,
+    maxIngredientCount: undefined,
+    minVesselCount: undefined,
+    maxVesselCount: undefined,
     name: undefined,
     description: undefined,
     iconPath: undefined,
@@ -8147,14 +8375,23 @@ function createBaseValidPreparationUpdateRequestInput(): ValidPreparationUpdateR
 
 export const ValidPreparationUpdateRequestInput: MessageFns<ValidPreparationUpdateRequestInput> = {
   encode(message: ValidPreparationUpdateRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.instrumentCount !== undefined) {
-      Uint16RangeWithOptionalMaxUpdateRequestInput.encode(message.instrumentCount, writer.uint32(10).fork()).join();
+    if (message.minInstrumentCount !== undefined) {
+      writer.uint32(8).uint32(message.minInstrumentCount);
     }
-    if (message.ingredientCount !== undefined) {
-      Uint16RangeWithOptionalMaxUpdateRequestInput.encode(message.ingredientCount, writer.uint32(18).fork()).join();
+    if (message.maxInstrumentCount !== undefined) {
+      writer.uint32(128).uint32(message.maxInstrumentCount);
     }
-    if (message.vesselCount !== undefined) {
-      Uint16RangeWithOptionalMaxUpdateRequestInput.encode(message.vesselCount, writer.uint32(26).fork()).join();
+    if (message.minIngredientCount !== undefined) {
+      writer.uint32(16).uint32(message.minIngredientCount);
+    }
+    if (message.maxIngredientCount !== undefined) {
+      writer.uint32(136).uint32(message.maxIngredientCount);
+    }
+    if (message.minVesselCount !== undefined) {
+      writer.uint32(24).uint32(message.minVesselCount);
+    }
+    if (message.maxVesselCount !== undefined) {
+      writer.uint32(144).uint32(message.maxVesselCount);
     }
     if (message.name !== undefined) {
       writer.uint32(34).string(message.name);
@@ -8203,27 +8440,51 @@ export const ValidPreparationUpdateRequestInput: MessageFns<ValidPreparationUpda
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.instrumentCount = Uint16RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minInstrumentCount = reader.uint32();
+          continue;
+        }
+        case 16: {
+          if (tag !== 128) {
+            break;
+          }
+
+          message.maxInstrumentCount = reader.uint32();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.ingredientCount = Uint16RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minIngredientCount = reader.uint32();
+          continue;
+        }
+        case 17: {
+          if (tag !== 136) {
+            break;
+          }
+
+          message.maxIngredientCount = reader.uint32();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.vesselCount = Uint16RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minVesselCount = reader.uint32();
+          continue;
+        }
+        case 18: {
+          if (tag !== 144) {
+            break;
+          }
+
+          message.maxVesselCount = reader.uint32();
           continue;
         }
         case 4: {
@@ -8333,20 +8594,35 @@ export const ValidPreparationUpdateRequestInput: MessageFns<ValidPreparationUpda
 
   fromJSON(object: any): ValidPreparationUpdateRequestInput {
     return {
-      instrumentCount: isSet(object.instrumentCount)
-        ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.instrumentCount)
-        : isSet(object.instrument_count)
-          ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.instrument_count)
+      minInstrumentCount: isSet(object.minInstrumentCount)
+        ? globalThis.Number(object.minInstrumentCount)
+        : isSet(object.min_instrument_count)
+          ? globalThis.Number(object.min_instrument_count)
           : undefined,
-      ingredientCount: isSet(object.ingredientCount)
-        ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.ingredientCount)
-        : isSet(object.ingredient_count)
-          ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.ingredient_count)
+      maxInstrumentCount: isSet(object.maxInstrumentCount)
+        ? globalThis.Number(object.maxInstrumentCount)
+        : isSet(object.max_instrument_count)
+          ? globalThis.Number(object.max_instrument_count)
           : undefined,
-      vesselCount: isSet(object.vesselCount)
-        ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.vesselCount)
-        : isSet(object.vessel_count)
-          ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.vessel_count)
+      minIngredientCount: isSet(object.minIngredientCount)
+        ? globalThis.Number(object.minIngredientCount)
+        : isSet(object.min_ingredient_count)
+          ? globalThis.Number(object.min_ingredient_count)
+          : undefined,
+      maxIngredientCount: isSet(object.maxIngredientCount)
+        ? globalThis.Number(object.maxIngredientCount)
+        : isSet(object.max_ingredient_count)
+          ? globalThis.Number(object.max_ingredient_count)
+          : undefined,
+      minVesselCount: isSet(object.minVesselCount)
+        ? globalThis.Number(object.minVesselCount)
+        : isSet(object.min_vessel_count)
+          ? globalThis.Number(object.min_vessel_count)
+          : undefined,
+      maxVesselCount: isSet(object.maxVesselCount)
+        ? globalThis.Number(object.maxVesselCount)
+        : isSet(object.max_vessel_count)
+          ? globalThis.Number(object.max_vessel_count)
           : undefined,
       name: isSet(object.name) ? globalThis.String(object.name) : undefined,
       description: isSet(object.description) ? globalThis.String(object.description) : undefined,
@@ -8401,14 +8677,23 @@ export const ValidPreparationUpdateRequestInput: MessageFns<ValidPreparationUpda
 
   toJSON(message: ValidPreparationUpdateRequestInput): unknown {
     const obj: any = {};
-    if (message.instrumentCount !== undefined) {
-      obj.instrumentCount = Uint16RangeWithOptionalMaxUpdateRequestInput.toJSON(message.instrumentCount);
+    if (message.minInstrumentCount !== undefined) {
+      obj.minInstrumentCount = Math.round(message.minInstrumentCount);
     }
-    if (message.ingredientCount !== undefined) {
-      obj.ingredientCount = Uint16RangeWithOptionalMaxUpdateRequestInput.toJSON(message.ingredientCount);
+    if (message.maxInstrumentCount !== undefined) {
+      obj.maxInstrumentCount = Math.round(message.maxInstrumentCount);
     }
-    if (message.vesselCount !== undefined) {
-      obj.vesselCount = Uint16RangeWithOptionalMaxUpdateRequestInput.toJSON(message.vesselCount);
+    if (message.minIngredientCount !== undefined) {
+      obj.minIngredientCount = Math.round(message.minIngredientCount);
+    }
+    if (message.maxIngredientCount !== undefined) {
+      obj.maxIngredientCount = Math.round(message.maxIngredientCount);
+    }
+    if (message.minVesselCount !== undefined) {
+      obj.minVesselCount = Math.round(message.minVesselCount);
+    }
+    if (message.maxVesselCount !== undefined) {
+      obj.maxVesselCount = Math.round(message.maxVesselCount);
     }
     if (message.name !== undefined) {
       obj.name = message.name;
@@ -8458,18 +8743,12 @@ export const ValidPreparationUpdateRequestInput: MessageFns<ValidPreparationUpda
     object: I,
   ): ValidPreparationUpdateRequestInput {
     const message = createBaseValidPreparationUpdateRequestInput();
-    message.instrumentCount =
-      object.instrumentCount !== undefined && object.instrumentCount !== null
-        ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.instrumentCount)
-        : undefined;
-    message.ingredientCount =
-      object.ingredientCount !== undefined && object.ingredientCount !== null
-        ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.ingredientCount)
-        : undefined;
-    message.vesselCount =
-      object.vesselCount !== undefined && object.vesselCount !== null
-        ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.vesselCount)
-        : undefined;
+    message.minInstrumentCount = object.minInstrumentCount ?? undefined;
+    message.maxInstrumentCount = object.maxInstrumentCount ?? undefined;
+    message.minIngredientCount = object.minIngredientCount ?? undefined;
+    message.maxIngredientCount = object.maxIngredientCount ?? undefined;
+    message.minVesselCount = object.minVesselCount ?? undefined;
+    message.maxVesselCount = object.maxVesselCount ?? undefined;
     message.name = object.name ?? undefined;
     message.description = object.description ?? undefined;
     message.iconPath = object.iconPath ?? undefined;
@@ -27094,7 +27373,8 @@ function createBaseRecipeCreationRequestInput(): RecipeCreationRequestInput {
     portionName: '',
     slug: '',
     yieldsComponentType: 0,
-    estimatedPortions: undefined,
+    minEstimatedPortions: 0,
+    maxEstimatedPortions: undefined,
     prepTasks: [],
     steps: [],
     alsoCreateMeal: false,
@@ -27114,37 +27394,40 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
       writer.uint32(26).string(message.source);
     }
     if (message.sourceIsbn !== '') {
-      writer.uint32(122).string(message.sourceIsbn);
+      writer.uint32(34).string(message.sourceIsbn);
     }
     if (message.description !== '') {
-      writer.uint32(34).string(message.description);
+      writer.uint32(42).string(message.description);
     }
     if (message.pluralPortionName !== '') {
-      writer.uint32(42).string(message.pluralPortionName);
+      writer.uint32(50).string(message.pluralPortionName);
     }
     if (message.portionName !== '') {
-      writer.uint32(50).string(message.portionName);
+      writer.uint32(58).string(message.portionName);
     }
     if (message.slug !== '') {
-      writer.uint32(58).string(message.slug);
+      writer.uint32(66).string(message.slug);
     }
     if (message.yieldsComponentType !== 0) {
-      writer.uint32(64).int32(message.yieldsComponentType);
+      writer.uint32(72).int32(message.yieldsComponentType);
     }
-    if (message.estimatedPortions !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.estimatedPortions, writer.uint32(74).fork()).join();
+    if (message.minEstimatedPortions !== 0) {
+      writer.uint32(85).float(message.minEstimatedPortions);
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      writer.uint32(93).float(message.maxEstimatedPortions);
     }
     for (const v of message.prepTasks) {
-      RecipePrepTaskWithinRecipeCreationRequestInput.encode(v!, writer.uint32(82).fork()).join();
+      RecipePrepTaskWithinRecipeCreationRequestInput.encode(v!, writer.uint32(98).fork()).join();
     }
     for (const v of message.steps) {
-      RecipeStepCreationRequestInput.encode(v!, writer.uint32(90).fork()).join();
+      RecipeStepCreationRequestInput.encode(v!, writer.uint32(106).fork()).join();
     }
     if (message.alsoCreateMeal !== false) {
-      writer.uint32(96).bool(message.alsoCreateMeal);
+      writer.uint32(112).bool(message.alsoCreateMeal);
     }
     if (message.eligibleForMeals !== false) {
-      writer.uint32(104).bool(message.eligibleForMeals);
+      writer.uint32(120).bool(message.eligibleForMeals);
     }
     return writer;
   },
@@ -27180,20 +27463,12 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
           message.source = reader.string();
           continue;
         }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.sourceIsbn = reader.string();
-          continue;
-        }
         case 4: {
           if (tag !== 34) {
             break;
           }
 
-          message.description = reader.string();
+          message.sourceIsbn = reader.string();
           continue;
         }
         case 5: {
@@ -27201,7 +27476,7 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
             break;
           }
 
-          message.pluralPortionName = reader.string();
+          message.description = reader.string();
           continue;
         }
         case 6: {
@@ -27209,7 +27484,7 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
             break;
           }
 
-          message.portionName = reader.string();
+          message.pluralPortionName = reader.string();
           continue;
         }
         case 7: {
@@ -27217,51 +27492,67 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
             break;
           }
 
-          message.slug = reader.string();
+          message.portionName = reader.string();
           continue;
         }
         case 8: {
-          if (tag !== 64) {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.slug = reader.string();
+          continue;
+        }
+        case 9: {
+          if (tag !== 72) {
             break;
           }
 
           message.yieldsComponentType = reader.int32() as any;
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
+        case 10: {
+          if (tag !== 85) {
             break;
           }
 
-          message.estimatedPortions = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minEstimatedPortions = reader.float();
           continue;
         }
-        case 10: {
-          if (tag !== 82) {
+        case 11: {
+          if (tag !== 93) {
+            break;
+          }
+
+          message.maxEstimatedPortions = reader.float();
+          continue;
+        }
+        case 12: {
+          if (tag !== 98) {
             break;
           }
 
           message.prepTasks.push(RecipePrepTaskWithinRecipeCreationRequestInput.decode(reader, reader.uint32()));
           continue;
         }
-        case 11: {
-          if (tag !== 90) {
+        case 13: {
+          if (tag !== 106) {
             break;
           }
 
           message.steps.push(RecipeStepCreationRequestInput.decode(reader, reader.uint32()));
           continue;
         }
-        case 12: {
-          if (tag !== 96) {
+        case 14: {
+          if (tag !== 112) {
             break;
           }
 
           message.alsoCreateMeal = reader.bool();
           continue;
         }
-        case 13: {
-          if (tag !== 104) {
+        case 15: {
+          if (tag !== 120) {
             break;
           }
 
@@ -27308,10 +27599,15 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
         : isSet(object.yields_component_type)
           ? mealComponentTypeFromJSON(object.yields_component_type)
           : 0,
-      estimatedPortions: isSet(object.estimatedPortions)
-        ? Float32RangeWithOptionalMax.fromJSON(object.estimatedPortions)
-        : isSet(object.estimated_portions)
-          ? Float32RangeWithOptionalMax.fromJSON(object.estimated_portions)
+      minEstimatedPortions: isSet(object.minEstimatedPortions)
+        ? globalThis.Number(object.minEstimatedPortions)
+        : isSet(object.min_estimated_portions)
+          ? globalThis.Number(object.min_estimated_portions)
+          : 0,
+      maxEstimatedPortions: isSet(object.maxEstimatedPortions)
+        ? globalThis.Number(object.maxEstimatedPortions)
+        : isSet(object.max_estimated_portions)
+          ? globalThis.Number(object.max_estimated_portions)
           : undefined,
       prepTasks: globalThis.Array.isArray(object?.prepTasks)
         ? object.prepTasks.map((e: any) => RecipePrepTaskWithinRecipeCreationRequestInput.fromJSON(e))
@@ -27363,8 +27659,11 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
     if (message.yieldsComponentType !== 0) {
       obj.yieldsComponentType = mealComponentTypeToJSON(message.yieldsComponentType);
     }
-    if (message.estimatedPortions !== undefined) {
-      obj.estimatedPortions = Float32RangeWithOptionalMax.toJSON(message.estimatedPortions);
+    if (message.minEstimatedPortions !== 0) {
+      obj.minEstimatedPortions = message.minEstimatedPortions;
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      obj.maxEstimatedPortions = message.maxEstimatedPortions;
     }
     if (message.prepTasks?.length) {
       obj.prepTasks = message.prepTasks.map((e) => RecipePrepTaskWithinRecipeCreationRequestInput.toJSON(e));
@@ -27395,10 +27694,8 @@ export const RecipeCreationRequestInput: MessageFns<RecipeCreationRequestInput> 
     message.portionName = object.portionName ?? '';
     message.slug = object.slug ?? '';
     message.yieldsComponentType = object.yieldsComponentType ?? 0;
-    message.estimatedPortions =
-      object.estimatedPortions !== undefined && object.estimatedPortions !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.estimatedPortions)
-        : undefined;
+    message.minEstimatedPortions = object.minEstimatedPortions ?? 0;
+    message.maxEstimatedPortions = object.maxEstimatedPortions ?? undefined;
     message.prepTasks =
       object.prepTasks?.map((e) => RecipePrepTaskWithinRecipeCreationRequestInput.fromPartial(e)) || [];
     message.steps = object.steps?.map((e) => RecipeStepCreationRequestInput.fromPartial(e)) || [];
@@ -27741,8 +28038,10 @@ export const RecipeMediaUpdateRequestInput: MessageFns<RecipeMediaUpdateRequestI
 
 function createBaseRecipePrepTaskCreationRequestInput(): RecipePrepTaskCreationRequestInput {
   return {
-    storageTemperatureInCelsius: undefined,
-    timeBufferBeforeRecipeInSeconds: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
+    minTimeBufferBeforeRecipeInSeconds: 0,
+    maxTimeBufferBeforeRecipeInSeconds: undefined,
     storageType: '',
     explicitStorageInstructions: '',
     notes: '',
@@ -27756,11 +28055,17 @@ function createBaseRecipePrepTaskCreationRequestInput(): RecipePrepTaskCreationR
 
 export const RecipePrepTaskCreationRequestInput: MessageFns<RecipePrepTaskCreationRequestInput> = {
   encode(message: RecipePrepTaskCreationRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(10).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(13).float(message.minStorageTemperatureInCelsius);
     }
-    if (message.timeBufferBeforeRecipeInSeconds !== undefined) {
-      Uint32RangeWithOptionalMax.encode(message.timeBufferBeforeRecipeInSeconds, writer.uint32(18).fork()).join();
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(93).float(message.maxStorageTemperatureInCelsius);
+    }
+    if (message.minTimeBufferBeforeRecipeInSeconds !== 0) {
+      writer.uint32(16).uint32(message.minTimeBufferBeforeRecipeInSeconds);
+    }
+    if (message.maxTimeBufferBeforeRecipeInSeconds !== undefined) {
+      writer.uint32(96).uint32(message.maxTimeBufferBeforeRecipeInSeconds);
     }
     if (message.storageType !== '') {
       writer.uint32(26).string(message.storageType);
@@ -27797,19 +28102,35 @@ export const RecipePrepTaskCreationRequestInput: MessageFns<RecipePrepTaskCreati
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 13) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 11: {
+          if (tag !== 93) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.timeBufferBeforeRecipeInSeconds = Uint32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minTimeBufferBeforeRecipeInSeconds = reader.uint32();
+          continue;
+        }
+        case 12: {
+          if (tag !== 96) {
+            break;
+          }
+
+          message.maxTimeBufferBeforeRecipeInSeconds = reader.uint32();
           continue;
         }
         case 3: {
@@ -27887,15 +28208,25 @@ export const RecipePrepTaskCreationRequestInput: MessageFns<RecipePrepTaskCreati
 
   fromJSON(object: any): RecipePrepTaskCreationRequestInput {
     return {
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
           : undefined,
-      timeBufferBeforeRecipeInSeconds: isSet(object.timeBufferBeforeRecipeInSeconds)
-        ? Uint32RangeWithOptionalMax.fromJSON(object.timeBufferBeforeRecipeInSeconds)
-        : isSet(object.time_buffer_before_recipe_in_seconds)
-          ? Uint32RangeWithOptionalMax.fromJSON(object.time_buffer_before_recipe_in_seconds)
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
+          : undefined,
+      minTimeBufferBeforeRecipeInSeconds: isSet(object.minTimeBufferBeforeRecipeInSeconds)
+        ? globalThis.Number(object.minTimeBufferBeforeRecipeInSeconds)
+        : isSet(object.min_time_buffer_before_recipe_in_seconds)
+          ? globalThis.Number(object.min_time_buffer_before_recipe_in_seconds)
+          : 0,
+      maxTimeBufferBeforeRecipeInSeconds: isSet(object.maxTimeBufferBeforeRecipeInSeconds)
+        ? globalThis.Number(object.maxTimeBufferBeforeRecipeInSeconds)
+        : isSet(object.max_time_buffer_before_recipe_in_seconds)
+          ? globalThis.Number(object.max_time_buffer_before_recipe_in_seconds)
           : undefined,
       storageType: isSet(object.storageType)
         ? globalThis.String(object.storageType)
@@ -27926,11 +28257,17 @@ export const RecipePrepTaskCreationRequestInput: MessageFns<RecipePrepTaskCreati
 
   toJSON(message: RecipePrepTaskCreationRequestInput): unknown {
     const obj: any = {};
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
     }
-    if (message.timeBufferBeforeRecipeInSeconds !== undefined) {
-      obj.timeBufferBeforeRecipeInSeconds = Uint32RangeWithOptionalMax.toJSON(message.timeBufferBeforeRecipeInSeconds);
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
+    }
+    if (message.minTimeBufferBeforeRecipeInSeconds !== 0) {
+      obj.minTimeBufferBeforeRecipeInSeconds = Math.round(message.minTimeBufferBeforeRecipeInSeconds);
+    }
+    if (message.maxTimeBufferBeforeRecipeInSeconds !== undefined) {
+      obj.maxTimeBufferBeforeRecipeInSeconds = Math.round(message.maxTimeBufferBeforeRecipeInSeconds);
     }
     if (message.storageType !== '') {
       obj.storageType = message.storageType;
@@ -27968,14 +28305,10 @@ export const RecipePrepTaskCreationRequestInput: MessageFns<RecipePrepTaskCreati
     object: I,
   ): RecipePrepTaskCreationRequestInput {
     const message = createBaseRecipePrepTaskCreationRequestInput();
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
-    message.timeBufferBeforeRecipeInSeconds =
-      object.timeBufferBeforeRecipeInSeconds !== undefined && object.timeBufferBeforeRecipeInSeconds !== null
-        ? Uint32RangeWithOptionalMax.fromPartial(object.timeBufferBeforeRecipeInSeconds)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
+    message.minTimeBufferBeforeRecipeInSeconds = object.minTimeBufferBeforeRecipeInSeconds ?? 0;
+    message.maxTimeBufferBeforeRecipeInSeconds = object.maxTimeBufferBeforeRecipeInSeconds ?? undefined;
     message.storageType = object.storageType ?? '';
     message.explicitStorageInstructions = object.explicitStorageInstructions ?? '';
     message.notes = object.notes ?? '';
@@ -28284,8 +28617,10 @@ function createBaseRecipePrepTaskUpdateRequestInput(): RecipePrepTaskUpdateReque
     name: undefined,
     optional: undefined,
     description: undefined,
-    storageTemperatureInCelsius: undefined,
-    timeBufferBeforeRecipeInSeconds: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
+    minTimeBufferBeforeRecipeInSeconds: undefined,
+    maxTimeBufferBeforeRecipeInSeconds: undefined,
     belongsToRecipe: undefined,
     taskSteps: [],
   };
@@ -28311,14 +28646,17 @@ export const RecipePrepTaskUpdateRequestInput: MessageFns<RecipePrepTaskUpdateRe
     if (message.description !== undefined) {
       writer.uint32(50).string(message.description);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(58).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(61).float(message.minStorageTemperatureInCelsius);
     }
-    if (message.timeBufferBeforeRecipeInSeconds !== undefined) {
-      Uint32RangeWithOptionalMaxUpdateRequestInput.encode(
-        message.timeBufferBeforeRecipeInSeconds,
-        writer.uint32(66).fork(),
-      ).join();
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(93).float(message.maxStorageTemperatureInCelsius);
+    }
+    if (message.minTimeBufferBeforeRecipeInSeconds !== undefined) {
+      writer.uint32(64).uint32(message.minTimeBufferBeforeRecipeInSeconds);
+    }
+    if (message.maxTimeBufferBeforeRecipeInSeconds !== undefined) {
+      writer.uint32(96).uint32(message.maxTimeBufferBeforeRecipeInSeconds);
     }
     if (message.belongsToRecipe !== undefined) {
       writer.uint32(74).string(message.belongsToRecipe);
@@ -28385,22 +28723,35 @@ export const RecipePrepTaskUpdateRequestInput: MessageFns<RecipePrepTaskUpdateRe
           continue;
         }
         case 7: {
-          if (tag !== 58) {
+          if (tag !== 61) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 11: {
+          if (tag !== 93) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 8: {
-          if (tag !== 66) {
+          if (tag !== 64) {
             break;
           }
 
-          message.timeBufferBeforeRecipeInSeconds = Uint32RangeWithOptionalMaxUpdateRequestInput.decode(
-            reader,
-            reader.uint32(),
-          );
+          message.minTimeBufferBeforeRecipeInSeconds = reader.uint32();
+          continue;
+        }
+        case 12: {
+          if (tag !== 96) {
+            break;
+          }
+
+          message.maxTimeBufferBeforeRecipeInSeconds = reader.uint32();
           continue;
         }
         case 9: {
@@ -28444,15 +28795,25 @@ export const RecipePrepTaskUpdateRequestInput: MessageFns<RecipePrepTaskUpdateRe
       name: isSet(object.name) ? globalThis.String(object.name) : undefined,
       optional: isSet(object.optional) ? globalThis.Boolean(object.optional) : undefined,
       description: isSet(object.description) ? globalThis.String(object.description) : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
           : undefined,
-      timeBufferBeforeRecipeInSeconds: isSet(object.timeBufferBeforeRecipeInSeconds)
-        ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.timeBufferBeforeRecipeInSeconds)
-        : isSet(object.time_buffer_before_recipe_in_seconds)
-          ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.time_buffer_before_recipe_in_seconds)
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
+          : undefined,
+      minTimeBufferBeforeRecipeInSeconds: isSet(object.minTimeBufferBeforeRecipeInSeconds)
+        ? globalThis.Number(object.minTimeBufferBeforeRecipeInSeconds)
+        : isSet(object.min_time_buffer_before_recipe_in_seconds)
+          ? globalThis.Number(object.min_time_buffer_before_recipe_in_seconds)
+          : undefined,
+      maxTimeBufferBeforeRecipeInSeconds: isSet(object.maxTimeBufferBeforeRecipeInSeconds)
+        ? globalThis.Number(object.maxTimeBufferBeforeRecipeInSeconds)
+        : isSet(object.max_time_buffer_before_recipe_in_seconds)
+          ? globalThis.Number(object.max_time_buffer_before_recipe_in_seconds)
           : undefined,
       belongsToRecipe: isSet(object.belongsToRecipe)
         ? globalThis.String(object.belongsToRecipe)
@@ -28487,13 +28848,17 @@ export const RecipePrepTaskUpdateRequestInput: MessageFns<RecipePrepTaskUpdateRe
     if (message.description !== undefined) {
       obj.description = message.description;
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
     }
-    if (message.timeBufferBeforeRecipeInSeconds !== undefined) {
-      obj.timeBufferBeforeRecipeInSeconds = Uint32RangeWithOptionalMaxUpdateRequestInput.toJSON(
-        message.timeBufferBeforeRecipeInSeconds,
-      );
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
+    }
+    if (message.minTimeBufferBeforeRecipeInSeconds !== undefined) {
+      obj.minTimeBufferBeforeRecipeInSeconds = Math.round(message.minTimeBufferBeforeRecipeInSeconds);
+    }
+    if (message.maxTimeBufferBeforeRecipeInSeconds !== undefined) {
+      obj.maxTimeBufferBeforeRecipeInSeconds = Math.round(message.maxTimeBufferBeforeRecipeInSeconds);
     }
     if (message.belongsToRecipe !== undefined) {
       obj.belongsToRecipe = message.belongsToRecipe;
@@ -28519,14 +28884,10 @@ export const RecipePrepTaskUpdateRequestInput: MessageFns<RecipePrepTaskUpdateRe
     message.name = object.name ?? undefined;
     message.optional = object.optional ?? undefined;
     message.description = object.description ?? undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
-    message.timeBufferBeforeRecipeInSeconds =
-      object.timeBufferBeforeRecipeInSeconds !== undefined && object.timeBufferBeforeRecipeInSeconds !== null
-        ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.timeBufferBeforeRecipeInSeconds)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
+    message.minTimeBufferBeforeRecipeInSeconds = object.minTimeBufferBeforeRecipeInSeconds ?? undefined;
+    message.maxTimeBufferBeforeRecipeInSeconds = object.maxTimeBufferBeforeRecipeInSeconds ?? undefined;
     message.belongsToRecipe = object.belongsToRecipe ?? undefined;
     message.taskSteps = object.taskSteps?.map((e) => RecipePrepTaskStepUpdateRequestInput.fromPartial(e)) || [];
     return message;
@@ -28535,8 +28896,10 @@ export const RecipePrepTaskUpdateRequestInput: MessageFns<RecipePrepTaskUpdateRe
 
 function createBaseRecipePrepTaskWithinRecipeCreationRequestInput(): RecipePrepTaskWithinRecipeCreationRequestInput {
   return {
-    storageTemperatureInCelsius: undefined,
-    timeBufferBeforeRecipeInSeconds: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
+    minTimeBufferBeforeRecipeInSeconds: 0,
+    maxTimeBufferBeforeRecipeInSeconds: undefined,
     storageType: '',
     name: '',
     description: '',
@@ -28554,11 +28917,17 @@ export const RecipePrepTaskWithinRecipeCreationRequestInput: MessageFns<RecipePr
       message: RecipePrepTaskWithinRecipeCreationRequestInput,
       writer: BinaryWriter = new BinaryWriter(),
     ): BinaryWriter {
-      if (message.storageTemperatureInCelsius !== undefined) {
-        OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(10).fork()).join();
+      if (message.minStorageTemperatureInCelsius !== undefined) {
+        writer.uint32(13).float(message.minStorageTemperatureInCelsius);
       }
-      if (message.timeBufferBeforeRecipeInSeconds !== undefined) {
-        Uint32RangeWithOptionalMax.encode(message.timeBufferBeforeRecipeInSeconds, writer.uint32(18).fork()).join();
+      if (message.maxStorageTemperatureInCelsius !== undefined) {
+        writer.uint32(93).float(message.maxStorageTemperatureInCelsius);
+      }
+      if (message.minTimeBufferBeforeRecipeInSeconds !== 0) {
+        writer.uint32(16).uint32(message.minTimeBufferBeforeRecipeInSeconds);
+      }
+      if (message.maxTimeBufferBeforeRecipeInSeconds !== undefined) {
+        writer.uint32(96).uint32(message.maxTimeBufferBeforeRecipeInSeconds);
       }
       if (message.storageType !== '') {
         writer.uint32(26).string(message.storageType);
@@ -28595,19 +28964,35 @@ export const RecipePrepTaskWithinRecipeCreationRequestInput: MessageFns<RecipePr
         const tag = reader.uint32();
         switch (tag >>> 3) {
           case 1: {
-            if (tag !== 10) {
+            if (tag !== 13) {
               break;
             }
 
-            message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+            message.minStorageTemperatureInCelsius = reader.float();
+            continue;
+          }
+          case 11: {
+            if (tag !== 93) {
+              break;
+            }
+
+            message.maxStorageTemperatureInCelsius = reader.float();
             continue;
           }
           case 2: {
-            if (tag !== 18) {
+            if (tag !== 16) {
               break;
             }
 
-            message.timeBufferBeforeRecipeInSeconds = Uint32RangeWithOptionalMax.decode(reader, reader.uint32());
+            message.minTimeBufferBeforeRecipeInSeconds = reader.uint32();
+            continue;
+          }
+          case 12: {
+            if (tag !== 96) {
+              break;
+            }
+
+            message.maxTimeBufferBeforeRecipeInSeconds = reader.uint32();
             continue;
           }
           case 3: {
@@ -28687,15 +29072,25 @@ export const RecipePrepTaskWithinRecipeCreationRequestInput: MessageFns<RecipePr
 
     fromJSON(object: any): RecipePrepTaskWithinRecipeCreationRequestInput {
       return {
-        storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-          ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-          : isSet(object.storage_temperature_in_celsius)
-            ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+        minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+          ? globalThis.Number(object.minStorageTemperatureInCelsius)
+          : isSet(object.min_storage_temperature_in_celsius)
+            ? globalThis.Number(object.min_storage_temperature_in_celsius)
             : undefined,
-        timeBufferBeforeRecipeInSeconds: isSet(object.timeBufferBeforeRecipeInSeconds)
-          ? Uint32RangeWithOptionalMax.fromJSON(object.timeBufferBeforeRecipeInSeconds)
-          : isSet(object.time_buffer_before_recipe_in_seconds)
-            ? Uint32RangeWithOptionalMax.fromJSON(object.time_buffer_before_recipe_in_seconds)
+        maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+          ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+          : isSet(object.max_storage_temperature_in_celsius)
+            ? globalThis.Number(object.max_storage_temperature_in_celsius)
+            : undefined,
+        minTimeBufferBeforeRecipeInSeconds: isSet(object.minTimeBufferBeforeRecipeInSeconds)
+          ? globalThis.Number(object.minTimeBufferBeforeRecipeInSeconds)
+          : isSet(object.min_time_buffer_before_recipe_in_seconds)
+            ? globalThis.Number(object.min_time_buffer_before_recipe_in_seconds)
+            : 0,
+        maxTimeBufferBeforeRecipeInSeconds: isSet(object.maxTimeBufferBeforeRecipeInSeconds)
+          ? globalThis.Number(object.maxTimeBufferBeforeRecipeInSeconds)
+          : isSet(object.max_time_buffer_before_recipe_in_seconds)
+            ? globalThis.Number(object.max_time_buffer_before_recipe_in_seconds)
             : undefined,
         storageType: isSet(object.storageType)
           ? globalThis.String(object.storageType)
@@ -28726,13 +29121,17 @@ export const RecipePrepTaskWithinRecipeCreationRequestInput: MessageFns<RecipePr
 
     toJSON(message: RecipePrepTaskWithinRecipeCreationRequestInput): unknown {
       const obj: any = {};
-      if (message.storageTemperatureInCelsius !== undefined) {
-        obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+      if (message.minStorageTemperatureInCelsius !== undefined) {
+        obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
       }
-      if (message.timeBufferBeforeRecipeInSeconds !== undefined) {
-        obj.timeBufferBeforeRecipeInSeconds = Uint32RangeWithOptionalMax.toJSON(
-          message.timeBufferBeforeRecipeInSeconds,
-        );
+      if (message.maxStorageTemperatureInCelsius !== undefined) {
+        obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
+      }
+      if (message.minTimeBufferBeforeRecipeInSeconds !== 0) {
+        obj.minTimeBufferBeforeRecipeInSeconds = Math.round(message.minTimeBufferBeforeRecipeInSeconds);
+      }
+      if (message.maxTimeBufferBeforeRecipeInSeconds !== undefined) {
+        obj.maxTimeBufferBeforeRecipeInSeconds = Math.round(message.maxTimeBufferBeforeRecipeInSeconds);
       }
       if (message.storageType !== '') {
         obj.storageType = message.storageType;
@@ -28770,14 +29169,10 @@ export const RecipePrepTaskWithinRecipeCreationRequestInput: MessageFns<RecipePr
       object: I,
     ): RecipePrepTaskWithinRecipeCreationRequestInput {
       const message = createBaseRecipePrepTaskWithinRecipeCreationRequestInput();
-      message.storageTemperatureInCelsius =
-        object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-          ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-          : undefined;
-      message.timeBufferBeforeRecipeInSeconds =
-        object.timeBufferBeforeRecipeInSeconds !== undefined && object.timeBufferBeforeRecipeInSeconds !== null
-          ? Uint32RangeWithOptionalMax.fromPartial(object.timeBufferBeforeRecipeInSeconds)
-          : undefined;
+      message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+      message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
+      message.minTimeBufferBeforeRecipeInSeconds = object.minTimeBufferBeforeRecipeInSeconds ?? 0;
+      message.maxTimeBufferBeforeRecipeInSeconds = object.maxTimeBufferBeforeRecipeInSeconds ?? undefined;
       message.storageType = object.storageType ?? '';
       message.name = object.name ?? '';
       message.description = object.description ?? '';
@@ -28984,7 +29379,6 @@ function createBaseRecipeRatingUpdateRequestInput(): RecipeRatingUpdateRequestIn
     instructions: undefined,
     overall: undefined,
     notes: undefined,
-    byUser: undefined,
   };
 }
 
@@ -29010,9 +29404,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
     }
     if (message.notes !== undefined) {
       writer.uint32(58).string(message.notes);
-    }
-    if (message.byUser !== undefined) {
-      writer.uint32(66).string(message.byUser);
     }
     return writer;
   },
@@ -29080,14 +29471,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
           message.notes = reader.string();
           continue;
         }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.byUser = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -29110,11 +29493,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
       instructions: isSet(object.instructions) ? globalThis.Number(object.instructions) : undefined,
       overall: isSet(object.overall) ? globalThis.Number(object.overall) : undefined,
       notes: isSet(object.notes) ? globalThis.String(object.notes) : undefined,
-      byUser: isSet(object.byUser)
-        ? globalThis.String(object.byUser)
-        : isSet(object.by_user)
-          ? globalThis.String(object.by_user)
-          : undefined,
     };
   },
 
@@ -29141,9 +29519,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
     if (message.notes !== undefined) {
       obj.notes = message.notes;
     }
-    if (message.byUser !== undefined) {
-      obj.byUser = message.byUser;
-    }
     return obj;
   },
 
@@ -29161,7 +29536,6 @@ export const RecipeRatingUpdateRequestInput: MessageFns<RecipeRatingUpdateReques
     message.instructions = object.instructions ?? undefined;
     message.overall = object.overall ?? undefined;
     message.notes = object.notes ?? undefined;
-    message.byUser = object.byUser ?? undefined;
     return message;
   },
 };
@@ -29669,8 +30043,10 @@ export const RecipeStepCompletionConditionUpdateRequestInput: MessageFns<RecipeS
 
 function createBaseRecipeStepCreationRequestInput(): RecipeStepCreationRequestInput {
   return {
-    estimatedTimeInSeconds: undefined,
-    temperatureInCelsius: undefined,
+    minEstimatedTimeInSeconds: undefined,
+    maxEstimatedTimeInSeconds: undefined,
+    minTemperatureInCelsius: undefined,
+    maxTemperatureInCelsius: undefined,
     preparationId: '',
     notes: '',
     conditionExpression: '',
@@ -29688,11 +30064,17 @@ function createBaseRecipeStepCreationRequestInput(): RecipeStepCreationRequestIn
 
 export const RecipeStepCreationRequestInput: MessageFns<RecipeStepCreationRequestInput> = {
   encode(message: RecipeStepCreationRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.estimatedTimeInSeconds !== undefined) {
-      OptionalUint32Range.encode(message.estimatedTimeInSeconds, writer.uint32(10).fork()).join();
+    if (message.minEstimatedTimeInSeconds !== undefined) {
+      writer.uint32(8).uint32(message.minEstimatedTimeInSeconds);
     }
-    if (message.temperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.temperatureInCelsius, writer.uint32(18).fork()).join();
+    if (message.maxEstimatedTimeInSeconds !== undefined) {
+      writer.uint32(120).uint32(message.maxEstimatedTimeInSeconds);
+    }
+    if (message.minTemperatureInCelsius !== undefined) {
+      writer.uint32(21).float(message.minTemperatureInCelsius);
+    }
+    if (message.maxTemperatureInCelsius !== undefined) {
+      writer.uint32(133).float(message.maxTemperatureInCelsius);
     }
     if (message.preparationId !== '') {
       writer.uint32(26).string(message.preparationId);
@@ -29741,19 +30123,35 @@ export const RecipeStepCreationRequestInput: MessageFns<RecipeStepCreationReques
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.estimatedTimeInSeconds = OptionalUint32Range.decode(reader, reader.uint32());
+          message.minEstimatedTimeInSeconds = reader.uint32();
+          continue;
+        }
+        case 15: {
+          if (tag !== 120) {
+            break;
+          }
+
+          message.maxEstimatedTimeInSeconds = reader.uint32();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 21) {
             break;
           }
 
-          message.temperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 16: {
+          if (tag !== 133) {
+            break;
+          }
+
+          message.maxTemperatureInCelsius = reader.float();
           continue;
         }
         case 3: {
@@ -29865,15 +30263,25 @@ export const RecipeStepCreationRequestInput: MessageFns<RecipeStepCreationReques
 
   fromJSON(object: any): RecipeStepCreationRequestInput {
     return {
-      estimatedTimeInSeconds: isSet(object.estimatedTimeInSeconds)
-        ? OptionalUint32Range.fromJSON(object.estimatedTimeInSeconds)
-        : isSet(object.estimated_time_in_seconds)
-          ? OptionalUint32Range.fromJSON(object.estimated_time_in_seconds)
+      minEstimatedTimeInSeconds: isSet(object.minEstimatedTimeInSeconds)
+        ? globalThis.Number(object.minEstimatedTimeInSeconds)
+        : isSet(object.min_estimated_time_in_seconds)
+          ? globalThis.Number(object.min_estimated_time_in_seconds)
           : undefined,
-      temperatureInCelsius: isSet(object.temperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.temperatureInCelsius)
-        : isSet(object.temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.temperature_in_celsius)
+      maxEstimatedTimeInSeconds: isSet(object.maxEstimatedTimeInSeconds)
+        ? globalThis.Number(object.maxEstimatedTimeInSeconds)
+        : isSet(object.max_estimated_time_in_seconds)
+          ? globalThis.Number(object.max_estimated_time_in_seconds)
+          : undefined,
+      minTemperatureInCelsius: isSet(object.minTemperatureInCelsius)
+        ? globalThis.Number(object.minTemperatureInCelsius)
+        : isSet(object.min_temperature_in_celsius)
+          ? globalThis.Number(object.min_temperature_in_celsius)
+          : undefined,
+      maxTemperatureInCelsius: isSet(object.maxTemperatureInCelsius)
+        ? globalThis.Number(object.maxTemperatureInCelsius)
+        : isSet(object.max_temperature_in_celsius)
+          ? globalThis.Number(object.max_temperature_in_celsius)
           : undefined,
       preparationId: isSet(object.preparationId)
         ? globalThis.String(object.preparationId)
@@ -29920,11 +30328,17 @@ export const RecipeStepCreationRequestInput: MessageFns<RecipeStepCreationReques
 
   toJSON(message: RecipeStepCreationRequestInput): unknown {
     const obj: any = {};
-    if (message.estimatedTimeInSeconds !== undefined) {
-      obj.estimatedTimeInSeconds = OptionalUint32Range.toJSON(message.estimatedTimeInSeconds);
+    if (message.minEstimatedTimeInSeconds !== undefined) {
+      obj.minEstimatedTimeInSeconds = Math.round(message.minEstimatedTimeInSeconds);
     }
-    if (message.temperatureInCelsius !== undefined) {
-      obj.temperatureInCelsius = OptionalFloat32Range.toJSON(message.temperatureInCelsius);
+    if (message.maxEstimatedTimeInSeconds !== undefined) {
+      obj.maxEstimatedTimeInSeconds = Math.round(message.maxEstimatedTimeInSeconds);
+    }
+    if (message.minTemperatureInCelsius !== undefined) {
+      obj.minTemperatureInCelsius = message.minTemperatureInCelsius;
+    }
+    if (message.maxTemperatureInCelsius !== undefined) {
+      obj.maxTemperatureInCelsius = message.maxTemperatureInCelsius;
     }
     if (message.preparationId !== '') {
       obj.preparationId = message.preparationId;
@@ -29974,14 +30388,10 @@ export const RecipeStepCreationRequestInput: MessageFns<RecipeStepCreationReques
     object: I,
   ): RecipeStepCreationRequestInput {
     const message = createBaseRecipeStepCreationRequestInput();
-    message.estimatedTimeInSeconds =
-      object.estimatedTimeInSeconds !== undefined && object.estimatedTimeInSeconds !== null
-        ? OptionalUint32Range.fromPartial(object.estimatedTimeInSeconds)
-        : undefined;
-    message.temperatureInCelsius =
-      object.temperatureInCelsius !== undefined && object.temperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.temperatureInCelsius)
-        : undefined;
+    message.minEstimatedTimeInSeconds = object.minEstimatedTimeInSeconds ?? undefined;
+    message.maxEstimatedTimeInSeconds = object.maxEstimatedTimeInSeconds ?? undefined;
+    message.minTemperatureInCelsius = object.minTemperatureInCelsius ?? undefined;
+    message.maxTemperatureInCelsius = object.maxTemperatureInCelsius ?? undefined;
     message.preparationId = object.preparationId ?? '';
     message.notes = object.notes ?? '';
     message.conditionExpression = object.conditionExpression ?? '';
@@ -30010,7 +30420,8 @@ function createBaseRecipeStepIngredientCreationRequestInput(): RecipeStepIngredi
     ingredientNotes: '',
     name: '',
     quantityNotes: '',
-    quantity: undefined,
+    minQuantity: 0,
+    maxQuantity: undefined,
     optionIndex: 0,
     optional: false,
     toTaste: false,
@@ -30050,8 +30461,11 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
     if (message.quantityNotes !== '') {
       writer.uint32(74).string(message.quantityNotes);
     }
-    if (message.quantity !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.quantity, writer.uint32(82).fork()).join();
+    if (message.minQuantity !== 0) {
+      writer.uint32(85).float(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(149).float(message.maxQuantity);
     }
     if (message.optionIndex !== 0) {
       writer.uint32(88).uint32(message.optionIndex);
@@ -30157,11 +30571,19 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
           continue;
         }
         case 10: {
-          if (tag !== 82) {
+          if (tag !== 85) {
             break;
           }
 
-          message.quantity = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minQuantity = reader.float();
+          continue;
+        }
+        case 18: {
+          if (tag !== 149) {
+            break;
+          }
+
+          message.maxQuantity = reader.float();
           continue;
         }
         case 11: {
@@ -30272,7 +30694,16 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
         : isSet(object.quantity_notes)
           ? globalThis.String(object.quantity_notes)
           : '',
-      quantity: isSet(object.quantity) ? Float32RangeWithOptionalMax.fromJSON(object.quantity) : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : 0,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       optionIndex: isSet(object.optionIndex)
         ? globalThis.Number(object.optionIndex)
         : isSet(object.option_index)
@@ -30332,8 +30763,11 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
     if (message.quantityNotes !== '') {
       obj.quantityNotes = message.quantityNotes;
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Float32RangeWithOptionalMax.toJSON(message.quantity);
+    if (message.minQuantity !== 0) {
+      obj.minQuantity = message.minQuantity;
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = message.maxQuantity;
     }
     if (message.optionIndex !== 0) {
       obj.optionIndex = Math.round(message.optionIndex);
@@ -30377,10 +30811,8 @@ export const RecipeStepIngredientCreationRequestInput: MessageFns<RecipeStepIngr
     message.ingredientNotes = object.ingredientNotes ?? '';
     message.name = object.name ?? '';
     message.quantityNotes = object.quantityNotes ?? '';
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? 0;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.optionIndex = object.optionIndex ?? 0;
     message.optional = object.optional ?? false;
     message.toTaste = object.toTaste ?? false;
@@ -30402,7 +30834,8 @@ function createBaseRecipeStepIngredientUpdateRequestInput(): RecipeStepIngredien
     quantityNotes: undefined,
     ingredientNotes: undefined,
     belongsToRecipeStep: undefined,
-    quantity: undefined,
+    minQuantity: undefined,
+    maxQuantity: undefined,
     optionIndex: undefined,
     vesselIndex: undefined,
     toTaste: undefined,
@@ -30439,8 +30872,11 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
     if (message.belongsToRecipeStep !== undefined) {
       writer.uint32(66).string(message.belongsToRecipeStep);
     }
-    if (message.quantity !== undefined) {
-      Float32RangeWithOptionalMaxUpdateRequestInput.encode(message.quantity, writer.uint32(74).fork()).join();
+    if (message.minQuantity !== undefined) {
+      writer.uint32(77).float(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(141).float(message.maxQuantity);
     }
     if (message.optionIndex !== undefined) {
       writer.uint32(80).uint32(message.optionIndex);
@@ -30538,11 +30974,19 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
           continue;
         }
         case 9: {
-          if (tag !== 74) {
+          if (tag !== 77) {
             break;
           }
 
-          message.quantity = Float32RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minQuantity = reader.float();
+          continue;
+        }
+        case 17: {
+          if (tag !== 141) {
+            break;
+          }
+
+          message.maxQuantity = reader.float();
           continue;
         }
         case 10: {
@@ -30644,9 +31088,16 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
         : isSet(object.belongs_to_recipe_step)
           ? globalThis.String(object.belongs_to_recipe_step)
           : undefined,
-      quantity: isSet(object.quantity)
-        ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.quantity)
-        : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : undefined,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       optionIndex: isSet(object.optionIndex)
         ? globalThis.Number(object.optionIndex)
         : isSet(object.option_index)
@@ -30707,8 +31158,11 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
     if (message.belongsToRecipeStep !== undefined) {
       obj.belongsToRecipeStep = message.belongsToRecipeStep;
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Float32RangeWithOptionalMaxUpdateRequestInput.toJSON(message.quantity);
+    if (message.minQuantity !== undefined) {
+      obj.minQuantity = message.minQuantity;
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = message.maxQuantity;
     }
     if (message.optionIndex !== undefined) {
       obj.optionIndex = Math.round(message.optionIndex);
@@ -30751,10 +31205,8 @@ export const RecipeStepIngredientUpdateRequestInput: MessageFns<RecipeStepIngred
     message.quantityNotes = object.quantityNotes ?? undefined;
     message.ingredientNotes = object.ingredientNotes ?? undefined;
     message.belongsToRecipeStep = object.belongsToRecipeStep ?? undefined;
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Float32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? undefined;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.optionIndex = object.optionIndex ?? undefined;
     message.vesselIndex = object.vesselIndex ?? undefined;
     message.toTaste = object.toTaste ?? undefined;
@@ -30771,7 +31223,8 @@ function createBaseRecipeStepInstrumentCreationRequestInput(): RecipeStepInstrum
     recipeStepProductId: undefined,
     productOfRecipeStepIndex: undefined,
     productOfRecipeStepProductIndex: undefined,
-    quantity: undefined,
+    minQuantity: 0,
+    maxQuantity: undefined,
     notes: '',
     name: '',
     optionIndex: 0,
@@ -30794,8 +31247,11 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
     if (message.productOfRecipeStepProductIndex !== undefined) {
       writer.uint32(24).uint64(message.productOfRecipeStepProductIndex);
     }
-    if (message.quantity !== undefined) {
-      Uint32RangeWithOptionalMax.encode(message.quantity, writer.uint32(34).fork()).join();
+    if (message.minQuantity !== 0) {
+      writer.uint32(32).uint32(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(104).uint32(message.maxQuantity);
     }
     if (message.notes !== '') {
       writer.uint32(42).string(message.notes);
@@ -30856,11 +31312,19 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.quantity = Uint32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minQuantity = reader.uint32();
+          continue;
+        }
+        case 13: {
+          if (tag !== 104) {
+            break;
+          }
+
+          message.maxQuantity = reader.uint32();
           continue;
         }
         case 5: {
@@ -30953,7 +31417,16 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
         : isSet(object.product_of_recipe_step_product_index)
           ? globalThis.Number(object.product_of_recipe_step_product_index)
           : undefined,
-      quantity: isSet(object.quantity) ? Uint32RangeWithOptionalMax.fromJSON(object.quantity) : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : 0,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       notes: isSet(object.notes) ? globalThis.String(object.notes) : '',
       name: isSet(object.name) ? globalThis.String(object.name) : '',
       optionIndex: isSet(object.optionIndex)
@@ -30992,8 +31465,11 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
     if (message.productOfRecipeStepProductIndex !== undefined) {
       obj.productOfRecipeStepProductIndex = Math.round(message.productOfRecipeStepProductIndex);
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Uint32RangeWithOptionalMax.toJSON(message.quantity);
+    if (message.minQuantity !== 0) {
+      obj.minQuantity = Math.round(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = Math.round(message.maxQuantity);
     }
     if (message.notes !== '') {
       obj.notes = message.notes;
@@ -31034,10 +31510,8 @@ export const RecipeStepInstrumentCreationRequestInput: MessageFns<RecipeStepInst
     message.recipeStepProductId = object.recipeStepProductId ?? undefined;
     message.productOfRecipeStepIndex = object.productOfRecipeStepIndex ?? undefined;
     message.productOfRecipeStepProductIndex = object.productOfRecipeStepProductIndex ?? undefined;
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Uint32RangeWithOptionalMax.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? 0;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.notes = object.notes ?? '';
     message.name = object.name ?? '';
     message.optionIndex = object.optionIndex ?? 0;
@@ -31060,7 +31534,8 @@ function createBaseRecipeStepInstrumentUpdateRequestInput(): RecipeStepInstrumen
     name: undefined,
     optional: undefined,
     optionIndex: undefined,
-    quantity: undefined,
+    minQuantity: undefined,
+    maxQuantity: undefined,
     index: undefined,
     scaleFactor: undefined,
   };
@@ -31092,8 +31567,11 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
     if (message.optionIndex !== undefined) {
       writer.uint32(64).uint32(message.optionIndex);
     }
-    if (message.quantity !== undefined) {
-      Uint32RangeWithOptionalMaxUpdateRequestInput.encode(message.quantity, writer.uint32(74).fork()).join();
+    if (message.minQuantity !== undefined) {
+      writer.uint32(72).uint32(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(96).uint32(message.maxQuantity);
     }
     if (message.index !== undefined) {
       writer.uint32(80).uint32(message.index);
@@ -31176,11 +31654,19 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
           continue;
         }
         case 9: {
-          if (tag !== 74) {
+          if (tag !== 72) {
             break;
           }
 
-          message.quantity = Uint32RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minQuantity = reader.uint32();
+          continue;
+        }
+        case 12: {
+          if (tag !== 96) {
+            break;
+          }
+
+          message.maxQuantity = reader.uint32();
           continue;
         }
         case 10: {
@@ -31238,9 +31724,16 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
         : isSet(object.option_index)
           ? globalThis.Number(object.option_index)
           : undefined,
-      quantity: isSet(object.quantity)
-        ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.quantity)
-        : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : undefined,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       index: isSet(object.index) ? globalThis.Number(object.index) : undefined,
       scaleFactor: isSet(object.scaleFactor)
         ? globalThis.Number(object.scaleFactor)
@@ -31276,8 +31769,11 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
     if (message.optionIndex !== undefined) {
       obj.optionIndex = Math.round(message.optionIndex);
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Uint32RangeWithOptionalMaxUpdateRequestInput.toJSON(message.quantity);
+    if (message.minQuantity !== undefined) {
+      obj.minQuantity = Math.round(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = Math.round(message.maxQuantity);
     }
     if (message.index !== undefined) {
       obj.index = Math.round(message.index);
@@ -31305,10 +31801,8 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
     message.name = object.name ?? undefined;
     message.optional = object.optional ?? undefined;
     message.optionIndex = object.optionIndex ?? undefined;
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Uint32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? undefined;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.index = object.index ?? undefined;
     message.scaleFactor = object.scaleFactor ?? undefined;
     return message;
@@ -31317,10 +31811,14 @@ export const RecipeStepInstrumentUpdateRequestInput: MessageFns<RecipeStepInstru
 
 function createBaseRecipeStepProductCreationRequestInput(): RecipeStepProductCreationRequestInput {
   return {
-    storageTemperatureInCelsius: undefined,
-    storageDurationInSeconds: undefined,
-    measurementQuantity: undefined,
-    itemQuantity: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
+    minStorageDurationInSeconds: undefined,
+    maxStorageDurationInSeconds: undefined,
+    minMeasurementQuantity: undefined,
+    maxMeasurementQuantity: undefined,
+    minItemQuantity: undefined,
+    maxItemQuantity: undefined,
     measurementUnitId: undefined,
     containedInVesselIndex: undefined,
     quantityNotes: '',
@@ -31336,17 +31834,29 @@ function createBaseRecipeStepProductCreationRequestInput(): RecipeStepProductCre
 
 export const RecipeStepProductCreationRequestInput: MessageFns<RecipeStepProductCreationRequestInput> = {
   encode(message: RecipeStepProductCreationRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(10).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(13).float(message.minStorageTemperatureInCelsius);
     }
-    if (message.storageDurationInSeconds !== undefined) {
-      OptionalUint32Range.encode(message.storageDurationInSeconds, writer.uint32(18).fork()).join();
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(125).float(message.maxStorageTemperatureInCelsius);
     }
-    if (message.measurementQuantity !== undefined) {
-      OptionalFloat32Range.encode(message.measurementQuantity, writer.uint32(26).fork()).join();
+    if (message.minStorageDurationInSeconds !== undefined) {
+      writer.uint32(16).uint32(message.minStorageDurationInSeconds);
     }
-    if (message.itemQuantity !== undefined) {
-      OptionalFloat32Range.encode(message.itemQuantity, writer.uint32(34).fork()).join();
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      writer.uint32(128).uint32(message.maxStorageDurationInSeconds);
+    }
+    if (message.minMeasurementQuantity !== undefined) {
+      writer.uint32(29).float(message.minMeasurementQuantity);
+    }
+    if (message.maxMeasurementQuantity !== undefined) {
+      writer.uint32(141).float(message.maxMeasurementQuantity);
+    }
+    if (message.minItemQuantity !== undefined) {
+      writer.uint32(37).float(message.minItemQuantity);
+    }
+    if (message.maxItemQuantity !== undefined) {
+      writer.uint32(149).float(message.maxItemQuantity);
     }
     if (message.measurementUnitId !== undefined) {
       writer.uint32(42).string(message.measurementUnitId);
@@ -31389,35 +31899,67 @@ export const RecipeStepProductCreationRequestInput: MessageFns<RecipeStepProduct
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 13) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 15: {
+          if (tag !== 125) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.storageDurationInSeconds = OptionalUint32Range.decode(reader, reader.uint32());
+          message.minStorageDurationInSeconds = reader.uint32();
+          continue;
+        }
+        case 16: {
+          if (tag !== 128) {
+            break;
+          }
+
+          message.maxStorageDurationInSeconds = reader.uint32();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 29) {
             break;
           }
 
-          message.measurementQuantity = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minMeasurementQuantity = reader.float();
+          continue;
+        }
+        case 17: {
+          if (tag !== 141) {
+            break;
+          }
+
+          message.maxMeasurementQuantity = reader.float();
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 37) {
             break;
           }
 
-          message.itemQuantity = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minItemQuantity = reader.float();
+          continue;
+        }
+        case 18: {
+          if (tag !== 149) {
+            break;
+          }
+
+          message.maxItemQuantity = reader.float();
           continue;
         }
         case 5: {
@@ -31511,25 +32053,45 @@ export const RecipeStepProductCreationRequestInput: MessageFns<RecipeStepProduct
 
   fromJSON(object: any): RecipeStepProductCreationRequestInput {
     return {
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
           : undefined,
-      storageDurationInSeconds: isSet(object.storageDurationInSeconds)
-        ? OptionalUint32Range.fromJSON(object.storageDurationInSeconds)
-        : isSet(object.storage_duration_in_seconds)
-          ? OptionalUint32Range.fromJSON(object.storage_duration_in_seconds)
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
-      measurementQuantity: isSet(object.measurementQuantity)
-        ? OptionalFloat32Range.fromJSON(object.measurementQuantity)
-        : isSet(object.measurement_quantity)
-          ? OptionalFloat32Range.fromJSON(object.measurement_quantity)
+      minStorageDurationInSeconds: isSet(object.minStorageDurationInSeconds)
+        ? globalThis.Number(object.minStorageDurationInSeconds)
+        : isSet(object.min_storage_duration_in_seconds)
+          ? globalThis.Number(object.min_storage_duration_in_seconds)
           : undefined,
-      itemQuantity: isSet(object.itemQuantity)
-        ? OptionalFloat32Range.fromJSON(object.itemQuantity)
-        : isSet(object.item_quantity)
-          ? OptionalFloat32Range.fromJSON(object.item_quantity)
+      maxStorageDurationInSeconds: isSet(object.maxStorageDurationInSeconds)
+        ? globalThis.Number(object.maxStorageDurationInSeconds)
+        : isSet(object.max_storage_duration_in_seconds)
+          ? globalThis.Number(object.max_storage_duration_in_seconds)
+          : undefined,
+      minMeasurementQuantity: isSet(object.minMeasurementQuantity)
+        ? globalThis.Number(object.minMeasurementQuantity)
+        : isSet(object.min_measurement_quantity)
+          ? globalThis.Number(object.min_measurement_quantity)
+          : undefined,
+      maxMeasurementQuantity: isSet(object.maxMeasurementQuantity)
+        ? globalThis.Number(object.maxMeasurementQuantity)
+        : isSet(object.max_measurement_quantity)
+          ? globalThis.Number(object.max_measurement_quantity)
+          : undefined,
+      minItemQuantity: isSet(object.minItemQuantity)
+        ? globalThis.Number(object.minItemQuantity)
+        : isSet(object.min_item_quantity)
+          ? globalThis.Number(object.min_item_quantity)
+          : undefined,
+      maxItemQuantity: isSet(object.maxItemQuantity)
+        ? globalThis.Number(object.maxItemQuantity)
+        : isSet(object.max_item_quantity)
+          ? globalThis.Number(object.max_item_quantity)
           : undefined,
       measurementUnitId: isSet(object.measurementUnitId)
         ? globalThis.String(object.measurementUnitId)
@@ -31570,17 +32132,29 @@ export const RecipeStepProductCreationRequestInput: MessageFns<RecipeStepProduct
 
   toJSON(message: RecipeStepProductCreationRequestInput): unknown {
     const obj: any = {};
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
     }
-    if (message.storageDurationInSeconds !== undefined) {
-      obj.storageDurationInSeconds = OptionalUint32Range.toJSON(message.storageDurationInSeconds);
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
-    if (message.measurementQuantity !== undefined) {
-      obj.measurementQuantity = OptionalFloat32Range.toJSON(message.measurementQuantity);
+    if (message.minStorageDurationInSeconds !== undefined) {
+      obj.minStorageDurationInSeconds = Math.round(message.minStorageDurationInSeconds);
     }
-    if (message.itemQuantity !== undefined) {
-      obj.itemQuantity = OptionalFloat32Range.toJSON(message.itemQuantity);
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      obj.maxStorageDurationInSeconds = Math.round(message.maxStorageDurationInSeconds);
+    }
+    if (message.minMeasurementQuantity !== undefined) {
+      obj.minMeasurementQuantity = message.minMeasurementQuantity;
+    }
+    if (message.maxMeasurementQuantity !== undefined) {
+      obj.maxMeasurementQuantity = message.maxMeasurementQuantity;
+    }
+    if (message.minItemQuantity !== undefined) {
+      obj.minItemQuantity = message.minItemQuantity;
+    }
+    if (message.maxItemQuantity !== undefined) {
+      obj.maxItemQuantity = message.maxItemQuantity;
     }
     if (message.measurementUnitId !== undefined) {
       obj.measurementUnitId = message.measurementUnitId;
@@ -31624,22 +32198,14 @@ export const RecipeStepProductCreationRequestInput: MessageFns<RecipeStepProduct
     object: I,
   ): RecipeStepProductCreationRequestInput {
     const message = createBaseRecipeStepProductCreationRequestInput();
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
-    message.storageDurationInSeconds =
-      object.storageDurationInSeconds !== undefined && object.storageDurationInSeconds !== null
-        ? OptionalUint32Range.fromPartial(object.storageDurationInSeconds)
-        : undefined;
-    message.measurementQuantity =
-      object.measurementQuantity !== undefined && object.measurementQuantity !== null
-        ? OptionalFloat32Range.fromPartial(object.measurementQuantity)
-        : undefined;
-    message.itemQuantity =
-      object.itemQuantity !== undefined && object.itemQuantity !== null
-        ? OptionalFloat32Range.fromPartial(object.itemQuantity)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
+    message.minStorageDurationInSeconds = object.minStorageDurationInSeconds ?? undefined;
+    message.maxStorageDurationInSeconds = object.maxStorageDurationInSeconds ?? undefined;
+    message.minMeasurementQuantity = object.minMeasurementQuantity ?? undefined;
+    message.maxMeasurementQuantity = object.maxMeasurementQuantity ?? undefined;
+    message.minItemQuantity = object.minItemQuantity ?? undefined;
+    message.maxItemQuantity = object.maxItemQuantity ?? undefined;
     message.measurementUnitId = object.measurementUnitId ?? undefined;
     message.containedInVesselIndex = object.containedInVesselIndex ?? undefined;
     message.quantityNotes = object.quantityNotes ?? '';
@@ -31661,10 +32227,14 @@ function createBaseRecipeStepProductUpdateRequestInput(): RecipeStepProductUpdat
     measurementUnitId: undefined,
     quantityNotes: undefined,
     belongsToRecipeStep: undefined,
-    storageTemperatureInCelsius: undefined,
-    storageDurationInSeconds: undefined,
-    measurementQuantity: undefined,
-    itemQuantity: undefined,
+    minStorageTemperatureInCelsius: undefined,
+    maxStorageTemperatureInCelsius: undefined,
+    minStorageDurationInSeconds: undefined,
+    maxStorageDurationInSeconds: undefined,
+    minMeasurementQuantity: undefined,
+    maxMeasurementQuantity: undefined,
+    minItemQuantity: undefined,
+    maxItemQuantity: undefined,
     compostable: undefined,
     storageInstructions: undefined,
     isLiquid: undefined,
@@ -31691,17 +32261,29 @@ export const RecipeStepProductUpdateRequestInput: MessageFns<RecipeStepProductUp
     if (message.belongsToRecipeStep !== undefined) {
       writer.uint32(42).string(message.belongsToRecipeStep);
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.storageTemperatureInCelsius, writer.uint32(50).fork()).join();
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(53).float(message.minStorageTemperatureInCelsius);
     }
-    if (message.storageDurationInSeconds !== undefined) {
-      OptionalUint32Range.encode(message.storageDurationInSeconds, writer.uint32(58).fork()).join();
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      writer.uint32(133).float(message.maxStorageTemperatureInCelsius);
     }
-    if (message.measurementQuantity !== undefined) {
-      OptionalFloat32Range.encode(message.measurementQuantity, writer.uint32(66).fork()).join();
+    if (message.minStorageDurationInSeconds !== undefined) {
+      writer.uint32(56).uint32(message.minStorageDurationInSeconds);
     }
-    if (message.itemQuantity !== undefined) {
-      OptionalFloat32Range.encode(message.itemQuantity, writer.uint32(74).fork()).join();
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      writer.uint32(136).uint32(message.maxStorageDurationInSeconds);
+    }
+    if (message.minMeasurementQuantity !== undefined) {
+      writer.uint32(69).float(message.minMeasurementQuantity);
+    }
+    if (message.maxMeasurementQuantity !== undefined) {
+      writer.uint32(149).float(message.maxMeasurementQuantity);
+    }
+    if (message.minItemQuantity !== undefined) {
+      writer.uint32(77).float(message.minItemQuantity);
+    }
+    if (message.maxItemQuantity !== undefined) {
+      writer.uint32(157).float(message.maxItemQuantity);
     }
     if (message.compostable !== undefined) {
       writer.uint32(80).bool(message.compostable);
@@ -31772,35 +32354,67 @@ export const RecipeStepProductUpdateRequestInput: MessageFns<RecipeStepProductUp
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 53) {
             break;
           }
 
-          message.storageTemperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minStorageTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 16: {
+          if (tag !== 133) {
+            break;
+          }
+
+          message.maxStorageTemperatureInCelsius = reader.float();
           continue;
         }
         case 7: {
-          if (tag !== 58) {
+          if (tag !== 56) {
             break;
           }
 
-          message.storageDurationInSeconds = OptionalUint32Range.decode(reader, reader.uint32());
+          message.minStorageDurationInSeconds = reader.uint32();
+          continue;
+        }
+        case 17: {
+          if (tag !== 136) {
+            break;
+          }
+
+          message.maxStorageDurationInSeconds = reader.uint32();
           continue;
         }
         case 8: {
-          if (tag !== 66) {
+          if (tag !== 69) {
             break;
           }
 
-          message.measurementQuantity = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minMeasurementQuantity = reader.float();
+          continue;
+        }
+        case 18: {
+          if (tag !== 149) {
+            break;
+          }
+
+          message.maxMeasurementQuantity = reader.float();
           continue;
         }
         case 9: {
-          if (tag !== 74) {
+          if (tag !== 77) {
             break;
           }
 
-          message.itemQuantity = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minItemQuantity = reader.float();
+          continue;
+        }
+        case 19: {
+          if (tag !== 157) {
+            break;
+          }
+
+          message.maxItemQuantity = reader.float();
           continue;
         }
         case 10: {
@@ -31879,25 +32493,45 @@ export const RecipeStepProductUpdateRequestInput: MessageFns<RecipeStepProductUp
         : isSet(object.belongs_to_recipe_step)
           ? globalThis.String(object.belongs_to_recipe_step)
           : undefined,
-      storageTemperatureInCelsius: isSet(object.storageTemperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.storageTemperatureInCelsius)
-        : isSet(object.storage_temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.storage_temperature_in_celsius)
+      minStorageTemperatureInCelsius: isSet(object.minStorageTemperatureInCelsius)
+        ? globalThis.Number(object.minStorageTemperatureInCelsius)
+        : isSet(object.min_storage_temperature_in_celsius)
+          ? globalThis.Number(object.min_storage_temperature_in_celsius)
           : undefined,
-      storageDurationInSeconds: isSet(object.storageDurationInSeconds)
-        ? OptionalUint32Range.fromJSON(object.storageDurationInSeconds)
-        : isSet(object.storage_duration_in_seconds)
-          ? OptionalUint32Range.fromJSON(object.storage_duration_in_seconds)
+      maxStorageTemperatureInCelsius: isSet(object.maxStorageTemperatureInCelsius)
+        ? globalThis.Number(object.maxStorageTemperatureInCelsius)
+        : isSet(object.max_storage_temperature_in_celsius)
+          ? globalThis.Number(object.max_storage_temperature_in_celsius)
           : undefined,
-      measurementQuantity: isSet(object.measurementQuantity)
-        ? OptionalFloat32Range.fromJSON(object.measurementQuantity)
-        : isSet(object.measurement_quantity)
-          ? OptionalFloat32Range.fromJSON(object.measurement_quantity)
+      minStorageDurationInSeconds: isSet(object.minStorageDurationInSeconds)
+        ? globalThis.Number(object.minStorageDurationInSeconds)
+        : isSet(object.min_storage_duration_in_seconds)
+          ? globalThis.Number(object.min_storage_duration_in_seconds)
           : undefined,
-      itemQuantity: isSet(object.itemQuantity)
-        ? OptionalFloat32Range.fromJSON(object.itemQuantity)
-        : isSet(object.item_quantity)
-          ? OptionalFloat32Range.fromJSON(object.item_quantity)
+      maxStorageDurationInSeconds: isSet(object.maxStorageDurationInSeconds)
+        ? globalThis.Number(object.maxStorageDurationInSeconds)
+        : isSet(object.max_storage_duration_in_seconds)
+          ? globalThis.Number(object.max_storage_duration_in_seconds)
+          : undefined,
+      minMeasurementQuantity: isSet(object.minMeasurementQuantity)
+        ? globalThis.Number(object.minMeasurementQuantity)
+        : isSet(object.min_measurement_quantity)
+          ? globalThis.Number(object.min_measurement_quantity)
+          : undefined,
+      maxMeasurementQuantity: isSet(object.maxMeasurementQuantity)
+        ? globalThis.Number(object.maxMeasurementQuantity)
+        : isSet(object.max_measurement_quantity)
+          ? globalThis.Number(object.max_measurement_quantity)
+          : undefined,
+      minItemQuantity: isSet(object.minItemQuantity)
+        ? globalThis.Number(object.minItemQuantity)
+        : isSet(object.min_item_quantity)
+          ? globalThis.Number(object.min_item_quantity)
+          : undefined,
+      maxItemQuantity: isSet(object.maxItemQuantity)
+        ? globalThis.Number(object.maxItemQuantity)
+        : isSet(object.max_item_quantity)
+          ? globalThis.Number(object.max_item_quantity)
           : undefined,
       compostable: isSet(object.compostable) ? globalThis.Boolean(object.compostable) : undefined,
       storageInstructions: isSet(object.storageInstructions)
@@ -31941,17 +32575,29 @@ export const RecipeStepProductUpdateRequestInput: MessageFns<RecipeStepProductUp
     if (message.belongsToRecipeStep !== undefined) {
       obj.belongsToRecipeStep = message.belongsToRecipeStep;
     }
-    if (message.storageTemperatureInCelsius !== undefined) {
-      obj.storageTemperatureInCelsius = OptionalFloat32Range.toJSON(message.storageTemperatureInCelsius);
+    if (message.minStorageTemperatureInCelsius !== undefined) {
+      obj.minStorageTemperatureInCelsius = message.minStorageTemperatureInCelsius;
     }
-    if (message.storageDurationInSeconds !== undefined) {
-      obj.storageDurationInSeconds = OptionalUint32Range.toJSON(message.storageDurationInSeconds);
+    if (message.maxStorageTemperatureInCelsius !== undefined) {
+      obj.maxStorageTemperatureInCelsius = message.maxStorageTemperatureInCelsius;
     }
-    if (message.measurementQuantity !== undefined) {
-      obj.measurementQuantity = OptionalFloat32Range.toJSON(message.measurementQuantity);
+    if (message.minStorageDurationInSeconds !== undefined) {
+      obj.minStorageDurationInSeconds = Math.round(message.minStorageDurationInSeconds);
     }
-    if (message.itemQuantity !== undefined) {
-      obj.itemQuantity = OptionalFloat32Range.toJSON(message.itemQuantity);
+    if (message.maxStorageDurationInSeconds !== undefined) {
+      obj.maxStorageDurationInSeconds = Math.round(message.maxStorageDurationInSeconds);
+    }
+    if (message.minMeasurementQuantity !== undefined) {
+      obj.minMeasurementQuantity = message.minMeasurementQuantity;
+    }
+    if (message.maxMeasurementQuantity !== undefined) {
+      obj.maxMeasurementQuantity = message.maxMeasurementQuantity;
+    }
+    if (message.minItemQuantity !== undefined) {
+      obj.minItemQuantity = message.minItemQuantity;
+    }
+    if (message.maxItemQuantity !== undefined) {
+      obj.maxItemQuantity = message.maxItemQuantity;
     }
     if (message.compostable !== undefined) {
       obj.compostable = message.compostable;
@@ -31988,22 +32634,14 @@ export const RecipeStepProductUpdateRequestInput: MessageFns<RecipeStepProductUp
     message.measurementUnitId = object.measurementUnitId ?? undefined;
     message.quantityNotes = object.quantityNotes ?? undefined;
     message.belongsToRecipeStep = object.belongsToRecipeStep ?? undefined;
-    message.storageTemperatureInCelsius =
-      object.storageTemperatureInCelsius !== undefined && object.storageTemperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.storageTemperatureInCelsius)
-        : undefined;
-    message.storageDurationInSeconds =
-      object.storageDurationInSeconds !== undefined && object.storageDurationInSeconds !== null
-        ? OptionalUint32Range.fromPartial(object.storageDurationInSeconds)
-        : undefined;
-    message.measurementQuantity =
-      object.measurementQuantity !== undefined && object.measurementQuantity !== null
-        ? OptionalFloat32Range.fromPartial(object.measurementQuantity)
-        : undefined;
-    message.itemQuantity =
-      object.itemQuantity !== undefined && object.itemQuantity !== null
-        ? OptionalFloat32Range.fromPartial(object.itemQuantity)
-        : undefined;
+    message.minStorageTemperatureInCelsius = object.minStorageTemperatureInCelsius ?? undefined;
+    message.maxStorageTemperatureInCelsius = object.maxStorageTemperatureInCelsius ?? undefined;
+    message.minStorageDurationInSeconds = object.minStorageDurationInSeconds ?? undefined;
+    message.maxStorageDurationInSeconds = object.maxStorageDurationInSeconds ?? undefined;
+    message.minMeasurementQuantity = object.minMeasurementQuantity ?? undefined;
+    message.maxMeasurementQuantity = object.maxMeasurementQuantity ?? undefined;
+    message.minItemQuantity = object.minItemQuantity ?? undefined;
+    message.maxItemQuantity = object.maxItemQuantity ?? undefined;
     message.compostable = object.compostable ?? undefined;
     message.storageInstructions = object.storageInstructions ?? undefined;
     message.isLiquid = object.isLiquid ?? undefined;
@@ -32016,8 +32654,10 @@ export const RecipeStepProductUpdateRequestInput: MessageFns<RecipeStepProductUp
 
 function createBaseRecipeStepUpdateRequestInput(): RecipeStepUpdateRequestInput {
   return {
-    estimatedTimeInSeconds: undefined,
-    temperatureInCelsius: undefined,
+    minEstimatedTimeInSeconds: undefined,
+    maxEstimatedTimeInSeconds: undefined,
+    minTemperatureInCelsius: undefined,
+    maxTemperatureInCelsius: undefined,
     notes: undefined,
     preparation: undefined,
     index: undefined,
@@ -32031,11 +32671,17 @@ function createBaseRecipeStepUpdateRequestInput(): RecipeStepUpdateRequestInput 
 
 export const RecipeStepUpdateRequestInput: MessageFns<RecipeStepUpdateRequestInput> = {
   encode(message: RecipeStepUpdateRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.estimatedTimeInSeconds !== undefined) {
-      OptionalUint32Range.encode(message.estimatedTimeInSeconds, writer.uint32(10).fork()).join();
+    if (message.minEstimatedTimeInSeconds !== undefined) {
+      writer.uint32(8).uint32(message.minEstimatedTimeInSeconds);
     }
-    if (message.temperatureInCelsius !== undefined) {
-      OptionalFloat32Range.encode(message.temperatureInCelsius, writer.uint32(18).fork()).join();
+    if (message.maxEstimatedTimeInSeconds !== undefined) {
+      writer.uint32(88).uint32(message.maxEstimatedTimeInSeconds);
+    }
+    if (message.minTemperatureInCelsius !== undefined) {
+      writer.uint32(21).float(message.minTemperatureInCelsius);
+    }
+    if (message.maxTemperatureInCelsius !== undefined) {
+      writer.uint32(101).float(message.maxTemperatureInCelsius);
     }
     if (message.notes !== undefined) {
       writer.uint32(26).string(message.notes);
@@ -32072,19 +32718,35 @@ export const RecipeStepUpdateRequestInput: MessageFns<RecipeStepUpdateRequestInp
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.estimatedTimeInSeconds = OptionalUint32Range.decode(reader, reader.uint32());
+          message.minEstimatedTimeInSeconds = reader.uint32();
+          continue;
+        }
+        case 11: {
+          if (tag !== 88) {
+            break;
+          }
+
+          message.maxEstimatedTimeInSeconds = reader.uint32();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 21) {
             break;
           }
 
-          message.temperatureInCelsius = OptionalFloat32Range.decode(reader, reader.uint32());
+          message.minTemperatureInCelsius = reader.float();
+          continue;
+        }
+        case 12: {
+          if (tag !== 101) {
+            break;
+          }
+
+          message.maxTemperatureInCelsius = reader.float();
           continue;
         }
         case 3: {
@@ -32162,15 +32824,25 @@ export const RecipeStepUpdateRequestInput: MessageFns<RecipeStepUpdateRequestInp
 
   fromJSON(object: any): RecipeStepUpdateRequestInput {
     return {
-      estimatedTimeInSeconds: isSet(object.estimatedTimeInSeconds)
-        ? OptionalUint32Range.fromJSON(object.estimatedTimeInSeconds)
-        : isSet(object.estimated_time_in_seconds)
-          ? OptionalUint32Range.fromJSON(object.estimated_time_in_seconds)
+      minEstimatedTimeInSeconds: isSet(object.minEstimatedTimeInSeconds)
+        ? globalThis.Number(object.minEstimatedTimeInSeconds)
+        : isSet(object.min_estimated_time_in_seconds)
+          ? globalThis.Number(object.min_estimated_time_in_seconds)
           : undefined,
-      temperatureInCelsius: isSet(object.temperatureInCelsius)
-        ? OptionalFloat32Range.fromJSON(object.temperatureInCelsius)
-        : isSet(object.temperature_in_celsius)
-          ? OptionalFloat32Range.fromJSON(object.temperature_in_celsius)
+      maxEstimatedTimeInSeconds: isSet(object.maxEstimatedTimeInSeconds)
+        ? globalThis.Number(object.maxEstimatedTimeInSeconds)
+        : isSet(object.max_estimated_time_in_seconds)
+          ? globalThis.Number(object.max_estimated_time_in_seconds)
+          : undefined,
+      minTemperatureInCelsius: isSet(object.minTemperatureInCelsius)
+        ? globalThis.Number(object.minTemperatureInCelsius)
+        : isSet(object.min_temperature_in_celsius)
+          ? globalThis.Number(object.min_temperature_in_celsius)
+          : undefined,
+      maxTemperatureInCelsius: isSet(object.maxTemperatureInCelsius)
+        ? globalThis.Number(object.maxTemperatureInCelsius)
+        : isSet(object.max_temperature_in_celsius)
+          ? globalThis.Number(object.max_temperature_in_celsius)
           : undefined,
       notes: isSet(object.notes) ? globalThis.String(object.notes) : undefined,
       preparation: isSet(object.preparation) ? ValidPreparation.fromJSON(object.preparation) : undefined,
@@ -32201,11 +32873,17 @@ export const RecipeStepUpdateRequestInput: MessageFns<RecipeStepUpdateRequestInp
 
   toJSON(message: RecipeStepUpdateRequestInput): unknown {
     const obj: any = {};
-    if (message.estimatedTimeInSeconds !== undefined) {
-      obj.estimatedTimeInSeconds = OptionalUint32Range.toJSON(message.estimatedTimeInSeconds);
+    if (message.minEstimatedTimeInSeconds !== undefined) {
+      obj.minEstimatedTimeInSeconds = Math.round(message.minEstimatedTimeInSeconds);
     }
-    if (message.temperatureInCelsius !== undefined) {
-      obj.temperatureInCelsius = OptionalFloat32Range.toJSON(message.temperatureInCelsius);
+    if (message.maxEstimatedTimeInSeconds !== undefined) {
+      obj.maxEstimatedTimeInSeconds = Math.round(message.maxEstimatedTimeInSeconds);
+    }
+    if (message.minTemperatureInCelsius !== undefined) {
+      obj.minTemperatureInCelsius = message.minTemperatureInCelsius;
+    }
+    if (message.maxTemperatureInCelsius !== undefined) {
+      obj.maxTemperatureInCelsius = message.maxTemperatureInCelsius;
     }
     if (message.notes !== undefined) {
       obj.notes = message.notes;
@@ -32239,14 +32917,10 @@ export const RecipeStepUpdateRequestInput: MessageFns<RecipeStepUpdateRequestInp
   },
   fromPartial<I extends Exact<DeepPartial<RecipeStepUpdateRequestInput>, I>>(object: I): RecipeStepUpdateRequestInput {
     const message = createBaseRecipeStepUpdateRequestInput();
-    message.estimatedTimeInSeconds =
-      object.estimatedTimeInSeconds !== undefined && object.estimatedTimeInSeconds !== null
-        ? OptionalUint32Range.fromPartial(object.estimatedTimeInSeconds)
-        : undefined;
-    message.temperatureInCelsius =
-      object.temperatureInCelsius !== undefined && object.temperatureInCelsius !== null
-        ? OptionalFloat32Range.fromPartial(object.temperatureInCelsius)
-        : undefined;
+    message.minEstimatedTimeInSeconds = object.minEstimatedTimeInSeconds ?? undefined;
+    message.maxEstimatedTimeInSeconds = object.maxEstimatedTimeInSeconds ?? undefined;
+    message.minTemperatureInCelsius = object.minTemperatureInCelsius ?? undefined;
+    message.maxTemperatureInCelsius = object.maxTemperatureInCelsius ?? undefined;
     message.notes = object.notes ?? undefined;
     message.preparation =
       object.preparation !== undefined && object.preparation !== null
@@ -32267,7 +32941,8 @@ function createBaseRecipeStepVesselCreationRequestInput(): RecipeStepVesselCreat
     recipeStepProductId: undefined,
     productOfRecipeStepIndex: undefined,
     productOfRecipeStepProductIndex: undefined,
-    quantity: undefined,
+    minQuantity: 0,
+    maxQuantity: undefined,
     name: '',
     notes: '',
     vesselPreposition: '',
@@ -32290,8 +32965,11 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
     if (message.productOfRecipeStepProductIndex !== undefined) {
       writer.uint32(24).uint64(message.productOfRecipeStepProductIndex);
     }
-    if (message.quantity !== undefined) {
-      Uint16RangeWithOptionalMax.encode(message.quantity, writer.uint32(34).fork()).join();
+    if (message.minQuantity !== 0) {
+      writer.uint32(32).uint32(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(104).uint32(message.maxQuantity);
     }
     if (message.name !== '') {
       writer.uint32(42).string(message.name);
@@ -32352,11 +33030,19 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.quantity = Uint16RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minQuantity = reader.uint32();
+          continue;
+        }
+        case 13: {
+          if (tag !== 104) {
+            break;
+          }
+
+          message.maxQuantity = reader.uint32();
           continue;
         }
         case 5: {
@@ -32449,7 +33135,16 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
         : isSet(object.product_of_recipe_step_product_index)
           ? globalThis.Number(object.product_of_recipe_step_product_index)
           : undefined,
-      quantity: isSet(object.quantity) ? Uint16RangeWithOptionalMax.fromJSON(object.quantity) : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : 0,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       name: isSet(object.name) ? globalThis.String(object.name) : '',
       notes: isSet(object.notes) ? globalThis.String(object.notes) : '',
       vesselPreposition: isSet(object.vesselPreposition)
@@ -32492,8 +33187,11 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
     if (message.productOfRecipeStepProductIndex !== undefined) {
       obj.productOfRecipeStepProductIndex = Math.round(message.productOfRecipeStepProductIndex);
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Uint16RangeWithOptionalMax.toJSON(message.quantity);
+    if (message.minQuantity !== 0) {
+      obj.minQuantity = Math.round(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = Math.round(message.maxQuantity);
     }
     if (message.name !== '') {
       obj.name = message.name;
@@ -32534,10 +33232,8 @@ export const RecipeStepVesselCreationRequestInput: MessageFns<RecipeStepVesselCr
     message.recipeStepProductId = object.recipeStepProductId ?? undefined;
     message.productOfRecipeStepIndex = object.productOfRecipeStepIndex ?? undefined;
     message.productOfRecipeStepProductIndex = object.productOfRecipeStepProductIndex ?? undefined;
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Uint16RangeWithOptionalMax.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? 0;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.name = object.name ?? '';
     message.notes = object.notes ?? '';
     message.vesselPreposition = object.vesselPreposition ?? '';
@@ -32557,7 +33253,8 @@ function createBaseRecipeStepVesselUpdateRequestInput(): RecipeStepVesselUpdateR
     notes: undefined,
     belongsToRecipeStep: undefined,
     vesselId: undefined,
-    quantity: undefined,
+    minQuantity: undefined,
+    maxQuantity: undefined,
     vesselPreposition: undefined,
     unavailableAfterStep: undefined,
     index: undefined,
@@ -32583,8 +33280,11 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
     if (message.vesselId !== undefined) {
       writer.uint32(42).string(message.vesselId);
     }
-    if (message.quantity !== undefined) {
-      Uint16RangeWithOptionalMaxUpdateRequestInput.encode(message.quantity, writer.uint32(50).fork()).join();
+    if (message.minQuantity !== undefined) {
+      writer.uint32(48).uint32(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      writer.uint32(96).uint32(message.maxQuantity);
     }
     if (message.vesselPreposition !== undefined) {
       writer.uint32(58).string(message.vesselPreposition);
@@ -32652,11 +33352,19 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 48) {
             break;
           }
 
-          message.quantity = Uint16RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minQuantity = reader.uint32();
+          continue;
+        }
+        case 12: {
+          if (tag !== 96) {
+            break;
+          }
+
+          message.maxQuantity = reader.uint32();
           continue;
         }
         case 7: {
@@ -32727,9 +33435,16 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
         : isSet(object.vessel_id)
           ? globalThis.String(object.vessel_id)
           : undefined,
-      quantity: isSet(object.quantity)
-        ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.quantity)
-        : undefined,
+      minQuantity: isSet(object.minQuantity)
+        ? globalThis.Number(object.minQuantity)
+        : isSet(object.min_quantity)
+          ? globalThis.Number(object.min_quantity)
+          : undefined,
+      maxQuantity: isSet(object.maxQuantity)
+        ? globalThis.Number(object.maxQuantity)
+        : isSet(object.max_quantity)
+          ? globalThis.Number(object.max_quantity)
+          : undefined,
       vesselPreposition: isSet(object.vesselPreposition)
         ? globalThis.String(object.vesselPreposition)
         : isSet(object.vessel_preposition)
@@ -32771,8 +33486,11 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
     if (message.vesselId !== undefined) {
       obj.vesselId = message.vesselId;
     }
-    if (message.quantity !== undefined) {
-      obj.quantity = Uint16RangeWithOptionalMaxUpdateRequestInput.toJSON(message.quantity);
+    if (message.minQuantity !== undefined) {
+      obj.minQuantity = Math.round(message.minQuantity);
+    }
+    if (message.maxQuantity !== undefined) {
+      obj.maxQuantity = Math.round(message.maxQuantity);
     }
     if (message.vesselPreposition !== undefined) {
       obj.vesselPreposition = message.vesselPreposition;
@@ -32806,10 +33524,8 @@ export const RecipeStepVesselUpdateRequestInput: MessageFns<RecipeStepVesselUpda
     message.notes = object.notes ?? undefined;
     message.belongsToRecipeStep = object.belongsToRecipeStep ?? undefined;
     message.vesselId = object.vesselId ?? undefined;
-    message.quantity =
-      object.quantity !== undefined && object.quantity !== null
-        ? Uint16RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.quantity)
-        : undefined;
+    message.minQuantity = object.minQuantity ?? undefined;
+    message.maxQuantity = object.maxQuantity ?? undefined;
     message.vesselPreposition = object.vesselPreposition ?? undefined;
     message.unavailableAfterStep = object.unavailableAfterStep ?? undefined;
     message.index = object.index ?? undefined;
@@ -32827,7 +33543,8 @@ function createBaseRecipeUpdateRequestInput(): RecipeUpdateRequestInput {
     sourceIsbn: undefined,
     description: undefined,
     inspiredByRecipeId: undefined,
-    estimatedPortions: undefined,
+    minEstimatedPortions: undefined,
+    maxEstimatedPortions: undefined,
     portionName: undefined,
     pluralPortionName: undefined,
     eligibleForMeals: undefined,
@@ -32847,28 +33564,31 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
       writer.uint32(26).string(message.source);
     }
     if (message.sourceIsbn !== undefined) {
-      writer.uint32(98).string(message.sourceIsbn);
+      writer.uint32(34).string(message.sourceIsbn);
     }
     if (message.description !== undefined) {
-      writer.uint32(34).string(message.description);
+      writer.uint32(42).string(message.description);
     }
     if (message.inspiredByRecipeId !== undefined) {
-      writer.uint32(42).string(message.inspiredByRecipeId);
+      writer.uint32(50).string(message.inspiredByRecipeId);
     }
-    if (message.estimatedPortions !== undefined) {
-      Float32RangeWithOptionalMaxUpdateRequestInput.encode(message.estimatedPortions, writer.uint32(58).fork()).join();
+    if (message.minEstimatedPortions !== undefined) {
+      writer.uint32(61).float(message.minEstimatedPortions);
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      writer.uint32(69).float(message.maxEstimatedPortions);
     }
     if (message.portionName !== undefined) {
-      writer.uint32(66).string(message.portionName);
+      writer.uint32(74).string(message.portionName);
     }
     if (message.pluralPortionName !== undefined) {
-      writer.uint32(74).string(message.pluralPortionName);
+      writer.uint32(82).string(message.pluralPortionName);
     }
     if (message.eligibleForMeals !== undefined) {
-      writer.uint32(80).bool(message.eligibleForMeals);
+      writer.uint32(88).bool(message.eligibleForMeals);
     }
     if (message.yieldsComponentType !== undefined) {
-      writer.uint32(88).int32(message.yieldsComponentType);
+      writer.uint32(96).int32(message.yieldsComponentType);
     }
     return writer;
   },
@@ -32904,20 +33624,12 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
           message.source = reader.string();
           continue;
         }
-        case 12: {
-          if (tag !== 98) {
-            break;
-          }
-
-          message.sourceIsbn = reader.string();
-          continue;
-        }
         case 4: {
           if (tag !== 34) {
             break;
           }
 
-          message.description = reader.string();
+          message.sourceIsbn = reader.string();
           continue;
         }
         case 5: {
@@ -32925,23 +33637,31 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
             break;
           }
 
+          message.description = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
           message.inspiredByRecipeId = reader.string();
           continue;
         }
         case 7: {
-          if (tag !== 58) {
+          if (tag !== 61) {
             break;
           }
 
-          message.estimatedPortions = Float32RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minEstimatedPortions = reader.float();
           continue;
         }
         case 8: {
-          if (tag !== 66) {
+          if (tag !== 69) {
             break;
           }
 
-          message.portionName = reader.string();
+          message.maxEstimatedPortions = reader.float();
           continue;
         }
         case 9: {
@@ -32949,19 +33669,27 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
             break;
           }
 
-          message.pluralPortionName = reader.string();
+          message.portionName = reader.string();
           continue;
         }
         case 10: {
-          if (tag !== 80) {
+          if (tag !== 82) {
+            break;
+          }
+
+          message.pluralPortionName = reader.string();
+          continue;
+        }
+        case 11: {
+          if (tag !== 88) {
             break;
           }
 
           message.eligibleForMeals = reader.bool();
           continue;
         }
-        case 11: {
-          if (tag !== 88) {
+        case 12: {
+          if (tag !== 96) {
             break;
           }
 
@@ -32993,10 +33721,15 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
         : isSet(object.inspired_by_recipe_id)
           ? globalThis.String(object.inspired_by_recipe_id)
           : undefined,
-      estimatedPortions: isSet(object.estimatedPortions)
-        ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.estimatedPortions)
-        : isSet(object.estimated_portions)
-          ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.estimated_portions)
+      minEstimatedPortions: isSet(object.minEstimatedPortions)
+        ? globalThis.Number(object.minEstimatedPortions)
+        : isSet(object.min_estimated_portions)
+          ? globalThis.Number(object.min_estimated_portions)
+          : undefined,
+      maxEstimatedPortions: isSet(object.maxEstimatedPortions)
+        ? globalThis.Number(object.maxEstimatedPortions)
+        : isSet(object.max_estimated_portions)
+          ? globalThis.Number(object.max_estimated_portions)
           : undefined,
       portionName: isSet(object.portionName)
         ? globalThis.String(object.portionName)
@@ -33041,8 +33774,11 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
     if (message.inspiredByRecipeId !== undefined) {
       obj.inspiredByRecipeId = message.inspiredByRecipeId;
     }
-    if (message.estimatedPortions !== undefined) {
-      obj.estimatedPortions = Float32RangeWithOptionalMaxUpdateRequestInput.toJSON(message.estimatedPortions);
+    if (message.minEstimatedPortions !== undefined) {
+      obj.minEstimatedPortions = message.minEstimatedPortions;
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      obj.maxEstimatedPortions = message.maxEstimatedPortions;
     }
     if (message.portionName !== undefined) {
       obj.portionName = message.portionName;
@@ -33070,10 +33806,8 @@ export const RecipeUpdateRequestInput: MessageFns<RecipeUpdateRequestInput> = {
     message.sourceIsbn = object.sourceIsbn ?? undefined;
     message.description = object.description ?? undefined;
     message.inspiredByRecipeId = object.inspiredByRecipeId ?? undefined;
-    message.estimatedPortions =
-      object.estimatedPortions !== undefined && object.estimatedPortions !== null
-        ? Float32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.estimatedPortions)
-        : undefined;
+    message.minEstimatedPortions = object.minEstimatedPortions ?? undefined;
+    message.maxEstimatedPortions = object.maxEstimatedPortions ?? undefined;
     message.portionName = object.portionName ?? undefined;
     message.pluralPortionName = object.pluralPortionName ?? undefined;
     message.eligibleForMeals = object.eligibleForMeals ?? undefined;
@@ -43109,13 +43843,23 @@ export const MealComponentUpdateRequestInput: MessageFns<MealComponentUpdateRequ
 };
 
 function createBaseMealCreationRequestInput(): MealCreationRequestInput {
-  return { estimatedPortions: undefined, name: '', description: '', components: [], eligibleForMealPlans: false };
+  return {
+    minEstimatedPortions: 0,
+    maxEstimatedPortions: undefined,
+    name: '',
+    description: '',
+    components: [],
+    eligibleForMealPlans: false,
+  };
 }
 
 export const MealCreationRequestInput: MessageFns<MealCreationRequestInput> = {
   encode(message: MealCreationRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.estimatedPortions !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.estimatedPortions, writer.uint32(10).fork()).join();
+    if (message.minEstimatedPortions !== 0) {
+      writer.uint32(13).float(message.minEstimatedPortions);
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      writer.uint32(53).float(message.maxEstimatedPortions);
     }
     if (message.name !== '') {
       writer.uint32(18).string(message.name);
@@ -43140,11 +43884,19 @@ export const MealCreationRequestInput: MessageFns<MealCreationRequestInput> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 13) {
             break;
           }
 
-          message.estimatedPortions = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minEstimatedPortions = reader.float();
+          continue;
+        }
+        case 6: {
+          if (tag !== 53) {
+            break;
+          }
+
+          message.maxEstimatedPortions = reader.float();
           continue;
         }
         case 2: {
@@ -43190,10 +43942,15 @@ export const MealCreationRequestInput: MessageFns<MealCreationRequestInput> = {
 
   fromJSON(object: any): MealCreationRequestInput {
     return {
-      estimatedPortions: isSet(object.estimatedPortions)
-        ? Float32RangeWithOptionalMax.fromJSON(object.estimatedPortions)
-        : isSet(object.estimated_portions)
-          ? Float32RangeWithOptionalMax.fromJSON(object.estimated_portions)
+      minEstimatedPortions: isSet(object.minEstimatedPortions)
+        ? globalThis.Number(object.minEstimatedPortions)
+        : isSet(object.min_estimated_portions)
+          ? globalThis.Number(object.min_estimated_portions)
+          : 0,
+      maxEstimatedPortions: isSet(object.maxEstimatedPortions)
+        ? globalThis.Number(object.maxEstimatedPortions)
+        : isSet(object.max_estimated_portions)
+          ? globalThis.Number(object.max_estimated_portions)
           : undefined,
       name: isSet(object.name) ? globalThis.String(object.name) : '',
       description: isSet(object.description) ? globalThis.String(object.description) : '',
@@ -43210,8 +43967,11 @@ export const MealCreationRequestInput: MessageFns<MealCreationRequestInput> = {
 
   toJSON(message: MealCreationRequestInput): unknown {
     const obj: any = {};
-    if (message.estimatedPortions !== undefined) {
-      obj.estimatedPortions = Float32RangeWithOptionalMax.toJSON(message.estimatedPortions);
+    if (message.minEstimatedPortions !== 0) {
+      obj.minEstimatedPortions = message.minEstimatedPortions;
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      obj.maxEstimatedPortions = message.maxEstimatedPortions;
     }
     if (message.name !== '') {
       obj.name = message.name;
@@ -43233,10 +43993,8 @@ export const MealCreationRequestInput: MessageFns<MealCreationRequestInput> = {
   },
   fromPartial<I extends Exact<DeepPartial<MealCreationRequestInput>, I>>(object: I): MealCreationRequestInput {
     const message = createBaseMealCreationRequestInput();
-    message.estimatedPortions =
-      object.estimatedPortions !== undefined && object.estimatedPortions !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.estimatedPortions)
-        : undefined;
+    message.minEstimatedPortions = object.minEstimatedPortions ?? 0;
+    message.maxEstimatedPortions = object.maxEstimatedPortions ?? undefined;
     message.name = object.name ?? '';
     message.description = object.description ?? '';
     message.components = object.components?.map((e) => MealComponentCreationRequestInput.fromPartial(e)) || [];
@@ -43677,7 +44435,8 @@ function createBaseMealPlanGroceryListItemCreationRequestInput(): MealPlanGrocer
     validIngredientId: '',
     validMeasurementUnitId: '',
     statusExplanation: '',
-    quantityNeeded: undefined,
+    minQuantityNeeded: 0,
+    maxQuantityNeeded: undefined,
   };
 }
 
@@ -43713,8 +44472,11 @@ export const MealPlanGroceryListItemCreationRequestInput: MessageFns<MealPlanGro
     if (message.statusExplanation !== '') {
       writer.uint32(74).string(message.statusExplanation);
     }
-    if (message.quantityNeeded !== undefined) {
-      Float32RangeWithOptionalMax.encode(message.quantityNeeded, writer.uint32(82).fork()).join();
+    if (message.minQuantityNeeded !== 0) {
+      writer.uint32(85).float(message.minQuantityNeeded);
+    }
+    if (message.maxQuantityNeeded !== undefined) {
+      writer.uint32(93).float(message.maxQuantityNeeded);
     }
     return writer;
   },
@@ -43799,11 +44561,19 @@ export const MealPlanGroceryListItemCreationRequestInput: MessageFns<MealPlanGro
           continue;
         }
         case 10: {
-          if (tag !== 82) {
+          if (tag !== 85) {
             break;
           }
 
-          message.quantityNeeded = Float32RangeWithOptionalMax.decode(reader, reader.uint32());
+          message.minQuantityNeeded = reader.float();
+          continue;
+        }
+        case 11: {
+          if (tag !== 93) {
+            break;
+          }
+
+          message.maxQuantityNeeded = reader.float();
           continue;
         }
       }
@@ -43858,10 +44628,15 @@ export const MealPlanGroceryListItemCreationRequestInput: MessageFns<MealPlanGro
         : isSet(object.status_explanation)
           ? globalThis.String(object.status_explanation)
           : '',
-      quantityNeeded: isSet(object.quantityNeeded)
-        ? Float32RangeWithOptionalMax.fromJSON(object.quantityNeeded)
-        : isSet(object.quantity_needed)
-          ? Float32RangeWithOptionalMax.fromJSON(object.quantity_needed)
+      minQuantityNeeded: isSet(object.minQuantityNeeded)
+        ? globalThis.Number(object.minQuantityNeeded)
+        : isSet(object.min_quantity_needed)
+          ? globalThis.Number(object.min_quantity_needed)
+          : 0,
+      maxQuantityNeeded: isSet(object.maxQuantityNeeded)
+        ? globalThis.Number(object.maxQuantityNeeded)
+        : isSet(object.max_quantity_needed)
+          ? globalThis.Number(object.max_quantity_needed)
           : undefined,
     };
   },
@@ -43895,8 +44670,11 @@ export const MealPlanGroceryListItemCreationRequestInput: MessageFns<MealPlanGro
     if (message.statusExplanation !== '') {
       obj.statusExplanation = message.statusExplanation;
     }
-    if (message.quantityNeeded !== undefined) {
-      obj.quantityNeeded = Float32RangeWithOptionalMax.toJSON(message.quantityNeeded);
+    if (message.minQuantityNeeded !== 0) {
+      obj.minQuantityNeeded = message.minQuantityNeeded;
+    }
+    if (message.maxQuantityNeeded !== undefined) {
+      obj.maxQuantityNeeded = message.maxQuantityNeeded;
     }
     return obj;
   },
@@ -43919,10 +44697,8 @@ export const MealPlanGroceryListItemCreationRequestInput: MessageFns<MealPlanGro
     message.validIngredientId = object.validIngredientId ?? '';
     message.validMeasurementUnitId = object.validMeasurementUnitId ?? '';
     message.statusExplanation = object.statusExplanation ?? '';
-    message.quantityNeeded =
-      object.quantityNeeded !== undefined && object.quantityNeeded !== null
-        ? Float32RangeWithOptionalMax.fromPartial(object.quantityNeeded)
-        : undefined;
+    message.minQuantityNeeded = object.minQuantityNeeded ?? 0;
+    message.maxQuantityNeeded = object.maxQuantityNeeded ?? undefined;
     return message;
   },
 };
@@ -43938,7 +44714,8 @@ function createBaseMealPlanGroceryListItemUpdateRequestInput(): MealPlanGroceryL
     purchasedUpc: undefined,
     purchasePrice: undefined,
     status: undefined,
-    quantityNeeded: undefined,
+    minQuantityNeeded: undefined,
+    maxQuantityNeeded: undefined,
   };
 }
 
@@ -43971,8 +44748,11 @@ export const MealPlanGroceryListItemUpdateRequestInput: MessageFns<MealPlanGroce
     if (message.status !== undefined) {
       writer.uint32(72).int32(message.status);
     }
-    if (message.quantityNeeded !== undefined) {
-      Float32RangeWithOptionalMaxUpdateRequestInput.encode(message.quantityNeeded, writer.uint32(82).fork()).join();
+    if (message.minQuantityNeeded !== undefined) {
+      writer.uint32(85).float(message.minQuantityNeeded);
+    }
+    if (message.maxQuantityNeeded !== undefined) {
+      writer.uint32(93).float(message.maxQuantityNeeded);
     }
     return writer;
   },
@@ -44057,11 +44837,19 @@ export const MealPlanGroceryListItemUpdateRequestInput: MessageFns<MealPlanGroce
           continue;
         }
         case 10: {
-          if (tag !== 82) {
+          if (tag !== 85) {
             break;
           }
 
-          message.quantityNeeded = Float32RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minQuantityNeeded = reader.float();
+          continue;
+        }
+        case 11: {
+          if (tag !== 93) {
+            break;
+          }
+
+          message.maxQuantityNeeded = reader.float();
           continue;
         }
       }
@@ -44116,10 +44904,15 @@ export const MealPlanGroceryListItemUpdateRequestInput: MessageFns<MealPlanGroce
           ? globalThis.Number(object.purchase_price)
           : undefined,
       status: isSet(object.status) ? mealPlanGroceryListItemStatusFromJSON(object.status) : undefined,
-      quantityNeeded: isSet(object.quantityNeeded)
-        ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.quantityNeeded)
-        : isSet(object.quantity_needed)
-          ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.quantity_needed)
+      minQuantityNeeded: isSet(object.minQuantityNeeded)
+        ? globalThis.Number(object.minQuantityNeeded)
+        : isSet(object.min_quantity_needed)
+          ? globalThis.Number(object.min_quantity_needed)
+          : undefined,
+      maxQuantityNeeded: isSet(object.maxQuantityNeeded)
+        ? globalThis.Number(object.maxQuantityNeeded)
+        : isSet(object.max_quantity_needed)
+          ? globalThis.Number(object.max_quantity_needed)
           : undefined,
     };
   },
@@ -44153,8 +44946,11 @@ export const MealPlanGroceryListItemUpdateRequestInput: MessageFns<MealPlanGroce
     if (message.status !== undefined) {
       obj.status = mealPlanGroceryListItemStatusToJSON(message.status);
     }
-    if (message.quantityNeeded !== undefined) {
-      obj.quantityNeeded = Float32RangeWithOptionalMaxUpdateRequestInput.toJSON(message.quantityNeeded);
+    if (message.minQuantityNeeded !== undefined) {
+      obj.minQuantityNeeded = message.minQuantityNeeded;
+    }
+    if (message.maxQuantityNeeded !== undefined) {
+      obj.maxQuantityNeeded = message.maxQuantityNeeded;
     }
     return obj;
   },
@@ -44177,10 +44973,8 @@ export const MealPlanGroceryListItemUpdateRequestInput: MessageFns<MealPlanGroce
     message.purchasedUpc = object.purchasedUpc ?? undefined;
     message.purchasePrice = object.purchasePrice ?? undefined;
     message.status = object.status ?? undefined;
-    message.quantityNeeded =
-      object.quantityNeeded !== undefined && object.quantityNeeded !== null
-        ? Float32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.quantityNeeded)
-        : undefined;
+    message.minQuantityNeeded = object.minQuantityNeeded ?? undefined;
+    message.maxQuantityNeeded = object.maxQuantityNeeded ?? undefined;
     return message;
   },
 };
@@ -46111,7 +46905,8 @@ function createBaseMealUpdateRequestInput(): MealUpdateRequestInput {
     name: undefined,
     description: undefined,
     createdByUser: undefined,
-    estimatedPortions: undefined,
+    minEstimatedPortions: undefined,
+    maxEstimatedPortions: undefined,
     eligibleForMealPlans: undefined,
     components: [],
   };
@@ -46128,8 +46923,11 @@ export const MealUpdateRequestInput: MessageFns<MealUpdateRequestInput> = {
     if (message.createdByUser !== undefined) {
       writer.uint32(26).string(message.createdByUser);
     }
-    if (message.estimatedPortions !== undefined) {
-      Float32RangeWithOptionalMaxUpdateRequestInput.encode(message.estimatedPortions, writer.uint32(34).fork()).join();
+    if (message.minEstimatedPortions !== undefined) {
+      writer.uint32(37).float(message.minEstimatedPortions);
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      writer.uint32(61).float(message.maxEstimatedPortions);
     }
     if (message.eligibleForMealPlans !== undefined) {
       writer.uint32(40).bool(message.eligibleForMealPlans);
@@ -46172,11 +46970,19 @@ export const MealUpdateRequestInput: MessageFns<MealUpdateRequestInput> = {
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 37) {
             break;
           }
 
-          message.estimatedPortions = Float32RangeWithOptionalMaxUpdateRequestInput.decode(reader, reader.uint32());
+          message.minEstimatedPortions = reader.float();
+          continue;
+        }
+        case 7: {
+          if (tag !== 61) {
+            break;
+          }
+
+          message.maxEstimatedPortions = reader.float();
           continue;
         }
         case 5: {
@@ -46213,10 +47019,15 @@ export const MealUpdateRequestInput: MessageFns<MealUpdateRequestInput> = {
         : isSet(object.created_by_user)
           ? globalThis.String(object.created_by_user)
           : undefined,
-      estimatedPortions: isSet(object.estimatedPortions)
-        ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.estimatedPortions)
-        : isSet(object.estimated_portions)
-          ? Float32RangeWithOptionalMaxUpdateRequestInput.fromJSON(object.estimated_portions)
+      minEstimatedPortions: isSet(object.minEstimatedPortions)
+        ? globalThis.Number(object.minEstimatedPortions)
+        : isSet(object.min_estimated_portions)
+          ? globalThis.Number(object.min_estimated_portions)
+          : undefined,
+      maxEstimatedPortions: isSet(object.maxEstimatedPortions)
+        ? globalThis.Number(object.maxEstimatedPortions)
+        : isSet(object.max_estimated_portions)
+          ? globalThis.Number(object.max_estimated_portions)
           : undefined,
       eligibleForMealPlans: isSet(object.eligibleForMealPlans)
         ? globalThis.Boolean(object.eligibleForMealPlans)
@@ -46240,8 +47051,11 @@ export const MealUpdateRequestInput: MessageFns<MealUpdateRequestInput> = {
     if (message.createdByUser !== undefined) {
       obj.createdByUser = message.createdByUser;
     }
-    if (message.estimatedPortions !== undefined) {
-      obj.estimatedPortions = Float32RangeWithOptionalMaxUpdateRequestInput.toJSON(message.estimatedPortions);
+    if (message.minEstimatedPortions !== undefined) {
+      obj.minEstimatedPortions = message.minEstimatedPortions;
+    }
+    if (message.maxEstimatedPortions !== undefined) {
+      obj.maxEstimatedPortions = message.maxEstimatedPortions;
     }
     if (message.eligibleForMealPlans !== undefined) {
       obj.eligibleForMealPlans = message.eligibleForMealPlans;
@@ -46260,10 +47074,8 @@ export const MealUpdateRequestInput: MessageFns<MealUpdateRequestInput> = {
     message.name = object.name ?? undefined;
     message.description = object.description ?? undefined;
     message.createdByUser = object.createdByUser ?? undefined;
-    message.estimatedPortions =
-      object.estimatedPortions !== undefined && object.estimatedPortions !== null
-        ? Float32RangeWithOptionalMaxUpdateRequestInput.fromPartial(object.estimatedPortions)
-        : undefined;
+    message.minEstimatedPortions = object.minEstimatedPortions ?? undefined;
+    message.maxEstimatedPortions = object.maxEstimatedPortions ?? undefined;
     message.eligibleForMealPlans = object.eligibleForMealPlans ?? undefined;
     message.components = object.components?.map((e) => MealComponentUpdateRequestInput.fromPartial(e)) || [];
     return message;
@@ -57455,7 +58267,7 @@ export const AccountInstrumentOwnershipCreationRequestInput: MessageFns<AccountI
         writer.uint32(18).string(message.validInstrumentId);
       }
       if (message.quantity !== 0) {
-        writer.uint32(32).uint32(message.quantity);
+        writer.uint32(24).uint32(message.quantity);
       }
       return writer;
     },
@@ -57483,8 +58295,8 @@ export const AccountInstrumentOwnershipCreationRequestInput: MessageFns<AccountI
             message.validInstrumentId = reader.string();
             continue;
           }
-          case 4: {
-            if (tag !== 32) {
+          case 3: {
+            if (tag !== 24) {
               break;
             }
 

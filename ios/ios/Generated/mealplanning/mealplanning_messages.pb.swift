@@ -546,14 +546,23 @@ public struct Mealplanning_ValidIngredient: @unchecked Sendable {
   /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
   public mutating func clearArchivedAt() {_uniqueStorage()._archivedAt = nil}
 
-  public var storageTemperatureInCelsius: Common_OptionalFloat32Range {
-    get {return _storage._storageTemperatureInCelsius ?? Common_OptionalFloat32Range()}
-    set {_uniqueStorage()._storageTemperatureInCelsius = newValue}
+  public var minStorageTemperatureInCelsius: Float {
+    get {return _storage._minStorageTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._minStorageTemperatureInCelsius = newValue}
   }
-  /// Returns true if `storageTemperatureInCelsius` has been explicitly set.
-  public var hasStorageTemperatureInCelsius: Bool {return _storage._storageTemperatureInCelsius != nil}
-  /// Clears the value of `storageTemperatureInCelsius`. Subsequent reads from it will return its default value.
-  public mutating func clearStorageTemperatureInCelsius() {_uniqueStorage()._storageTemperatureInCelsius = nil}
+  /// Returns true if `minStorageTemperatureInCelsius` has been explicitly set.
+  public var hasMinStorageTemperatureInCelsius: Bool {return _storage._minStorageTemperatureInCelsius != nil}
+  /// Clears the value of `minStorageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMinStorageTemperatureInCelsius() {_uniqueStorage()._minStorageTemperatureInCelsius = nil}
+
+  public var maxStorageTemperatureInCelsius: Float {
+    get {return _storage._maxStorageTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._maxStorageTemperatureInCelsius = newValue}
+  }
+  /// Returns true if `maxStorageTemperatureInCelsius` has been explicitly set.
+  public var hasMaxStorageTemperatureInCelsius: Bool {return _storage._maxStorageTemperatureInCelsius != nil}
+  /// Clears the value of `maxStorageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxStorageTemperatureInCelsius() {_uniqueStorage()._maxStorageTemperatureInCelsius = nil}
 
   public var iconPath: String {
     get {return _storage._iconPath}
@@ -870,14 +879,19 @@ public struct Mealplanning_ValidIngredientMeasurementUnit: @unchecked Sendable {
     set {_uniqueStorage()._id = newValue}
   }
 
-  public var allowableQuantity: Common_Float32RangeWithOptionalMax {
-    get {return _storage._allowableQuantity ?? Common_Float32RangeWithOptionalMax()}
-    set {_uniqueStorage()._allowableQuantity = newValue}
+  public var minAllowableQuantity: Float {
+    get {return _storage._minAllowableQuantity}
+    set {_uniqueStorage()._minAllowableQuantity = newValue}
   }
-  /// Returns true if `allowableQuantity` has been explicitly set.
-  public var hasAllowableQuantity: Bool {return _storage._allowableQuantity != nil}
-  /// Clears the value of `allowableQuantity`. Subsequent reads from it will return its default value.
-  public mutating func clearAllowableQuantity() {_uniqueStorage()._allowableQuantity = nil}
+
+  public var maxAllowableQuantity: Float {
+    get {return _storage._maxAllowableQuantity ?? 0}
+    set {_uniqueStorage()._maxAllowableQuantity = newValue}
+  }
+  /// Returns true if `maxAllowableQuantity` has been explicitly set.
+  public var hasMaxAllowableQuantity: Bool {return _storage._maxAllowableQuantity != nil}
+  /// Clears the value of `maxAllowableQuantity`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxAllowableQuantity() {_uniqueStorage()._maxAllowableQuantity = nil}
 
   public var measurementUnit: Mealplanning_ValidMeasurementUnit {
     get {return _storage._measurementUnit ?? Mealplanning_ValidMeasurementUnit()}
@@ -1001,23 +1015,37 @@ public struct Mealplanning_ValidPrepTaskConfig: @unchecked Sendable {
   /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
   public mutating func clearArchivedAt() {_uniqueStorage()._archivedAt = nil}
 
-  public var storageDurationInSeconds: Common_Uint32RangeWithOptionalMax {
-    get {return _storage._storageDurationInSeconds ?? Common_Uint32RangeWithOptionalMax()}
-    set {_uniqueStorage()._storageDurationInSeconds = newValue}
+  public var minStorageDurationInSeconds: UInt32 {
+    get {return _storage._minStorageDurationInSeconds}
+    set {_uniqueStorage()._minStorageDurationInSeconds = newValue}
   }
-  /// Returns true if `storageDurationInSeconds` has been explicitly set.
-  public var hasStorageDurationInSeconds: Bool {return _storage._storageDurationInSeconds != nil}
-  /// Clears the value of `storageDurationInSeconds`. Subsequent reads from it will return its default value.
-  public mutating func clearStorageDurationInSeconds() {_uniqueStorage()._storageDurationInSeconds = nil}
 
-  public var storageTemperatureInCelsius: Common_OptionalFloat32Range {
-    get {return _storage._storageTemperatureInCelsius ?? Common_OptionalFloat32Range()}
-    set {_uniqueStorage()._storageTemperatureInCelsius = newValue}
+  public var maxStorageDurationInSeconds: UInt32 {
+    get {return _storage._maxStorageDurationInSeconds ?? 0}
+    set {_uniqueStorage()._maxStorageDurationInSeconds = newValue}
   }
-  /// Returns true if `storageTemperatureInCelsius` has been explicitly set.
-  public var hasStorageTemperatureInCelsius: Bool {return _storage._storageTemperatureInCelsius != nil}
-  /// Clears the value of `storageTemperatureInCelsius`. Subsequent reads from it will return its default value.
-  public mutating func clearStorageTemperatureInCelsius() {_uniqueStorage()._storageTemperatureInCelsius = nil}
+  /// Returns true if `maxStorageDurationInSeconds` has been explicitly set.
+  public var hasMaxStorageDurationInSeconds: Bool {return _storage._maxStorageDurationInSeconds != nil}
+  /// Clears the value of `maxStorageDurationInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxStorageDurationInSeconds() {_uniqueStorage()._maxStorageDurationInSeconds = nil}
+
+  public var minStorageTemperatureInCelsius: Float {
+    get {return _storage._minStorageTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._minStorageTemperatureInCelsius = newValue}
+  }
+  /// Returns true if `minStorageTemperatureInCelsius` has been explicitly set.
+  public var hasMinStorageTemperatureInCelsius: Bool {return _storage._minStorageTemperatureInCelsius != nil}
+  /// Clears the value of `minStorageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMinStorageTemperatureInCelsius() {_uniqueStorage()._minStorageTemperatureInCelsius = nil}
+
+  public var maxStorageTemperatureInCelsius: Float {
+    get {return _storage._maxStorageTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._maxStorageTemperatureInCelsius = newValue}
+  }
+  /// Returns true if `maxStorageTemperatureInCelsius` has been explicitly set.
+  public var hasMaxStorageTemperatureInCelsius: Bool {return _storage._maxStorageTemperatureInCelsius != nil}
+  /// Clears the value of `maxStorageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxStorageTemperatureInCelsius() {_uniqueStorage()._maxStorageTemperatureInCelsius = nil}
 
   public var id: String {
     get {return _storage._id}
@@ -1445,32 +1473,47 @@ public struct Mealplanning_ValidPreparation: @unchecked Sendable {
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
   public mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
 
-  public var instrumentCount: Common_Uint16RangeWithOptionalMax {
-    get {return _storage._instrumentCount ?? Common_Uint16RangeWithOptionalMax()}
-    set {_uniqueStorage()._instrumentCount = newValue}
+  public var minInstrumentCount: UInt32 {
+    get {return _storage._minInstrumentCount}
+    set {_uniqueStorage()._minInstrumentCount = newValue}
   }
-  /// Returns true if `instrumentCount` has been explicitly set.
-  public var hasInstrumentCount: Bool {return _storage._instrumentCount != nil}
-  /// Clears the value of `instrumentCount`. Subsequent reads from it will return its default value.
-  public mutating func clearInstrumentCount() {_uniqueStorage()._instrumentCount = nil}
 
-  public var ingredientCount: Common_Uint16RangeWithOptionalMax {
-    get {return _storage._ingredientCount ?? Common_Uint16RangeWithOptionalMax()}
-    set {_uniqueStorage()._ingredientCount = newValue}
+  public var maxInstrumentCount: UInt32 {
+    get {return _storage._maxInstrumentCount ?? 0}
+    set {_uniqueStorage()._maxInstrumentCount = newValue}
   }
-  /// Returns true if `ingredientCount` has been explicitly set.
-  public var hasIngredientCount: Bool {return _storage._ingredientCount != nil}
-  /// Clears the value of `ingredientCount`. Subsequent reads from it will return its default value.
-  public mutating func clearIngredientCount() {_uniqueStorage()._ingredientCount = nil}
+  /// Returns true if `maxInstrumentCount` has been explicitly set.
+  public var hasMaxInstrumentCount: Bool {return _storage._maxInstrumentCount != nil}
+  /// Clears the value of `maxInstrumentCount`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxInstrumentCount() {_uniqueStorage()._maxInstrumentCount = nil}
 
-  public var vesselCount: Common_Uint16RangeWithOptionalMax {
-    get {return _storage._vesselCount ?? Common_Uint16RangeWithOptionalMax()}
-    set {_uniqueStorage()._vesselCount = newValue}
+  public var minIngredientCount: UInt32 {
+    get {return _storage._minIngredientCount}
+    set {_uniqueStorage()._minIngredientCount = newValue}
   }
-  /// Returns true if `vesselCount` has been explicitly set.
-  public var hasVesselCount: Bool {return _storage._vesselCount != nil}
-  /// Clears the value of `vesselCount`. Subsequent reads from it will return its default value.
-  public mutating func clearVesselCount() {_uniqueStorage()._vesselCount = nil}
+
+  public var maxIngredientCount: UInt32 {
+    get {return _storage._maxIngredientCount ?? 0}
+    set {_uniqueStorage()._maxIngredientCount = newValue}
+  }
+  /// Returns true if `maxIngredientCount` has been explicitly set.
+  public var hasMaxIngredientCount: Bool {return _storage._maxIngredientCount != nil}
+  /// Clears the value of `maxIngredientCount`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxIngredientCount() {_uniqueStorage()._maxIngredientCount = nil}
+
+  public var minVesselCount: UInt32 {
+    get {return _storage._minVesselCount}
+    set {_uniqueStorage()._minVesselCount = newValue}
+  }
+
+  public var maxVesselCount: UInt32 {
+    get {return _storage._maxVesselCount ?? 0}
+    set {_uniqueStorage()._maxVesselCount = newValue}
+  }
+  /// Returns true if `maxVesselCount` has been explicitly set.
+  public var hasMaxVesselCount: Bool {return _storage._maxVesselCount != nil}
+  /// Clears the value of `maxVesselCount`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxVesselCount() {_uniqueStorage()._maxVesselCount = nil}
 
   public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
@@ -1919,14 +1962,19 @@ public struct Mealplanning_Recipe: @unchecked Sendable {
   /// Clears the value of `archivedAt`. Subsequent reads from it will return its default value.
   public mutating func clearArchivedAt() {_uniqueStorage()._archivedAt = nil}
 
-  public var estimatedPortions: Common_Float32RangeWithOptionalMax {
-    get {return _storage._estimatedPortions ?? Common_Float32RangeWithOptionalMax()}
-    set {_uniqueStorage()._estimatedPortions = newValue}
+  public var minEstimatedPortions: Float {
+    get {return _storage._minEstimatedPortions}
+    set {_uniqueStorage()._minEstimatedPortions = newValue}
   }
-  /// Returns true if `estimatedPortions` has been explicitly set.
-  public var hasEstimatedPortions: Bool {return _storage._estimatedPortions != nil}
-  /// Clears the value of `estimatedPortions`. Subsequent reads from it will return its default value.
-  public mutating func clearEstimatedPortions() {_uniqueStorage()._estimatedPortions = nil}
+
+  public var maxEstimatedPortions: Float {
+    get {return _storage._maxEstimatedPortions ?? 0}
+    set {_uniqueStorage()._maxEstimatedPortions = newValue}
+  }
+  /// Returns true if `maxEstimatedPortions` has been explicitly set.
+  public var hasMaxEstimatedPortions: Bool {return _storage._maxEstimatedPortions != nil}
+  /// Clears the value of `maxEstimatedPortions`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxEstimatedPortions() {_uniqueStorage()._maxEstimatedPortions = nil}
 
   public var pluralPortionName: String {
     get {return _storage._pluralPortionName}
@@ -2100,23 +2148,37 @@ public struct Mealplanning_RecipePrepTask: @unchecked Sendable {
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
   public mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
 
-  public var storageTemperatureInCelsius: Common_OptionalFloat32Range {
-    get {return _storage._storageTemperatureInCelsius ?? Common_OptionalFloat32Range()}
-    set {_uniqueStorage()._storageTemperatureInCelsius = newValue}
+  public var minStorageTemperatureInCelsius: Float {
+    get {return _storage._minStorageTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._minStorageTemperatureInCelsius = newValue}
   }
-  /// Returns true if `storageTemperatureInCelsius` has been explicitly set.
-  public var hasStorageTemperatureInCelsius: Bool {return _storage._storageTemperatureInCelsius != nil}
-  /// Clears the value of `storageTemperatureInCelsius`. Subsequent reads from it will return its default value.
-  public mutating func clearStorageTemperatureInCelsius() {_uniqueStorage()._storageTemperatureInCelsius = nil}
+  /// Returns true if `minStorageTemperatureInCelsius` has been explicitly set.
+  public var hasMinStorageTemperatureInCelsius: Bool {return _storage._minStorageTemperatureInCelsius != nil}
+  /// Clears the value of `minStorageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMinStorageTemperatureInCelsius() {_uniqueStorage()._minStorageTemperatureInCelsius = nil}
 
-  public var timeBufferBeforeRecipeInSeconds: Common_Uint32RangeWithOptionalMax {
-    get {return _storage._timeBufferBeforeRecipeInSeconds ?? Common_Uint32RangeWithOptionalMax()}
-    set {_uniqueStorage()._timeBufferBeforeRecipeInSeconds = newValue}
+  public var maxStorageTemperatureInCelsius: Float {
+    get {return _storage._maxStorageTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._maxStorageTemperatureInCelsius = newValue}
   }
-  /// Returns true if `timeBufferBeforeRecipeInSeconds` has been explicitly set.
-  public var hasTimeBufferBeforeRecipeInSeconds: Bool {return _storage._timeBufferBeforeRecipeInSeconds != nil}
-  /// Clears the value of `timeBufferBeforeRecipeInSeconds`. Subsequent reads from it will return its default value.
-  public mutating func clearTimeBufferBeforeRecipeInSeconds() {_uniqueStorage()._timeBufferBeforeRecipeInSeconds = nil}
+  /// Returns true if `maxStorageTemperatureInCelsius` has been explicitly set.
+  public var hasMaxStorageTemperatureInCelsius: Bool {return _storage._maxStorageTemperatureInCelsius != nil}
+  /// Clears the value of `maxStorageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxStorageTemperatureInCelsius() {_uniqueStorage()._maxStorageTemperatureInCelsius = nil}
+
+  public var minTimeBufferBeforeRecipeInSeconds: UInt32 {
+    get {return _storage._minTimeBufferBeforeRecipeInSeconds}
+    set {_uniqueStorage()._minTimeBufferBeforeRecipeInSeconds = newValue}
+  }
+
+  public var maxTimeBufferBeforeRecipeInSeconds: UInt32 {
+    get {return _storage._maxTimeBufferBeforeRecipeInSeconds ?? 0}
+    set {_uniqueStorage()._maxTimeBufferBeforeRecipeInSeconds = newValue}
+  }
+  /// Returns true if `maxTimeBufferBeforeRecipeInSeconds` has been explicitly set.
+  public var hasMaxTimeBufferBeforeRecipeInSeconds: Bool {return _storage._maxTimeBufferBeforeRecipeInSeconds != nil}
+  /// Clears the value of `maxTimeBufferBeforeRecipeInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxTimeBufferBeforeRecipeInSeconds() {_uniqueStorage()._maxTimeBufferBeforeRecipeInSeconds = nil}
 
   public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
@@ -2279,23 +2341,41 @@ public struct Mealplanning_RecipeStep: @unchecked Sendable {
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
   public mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
 
-  public var estimatedTimeInSeconds: Common_OptionalUint32Range {
-    get {return _storage._estimatedTimeInSeconds ?? Common_OptionalUint32Range()}
-    set {_uniqueStorage()._estimatedTimeInSeconds = newValue}
+  public var minEstimatedTimeInSeconds: UInt32 {
+    get {return _storage._minEstimatedTimeInSeconds ?? 0}
+    set {_uniqueStorage()._minEstimatedTimeInSeconds = newValue}
   }
-  /// Returns true if `estimatedTimeInSeconds` has been explicitly set.
-  public var hasEstimatedTimeInSeconds: Bool {return _storage._estimatedTimeInSeconds != nil}
-  /// Clears the value of `estimatedTimeInSeconds`. Subsequent reads from it will return its default value.
-  public mutating func clearEstimatedTimeInSeconds() {_uniqueStorage()._estimatedTimeInSeconds = nil}
+  /// Returns true if `minEstimatedTimeInSeconds` has been explicitly set.
+  public var hasMinEstimatedTimeInSeconds: Bool {return _storage._minEstimatedTimeInSeconds != nil}
+  /// Clears the value of `minEstimatedTimeInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearMinEstimatedTimeInSeconds() {_uniqueStorage()._minEstimatedTimeInSeconds = nil}
 
-  public var temperatureInCelsius: Common_OptionalFloat32Range {
-    get {return _storage._temperatureInCelsius ?? Common_OptionalFloat32Range()}
-    set {_uniqueStorage()._temperatureInCelsius = newValue}
+  public var maxEstimatedTimeInSeconds: UInt32 {
+    get {return _storage._maxEstimatedTimeInSeconds ?? 0}
+    set {_uniqueStorage()._maxEstimatedTimeInSeconds = newValue}
   }
-  /// Returns true if `temperatureInCelsius` has been explicitly set.
-  public var hasTemperatureInCelsius: Bool {return _storage._temperatureInCelsius != nil}
-  /// Clears the value of `temperatureInCelsius`. Subsequent reads from it will return its default value.
-  public mutating func clearTemperatureInCelsius() {_uniqueStorage()._temperatureInCelsius = nil}
+  /// Returns true if `maxEstimatedTimeInSeconds` has been explicitly set.
+  public var hasMaxEstimatedTimeInSeconds: Bool {return _storage._maxEstimatedTimeInSeconds != nil}
+  /// Clears the value of `maxEstimatedTimeInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxEstimatedTimeInSeconds() {_uniqueStorage()._maxEstimatedTimeInSeconds = nil}
+
+  public var minTemperatureInCelsius: Float {
+    get {return _storage._minTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._minTemperatureInCelsius = newValue}
+  }
+  /// Returns true if `minTemperatureInCelsius` has been explicitly set.
+  public var hasMinTemperatureInCelsius: Bool {return _storage._minTemperatureInCelsius != nil}
+  /// Clears the value of `minTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMinTemperatureInCelsius() {_uniqueStorage()._minTemperatureInCelsius = nil}
+
+  public var maxTemperatureInCelsius: Float {
+    get {return _storage._maxTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._maxTemperatureInCelsius = newValue}
+  }
+  /// Returns true if `maxTemperatureInCelsius` has been explicitly set.
+  public var hasMaxTemperatureInCelsius: Bool {return _storage._maxTemperatureInCelsius != nil}
+  /// Clears the value of `maxTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxTemperatureInCelsius() {_uniqueStorage()._maxTemperatureInCelsius = nil}
 
   public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
@@ -2628,14 +2708,19 @@ public struct Mealplanning_RecipeStepIngredient: @unchecked Sendable {
     set {_uniqueStorage()._name = newValue}
   }
 
-  public var quantity: Common_Float32RangeWithOptionalMax {
-    get {return _storage._quantity ?? Common_Float32RangeWithOptionalMax()}
-    set {_uniqueStorage()._quantity = newValue}
+  public var minQuantity: Float {
+    get {return _storage._minQuantity}
+    set {_uniqueStorage()._minQuantity = newValue}
   }
-  /// Returns true if `quantity` has been explicitly set.
-  public var hasQuantity: Bool {return _storage._quantity != nil}
-  /// Clears the value of `quantity`. Subsequent reads from it will return its default value.
-  public mutating func clearQuantity() {_uniqueStorage()._quantity = nil}
+
+  public var maxQuantity: Float {
+    get {return _storage._maxQuantity ?? 0}
+    set {_uniqueStorage()._maxQuantity = newValue}
+  }
+  /// Returns true if `maxQuantity` has been explicitly set.
+  public var hasMaxQuantity: Bool {return _storage._maxQuantity != nil}
+  /// Clears the value of `maxQuantity`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxQuantity() {_uniqueStorage()._maxQuantity = nil}
 
   public var measurementUnit: Mealplanning_ValidMeasurementUnit {
     get {return _storage._measurementUnit ?? Mealplanning_ValidMeasurementUnit()}
@@ -2748,14 +2833,19 @@ public struct Mealplanning_RecipeStepInstrument: @unchecked Sendable {
     set {_uniqueStorage()._id = newValue}
   }
 
-  public var quantity: Common_Uint32RangeWithOptionalMax {
-    get {return _storage._quantity ?? Common_Uint32RangeWithOptionalMax()}
-    set {_uniqueStorage()._quantity = newValue}
+  public var minQuantity: UInt32 {
+    get {return _storage._minQuantity}
+    set {_uniqueStorage()._minQuantity = newValue}
   }
-  /// Returns true if `quantity` has been explicitly set.
-  public var hasQuantity: Bool {return _storage._quantity != nil}
-  /// Clears the value of `quantity`. Subsequent reads from it will return its default value.
-  public mutating func clearQuantity() {_uniqueStorage()._quantity = nil}
+
+  public var maxQuantity: UInt32 {
+    get {return _storage._maxQuantity ?? 0}
+    set {_uniqueStorage()._maxQuantity = newValue}
+  }
+  /// Returns true if `maxQuantity` has been explicitly set.
+  public var hasMaxQuantity: Bool {return _storage._maxQuantity != nil}
+  /// Clears the value of `maxQuantity`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxQuantity() {_uniqueStorage()._maxQuantity = nil}
 
   public var optionIndex: UInt32 {
     get {return _storage._optionIndex}
@@ -2803,41 +2893,77 @@ public struct Mealplanning_RecipeStepProduct: @unchecked Sendable {
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
   public mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
 
-  public var storageTemperatureInCelsius: Common_OptionalFloat32Range {
-    get {return _storage._storageTemperatureInCelsius ?? Common_OptionalFloat32Range()}
-    set {_uniqueStorage()._storageTemperatureInCelsius = newValue}
+  public var minStorageTemperatureInCelsius: Float {
+    get {return _storage._minStorageTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._minStorageTemperatureInCelsius = newValue}
   }
-  /// Returns true if `storageTemperatureInCelsius` has been explicitly set.
-  public var hasStorageTemperatureInCelsius: Bool {return _storage._storageTemperatureInCelsius != nil}
-  /// Clears the value of `storageTemperatureInCelsius`. Subsequent reads from it will return its default value.
-  public mutating func clearStorageTemperatureInCelsius() {_uniqueStorage()._storageTemperatureInCelsius = nil}
+  /// Returns true if `minStorageTemperatureInCelsius` has been explicitly set.
+  public var hasMinStorageTemperatureInCelsius: Bool {return _storage._minStorageTemperatureInCelsius != nil}
+  /// Clears the value of `minStorageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMinStorageTemperatureInCelsius() {_uniqueStorage()._minStorageTemperatureInCelsius = nil}
 
-  public var storageDurationInSeconds: Common_OptionalUint32Range {
-    get {return _storage._storageDurationInSeconds ?? Common_OptionalUint32Range()}
-    set {_uniqueStorage()._storageDurationInSeconds = newValue}
+  public var maxStorageTemperatureInCelsius: Float {
+    get {return _storage._maxStorageTemperatureInCelsius ?? 0}
+    set {_uniqueStorage()._maxStorageTemperatureInCelsius = newValue}
   }
-  /// Returns true if `storageDurationInSeconds` has been explicitly set.
-  public var hasStorageDurationInSeconds: Bool {return _storage._storageDurationInSeconds != nil}
-  /// Clears the value of `storageDurationInSeconds`. Subsequent reads from it will return its default value.
-  public mutating func clearStorageDurationInSeconds() {_uniqueStorage()._storageDurationInSeconds = nil}
+  /// Returns true if `maxStorageTemperatureInCelsius` has been explicitly set.
+  public var hasMaxStorageTemperatureInCelsius: Bool {return _storage._maxStorageTemperatureInCelsius != nil}
+  /// Clears the value of `maxStorageTemperatureInCelsius`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxStorageTemperatureInCelsius() {_uniqueStorage()._maxStorageTemperatureInCelsius = nil}
 
-  public var measurementQuantity: Common_OptionalFloat32Range {
-    get {return _storage._measurementQuantity ?? Common_OptionalFloat32Range()}
-    set {_uniqueStorage()._measurementQuantity = newValue}
+  public var minStorageDurationInSeconds: UInt32 {
+    get {return _storage._minStorageDurationInSeconds ?? 0}
+    set {_uniqueStorage()._minStorageDurationInSeconds = newValue}
   }
-  /// Returns true if `measurementQuantity` has been explicitly set.
-  public var hasMeasurementQuantity: Bool {return _storage._measurementQuantity != nil}
-  /// Clears the value of `measurementQuantity`. Subsequent reads from it will return its default value.
-  public mutating func clearMeasurementQuantity() {_uniqueStorage()._measurementQuantity = nil}
+  /// Returns true if `minStorageDurationInSeconds` has been explicitly set.
+  public var hasMinStorageDurationInSeconds: Bool {return _storage._minStorageDurationInSeconds != nil}
+  /// Clears the value of `minStorageDurationInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearMinStorageDurationInSeconds() {_uniqueStorage()._minStorageDurationInSeconds = nil}
 
-  public var itemQuantity: Common_OptionalFloat32Range {
-    get {return _storage._itemQuantity ?? Common_OptionalFloat32Range()}
-    set {_uniqueStorage()._itemQuantity = newValue}
+  public var maxStorageDurationInSeconds: UInt32 {
+    get {return _storage._maxStorageDurationInSeconds ?? 0}
+    set {_uniqueStorage()._maxStorageDurationInSeconds = newValue}
   }
-  /// Returns true if `itemQuantity` has been explicitly set.
-  public var hasItemQuantity: Bool {return _storage._itemQuantity != nil}
-  /// Clears the value of `itemQuantity`. Subsequent reads from it will return its default value.
-  public mutating func clearItemQuantity() {_uniqueStorage()._itemQuantity = nil}
+  /// Returns true if `maxStorageDurationInSeconds` has been explicitly set.
+  public var hasMaxStorageDurationInSeconds: Bool {return _storage._maxStorageDurationInSeconds != nil}
+  /// Clears the value of `maxStorageDurationInSeconds`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxStorageDurationInSeconds() {_uniqueStorage()._maxStorageDurationInSeconds = nil}
+
+  public var minMeasurementQuantity: Float {
+    get {return _storage._minMeasurementQuantity ?? 0}
+    set {_uniqueStorage()._minMeasurementQuantity = newValue}
+  }
+  /// Returns true if `minMeasurementQuantity` has been explicitly set.
+  public var hasMinMeasurementQuantity: Bool {return _storage._minMeasurementQuantity != nil}
+  /// Clears the value of `minMeasurementQuantity`. Subsequent reads from it will return its default value.
+  public mutating func clearMinMeasurementQuantity() {_uniqueStorage()._minMeasurementQuantity = nil}
+
+  public var maxMeasurementQuantity: Float {
+    get {return _storage._maxMeasurementQuantity ?? 0}
+    set {_uniqueStorage()._maxMeasurementQuantity = newValue}
+  }
+  /// Returns true if `maxMeasurementQuantity` has been explicitly set.
+  public var hasMaxMeasurementQuantity: Bool {return _storage._maxMeasurementQuantity != nil}
+  /// Clears the value of `maxMeasurementQuantity`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxMeasurementQuantity() {_uniqueStorage()._maxMeasurementQuantity = nil}
+
+  public var minItemQuantity: Float {
+    get {return _storage._minItemQuantity ?? 0}
+    set {_uniqueStorage()._minItemQuantity = newValue}
+  }
+  /// Returns true if `minItemQuantity` has been explicitly set.
+  public var hasMinItemQuantity: Bool {return _storage._minItemQuantity != nil}
+  /// Clears the value of `minItemQuantity`. Subsequent reads from it will return its default value.
+  public mutating func clearMinItemQuantity() {_uniqueStorage()._minItemQuantity = nil}
+
+  public var maxItemQuantity: Float {
+    get {return _storage._maxItemQuantity ?? 0}
+    set {_uniqueStorage()._maxItemQuantity = newValue}
+  }
+  /// Returns true if `maxItemQuantity` has been explicitly set.
+  public var hasMaxItemQuantity: Bool {return _storage._maxItemQuantity != nil}
+  /// Clears the value of `maxItemQuantity`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxItemQuantity() {_uniqueStorage()._maxItemQuantity = nil}
 
   public var archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._archivedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
@@ -2946,14 +3072,19 @@ public struct Mealplanning_RecipeStepVessel: @unchecked Sendable {
   /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
   public mutating func clearCreatedAt() {_uniqueStorage()._createdAt = nil}
 
-  public var quantity: Common_Uint16RangeWithOptionalMax {
-    get {return _storage._quantity ?? Common_Uint16RangeWithOptionalMax()}
-    set {_uniqueStorage()._quantity = newValue}
+  public var minQuantity: UInt32 {
+    get {return _storage._minQuantity}
+    set {_uniqueStorage()._minQuantity = newValue}
   }
-  /// Returns true if `quantity` has been explicitly set.
-  public var hasQuantity: Bool {return _storage._quantity != nil}
-  /// Clears the value of `quantity`. Subsequent reads from it will return its default value.
-  public mutating func clearQuantity() {_uniqueStorage()._quantity = nil}
+
+  public var maxQuantity: UInt32 {
+    get {return _storage._maxQuantity ?? 0}
+    set {_uniqueStorage()._maxQuantity = newValue}
+  }
+  /// Returns true if `maxQuantity` has been explicitly set.
+  public var hasMaxQuantity: Bool {return _storage._maxQuantity != nil}
+  /// Clears the value of `maxQuantity`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxQuantity() {_uniqueStorage()._maxQuantity = nil}
 
   public var lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
     get {return _storage._lastUpdatedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
@@ -3075,14 +3206,16 @@ public struct Mealplanning_Meal: Sendable {
   /// Clears the value of `lastUpdatedAt`. Subsequent reads from it will return its default value.
   public mutating func clearLastUpdatedAt() {self._lastUpdatedAt = nil}
 
-  public var estimatedPortions: Common_Float32RangeWithOptionalMax {
-    get {return _estimatedPortions ?? Common_Float32RangeWithOptionalMax()}
-    set {_estimatedPortions = newValue}
+  public var minEstimatedPortions: Float = 0
+
+  public var maxEstimatedPortions: Float {
+    get {return _maxEstimatedPortions ?? 0}
+    set {_maxEstimatedPortions = newValue}
   }
-  /// Returns true if `estimatedPortions` has been explicitly set.
-  public var hasEstimatedPortions: Bool {return self._estimatedPortions != nil}
-  /// Clears the value of `estimatedPortions`. Subsequent reads from it will return its default value.
-  public mutating func clearEstimatedPortions() {self._estimatedPortions = nil}
+  /// Returns true if `maxEstimatedPortions` has been explicitly set.
+  public var hasMaxEstimatedPortions: Bool {return self._maxEstimatedPortions != nil}
+  /// Clears the value of `maxEstimatedPortions`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxEstimatedPortions() {self._maxEstimatedPortions = nil}
 
   public var id: String = String()
 
@@ -3103,7 +3236,7 @@ public struct Mealplanning_Meal: Sendable {
   fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
   fileprivate var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
   fileprivate var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-  fileprivate var _estimatedPortions: Common_Float32RangeWithOptionalMax? = nil
+  fileprivate var _maxEstimatedPortions: Float? = nil
 }
 
 public struct Mealplanning_MealComponent: Sendable {
@@ -3388,14 +3521,19 @@ public struct Mealplanning_MealPlanGroceryListItem: @unchecked Sendable {
     set {_uniqueStorage()._id = newValue}
   }
 
-  public var quantityNeeded: Common_Float32RangeWithOptionalMax {
-    get {return _storage._quantityNeeded ?? Common_Float32RangeWithOptionalMax()}
-    set {_uniqueStorage()._quantityNeeded = newValue}
+  public var minQuantityNeeded: Float {
+    get {return _storage._minQuantityNeeded}
+    set {_uniqueStorage()._minQuantityNeeded = newValue}
   }
-  /// Returns true if `quantityNeeded` has been explicitly set.
-  public var hasQuantityNeeded: Bool {return _storage._quantityNeeded != nil}
-  /// Clears the value of `quantityNeeded`. Subsequent reads from it will return its default value.
-  public mutating func clearQuantityNeeded() {_uniqueStorage()._quantityNeeded = nil}
+
+  public var maxQuantityNeeded: Float {
+    get {return _storage._maxQuantityNeeded ?? 0}
+    set {_uniqueStorage()._maxQuantityNeeded = newValue}
+  }
+  /// Returns true if `maxQuantityNeeded` has been explicitly set.
+  public var hasMaxQuantityNeeded: Bool {return _storage._maxQuantityNeeded != nil}
+  /// Clears the value of `maxQuantityNeeded`. Subsequent reads from it will return its default value.
+  public mutating func clearMaxQuantityNeeded() {_uniqueStorage()._maxQuantityNeeded = nil}
 
   public var measurementUnit: Mealplanning_ValidMeasurementUnit {
     get {return _storage._measurementUnit ?? Mealplanning_ValidMeasurementUnit()}
@@ -4137,7 +4275,7 @@ extension Mealplanning_MealPlanRecipeOptionSelectionType: SwiftProtobuf._ProtoNa
 
 extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DataCollection"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{2}account_instrument_ownerships\0\u{3}meal_plans\0\u{3}recipe_ratings\0\u{1}recipes\0\u{1}meals\0\u{3}user_ingredient_preferences\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}account_instrument_ownerships\0\u{3}meal_plans\0\u{3}recipe_ratings\0\u{1}recipes\0\u{1}meals\0\u{3}user_ingredient_preferences\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4145,12 +4283,12 @@ extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Mes
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.accountInstrumentOwnerships) }()
-      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.mealPlans) }()
-      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.recipeRatings) }()
-      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.recipes) }()
-      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.meals) }()
-      case 7: try { try decoder.decodeRepeatedMessageField(value: &self.userIngredientPreferences) }()
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.accountInstrumentOwnerships) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.mealPlans) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.recipeRatings) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.recipes) }()
+      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.meals) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.userIngredientPreferences) }()
       default: break
       }
     }
@@ -4158,22 +4296,22 @@ extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.accountInstrumentOwnerships.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.accountInstrumentOwnerships, fieldNumber: 2)
+      try visitor.visitRepeatedMessageField(value: self.accountInstrumentOwnerships, fieldNumber: 1)
     }
     if !self.mealPlans.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.mealPlans, fieldNumber: 3)
+      try visitor.visitRepeatedMessageField(value: self.mealPlans, fieldNumber: 2)
     }
     if !self.recipeRatings.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.recipeRatings, fieldNumber: 4)
+      try visitor.visitRepeatedMessageField(value: self.recipeRatings, fieldNumber: 3)
     }
     if !self.recipes.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.recipes, fieldNumber: 5)
+      try visitor.visitRepeatedMessageField(value: self.recipes, fieldNumber: 4)
     }
     if !self.meals.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.meals, fieldNumber: 6)
+      try visitor.visitRepeatedMessageField(value: self.meals, fieldNumber: 5)
     }
     if !self.userIngredientPreferences.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.userIngredientPreferences, fieldNumber: 7)
+      try visitor.visitRepeatedMessageField(value: self.userIngredientPreferences, fieldNumber: 6)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4192,13 +4330,14 @@ extension Mealplanning_DataCollection: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}storage_temperature_in_celsius\0\u{3}icon_path\0\u{1}warning\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}id\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_shellfish\0\u{3}is_liquid\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_soy\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}contains_dairy\0\u{3}contains_alcohol\0\u{3}animal_flesh\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0\u{3}contaminates_equipment\0\u{1}media\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}min_storage_temperature_in_celsius\0\u{3}icon_path\0\u{1}warning\0\u{3}plural_name\0\u{3}storage_instructions\0\u{1}name\0\u{1}id\0\u{1}description\0\u{1}slug\0\u{3}shopping_suggestions\0\u{3}contains_shellfish\0\u{3}is_liquid\0\u{3}contains_peanut\0\u{3}contains_tree_nut\0\u{3}contains_egg\0\u{3}contains_wheat\0\u{3}contains_soy\0\u{3}animal_derived\0\u{3}restrict_to_preparations\0\u{3}contains_sesame\0\u{3}contains_fish\0\u{3}contains_gluten\0\u{3}contains_dairy\0\u{3}contains_alcohol\0\u{3}animal_flesh\0\u{3}is_starch\0\u{3}is_protein\0\u{3}is_grain\0\u{3}is_fruit\0\u{3}is_salt\0\u{3}is_fat\0\u{3}is_acid\0\u{3}is_heat\0\u{3}contaminates_equipment\0\u{1}media\0\u{3}max_storage_temperature_in_celsius\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
+    var _minStorageTemperatureInCelsius: Float? = nil
+    var _maxStorageTemperatureInCelsius: Float? = nil
     var _iconPath: String = String()
     var _warning: String = String()
     var _pluralName: String = String()
@@ -4246,7 +4385,8 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
       _createdAt = source._createdAt
       _lastUpdatedAt = source._lastUpdatedAt
       _archivedAt = source._archivedAt
-      _storageTemperatureInCelsius = source._storageTemperatureInCelsius
+      _minStorageTemperatureInCelsius = source._minStorageTemperatureInCelsius
+      _maxStorageTemperatureInCelsius = source._maxStorageTemperatureInCelsius
       _iconPath = source._iconPath
       _warning = source._warning
       _pluralName = source._pluralName
@@ -4302,7 +4442,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
         case 2: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
-        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._storageTemperatureInCelsius) }()
+        case 4: try { try decoder.decodeSingularFloatField(value: &_storage._minStorageTemperatureInCelsius) }()
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._iconPath) }()
         case 6: try { try decoder.decodeSingularStringField(value: &_storage._warning) }()
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._pluralName) }()
@@ -4337,6 +4477,7 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
         case 36: try { try decoder.decodeSingularBoolField(value: &_storage._isHeat) }()
         case 37: try { try decoder.decodeSingularBoolField(value: &_storage._contaminatesEquipment) }()
         case 38: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
+        case 39: try { try decoder.decodeSingularFloatField(value: &_storage._maxStorageTemperatureInCelsius) }()
         default: break
         }
       }
@@ -4358,8 +4499,8 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
       try { if let v = _storage._archivedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
       } }()
-      try { if let v = _storage._storageTemperatureInCelsius {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try { if let v = _storage._minStorageTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 4)
       } }()
       if !_storage._iconPath.isEmpty {
         try visitor.visitSingularStringField(value: _storage._iconPath, fieldNumber: 5)
@@ -4463,6 +4604,9 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
       if !_storage._media.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._media, fieldNumber: 38)
       }
+      try { if let v = _storage._maxStorageTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 39)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4475,7 +4619,8 @@ extension Mealplanning_ValidIngredient: SwiftProtobuf.Message, SwiftProtobuf._Me
         if _storage._createdAt != rhs_storage._createdAt {return false}
         if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
-        if _storage._storageTemperatureInCelsius != rhs_storage._storageTemperatureInCelsius {return false}
+        if _storage._minStorageTemperatureInCelsius != rhs_storage._minStorageTemperatureInCelsius {return false}
+        if _storage._maxStorageTemperatureInCelsius != rhs_storage._maxStorageTemperatureInCelsius {return false}
         if _storage._iconPath != rhs_storage._iconPath {return false}
         if _storage._warning != rhs_storage._warning {return false}
         if _storage._pluralName != rhs_storage._pluralName {return false}
@@ -4644,7 +4789,7 @@ extension Mealplanning_ValidIngredientGroupMember: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_ValidIngredientMeasurementUnit: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidIngredientMeasurementUnit"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}notes\0\u{1}id\0\u{3}allowable_quantity\0\u{3}measurement_unit\0\u{1}ingredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{1}notes\0\u{1}id\0\u{3}min_allowable_quantity\0\u{3}measurement_unit\0\u{1}ingredient\0\u{3}max_allowable_quantity\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -4652,7 +4797,8 @@ extension Mealplanning_ValidIngredientMeasurementUnit: SwiftProtobuf.Message, Sw
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _notes: String = String()
     var _id: String = String()
-    var _allowableQuantity: Common_Float32RangeWithOptionalMax? = nil
+    var _minAllowableQuantity: Float = 0
+    var _maxAllowableQuantity: Float? = nil
     var _measurementUnit: Mealplanning_ValidMeasurementUnit? = nil
     var _ingredient: Mealplanning_ValidIngredient? = nil
 
@@ -4670,7 +4816,8 @@ extension Mealplanning_ValidIngredientMeasurementUnit: SwiftProtobuf.Message, Sw
       _archivedAt = source._archivedAt
       _notes = source._notes
       _id = source._id
-      _allowableQuantity = source._allowableQuantity
+      _minAllowableQuantity = source._minAllowableQuantity
+      _maxAllowableQuantity = source._maxAllowableQuantity
       _measurementUnit = source._measurementUnit
       _ingredient = source._ingredient
     }
@@ -4696,9 +4843,10 @@ extension Mealplanning_ValidIngredientMeasurementUnit: SwiftProtobuf.Message, Sw
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
         case 4: try { try decoder.decodeSingularStringField(value: &_storage._notes) }()
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
-        case 6: try { try decoder.decodeSingularMessageField(value: &_storage._allowableQuantity) }()
+        case 6: try { try decoder.decodeSingularFloatField(value: &_storage._minAllowableQuantity) }()
         case 7: try { try decoder.decodeSingularMessageField(value: &_storage._measurementUnit) }()
         case 8: try { try decoder.decodeSingularMessageField(value: &_storage._ingredient) }()
+        case 9: try { try decoder.decodeSingularFloatField(value: &_storage._maxAllowableQuantity) }()
         default: break
         }
       }
@@ -4726,14 +4874,17 @@ extension Mealplanning_ValidIngredientMeasurementUnit: SwiftProtobuf.Message, Sw
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 5)
       }
-      try { if let v = _storage._allowableQuantity {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-      } }()
+      if _storage._minAllowableQuantity.bitPattern != 0 {
+        try visitor.visitSingularFloatField(value: _storage._minAllowableQuantity, fieldNumber: 6)
+      }
       try { if let v = _storage._measurementUnit {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
       } }()
       try { if let v = _storage._ingredient {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+      } }()
+      try { if let v = _storage._maxAllowableQuantity {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 9)
       } }()
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -4749,7 +4900,8 @@ extension Mealplanning_ValidIngredientMeasurementUnit: SwiftProtobuf.Message, Sw
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
         if _storage._notes != rhs_storage._notes {return false}
         if _storage._id != rhs_storage._id {return false}
-        if _storage._allowableQuantity != rhs_storage._allowableQuantity {return false}
+        if _storage._minAllowableQuantity != rhs_storage._minAllowableQuantity {return false}
+        if _storage._maxAllowableQuantity != rhs_storage._maxAllowableQuantity {return false}
         if _storage._measurementUnit != rhs_storage._measurementUnit {return false}
         if _storage._ingredient != rhs_storage._ingredient {return false}
         return true
@@ -4827,14 +4979,16 @@ extension Mealplanning_ValidIngredientPreparation: SwiftProtobuf.Message, SwiftP
 
 extension Mealplanning_ValidPrepTaskConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPrepTaskConfig"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}storage_duration_in_seconds\0\u{3}storage_temperature_in_celsius\0\u{1}id\0\u{3}storage_type\0\u{3}storage_instructions\0\u{1}notes\0\u{1}source\0\u{1}preparation\0\u{1}ingredient\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}min_storage_duration_in_seconds\0\u{3}min_storage_temperature_in_celsius\0\u{1}id\0\u{3}storage_type\0\u{3}storage_instructions\0\u{1}notes\0\u{1}source\0\u{1}preparation\0\u{1}ingredient\0\u{3}max_storage_duration_in_seconds\0\u{3}max_storage_temperature_in_celsius\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _storageDurationInSeconds: Common_Uint32RangeWithOptionalMax? = nil
-    var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
+    var _minStorageDurationInSeconds: UInt32 = 0
+    var _maxStorageDurationInSeconds: UInt32? = nil
+    var _minStorageTemperatureInCelsius: Float? = nil
+    var _maxStorageTemperatureInCelsius: Float? = nil
     var _id: String = String()
     var _storageType: String = String()
     var _storageInstructions: String = String()
@@ -4855,8 +5009,10 @@ extension Mealplanning_ValidPrepTaskConfig: SwiftProtobuf.Message, SwiftProtobuf
       _createdAt = source._createdAt
       _lastUpdatedAt = source._lastUpdatedAt
       _archivedAt = source._archivedAt
-      _storageDurationInSeconds = source._storageDurationInSeconds
-      _storageTemperatureInCelsius = source._storageTemperatureInCelsius
+      _minStorageDurationInSeconds = source._minStorageDurationInSeconds
+      _maxStorageDurationInSeconds = source._maxStorageDurationInSeconds
+      _minStorageTemperatureInCelsius = source._minStorageTemperatureInCelsius
+      _maxStorageTemperatureInCelsius = source._maxStorageTemperatureInCelsius
       _id = source._id
       _storageType = source._storageType
       _storageInstructions = source._storageInstructions
@@ -4885,8 +5041,8 @@ extension Mealplanning_ValidPrepTaskConfig: SwiftProtobuf.Message, SwiftProtobuf
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
         case 2: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
-        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._storageDurationInSeconds) }()
-        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._storageTemperatureInCelsius) }()
+        case 4: try { try decoder.decodeSingularUInt32Field(value: &_storage._minStorageDurationInSeconds) }()
+        case 5: try { try decoder.decodeSingularFloatField(value: &_storage._minStorageTemperatureInCelsius) }()
         case 6: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._storageType) }()
         case 8: try { try decoder.decodeSingularStringField(value: &_storage._storageInstructions) }()
@@ -4894,6 +5050,8 @@ extension Mealplanning_ValidPrepTaskConfig: SwiftProtobuf.Message, SwiftProtobuf
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._source) }()
         case 11: try { try decoder.decodeSingularMessageField(value: &_storage._preparation) }()
         case 12: try { try decoder.decodeSingularMessageField(value: &_storage._ingredient) }()
+        case 13: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxStorageDurationInSeconds) }()
+        case 14: try { try decoder.decodeSingularFloatField(value: &_storage._maxStorageTemperatureInCelsius) }()
         default: break
         }
       }
@@ -4915,11 +5073,11 @@ extension Mealplanning_ValidPrepTaskConfig: SwiftProtobuf.Message, SwiftProtobuf
       try { if let v = _storage._archivedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
       } }()
-      try { if let v = _storage._storageDurationInSeconds {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-      } }()
-      try { if let v = _storage._storageTemperatureInCelsius {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      if _storage._minStorageDurationInSeconds != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._minStorageDurationInSeconds, fieldNumber: 4)
+      }
+      try { if let v = _storage._minStorageTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 5)
       } }()
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 6)
@@ -4942,6 +5100,12 @@ extension Mealplanning_ValidPrepTaskConfig: SwiftProtobuf.Message, SwiftProtobuf
       try { if let v = _storage._ingredient {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
       } }()
+      try { if let v = _storage._maxStorageDurationInSeconds {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 13)
+      } }()
+      try { if let v = _storage._maxStorageTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 14)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4954,8 +5118,10 @@ extension Mealplanning_ValidPrepTaskConfig: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._createdAt != rhs_storage._createdAt {return false}
         if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
-        if _storage._storageDurationInSeconds != rhs_storage._storageDurationInSeconds {return false}
-        if _storage._storageTemperatureInCelsius != rhs_storage._storageTemperatureInCelsius {return false}
+        if _storage._minStorageDurationInSeconds != rhs_storage._minStorageDurationInSeconds {return false}
+        if _storage._maxStorageDurationInSeconds != rhs_storage._maxStorageDurationInSeconds {return false}
+        if _storage._minStorageTemperatureInCelsius != rhs_storage._minStorageTemperatureInCelsius {return false}
+        if _storage._maxStorageTemperatureInCelsius != rhs_storage._maxStorageTemperatureInCelsius {return false}
         if _storage._id != rhs_storage._id {return false}
         if _storage._storageType != rhs_storage._storageType {return false}
         if _storage._storageInstructions != rhs_storage._storageInstructions {return false}
@@ -5558,13 +5724,16 @@ extension Mealplanning_MeasurementUnitConversionMismatch: SwiftProtobuf.Message,
 
 extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ValidPreparation"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}instrument_count\0\u{3}ingredient_count\0\u{3}vessel_count\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}icon_path\0\u{3}past_tense\0\u{1}id\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}restrict_to_ingredients\0\u{3}temperature_required\0\u{3}time_estimate_required\0\u{3}condition_expression_required\0\u{3}consumes_vessel\0\u{3}only_for_vessels\0\u{3}yields_nothing\0\u{1}media\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}min_instrument_count\0\u{3}min_ingredient_count\0\u{3}min_vessel_count\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}icon_path\0\u{3}past_tense\0\u{1}id\0\u{1}name\0\u{1}description\0\u{1}slug\0\u{3}restrict_to_ingredients\0\u{3}temperature_required\0\u{3}time_estimate_required\0\u{3}condition_expression_required\0\u{3}consumes_vessel\0\u{3}only_for_vessels\0\u{3}yields_nothing\0\u{1}media\0\u{3}max_instrument_count\0\u{3}max_ingredient_count\0\u{3}max_vessel_count\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _instrumentCount: Common_Uint16RangeWithOptionalMax? = nil
-    var _ingredientCount: Common_Uint16RangeWithOptionalMax? = nil
-    var _vesselCount: Common_Uint16RangeWithOptionalMax? = nil
+    var _minInstrumentCount: UInt32 = 0
+    var _maxInstrumentCount: UInt32? = nil
+    var _minIngredientCount: UInt32 = 0
+    var _maxIngredientCount: UInt32? = nil
+    var _minVesselCount: UInt32 = 0
+    var _maxVesselCount: UInt32? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _iconPath: String = String()
@@ -5592,9 +5761,12 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
 
     init(copying source: _StorageClass) {
       _createdAt = source._createdAt
-      _instrumentCount = source._instrumentCount
-      _ingredientCount = source._ingredientCount
-      _vesselCount = source._vesselCount
+      _minInstrumentCount = source._minInstrumentCount
+      _maxInstrumentCount = source._maxInstrumentCount
+      _minIngredientCount = source._minIngredientCount
+      _maxIngredientCount = source._maxIngredientCount
+      _minVesselCount = source._minVesselCount
+      _maxVesselCount = source._maxVesselCount
       _archivedAt = source._archivedAt
       _lastUpdatedAt = source._lastUpdatedAt
       _iconPath = source._iconPath
@@ -5630,9 +5802,9 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._instrumentCount) }()
-        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._ingredientCount) }()
-        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._vesselCount) }()
+        case 2: try { try decoder.decodeSingularUInt32Field(value: &_storage._minInstrumentCount) }()
+        case 3: try { try decoder.decodeSingularUInt32Field(value: &_storage._minIngredientCount) }()
+        case 4: try { try decoder.decodeSingularUInt32Field(value: &_storage._minVesselCount) }()
         case 5: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
         case 6: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._iconPath) }()
@@ -5649,6 +5821,9 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
         case 18: try { try decoder.decodeSingularBoolField(value: &_storage._onlyForVessels) }()
         case 19: try { try decoder.decodeSingularBoolField(value: &_storage._yieldsNothing) }()
         case 20: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
+        case 21: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxInstrumentCount) }()
+        case 22: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxIngredientCount) }()
+        case 23: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxVesselCount) }()
         default: break
         }
       }
@@ -5664,15 +5839,15 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
       try { if let v = _storage._createdAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       } }()
-      try { if let v = _storage._instrumentCount {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-      } }()
-      try { if let v = _storage._ingredientCount {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-      } }()
-      try { if let v = _storage._vesselCount {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-      } }()
+      if _storage._minInstrumentCount != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._minInstrumentCount, fieldNumber: 2)
+      }
+      if _storage._minIngredientCount != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._minIngredientCount, fieldNumber: 3)
+      }
+      if _storage._minVesselCount != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._minVesselCount, fieldNumber: 4)
+      }
       try { if let v = _storage._archivedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
       } }()
@@ -5721,6 +5896,15 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
       if !_storage._media.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._media, fieldNumber: 20)
       }
+      try { if let v = _storage._maxInstrumentCount {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 21)
+      } }()
+      try { if let v = _storage._maxIngredientCount {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 22)
+      } }()
+      try { if let v = _storage._maxVesselCount {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 23)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5731,9 +5915,12 @@ extension Mealplanning_ValidPreparation: SwiftProtobuf.Message, SwiftProtobuf._M
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._createdAt != rhs_storage._createdAt {return false}
-        if _storage._instrumentCount != rhs_storage._instrumentCount {return false}
-        if _storage._ingredientCount != rhs_storage._ingredientCount {return false}
-        if _storage._vesselCount != rhs_storage._vesselCount {return false}
+        if _storage._minInstrumentCount != rhs_storage._minInstrumentCount {return false}
+        if _storage._maxInstrumentCount != rhs_storage._maxInstrumentCount {return false}
+        if _storage._minIngredientCount != rhs_storage._minIngredientCount {return false}
+        if _storage._maxIngredientCount != rhs_storage._maxIngredientCount {return false}
+        if _storage._minVesselCount != rhs_storage._minVesselCount {return false}
+        if _storage._maxVesselCount != rhs_storage._maxVesselCount {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
         if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
         if _storage._iconPath != rhs_storage._iconPath {return false}
@@ -6200,14 +6387,15 @@ extension Mealplanning_UserIngredientPreference: SwiftProtobuf.Message, SwiftPro
 
 extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Recipe"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{2}\u{2}status\0\u{3}eligible_for_meals\0\u{3}associated_recipes\0\u{3}source_isbn\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}inspired_by_recipe_id\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}min_estimated_portions\0\u{3}plural_portion_name\0\u{1}description\0\u{1}name\0\u{3}portion_name\0\u{1}id\0\u{3}created_by_user\0\u{1}source\0\u{3}source_isbn\0\u{1}slug\0\u{3}yields_component_type\0\u{3}prep_tasks\0\u{1}steps\0\u{1}media\0\u{1}status\0\u{3}eligible_for_meals\0\u{3}associated_recipes\0\u{4}\u{2}max_estimated_portions\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _inspiredByRecipeID: String? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _estimatedPortions: Common_Float32RangeWithOptionalMax? = nil
+    var _minEstimatedPortions: Float = 0
+    var _maxEstimatedPortions: Float? = nil
     var _pluralPortionName: String = String()
     var _description_p: String = String()
     var _name: String = String()
@@ -6238,7 +6426,8 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       _inspiredByRecipeID = source._inspiredByRecipeID
       _lastUpdatedAt = source._lastUpdatedAt
       _archivedAt = source._archivedAt
-      _estimatedPortions = source._estimatedPortions
+      _minEstimatedPortions = source._minEstimatedPortions
+      _maxEstimatedPortions = source._maxEstimatedPortions
       _pluralPortionName = source._pluralPortionName
       _description_p = source._description_p
       _name = source._name
@@ -6277,7 +6466,7 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 2: try { try decoder.decodeSingularStringField(value: &_storage._inspiredByRecipeID) }()
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
-        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._estimatedPortions) }()
+        case 5: try { try decoder.decodeSingularFloatField(value: &_storage._minEstimatedPortions) }()
         case 6: try { try decoder.decodeSingularStringField(value: &_storage._pluralPortionName) }()
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._description_p) }()
         case 8: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
@@ -6285,15 +6474,16 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._createdByUser) }()
         case 12: try { try decoder.decodeSingularStringField(value: &_storage._source) }()
-        case 13: try { try decoder.decodeSingularStringField(value: &_storage._slug) }()
-        case 14: try { try decoder.decodeSingularEnumField(value: &_storage._yieldsComponentType) }()
-        case 15: try { try decoder.decodeRepeatedMessageField(value: &_storage._prepTasks) }()
-        case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._steps) }()
-        case 17: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
+        case 13: try { try decoder.decodeSingularStringField(value: &_storage._sourceIsbn) }()
+        case 14: try { try decoder.decodeSingularStringField(value: &_storage._slug) }()
+        case 15: try { try decoder.decodeSingularEnumField(value: &_storage._yieldsComponentType) }()
+        case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._prepTasks) }()
+        case 17: try { try decoder.decodeRepeatedMessageField(value: &_storage._steps) }()
+        case 18: try { try decoder.decodeRepeatedMessageField(value: &_storage._media) }()
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._status) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._eligibleForMeals) }()
         case 21: try { try decoder.decodeRepeatedMessageField(value: &_storage._associatedRecipes) }()
-        case 22: try { try decoder.decodeSingularStringField(value: &_storage._sourceIsbn) }()
+        case 23: try { try decoder.decodeSingularFloatField(value: &_storage._maxEstimatedPortions) }()
         default: break
         }
       }
@@ -6318,9 +6508,9 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       try { if let v = _storage._archivedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
       } }()
-      try { if let v = _storage._estimatedPortions {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-      } }()
+      if _storage._minEstimatedPortions.bitPattern != 0 {
+        try visitor.visitSingularFloatField(value: _storage._minEstimatedPortions, fieldNumber: 5)
+      }
       if !_storage._pluralPortionName.isEmpty {
         try visitor.visitSingularStringField(value: _storage._pluralPortionName, fieldNumber: 6)
       }
@@ -6342,20 +6532,23 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if !_storage._source.isEmpty {
         try visitor.visitSingularStringField(value: _storage._source, fieldNumber: 12)
       }
+      if !_storage._sourceIsbn.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._sourceIsbn, fieldNumber: 13)
+      }
       if !_storage._slug.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._slug, fieldNumber: 13)
+        try visitor.visitSingularStringField(value: _storage._slug, fieldNumber: 14)
       }
       if _storage._yieldsComponentType != .unspecified {
-        try visitor.visitSingularEnumField(value: _storage._yieldsComponentType, fieldNumber: 14)
+        try visitor.visitSingularEnumField(value: _storage._yieldsComponentType, fieldNumber: 15)
       }
       if !_storage._prepTasks.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._prepTasks, fieldNumber: 15)
+        try visitor.visitRepeatedMessageField(value: _storage._prepTasks, fieldNumber: 16)
       }
       if !_storage._steps.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._steps, fieldNumber: 16)
+        try visitor.visitRepeatedMessageField(value: _storage._steps, fieldNumber: 17)
       }
       if !_storage._media.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._media, fieldNumber: 17)
+        try visitor.visitRepeatedMessageField(value: _storage._media, fieldNumber: 18)
       }
       if !_storage._status.isEmpty {
         try visitor.visitSingularStringField(value: _storage._status, fieldNumber: 19)
@@ -6366,9 +6559,9 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if !_storage._associatedRecipes.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._associatedRecipes, fieldNumber: 21)
       }
-      if !_storage._sourceIsbn.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._sourceIsbn, fieldNumber: 22)
-      }
+      try { if let v = _storage._maxEstimatedPortions {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 23)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6382,7 +6575,8 @@ extension Mealplanning_Recipe: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         if _storage._inspiredByRecipeID != rhs_storage._inspiredByRecipeID {return false}
         if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
-        if _storage._estimatedPortions != rhs_storage._estimatedPortions {return false}
+        if _storage._minEstimatedPortions != rhs_storage._minEstimatedPortions {return false}
+        if _storage._maxEstimatedPortions != rhs_storage._maxEstimatedPortions {return false}
         if _storage._pluralPortionName != rhs_storage._pluralPortionName {return false}
         if _storage._description_p != rhs_storage._description_p {return false}
         if _storage._name != rhs_storage._name {return false}
@@ -6489,12 +6683,14 @@ extension Mealplanning_RecipeMedia: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipePrepTask"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}storage_temperature_in_celsius\0\u{3}time_buffer_before_recipe_in_seconds\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{3}storage_type\0\u{3}belongs_to_recipe\0\u{3}explicit_storage_instructions\0\u{1}notes\0\u{1}name\0\u{1}description\0\u{3}task_steps\0\u{1}optional\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}min_storage_temperature_in_celsius\0\u{3}min_time_buffer_before_recipe_in_seconds\0\u{3}archived_at\0\u{3}last_updated_at\0\u{1}id\0\u{3}storage_type\0\u{3}belongs_to_recipe\0\u{3}explicit_storage_instructions\0\u{1}notes\0\u{1}name\0\u{1}description\0\u{3}task_steps\0\u{1}optional\0\u{3}max_storage_temperature_in_celsius\0\u{3}max_time_buffer_before_recipe_in_seconds\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
-    var _timeBufferBeforeRecipeInSeconds: Common_Uint32RangeWithOptionalMax? = nil
+    var _minStorageTemperatureInCelsius: Float? = nil
+    var _maxStorageTemperatureInCelsius: Float? = nil
+    var _minTimeBufferBeforeRecipeInSeconds: UInt32 = 0
+    var _maxTimeBufferBeforeRecipeInSeconds: UInt32? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _id: String = String()
@@ -6517,8 +6713,10 @@ extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
     init(copying source: _StorageClass) {
       _createdAt = source._createdAt
-      _storageTemperatureInCelsius = source._storageTemperatureInCelsius
-      _timeBufferBeforeRecipeInSeconds = source._timeBufferBeforeRecipeInSeconds
+      _minStorageTemperatureInCelsius = source._minStorageTemperatureInCelsius
+      _maxStorageTemperatureInCelsius = source._maxStorageTemperatureInCelsius
+      _minTimeBufferBeforeRecipeInSeconds = source._minTimeBufferBeforeRecipeInSeconds
+      _maxTimeBufferBeforeRecipeInSeconds = source._maxTimeBufferBeforeRecipeInSeconds
       _archivedAt = source._archivedAt
       _lastUpdatedAt = source._lastUpdatedAt
       _id = source._id
@@ -6549,8 +6747,8 @@ extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._Mes
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._storageTemperatureInCelsius) }()
-        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._timeBufferBeforeRecipeInSeconds) }()
+        case 2: try { try decoder.decodeSingularFloatField(value: &_storage._minStorageTemperatureInCelsius) }()
+        case 3: try { try decoder.decodeSingularUInt32Field(value: &_storage._minTimeBufferBeforeRecipeInSeconds) }()
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
         case 5: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 6: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
@@ -6562,6 +6760,8 @@ extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._Mes
         case 12: try { try decoder.decodeSingularStringField(value: &_storage._description_p) }()
         case 13: try { try decoder.decodeRepeatedMessageField(value: &_storage._taskSteps) }()
         case 14: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
+        case 15: try { try decoder.decodeSingularFloatField(value: &_storage._maxStorageTemperatureInCelsius) }()
+        case 16: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxTimeBufferBeforeRecipeInSeconds) }()
         default: break
         }
       }
@@ -6577,12 +6777,12 @@ extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._Mes
       try { if let v = _storage._createdAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       } }()
-      try { if let v = _storage._storageTemperatureInCelsius {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try { if let v = _storage._minStorageTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 2)
       } }()
-      try { if let v = _storage._timeBufferBeforeRecipeInSeconds {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-      } }()
+      if _storage._minTimeBufferBeforeRecipeInSeconds != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._minTimeBufferBeforeRecipeInSeconds, fieldNumber: 3)
+      }
       try { if let v = _storage._archivedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
       } }()
@@ -6616,6 +6816,12 @@ extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._Mes
       if _storage._optional != false {
         try visitor.visitSingularBoolField(value: _storage._optional, fieldNumber: 14)
       }
+      try { if let v = _storage._maxStorageTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 15)
+      } }()
+      try { if let v = _storage._maxTimeBufferBeforeRecipeInSeconds {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 16)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6626,8 +6832,10 @@ extension Mealplanning_RecipePrepTask: SwiftProtobuf.Message, SwiftProtobuf._Mes
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._createdAt != rhs_storage._createdAt {return false}
-        if _storage._storageTemperatureInCelsius != rhs_storage._storageTemperatureInCelsius {return false}
-        if _storage._timeBufferBeforeRecipeInSeconds != rhs_storage._timeBufferBeforeRecipeInSeconds {return false}
+        if _storage._minStorageTemperatureInCelsius != rhs_storage._minStorageTemperatureInCelsius {return false}
+        if _storage._maxStorageTemperatureInCelsius != rhs_storage._maxStorageTemperatureInCelsius {return false}
+        if _storage._minTimeBufferBeforeRecipeInSeconds != rhs_storage._minTimeBufferBeforeRecipeInSeconds {return false}
+        if _storage._maxTimeBufferBeforeRecipeInSeconds != rhs_storage._maxTimeBufferBeforeRecipeInSeconds {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
         if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
         if _storage._id != rhs_storage._id {return false}
@@ -6784,12 +6992,14 @@ extension Mealplanning_RecipeRating: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStep"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}estimated_time_in_seconds\0\u{3}temperature_in_celsius\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}belongs_to_recipe\0\u{3}condition_expression\0\u{1}id\0\u{1}notes\0\u{3}explicit_instructions\0\u{1}media\0\u{1}products\0\u{1}instruments\0\u{1}vessels\0\u{3}completion_conditions\0\u{1}ingredients\0\u{1}preparation\0\u{1}index\0\u{1}optional\0\u{3}start_timer_automatically\0\u{3}step_images\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}min_estimated_time_in_seconds\0\u{3}min_temperature_in_celsius\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}belongs_to_recipe\0\u{3}condition_expression\0\u{1}id\0\u{1}notes\0\u{3}explicit_instructions\0\u{1}media\0\u{1}products\0\u{1}instruments\0\u{1}vessels\0\u{3}completion_conditions\0\u{1}ingredients\0\u{1}preparation\0\u{1}index\0\u{1}optional\0\u{3}start_timer_automatically\0\u{3}step_images\0\u{3}max_estimated_time_in_seconds\0\u{3}max_temperature_in_celsius\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _estimatedTimeInSeconds: Common_OptionalUint32Range? = nil
-    var _temperatureInCelsius: Common_OptionalFloat32Range? = nil
+    var _minEstimatedTimeInSeconds: UInt32? = nil
+    var _maxEstimatedTimeInSeconds: UInt32? = nil
+    var _minTemperatureInCelsius: Float? = nil
+    var _maxTemperatureInCelsius: Float? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _belongsToRecipe: String = String()
@@ -6819,8 +7029,10 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
 
     init(copying source: _StorageClass) {
       _createdAt = source._createdAt
-      _estimatedTimeInSeconds = source._estimatedTimeInSeconds
-      _temperatureInCelsius = source._temperatureInCelsius
+      _minEstimatedTimeInSeconds = source._minEstimatedTimeInSeconds
+      _maxEstimatedTimeInSeconds = source._maxEstimatedTimeInSeconds
+      _minTemperatureInCelsius = source._minTemperatureInCelsius
+      _maxTemperatureInCelsius = source._maxTemperatureInCelsius
       _archivedAt = source._archivedAt
       _lastUpdatedAt = source._lastUpdatedAt
       _belongsToRecipe = source._belongsToRecipe
@@ -6858,8 +7070,8 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._estimatedTimeInSeconds) }()
-        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._temperatureInCelsius) }()
+        case 2: try { try decoder.decodeSingularUInt32Field(value: &_storage._minEstimatedTimeInSeconds) }()
+        case 3: try { try decoder.decodeSingularFloatField(value: &_storage._minTemperatureInCelsius) }()
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
         case 5: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 6: try { try decoder.decodeSingularStringField(value: &_storage._belongsToRecipe) }()
@@ -6878,6 +7090,8 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
         case 19: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._startTimerAutomatically) }()
         case 21: try { try decoder.decodeRepeatedMessageField(value: &_storage._stepImages) }()
+        case 22: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxEstimatedTimeInSeconds) }()
+        case 23: try { try decoder.decodeSingularFloatField(value: &_storage._maxTemperatureInCelsius) }()
         default: break
         }
       }
@@ -6893,11 +7107,11 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
       try { if let v = _storage._createdAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       } }()
-      try { if let v = _storage._estimatedTimeInSeconds {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try { if let v = _storage._minEstimatedTimeInSeconds {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
       } }()
-      try { if let v = _storage._temperatureInCelsius {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      try { if let v = _storage._minTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 3)
       } }()
       try { if let v = _storage._archivedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
@@ -6953,6 +7167,12 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
       if !_storage._stepImages.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._stepImages, fieldNumber: 21)
       }
+      try { if let v = _storage._maxEstimatedTimeInSeconds {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 22)
+      } }()
+      try { if let v = _storage._maxTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 23)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6963,8 +7183,10 @@ extension Mealplanning_RecipeStep: SwiftProtobuf.Message, SwiftProtobuf._Message
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._createdAt != rhs_storage._createdAt {return false}
-        if _storage._estimatedTimeInSeconds != rhs_storage._estimatedTimeInSeconds {return false}
-        if _storage._temperatureInCelsius != rhs_storage._temperatureInCelsius {return false}
+        if _storage._minEstimatedTimeInSeconds != rhs_storage._minEstimatedTimeInSeconds {return false}
+        if _storage._maxEstimatedTimeInSeconds != rhs_storage._maxEstimatedTimeInSeconds {return false}
+        if _storage._minTemperatureInCelsius != rhs_storage._minTemperatureInCelsius {return false}
+        if _storage._maxTemperatureInCelsius != rhs_storage._maxTemperatureInCelsius {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
         if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
         if _storage._belongsToRecipe != rhs_storage._belongsToRecipe {return false}
@@ -7179,7 +7401,7 @@ extension Mealplanning_RecipeStepCompletionConditionIngredient: SwiftProtobuf.Me
 
 extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepIngredient"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}recipe_step_product_recipe_id\0\u{3}archived_at\0\u{1}ingredient\0\u{3}last_updated_at\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_id\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{1}name\0\u{1}quantity\0\u{3}measurement_unit\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0\u{1}index\0\u{3}scale_factor\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}recipe_step_product_recipe_id\0\u{3}archived_at\0\u{1}ingredient\0\u{3}last_updated_at\0\u{3}vessel_index\0\u{3}product_percentage_to_use\0\u{3}recipe_step_product_id\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{3}quantity_notes\0\u{3}ingredient_notes\0\u{1}name\0\u{3}min_quantity\0\u{3}measurement_unit\0\u{3}option_index\0\u{1}optional\0\u{3}to_taste\0\u{1}index\0\u{3}scale_factor\0\u{3}max_quantity\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -7195,7 +7417,8 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
     var _quantityNotes: String = String()
     var _ingredientNotes: String = String()
     var _name: String = String()
-    var _quantity: Common_Float32RangeWithOptionalMax? = nil
+    var _minQuantity: Float = 0
+    var _maxQuantity: Float? = nil
     var _measurementUnit: Mealplanning_ValidMeasurementUnit? = nil
     var _optionIndex: UInt32 = 0
     var _optional: Bool = false
@@ -7225,7 +7448,8 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
       _quantityNotes = source._quantityNotes
       _ingredientNotes = source._ingredientNotes
       _name = source._name
-      _quantity = source._quantity
+      _minQuantity = source._minQuantity
+      _maxQuantity = source._maxQuantity
       _measurementUnit = source._measurementUnit
       _optionIndex = source._optionIndex
       _optional = source._optional
@@ -7263,13 +7487,14 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._quantityNotes) }()
         case 12: try { try decoder.decodeSingularStringField(value: &_storage._ingredientNotes) }()
         case 13: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
-        case 14: try { try decoder.decodeSingularMessageField(value: &_storage._quantity) }()
+        case 14: try { try decoder.decodeSingularFloatField(value: &_storage._minQuantity) }()
         case 15: try { try decoder.decodeSingularMessageField(value: &_storage._measurementUnit) }()
         case 16: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
         case 17: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
         case 18: try { try decoder.decodeSingularBoolField(value: &_storage._toTaste) }()
         case 19: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
         case 20: try { try decoder.decodeSingularFloatField(value: &_storage._scaleFactor) }()
+        case 21: try { try decoder.decodeSingularFloatField(value: &_storage._maxQuantity) }()
         default: break
         }
       }
@@ -7321,9 +7546,9 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
       if !_storage._name.isEmpty {
         try visitor.visitSingularStringField(value: _storage._name, fieldNumber: 13)
       }
-      try { if let v = _storage._quantity {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
-      } }()
+      if _storage._minQuantity.bitPattern != 0 {
+        try visitor.visitSingularFloatField(value: _storage._minQuantity, fieldNumber: 14)
+      }
       try { if let v = _storage._measurementUnit {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
       } }()
@@ -7342,6 +7567,9 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
       if _storage._scaleFactor.bitPattern != 0 {
         try visitor.visitSingularFloatField(value: _storage._scaleFactor, fieldNumber: 20)
       }
+      try { if let v = _storage._maxQuantity {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 21)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7364,7 +7592,8 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
         if _storage._quantityNotes != rhs_storage._quantityNotes {return false}
         if _storage._ingredientNotes != rhs_storage._ingredientNotes {return false}
         if _storage._name != rhs_storage._name {return false}
-        if _storage._quantity != rhs_storage._quantity {return false}
+        if _storage._minQuantity != rhs_storage._minQuantity {return false}
+        if _storage._maxQuantity != rhs_storage._maxQuantity {return false}
         if _storage._measurementUnit != rhs_storage._measurementUnit {return false}
         if _storage._optionIndex != rhs_storage._optionIndex {return false}
         if _storage._optional != rhs_storage._optional {return false}
@@ -7382,7 +7611,7 @@ extension Mealplanning_RecipeStepIngredient: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepInstrument"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}instrument\0\u{3}last_updated_at\0\u{3}recipe_step_product_id\0\u{3}archived_at\0\u{1}notes\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{1}quantity\0\u{3}option_index\0\u{3}preference_rank\0\u{1}optional\0\u{1}index\0\u{3}scale_factor\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}instrument\0\u{3}last_updated_at\0\u{3}recipe_step_product_id\0\u{3}archived_at\0\u{1}notes\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}id\0\u{3}min_quantity\0\u{3}option_index\0\u{3}preference_rank\0\u{1}optional\0\u{1}index\0\u{3}scale_factor\0\u{3}max_quantity\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -7394,7 +7623,8 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
     var _name: String = String()
     var _belongsToRecipeStep: String = String()
     var _id: String = String()
-    var _quantity: Common_Uint32RangeWithOptionalMax? = nil
+    var _minQuantity: UInt32 = 0
+    var _maxQuantity: UInt32? = nil
     var _optionIndex: UInt32 = 0
     var _preferenceRank: UInt32 = 0
     var _optional: Bool = false
@@ -7419,7 +7649,8 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
       _name = source._name
       _belongsToRecipeStep = source._belongsToRecipeStep
       _id = source._id
-      _quantity = source._quantity
+      _minQuantity = source._minQuantity
+      _maxQuantity = source._maxQuantity
       _optionIndex = source._optionIndex
       _preferenceRank = source._preferenceRank
       _optional = source._optional
@@ -7452,12 +7683,13 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
         case 7: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
         case 8: try { try decoder.decodeSingularStringField(value: &_storage._belongsToRecipeStep) }()
         case 9: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
-        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._quantity) }()
+        case 10: try { try decoder.decodeSingularUInt32Field(value: &_storage._minQuantity) }()
         case 11: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
         case 12: try { try decoder.decodeSingularUInt32Field(value: &_storage._preferenceRank) }()
         case 13: try { try decoder.decodeSingularBoolField(value: &_storage._optional) }()
         case 14: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
         case 15: try { try decoder.decodeSingularFloatField(value: &_storage._scaleFactor) }()
+        case 16: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxQuantity) }()
         default: break
         }
       }
@@ -7497,9 +7729,9 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 9)
       }
-      try { if let v = _storage._quantity {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
-      } }()
+      if _storage._minQuantity != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._minQuantity, fieldNumber: 10)
+      }
       if _storage._optionIndex != 0 {
         try visitor.visitSingularUInt32Field(value: _storage._optionIndex, fieldNumber: 11)
       }
@@ -7515,6 +7747,9 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
       if _storage._scaleFactor.bitPattern != 0 {
         try visitor.visitSingularFloatField(value: _storage._scaleFactor, fieldNumber: 15)
       }
+      try { if let v = _storage._maxQuantity {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 16)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7533,7 +7768,8 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
         if _storage._name != rhs_storage._name {return false}
         if _storage._belongsToRecipeStep != rhs_storage._belongsToRecipeStep {return false}
         if _storage._id != rhs_storage._id {return false}
-        if _storage._quantity != rhs_storage._quantity {return false}
+        if _storage._minQuantity != rhs_storage._minQuantity {return false}
+        if _storage._maxQuantity != rhs_storage._maxQuantity {return false}
         if _storage._optionIndex != rhs_storage._optionIndex {return false}
         if _storage._preferenceRank != rhs_storage._preferenceRank {return false}
         if _storage._optional != rhs_storage._optional {return false}
@@ -7550,14 +7786,18 @@ extension Mealplanning_RecipeStepInstrument: SwiftProtobuf.Message, SwiftProtobu
 
 extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepProduct"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}storage_temperature_in_celsius\0\u{3}storage_duration_in_seconds\0\u{3}measurement_quantity\0\u{3}item_quantity\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}measurement_unit\0\u{3}contained_in_vessel_index\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}type\0\u{1}id\0\u{3}storage_instructions\0\u{3}quantity_notes\0\u{1}index\0\u{3}is_waste\0\u{3}is_liquid\0\u{1}compostable\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}min_storage_temperature_in_celsius\0\u{3}min_storage_duration_in_seconds\0\u{3}min_measurement_quantity\0\u{3}min_item_quantity\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}measurement_unit\0\u{3}contained_in_vessel_index\0\u{1}name\0\u{3}belongs_to_recipe_step\0\u{1}type\0\u{1}id\0\u{3}storage_instructions\0\u{3}quantity_notes\0\u{1}index\0\u{3}is_waste\0\u{3}is_liquid\0\u{1}compostable\0\u{3}max_storage_temperature_in_celsius\0\u{3}max_storage_duration_in_seconds\0\u{3}max_measurement_quantity\0\u{3}max_item_quantity\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _storageTemperatureInCelsius: Common_OptionalFloat32Range? = nil
-    var _storageDurationInSeconds: Common_OptionalUint32Range? = nil
-    var _measurementQuantity: Common_OptionalFloat32Range? = nil
-    var _itemQuantity: Common_OptionalFloat32Range? = nil
+    var _minStorageTemperatureInCelsius: Float? = nil
+    var _maxStorageTemperatureInCelsius: Float? = nil
+    var _minStorageDurationInSeconds: UInt32? = nil
+    var _maxStorageDurationInSeconds: UInt32? = nil
+    var _minMeasurementQuantity: Float? = nil
+    var _maxMeasurementQuantity: Float? = nil
+    var _minItemQuantity: Float? = nil
+    var _maxItemQuantity: Float? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _measurementUnit: Mealplanning_ValidMeasurementUnit? = nil
@@ -7583,10 +7823,14 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
 
     init(copying source: _StorageClass) {
       _createdAt = source._createdAt
-      _storageTemperatureInCelsius = source._storageTemperatureInCelsius
-      _storageDurationInSeconds = source._storageDurationInSeconds
-      _measurementQuantity = source._measurementQuantity
-      _itemQuantity = source._itemQuantity
+      _minStorageTemperatureInCelsius = source._minStorageTemperatureInCelsius
+      _maxStorageTemperatureInCelsius = source._maxStorageTemperatureInCelsius
+      _minStorageDurationInSeconds = source._minStorageDurationInSeconds
+      _maxStorageDurationInSeconds = source._maxStorageDurationInSeconds
+      _minMeasurementQuantity = source._minMeasurementQuantity
+      _maxMeasurementQuantity = source._maxMeasurementQuantity
+      _minItemQuantity = source._minItemQuantity
+      _maxItemQuantity = source._maxItemQuantity
       _archivedAt = source._archivedAt
       _lastUpdatedAt = source._lastUpdatedAt
       _measurementUnit = source._measurementUnit
@@ -7620,10 +7864,10 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._storageTemperatureInCelsius) }()
-        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._storageDurationInSeconds) }()
-        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._measurementQuantity) }()
-        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._itemQuantity) }()
+        case 2: try { try decoder.decodeSingularFloatField(value: &_storage._minStorageTemperatureInCelsius) }()
+        case 3: try { try decoder.decodeSingularUInt32Field(value: &_storage._minStorageDurationInSeconds) }()
+        case 4: try { try decoder.decodeSingularFloatField(value: &_storage._minMeasurementQuantity) }()
+        case 5: try { try decoder.decodeSingularFloatField(value: &_storage._minItemQuantity) }()
         case 6: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
         case 7: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 8: try { try decoder.decodeSingularMessageField(value: &_storage._measurementUnit) }()
@@ -7638,6 +7882,10 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
         case 17: try { try decoder.decodeSingularBoolField(value: &_storage._isWaste) }()
         case 18: try { try decoder.decodeSingularBoolField(value: &_storage._isLiquid) }()
         case 19: try { try decoder.decodeSingularBoolField(value: &_storage._compostable) }()
+        case 20: try { try decoder.decodeSingularFloatField(value: &_storage._maxStorageTemperatureInCelsius) }()
+        case 21: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxStorageDurationInSeconds) }()
+        case 22: try { try decoder.decodeSingularFloatField(value: &_storage._maxMeasurementQuantity) }()
+        case 23: try { try decoder.decodeSingularFloatField(value: &_storage._maxItemQuantity) }()
         default: break
         }
       }
@@ -7653,17 +7901,17 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
       try { if let v = _storage._createdAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       } }()
-      try { if let v = _storage._storageTemperatureInCelsius {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try { if let v = _storage._minStorageTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 2)
       } }()
-      try { if let v = _storage._storageDurationInSeconds {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      try { if let v = _storage._minStorageDurationInSeconds {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
       } }()
-      try { if let v = _storage._measurementQuantity {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try { if let v = _storage._minMeasurementQuantity {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 4)
       } }()
-      try { if let v = _storage._itemQuantity {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      try { if let v = _storage._minItemQuantity {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 5)
       } }()
       try { if let v = _storage._archivedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
@@ -7707,6 +7955,18 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
       if _storage._compostable != false {
         try visitor.visitSingularBoolField(value: _storage._compostable, fieldNumber: 19)
       }
+      try { if let v = _storage._maxStorageTemperatureInCelsius {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 20)
+      } }()
+      try { if let v = _storage._maxStorageDurationInSeconds {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 21)
+      } }()
+      try { if let v = _storage._maxMeasurementQuantity {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 22)
+      } }()
+      try { if let v = _storage._maxItemQuantity {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 23)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7717,10 +7977,14 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._createdAt != rhs_storage._createdAt {return false}
-        if _storage._storageTemperatureInCelsius != rhs_storage._storageTemperatureInCelsius {return false}
-        if _storage._storageDurationInSeconds != rhs_storage._storageDurationInSeconds {return false}
-        if _storage._measurementQuantity != rhs_storage._measurementQuantity {return false}
-        if _storage._itemQuantity != rhs_storage._itemQuantity {return false}
+        if _storage._minStorageTemperatureInCelsius != rhs_storage._minStorageTemperatureInCelsius {return false}
+        if _storage._maxStorageTemperatureInCelsius != rhs_storage._maxStorageTemperatureInCelsius {return false}
+        if _storage._minStorageDurationInSeconds != rhs_storage._minStorageDurationInSeconds {return false}
+        if _storage._maxStorageDurationInSeconds != rhs_storage._maxStorageDurationInSeconds {return false}
+        if _storage._minMeasurementQuantity != rhs_storage._minMeasurementQuantity {return false}
+        if _storage._maxMeasurementQuantity != rhs_storage._maxMeasurementQuantity {return false}
+        if _storage._minItemQuantity != rhs_storage._minItemQuantity {return false}
+        if _storage._maxItemQuantity != rhs_storage._maxItemQuantity {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
         if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
         if _storage._measurementUnit != rhs_storage._measurementUnit {return false}
@@ -7746,11 +8010,12 @@ extension Mealplanning_RecipeStepProduct: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RecipeStepVessel"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{1}quantity\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}recipe_step_product_id\0\u{1}vessel\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_preposition\0\u{1}name\0\u{3}unavailable_after_step\0\u{1}index\0\u{3}option_index\0\u{3}scale_factor\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}min_quantity\0\u{3}last_updated_at\0\u{3}archived_at\0\u{3}recipe_step_product_id\0\u{1}vessel\0\u{1}id\0\u{1}notes\0\u{3}belongs_to_recipe_step\0\u{3}vessel_preposition\0\u{1}name\0\u{3}unavailable_after_step\0\u{1}index\0\u{3}option_index\0\u{3}scale_factor\0\u{3}max_quantity\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
-    var _quantity: Common_Uint16RangeWithOptionalMax? = nil
+    var _minQuantity: UInt32 = 0
+    var _maxQuantity: UInt32? = nil
     var _lastUpdatedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _archivedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _recipeStepProductID: String? = nil
@@ -7775,7 +8040,8 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
 
     init(copying source: _StorageClass) {
       _createdAt = source._createdAt
-      _quantity = source._quantity
+      _minQuantity = source._minQuantity
+      _maxQuantity = source._maxQuantity
       _lastUpdatedAt = source._lastUpdatedAt
       _archivedAt = source._archivedAt
       _recipeStepProductID = source._recipeStepProductID
@@ -7808,7 +8074,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._createdAt) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._quantity) }()
+        case 2: try { try decoder.decodeSingularUInt32Field(value: &_storage._minQuantity) }()
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._lastUpdatedAt) }()
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._archivedAt) }()
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._recipeStepProductID) }()
@@ -7822,6 +8088,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
         case 13: try { try decoder.decodeSingularUInt32Field(value: &_storage._index) }()
         case 14: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
         case 15: try { try decoder.decodeSingularFloatField(value: &_storage._scaleFactor) }()
+        case 16: try { try decoder.decodeSingularUInt32Field(value: &_storage._maxQuantity) }()
         default: break
         }
       }
@@ -7837,9 +8104,9 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
       try { if let v = _storage._createdAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       } }()
-      try { if let v = _storage._quantity {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-      } }()
+      if _storage._minQuantity != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._minQuantity, fieldNumber: 2)
+      }
       try { if let v = _storage._lastUpdatedAt {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
       } }()
@@ -7879,6 +8146,9 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
       if _storage._scaleFactor.bitPattern != 0 {
         try visitor.visitSingularFloatField(value: _storage._scaleFactor, fieldNumber: 15)
       }
+      try { if let v = _storage._maxQuantity {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 16)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7889,7 +8159,8 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._createdAt != rhs_storage._createdAt {return false}
-        if _storage._quantity != rhs_storage._quantity {return false}
+        if _storage._minQuantity != rhs_storage._minQuantity {return false}
+        if _storage._maxQuantity != rhs_storage._maxQuantity {return false}
         if _storage._lastUpdatedAt != rhs_storage._lastUpdatedAt {return false}
         if _storage._archivedAt != rhs_storage._archivedAt {return false}
         if _storage._recipeStepProductID != rhs_storage._recipeStepProductID {return false}
@@ -7914,7 +8185,7 @@ extension Mealplanning_RecipeStepVessel: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Mealplanning_Meal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Meal"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}estimated_portions\0\u{1}id\0\u{1}description\0\u{3}created_by_user\0\u{1}name\0\u{1}components\0\u{3}eligible_for_meal_plans\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}min_estimated_portions\0\u{1}id\0\u{1}description\0\u{3}created_by_user\0\u{1}name\0\u{1}components\0\u{3}eligible_for_meal_plans\0\u{3}max_estimated_portions\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7925,13 +8196,14 @@ extension Mealplanning_Meal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       case 1: try { try decoder.decodeSingularMessageField(value: &self._createdAt) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._archivedAt) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._lastUpdatedAt) }()
-      case 4: try { try decoder.decodeSingularMessageField(value: &self._estimatedPortions) }()
+      case 4: try { try decoder.decodeSingularFloatField(value: &self.minEstimatedPortions) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.id) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.description_p) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.createdByUser) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 9: try { try decoder.decodeRepeatedMessageField(value: &self.components) }()
       case 10: try { try decoder.decodeSingularBoolField(value: &self.eligibleForMealPlans) }()
+      case 11: try { try decoder.decodeSingularFloatField(value: &self._maxEstimatedPortions) }()
       default: break
       }
     }
@@ -7951,9 +8223,9 @@ extension Mealplanning_Meal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     try { if let v = self._lastUpdatedAt {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     } }()
-    try { if let v = self._estimatedPortions {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    } }()
+    if self.minEstimatedPortions.bitPattern != 0 {
+      try visitor.visitSingularFloatField(value: self.minEstimatedPortions, fieldNumber: 4)
+    }
     if !self.id.isEmpty {
       try visitor.visitSingularStringField(value: self.id, fieldNumber: 5)
     }
@@ -7972,6 +8244,9 @@ extension Mealplanning_Meal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if self.eligibleForMealPlans != false {
       try visitor.visitSingularBoolField(value: self.eligibleForMealPlans, fieldNumber: 10)
     }
+    try { if let v = self._maxEstimatedPortions {
+      try visitor.visitSingularFloatField(value: v, fieldNumber: 11)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -7979,7 +8254,8 @@ extension Mealplanning_Meal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if lhs._createdAt != rhs._createdAt {return false}
     if lhs._archivedAt != rhs._archivedAt {return false}
     if lhs._lastUpdatedAt != rhs._lastUpdatedAt {return false}
-    if lhs._estimatedPortions != rhs._estimatedPortions {return false}
+    if lhs.minEstimatedPortions != rhs.minEstimatedPortions {return false}
+    if lhs._maxEstimatedPortions != rhs._maxEstimatedPortions {return false}
     if lhs.id != rhs.id {return false}
     if lhs.description_p != rhs.description_p {return false}
     if lhs.createdByUser != rhs.createdByUser {return false}
@@ -8277,7 +8553,7 @@ extension Mealplanning_MealPlanEvent: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MealPlanGroceryListItem"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}quantity_purchased\0\u{3}purchase_price\0\u{3}purchased_upc\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}purchased_measurement_unit\0\u{3}belongs_to_meal_plan\0\u{1}status\0\u{3}status_explanation\0\u{1}id\0\u{3}quantity_needed\0\u{3}measurement_unit\0\u{1}ingredient\0\u{3}belongs_to_meal_plan_option\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}ingredient_index\0\u{3}option_index\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}created_at\0\u{3}quantity_purchased\0\u{3}purchase_price\0\u{3}purchased_upc\0\u{3}archived_at\0\u{3}last_updated_at\0\u{3}purchased_measurement_unit\0\u{3}belongs_to_meal_plan\0\u{1}status\0\u{3}status_explanation\0\u{1}id\0\u{3}min_quantity_needed\0\u{3}measurement_unit\0\u{1}ingredient\0\u{3}belongs_to_meal_plan_option\0\u{3}recipe_id\0\u{3}recipe_step_id\0\u{3}ingredient_index\0\u{3}option_index\0\u{3}max_quantity_needed\0")
 
   fileprivate class _StorageClass {
     var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
@@ -8291,7 +8567,8 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
     var _status: Mealplanning_MealPlanGroceryListItemStatus = .unknown
     var _statusExplanation: String = String()
     var _id: String = String()
-    var _quantityNeeded: Common_Float32RangeWithOptionalMax? = nil
+    var _minQuantityNeeded: Float = 0
+    var _maxQuantityNeeded: Float? = nil
     var _measurementUnit: Mealplanning_ValidMeasurementUnit? = nil
     var _ingredient: Mealplanning_ValidIngredient? = nil
     var _belongsToMealPlanOption: String? = nil
@@ -8320,7 +8597,8 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
       _status = source._status
       _statusExplanation = source._statusExplanation
       _id = source._id
-      _quantityNeeded = source._quantityNeeded
+      _minQuantityNeeded = source._minQuantityNeeded
+      _maxQuantityNeeded = source._maxQuantityNeeded
       _measurementUnit = source._measurementUnit
       _ingredient = source._ingredient
       _belongsToMealPlanOption = source._belongsToMealPlanOption
@@ -8357,7 +8635,7 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
         case 9: try { try decoder.decodeSingularEnumField(value: &_storage._status) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._statusExplanation) }()
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
-        case 12: try { try decoder.decodeSingularMessageField(value: &_storage._quantityNeeded) }()
+        case 12: try { try decoder.decodeSingularFloatField(value: &_storage._minQuantityNeeded) }()
         case 13: try { try decoder.decodeSingularMessageField(value: &_storage._measurementUnit) }()
         case 14: try { try decoder.decodeSingularMessageField(value: &_storage._ingredient) }()
         case 15: try { try decoder.decodeSingularStringField(value: &_storage._belongsToMealPlanOption) }()
@@ -8365,6 +8643,7 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
         case 17: try { try decoder.decodeSingularStringField(value: &_storage._recipeStepID) }()
         case 18: try { try decoder.decodeSingularUInt32Field(value: &_storage._ingredientIndex) }()
         case 19: try { try decoder.decodeSingularUInt32Field(value: &_storage._optionIndex) }()
+        case 20: try { try decoder.decodeSingularFloatField(value: &_storage._maxQuantityNeeded) }()
         default: break
         }
       }
@@ -8410,9 +8689,9 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
       if !_storage._id.isEmpty {
         try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 11)
       }
-      try { if let v = _storage._quantityNeeded {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
-      } }()
+      if _storage._minQuantityNeeded.bitPattern != 0 {
+        try visitor.visitSingularFloatField(value: _storage._minQuantityNeeded, fieldNumber: 12)
+      }
       try { if let v = _storage._measurementUnit {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
       } }()
@@ -8434,6 +8713,9 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
       try { if let v = _storage._optionIndex {
         try visitor.visitSingularUInt32Field(value: v, fieldNumber: 19)
       } }()
+      try { if let v = _storage._maxQuantityNeeded {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 20)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -8454,7 +8736,8 @@ extension Mealplanning_MealPlanGroceryListItem: SwiftProtobuf.Message, SwiftProt
         if _storage._status != rhs_storage._status {return false}
         if _storage._statusExplanation != rhs_storage._statusExplanation {return false}
         if _storage._id != rhs_storage._id {return false}
-        if _storage._quantityNeeded != rhs_storage._quantityNeeded {return false}
+        if _storage._minQuantityNeeded != rhs_storage._minQuantityNeeded {return false}
+        if _storage._maxQuantityNeeded != rhs_storage._maxQuantityNeeded {return false}
         if _storage._measurementUnit != rhs_storage._measurementUnit {return false}
         if _storage._ingredient != rhs_storage._ingredient {return false}
         if _storage._belongsToMealPlanOption != rhs_storage._belongsToMealPlanOption {return false}

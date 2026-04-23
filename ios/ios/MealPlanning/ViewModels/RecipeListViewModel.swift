@@ -46,14 +46,6 @@ class RecipeListViewModel {
     isLoading = true
     errorMessage = nil
 
-    if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
-      provider.loadIfNeeded()
-      self.recipes = provider.getRecipes()
-      isLoading = false
-      return
-    }
-
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(
@@ -119,13 +111,6 @@ class RecipeListViewModel {
   private func performSearch(query: String) async {
     isSearching = true
     searchError = nil
-
-    if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
-      searchResults = provider.searchRecipes(query: query)
-      isSearching = false
-      return
-    }
 
     do {
       guard let clientManager = try? authManager.getClientManager() else {

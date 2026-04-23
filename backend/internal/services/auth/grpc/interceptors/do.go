@@ -1,10 +1,10 @@
 package interceptors
 
 import (
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 
+	"github.com/primandproper/platform/authentication/tokens"
 	"github.com/primandproper/platform/observability/logging"
 	"github.com/primandproper/platform/observability/tracing"
 

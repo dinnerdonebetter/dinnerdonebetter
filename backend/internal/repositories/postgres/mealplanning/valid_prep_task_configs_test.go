@@ -52,7 +52,7 @@ func assertValidPrepTaskConfigsEqual(t *testing.T, expected, actual *types.Valid
 	t.Helper()
 
 	assert.Equal(t, expected.ID, actual.ID)
-	assert.Equal(t, expected.StorageDurationInSeconds.Min, actual.StorageDurationInSeconds.Min)
+	assert.Equal(t, expected.MinStorageDurationInSeconds, actual.MinStorageDurationInSeconds)
 	assert.Equal(t, expected.StorageType, actual.StorageType)
 	assert.Equal(t, expected.StorageInstructions, actual.StorageInstructions)
 	assert.Equal(t, expected.Notes, actual.Notes)

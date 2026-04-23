@@ -3,7 +3,6 @@ package identity
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -65,13 +64,6 @@ type (
 		GetPasswordResetTokenByToken(ctx context.Context, passwordResetTokenID string) (*PasswordResetToken, error)
 		CreatePasswordResetToken(ctx context.Context, input *PasswordResetTokenDatabaseCreationInput) (*PasswordResetToken, error)
 		RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error
-	}
-
-	// PasswordResetTokenDataService describes a structure capable of serving traffic related to password reset tokens.
-	PasswordResetTokenDataService interface {
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

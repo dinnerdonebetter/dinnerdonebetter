@@ -11,6 +11,7 @@ import (
 
 // BuildFakeRecipeStepVessel builds a faked recipe step vessel.
 func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
+	minQty, maxQty := BuildFakeUint16WithOptionalMax()
 	return &types.RecipeStepVessel{
 		ID:                   BuildFakeID(),
 		Vessel:               BuildFakeValidVessel(),
@@ -21,7 +22,8 @@ func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
 		BelongsToRecipeStep:  fake.UUID(),
 		Index:                0, // Will be set from array index during recipe creation
 		OptionIndex:          0, // Default to 0 for single-option items
-		Quantity:             BuildFakeUint16RangeWithOptionalMax(),
+		MinQuantity:          minQty,
+		MaxQuantity:          maxQty,
 		VesselPreposition:    buildUniqueString(),
 		UnavailableAfterStep: fake.Bool(),
 		ScaleFactor:          1.0,

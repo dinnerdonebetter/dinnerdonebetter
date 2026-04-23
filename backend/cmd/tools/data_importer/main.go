@@ -152,7 +152,7 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidIngredient(ctx, converters.ConvertValidIngredientToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidIngredient(ctx, converters.ConvertValidIngredientToValidIngredientDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid ingredient %d (%s): %w", i, v.Name, err)
 		}
 	}
@@ -166,7 +166,7 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidPreparation(ctx, converters.ConvertValidPreparationToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidPreparation(ctx, converters.ConvertValidPreparationToValidPreparationDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid preparation %d (%s): %w", i, v.Name, err)
 		}
 	}
@@ -180,7 +180,7 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidInstrument(ctx, converters.ConvertValidInstrumentToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidInstrument(ctx, converters.ConvertValidInstrumentToValidInstrumentDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid instrument %d (%s): %w", i, v.Name, err)
 		}
 	}
@@ -194,7 +194,7 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidVessel(ctx, converters.ConvertValidVesselToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidVessel(ctx, converters.ConvertValidVesselToValidVesselDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid vessel %d (%s): %w", i, v.Name, err)
 		}
 	}
@@ -208,7 +208,7 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidMeasurementUnit(ctx, converters.ConvertValidMeasurementUnitToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidMeasurementUnit(ctx, converters.ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid measurement unit %d (%s): %w", i, v.Name, err)
 		}
 	}
@@ -222,7 +222,7 @@ func importBaseEnumerations(ctx context.Context, repo mealplanning.Repository, e
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidIngredientState(ctx, converters.ConvertValidIngredientStateToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidIngredientState(ctx, converters.ConvertValidIngredientStateToValidIngredientStateDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid ingredient state %d (%s): %w", i, v.Name, err)
 		}
 	}
@@ -240,7 +240,7 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidIngredientPreparation(ctx, converters.ConvertValidIngredientPreparationToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidIngredientPreparation(ctx, converters.ConvertValidIngredientPreparationToValidIngredientPreparationDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid ingredient preparation %d: %w", i, err)
 		}
 	}
@@ -254,7 +254,7 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidIngredientMeasurementUnit(ctx, converters.ConvertValidIngredientMeasurementUnitToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidIngredientMeasurementUnit(ctx, converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid ingredient measurement unit %d: %w", i, err)
 		}
 	}
@@ -268,7 +268,7 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidPreparationInstrument(ctx, converters.ConvertValidPreparationInstrumentToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidPreparationInstrument(ctx, converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid preparation instrument %d: %w", i, err)
 		}
 	}
@@ -282,7 +282,7 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidPreparationVessel(ctx, converters.ConvertValidPreparationVesselToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidPreparationVessel(ctx, converters.ConvertValidPreparationVesselToValidPreparationVesselDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid preparation vessel %d: %w", i, err)
 		}
 	}
@@ -296,7 +296,7 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidIngredientGroup(ctx, converters.ConvertValidIngredientGroupToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidIngredientGroup(ctx, converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid ingredient group %d (%s): %w", i, v.Name, err)
 		}
 	}
@@ -310,7 +310,7 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidIngredientStateIngredient(ctx, converters.ConvertValidIngredientStateIngredientToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidIngredientStateIngredient(ctx, converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid ingredient state ingredient %d: %w", i, err)
 		}
 	}
@@ -324,7 +324,7 @@ func importBridgeTypes(ctx context.Context, repo mealplanning.Repository, enums 
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateValidMeasurementUnitConversion(ctx, converters.ConvertValidMeasurementUnitConversionToDatabaseCreationInput(v)); err != nil {
+		if _, err := repo.CreateValidMeasurementUnitConversion(ctx, converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionDatabaseCreationInput(v)); err != nil {
 			return fmt.Errorf("creating valid measurement unit conversion %d: %w", i, err)
 		}
 	}
@@ -342,7 +342,7 @@ func importRecipes(ctx context.Context, repo mealplanning.Repository, recipes []
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateRecipe(ctx, converters.ConvertRecipeToDatabaseCreationInput(r)); err != nil {
+		if _, err := repo.CreateRecipe(ctx, converters.ConvertRecipeToRecipeDatabaseCreationInput(r)); err != nil {
 			return fmt.Errorf("creating recipe %d (%s): %w", i, r.Name, err)
 		}
 		if (i+1)%50 == 0 {
@@ -362,7 +362,7 @@ func importMeals(ctx context.Context, repo mealplanning.Repository, meals []*mea
 		if exists {
 			continue
 		}
-		if _, err := repo.CreateMeal(ctx, converters.ConvertMealToDatabaseCreationInput(m)); err != nil {
+		if _, err := repo.CreateMeal(ctx, converters.ConvertMealToMealDatabaseCreationInput(m)); err != nil {
 			return fmt.Errorf("creating meal %d (%s): %w", i, m.Name, err)
 		}
 	}

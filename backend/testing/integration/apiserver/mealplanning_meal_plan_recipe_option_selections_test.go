@@ -14,8 +14,6 @@ import (
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
-	"github.com/primandproper/platform/numbers"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
@@ -341,7 +339,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 			Name:                "Alternative A " + nameSuffix,
 			Ingredient:          createdValidIngredients[0],
 			MeasurementUnit:     *createdValidMeasurementUnit,
-			Quantity:            numbers.MinRange[float32]{Min: 1.0, Max: new(float32(2.0))},
+			MaxQuantity:         new(float32(2.0)),
 			Index:               0, // Same index as Alternative B
 			OptionIndex:         0, // First option
 			BelongsToRecipeStep: step1.ID,
@@ -352,7 +350,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 			Name:                "Alternative B " + nameSuffix,
 			Ingredient:          createdValidIngredients[1],
 			MeasurementUnit:     *createdValidMeasurementUnit,
-			Quantity:            numbers.MinRange[float32]{Min: 1.5, Max: new(float32(2.5))},
+			MaxQuantity:         new(float32(2.5)),
 			Index:               0, // Same index as Alternative A
 			OptionIndex:         1, // Second option (alternative)
 			BelongsToRecipeStep: step1.ID,
@@ -363,7 +361,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 			Name:                "Regular Ingredient " + nameSuffix,
 			Ingredient:          createdValidIngredients[2],
 			MeasurementUnit:     *createdValidMeasurementUnit,
-			Quantity:            numbers.MinRange[float32]{Min: 0.5, Max: new(float32(1.0))},
+			MaxQuantity:         new(float32(1.0)),
 			Index:               1, // Different index
 			OptionIndex:         0, // Only one option at this index
 			BelongsToRecipeStep: step1.ID,
@@ -378,7 +376,7 @@ func createRecipeWithAlternativeIngredients(t *testing.T, nameSuffix string) ([]
 			Name:                "Secondary Ingredient " + nameSuffix,
 			Ingredient:          createdValidIngredients[0],
 			MeasurementUnit:     *createdValidMeasurementUnit,
-			Quantity:            numbers.MinRange[float32]{Min: 0.5, Max: new(float32(1.0))},
+			MaxQuantity:         new(float32(1.0)),
 			Index:               0,
 			OptionIndex:         0,
 			BelongsToRecipeStep: step2.ID,

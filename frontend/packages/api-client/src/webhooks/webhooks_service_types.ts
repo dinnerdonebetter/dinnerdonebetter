@@ -104,10 +104,10 @@ export interface GetWebhooksResponse {
  * When id is set, the existing catalog event is used; otherwise name (and optionally description) create a new catalog event.
  */
 export interface WebhookTriggerEventCreationRequestInput {
-  /** reference existing catalog event by id */
-  id?: string | undefined;
   name: string;
   description: string;
+  /** reference existing catalog event by id */
+  id?: string | undefined;
 }
 
 export interface CreateWebhookTriggerEventRequest {
@@ -1437,19 +1437,19 @@ export const GetWebhooksResponse: MessageFns<GetWebhooksResponse> = {
 };
 
 function createBaseWebhookTriggerEventCreationRequestInput(): WebhookTriggerEventCreationRequestInput {
-  return { id: undefined, name: '', description: '' };
+  return { name: '', description: '', id: undefined };
 }
 
 export const WebhookTriggerEventCreationRequestInput: MessageFns<WebhookTriggerEventCreationRequestInput> = {
   encode(message: WebhookTriggerEventCreationRequestInput, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== undefined) {
-      writer.uint32(26).string(message.id);
-    }
     if (message.name !== '') {
       writer.uint32(10).string(message.name);
     }
     if (message.description !== '') {
       writer.uint32(18).string(message.description);
+    }
+    if (message.id !== undefined) {
+      writer.uint32(26).string(message.id);
     }
     return writer;
   },
@@ -1461,14 +1461,6 @@ export const WebhookTriggerEventCreationRequestInput: MessageFns<WebhookTriggerE
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
         case 1: {
           if (tag !== 10) {
             break;
@@ -1485,6 +1477,14 @@ export const WebhookTriggerEventCreationRequestInput: MessageFns<WebhookTriggerE
           message.description = reader.string();
           continue;
         }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1496,22 +1496,22 @@ export const WebhookTriggerEventCreationRequestInput: MessageFns<WebhookTriggerE
 
   fromJSON(object: any): WebhookTriggerEventCreationRequestInput {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : undefined,
       name: isSet(object.name) ? globalThis.String(object.name) : '',
       description: isSet(object.description) ? globalThis.String(object.description) : '',
+      id: isSet(object.id) ? globalThis.String(object.id) : undefined,
     };
   },
 
   toJSON(message: WebhookTriggerEventCreationRequestInput): unknown {
     const obj: any = {};
-    if (message.id !== undefined) {
-      obj.id = message.id;
-    }
     if (message.name !== '') {
       obj.name = message.name;
     }
     if (message.description !== '') {
       obj.description = message.description;
+    }
+    if (message.id !== undefined) {
+      obj.id = message.id;
     }
     return obj;
   },
@@ -1525,9 +1525,9 @@ export const WebhookTriggerEventCreationRequestInput: MessageFns<WebhookTriggerE
     object: I,
   ): WebhookTriggerEventCreationRequestInput {
     const message = createBaseWebhookTriggerEventCreationRequestInput();
-    message.id = object.id ?? undefined;
     message.name = object.name ?? '';
     message.description = object.description ?? '';
+    message.id = object.id ?? undefined;
     return message;
   },
 };

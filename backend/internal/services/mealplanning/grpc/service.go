@@ -30,8 +30,6 @@ type (
 		tracer                               tracing.Tracer
 		logger                               logging.Logger
 		sessionContextDataFetcher            func(context.Context) (*sessions.ContextData, error)
-		recipeManager                        managers.RecipeManager
-		validEnumerationsManager             managers.ValidEnumerationsManager
 		mealPlanningManager                  managers.MealPlanningManager
 		mealPlanFinalizerWorker              *mealplanfinalizer.Worker
 		mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker
@@ -45,8 +43,6 @@ type (
 func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	recipeManager managers.RecipeManager,
-	validEnumerationsManager managers.ValidEnumerationsManager,
 	mealPlanningManager managers.MealPlanningManager,
 	mealPlanFinalizerWorker *mealplanfinalizer.Worker,
 	mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker,
@@ -58,8 +54,6 @@ func NewService(
 	return &serviceImpl{
 		logger:                               logging.NewNamedLogger(logger, o11yName),
 		tracer:                               tracing.NewNamedTracer(tracerProvider, o11yName),
-		recipeManager:                        recipeManager,
-		validEnumerationsManager:             validEnumerationsManager,
 		mealPlanningManager:                  mealPlanningManager,
 		mealPlanFinalizerWorker:              mealPlanFinalizerWorker,
 		mealPlanGroceryListInitializerWorker: mealPlanGroceryListInitializerWorker,

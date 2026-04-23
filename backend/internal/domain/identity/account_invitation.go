@@ -2,7 +2,6 @@ package identity
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -101,17 +100,6 @@ type (
 		CancelAccountInvitation(ctx context.Context, accountID, accountInvitationID, note string) error
 		AcceptAccountInvitation(ctx context.Context, accountID, accountInvitationID, token, note string) error
 		RejectAccountInvitation(ctx context.Context, accountID, accountInvitationID, note string) error
-	}
-
-	// AccountInvitationDataService describes a structure capable of serving traffic related to account invitations.
-	AccountInvitationDataService interface {
-		ReadAccountInviteHandler(http.ResponseWriter, *http.Request)
-		InboundInvitesHandler(http.ResponseWriter, *http.Request)
-		OutboundInvitesHandler(http.ResponseWriter, *http.Request)
-		InviteMemberHandler(http.ResponseWriter, *http.Request)
-		CancelInviteHandler(http.ResponseWriter, *http.Request)
-		AcceptInviteHandler(http.ResponseWriter, *http.Request)
-		RejectInviteHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

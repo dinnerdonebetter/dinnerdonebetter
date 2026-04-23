@@ -9,6 +9,7 @@ import (
 	identitymanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/manager"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 
+	"github.com/primandproper/platform/authentication/totp"
 	perrors "github.com/primandproper/platform/errors"
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
@@ -27,6 +28,7 @@ type (
 	service struct {
 		logger               logging.Logger
 		authenticator        authentication.Authenticator
+		totpVerifier         totp.Verifier
 		tracer               tracing.Tracer
 		dataChangesPublisher messagequeue.Publisher
 		oauth2Server         *server.Server
@@ -40,6 +42,7 @@ func ProvideService(
 	logger logging.Logger,
 	cfg *Config,
 	authenticator authentication.Authenticator,
+	totpVerifier totp.Verifier,
 	oauthRepo oauth.Repository,
 	identityDataManager identitymanager.IdentityDataManager,
 	tracerProvider tracing.TracerProvider,
@@ -65,6 +68,7 @@ func ProvideService(
 	svc := &service{
 		logger:               logging.NewNamedLogger(logger, serviceName),
 		authenticator:        authenticator,
+		totpVerifier:         totpVerifier,
 		tracer:               tracing.NewNamedTracer(tracerProvider, serviceName),
 		dataChangesPublisher: dataChangesPublisher,
 		oauth2Server:         ProvideOAuth2ServerImplementation(logger, tracerProvider, identityDataManager, authenticator, signer, manager),

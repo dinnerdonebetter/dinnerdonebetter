@@ -83,10 +83,10 @@ enum MealPreviewHelper {
         let taskID = "\(component.id)-\(prepTask.id)"
         guard !seenIDs.contains(taskID) else { continue }
         seenIDs.insert(taskID)
-        let advanceText =
-          prepTask.hasTimeBufferBeforeRecipeInSeconds
-          ? RecipeTimeEstimation.formatTimeBufferInAdvance(prepTask.timeBufferBeforeRecipeInSeconds)
-          : nil
+        let advanceText = RecipeTimeEstimation.formatTimeBufferInAdvance(
+          min: prepTask.minTimeBufferBeforeRecipeInSeconds,
+          max: prepTask.hasMaxTimeBufferBeforeRecipeInSeconds
+            ? prepTask.maxTimeBufferBeforeRecipeInSeconds : nil)
         tasks.append(
           MealPreviewPrepTask(
             id: taskID,
@@ -135,14 +135,9 @@ enum MealPreviewHelper {
         sourceRecipeName: recipeName
       )
 
-    if ingredient.hasQuantity {
-      var scaledQty = ingredient.quantity
-      scaledQty.min *= scale
-      if scaledQty.hasMax {
-        scaledQty.max *= scale
-      }
-      item.addQuantity(scaledQty)
-    }
+    let scaledMin = ingredient.minQuantity * scale
+    let scaledMax = ingredient.hasMaxQuantity ? ingredient.maxQuantity * scale : nil
+    item.addQuantity(min: scaledMin, max: scaledMax)
 
     aggregated[key] = item
   }

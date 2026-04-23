@@ -12,7 +12,8 @@ import "uploaded_media/uploaded_media_messages.proto";
 option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning";
 
 message ValidIngredientCreationRequestInput {
-  common.OptionalFloat32Range storage_temperature_in_celsius = 1;
+  optional float min_storage_temperature_in_celsius = 1;
+  optional float max_storage_temperature_in_celsius = 34;
   string warning = 2;
   string icon_path = 3;
   string plural_name = 4;
@@ -68,14 +69,16 @@ message ValidIngredientMeasurementUnitCreationRequestInput {
   string notes = 1;
   string valid_measurement_unit_id = 2;
   string valid_ingredient_id = 3;
-  common.Float32RangeWithOptionalMax allowable_quantity = 4;
+  float min_allowable_quantity = 4;
+  optional float max_allowable_quantity = 5;
 }
 
 message ValidIngredientMeasurementUnitUpdateRequestInput {
   optional string notes = 1;
   optional string valid_measurement_unit_id = 2;
   optional string valid_ingredient_id = 3;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput allowable_quantity = 4;
+  optional float min_allowable_quantity = 4;
+  optional float max_allowable_quantity = 5;
 }
 
 message ValidIngredientPreparationCreationRequestInput {
@@ -91,8 +94,10 @@ message ValidIngredientPreparationUpdateRequestInput {
 }
 
 message ValidPrepTaskConfigCreationRequestInput {
-  common.Uint32RangeWithOptionalMax storage_duration_in_seconds = 1;
-  common.OptionalFloat32Range storage_temperature_in_celsius = 2;
+  uint32 min_storage_duration_in_seconds = 1;
+  optional uint32 max_storage_duration_in_seconds = 9;
+  optional float min_storage_temperature_in_celsius = 2;
+  optional float max_storage_temperature_in_celsius = 10;
   string storage_type = 3;
   string storage_instructions = 4;
   string notes = 5;
@@ -102,8 +107,10 @@ message ValidPrepTaskConfigCreationRequestInput {
 }
 
 message ValidPrepTaskConfigUpdateRequestInput {
-  common.Uint32RangeWithOptionalMaxUpdateRequestInput storage_duration_in_seconds = 1;
-  common.OptionalFloat32Range storage_temperature_in_celsius = 2;
+  optional uint32 min_storage_duration_in_seconds = 1;
+  optional uint32 max_storage_duration_in_seconds = 9;
+  optional float min_storage_temperature_in_celsius = 2;
+  optional float max_storage_temperature_in_celsius = 10;
   optional string storage_type = 3;
   optional string storage_instructions = 4;
   optional string notes = 5;
@@ -162,7 +169,8 @@ message ValidIngredientUpdateRequestInput {
   optional string plural_name = 17;
   optional bool animal_derived = 18;
   optional bool restrict_to_preparations = 19;
-  optional common.OptionalFloat32Range storage_temperature_in_celsius = 20;
+  optional float min_storage_temperature_in_celsius = 20;
+  optional float max_storage_temperature_in_celsius = 34;
   optional string storage_instructions = 21;
   optional string slug = 22;
   optional bool contains_alcohol = 23;
@@ -241,9 +249,12 @@ message ValidMeasurementUnitUpdateRequestInput {
 }
 
 message ValidPreparationCreationRequestInput {
-  common.Uint16RangeWithOptionalMax instrument_count = 1;
-  common.Uint16RangeWithOptionalMax ingredient_count = 2;
-  common.Uint16RangeWithOptionalMax vessel_count = 3;
+  uint32 min_instrument_count = 1;
+  optional uint32 max_instrument_count = 16;
+  uint32 min_ingredient_count = 2;
+  optional uint32 max_ingredient_count = 17;
+  uint32 min_vessel_count = 3;
+  optional uint32 max_vessel_count = 18;
   string icon_path = 4;
   string past_tense = 5;
   string slug = 6;
@@ -271,9 +282,12 @@ message ValidPreparationInstrumentUpdateRequestInput {
 }
 
 message ValidPreparationUpdateRequestInput {
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput instrument_count = 1;
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput ingredient_count = 2;
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput vessel_count = 3;
+  optional uint32 min_instrument_count = 1;
+  optional uint32 max_instrument_count = 16;
+  optional uint32 min_ingredient_count = 2;
+  optional uint32 max_ingredient_count = 17;
+  optional uint32 min_vessel_count = 3;
+  optional uint32 max_vessel_count = 18;
   optional string name = 4;
   optional string description = 5;
   optional string icon_path = 6;
@@ -1352,17 +1366,18 @@ message RecipeCreationRequestInput {
   optional string inspired_by_recipe_id = 1;
   string name = 2;
   string source = 3;
-  string source_isbn = 15;
-  string description = 4;
-  string plural_portion_name = 5;
-  string portion_name = 6;
-  string slug = 7;
-  MealComponentType yields_component_type = 8;
-  common.Float32RangeWithOptionalMax estimated_portions = 9;
-  repeated RecipePrepTaskWithinRecipeCreationRequestInput prep_tasks = 10;
-  repeated RecipeStepCreationRequestInput steps = 11;
-  bool also_create_meal = 12;
-  bool eligible_for_meals = 13;
+  string source_isbn = 4;
+  string description = 5;
+  string plural_portion_name = 6;
+  string portion_name = 7;
+  string slug = 8;
+  MealComponentType yields_component_type = 9;
+  float min_estimated_portions = 10;
+  optional float max_estimated_portions = 11;
+  repeated RecipePrepTaskWithinRecipeCreationRequestInput prep_tasks = 12;
+  repeated RecipeStepCreationRequestInput steps = 13;
+  bool also_create_meal = 14;
+  bool eligible_for_meals = 15;
 }
 
 message RecipeMediaCreationRequestInput {
@@ -1384,8 +1399,10 @@ message RecipeMediaUpdateRequestInput {
 }
 
 message RecipePrepTaskCreationRequestInput {
-  common.OptionalFloat32Range storage_temperature_in_celsius = 1;
-  common.Uint32RangeWithOptionalMax time_buffer_before_recipe_in_seconds = 2;
+  optional float min_storage_temperature_in_celsius = 1;
+  optional float max_storage_temperature_in_celsius = 11;
+  uint32 min_time_buffer_before_recipe_in_seconds = 2;
+  optional uint32 max_time_buffer_before_recipe_in_seconds = 12;
   string storage_type = 3;
   string explicit_storage_instructions = 4;
   string notes = 5;
@@ -1419,15 +1436,19 @@ message RecipePrepTaskUpdateRequestInput {
   optional string name = 4;
   optional bool optional = 5;
   optional string description = 6;
-  optional common.OptionalFloat32Range storage_temperature_in_celsius = 7;
-  optional common.Uint32RangeWithOptionalMaxUpdateRequestInput time_buffer_before_recipe_in_seconds = 8;
+  optional float min_storage_temperature_in_celsius = 7;
+  optional float max_storage_temperature_in_celsius = 11;
+  optional uint32 min_time_buffer_before_recipe_in_seconds = 8;
+  optional uint32 max_time_buffer_before_recipe_in_seconds = 12;
   optional string belongs_to_recipe = 9;
   repeated RecipePrepTaskStepUpdateRequestInput task_steps = 10;
 }
 
 message RecipePrepTaskWithinRecipeCreationRequestInput {
-  common.OptionalFloat32Range storage_temperature_in_celsius = 1;
-  common.Uint32RangeWithOptionalMax time_buffer_before_recipe_in_seconds = 2;
+  optional float min_storage_temperature_in_celsius = 1;
+  optional float max_storage_temperature_in_celsius = 11;
+  uint32 min_time_buffer_before_recipe_in_seconds = 2;
+  optional uint32 max_time_buffer_before_recipe_in_seconds = 12;
   string storage_type = 3;
   string name = 4;
   string description = 5;
@@ -1457,7 +1478,6 @@ message RecipeRatingUpdateRequestInput {
   optional float instructions = 5;
   optional float overall = 6;
   optional string notes = 7;
-  optional string by_user = 8;
 }
 
 message RecipeStepCompletionConditionCreationRequestInput {
@@ -1488,8 +1508,10 @@ message RecipeStepCompletionConditionUpdateRequestInput {
 }
 
 message RecipeStepCreationRequestInput {
-  common.OptionalUint32Range estimated_time_in_seconds = 1;
-  common.OptionalFloat32Range temperature_in_celsius = 2;
+  optional uint32 min_estimated_time_in_seconds = 1;
+  optional uint32 max_estimated_time_in_seconds = 15;
+  optional float min_temperature_in_celsius = 2;
+  optional float max_temperature_in_celsius = 16;
   string preparation_id = 3;
   string notes = 4;
   string condition_expression = 5;
@@ -1514,7 +1536,8 @@ message RecipeStepIngredientCreationRequestInput {
   string ingredient_notes = 7;
   string name = 8;
   string quantity_notes = 9;
-  common.Float32RangeWithOptionalMax quantity = 10;
+  float min_quantity = 10;
+  optional float max_quantity = 18;
   uint32 option_index = 11;
   bool optional = 12;
   bool to_taste = 13;
@@ -1533,7 +1556,8 @@ message RecipeStepIngredientUpdateRequestInput {
   optional string quantity_notes = 6;
   optional string ingredient_notes = 7;
   optional string belongs_to_recipe_step = 8;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput quantity = 9;
+  optional float min_quantity = 9;
+  optional float max_quantity = 17;
   optional uint32 option_index = 10;
   optional uint32 vessel_index = 11;
   optional bool to_taste = 12;
@@ -1547,7 +1571,8 @@ message RecipeStepInstrumentCreationRequestInput {
   optional string recipe_step_product_id = 1;
   optional uint64 product_of_recipe_step_index = 2;
   optional uint64 product_of_recipe_step_product_index = 3;
-  common.Uint32RangeWithOptionalMax quantity = 4;
+  uint32 min_quantity = 4;
+  optional uint32 max_quantity = 13;
   string notes = 5;
   string name = 6;
   uint32 option_index = 7;
@@ -1567,16 +1592,21 @@ message RecipeStepInstrumentUpdateRequestInput {
   optional string name = 6;
   optional bool optional = 7;
   optional uint32 option_index = 8;
-  optional common.Uint32RangeWithOptionalMaxUpdateRequestInput quantity = 9;
+  optional uint32 min_quantity = 9;
+  optional uint32 max_quantity = 12;
   optional uint32 index = 10;
   optional float scale_factor = 11;
 }
 
 message RecipeStepProductCreationRequestInput {
-  common.OptionalFloat32Range storage_temperature_in_celsius = 1;
-  common.OptionalUint32Range storage_duration_in_seconds = 2;
-  common.OptionalFloat32Range measurement_quantity = 3;
-  common.OptionalFloat32Range item_quantity = 4;
+  optional float min_storage_temperature_in_celsius = 1;
+  optional float max_storage_temperature_in_celsius = 15;
+  optional uint32 min_storage_duration_in_seconds = 2;
+  optional uint32 max_storage_duration_in_seconds = 16;
+  optional float min_measurement_quantity = 3;
+  optional float max_measurement_quantity = 17;
+  optional float min_item_quantity = 4;
+  optional float max_item_quantity = 18;
   optional string measurement_unit_id = 5;
   optional uint32 contained_in_vessel_index = 6;
   string quantity_notes = 7;
@@ -1595,10 +1625,14 @@ message RecipeStepProductUpdateRequestInput {
   optional string measurement_unit_id = 3;
   optional string quantity_notes = 4;
   optional string belongs_to_recipe_step = 5;
-  optional common.OptionalFloat32Range storage_temperature_in_celsius = 6;
-  optional common.OptionalUint32Range storage_duration_in_seconds = 7;
-  optional common.OptionalFloat32Range measurement_quantity = 8;
-  optional common.OptionalFloat32Range item_quantity = 9;
+  optional float min_storage_temperature_in_celsius = 6;
+  optional float max_storage_temperature_in_celsius = 16;
+  optional uint32 min_storage_duration_in_seconds = 7;
+  optional uint32 max_storage_duration_in_seconds = 17;
+  optional float min_measurement_quantity = 8;
+  optional float max_measurement_quantity = 18;
+  optional float min_item_quantity = 9;
+  optional float max_item_quantity = 19;
   optional bool compostable = 10;
   optional string storage_instructions = 11;
   optional bool is_liquid = 12;
@@ -1608,8 +1642,10 @@ message RecipeStepProductUpdateRequestInput {
 }
 
 message RecipeStepUpdateRequestInput {
-  optional common.OptionalUint32Range estimated_time_in_seconds = 1;
-  optional common.OptionalFloat32Range temperature_in_celsius = 2;
+  optional uint32 min_estimated_time_in_seconds = 1;
+  optional uint32 max_estimated_time_in_seconds = 11;
+  optional float min_temperature_in_celsius = 2;
+  optional float max_temperature_in_celsius = 12;
   optional string notes = 3;
   optional ValidPreparation preparation = 4;
   optional uint32 index = 5;
@@ -1624,7 +1660,8 @@ message RecipeStepVesselCreationRequestInput {
   optional string recipe_step_product_id = 1;
   optional uint64 product_of_recipe_step_index = 2;
   optional uint64 product_of_recipe_step_product_index = 3;
-  common.Uint16RangeWithOptionalMax quantity = 4;
+  uint32 min_quantity = 4;
+  optional uint32 max_quantity = 13;
   string name = 5;
   string notes = 6;
   string vessel_preposition = 7;
@@ -1641,7 +1678,8 @@ message RecipeStepVesselUpdateRequestInput {
   optional string notes = 3;
   optional string belongs_to_recipe_step = 4;
   optional string vessel_id = 5;
-  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput quantity = 6;
+  optional uint32 min_quantity = 6;
+  optional uint32 max_quantity = 12;
   optional string vessel_preposition = 7;
   optional bool unavailable_after_step = 8;
   optional uint32 index = 9;
@@ -1653,14 +1691,15 @@ message RecipeUpdateRequestInput {
   optional string name = 1;
   optional string slug = 2;
   optional string source = 3;
-  optional string source_isbn = 12;
-  optional string description = 4;
-  optional string inspired_by_recipe_id = 5;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput estimated_portions = 7;
-  optional string portion_name = 8;
-  optional string plural_portion_name = 9;
-  optional bool eligible_for_meals = 10;
-  optional MealComponentType yields_component_type = 11;
+  optional string source_isbn = 4;
+  optional string description = 5;
+  optional string inspired_by_recipe_id = 6;
+  optional float min_estimated_portions = 7;
+  optional float max_estimated_portions = 8;
+  optional string portion_name = 9;
+  optional string plural_portion_name = 10;
+  optional bool eligible_for_meals = 11;
+  optional MealComponentType yields_component_type = 12;
 }
 
 message ArchiveRecipeRequest {
@@ -2244,7 +2283,8 @@ message MealComponentUpdateRequestInput {
 }
 
 message MealCreationRequestInput {
-  common.Float32RangeWithOptionalMax estimated_portions = 1;
+  float min_estimated_portions = 1;
+  optional float max_estimated_portions = 6;
   string name = 2;
   string description = 3;
   repeated MealComponentCreationRequestInput components = 4;
@@ -2285,7 +2325,8 @@ message MealPlanGroceryListItemCreationRequestInput {
   string valid_ingredient_id = 7;
   string valid_measurement_unit_id = 8;
   string status_explanation = 9;
-  common.Float32RangeWithOptionalMax quantity_needed = 10;
+  float min_quantity_needed = 10;
+  optional float max_quantity_needed = 11;
 }
 
 message MealPlanGroceryListItemUpdateRequestInput {
@@ -2298,7 +2339,8 @@ message MealPlanGroceryListItemUpdateRequestInput {
   optional string purchased_upc = 7;
   optional float purchase_price = 8;
   optional MealPlanGroceryListItemStatus status = 9;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput quantity_needed = 10;
+  optional float min_quantity_needed = 10;
+  optional float max_quantity_needed = 11;
 }
 
 message MealPlanRecipeOptionSelectionCreationRequestInput {
@@ -2415,7 +2457,8 @@ message MealUpdateRequestInput {
   optional string name = 1;
   optional string description = 2;
   optional string created_by_user = 3;
-  optional common.Float32RangeWithOptionalMaxUpdateRequestInput estimated_portions = 4;
+  optional float min_estimated_portions = 4;
+  optional float max_estimated_portions = 7;
   optional bool eligible_for_meal_plans = 5;
   repeated MealComponentUpdateRequestInput components = 6;
 }
@@ -3076,7 +3119,7 @@ message UpdateAccountInstrumentOwnershipResponse {
 message AccountInstrumentOwnershipCreationRequestInput {
   string notes = 1;
   string valid_instrument_id = 2;
-  uint32 quantity = 4;
+  uint32 quantity = 3;
 }
 
 message AccountInstrumentOwnershipUpdateRequestInput {

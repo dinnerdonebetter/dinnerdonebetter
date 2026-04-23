@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/numbers"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -38,20 +36,15 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductCreationRequestInput{
-			Name:              t.Name(),
-			Type:              RecipeStepProductIngredientType,
-			MeasurementUnitID: new(t.Name()),
-			MeasurementQuantity: numbers.OpenRange[float32]{
-				Max: nil,
-				Min: new(fake.Float32()),
-			},
-			QuantityNotes:            t.Name(),
-			Compostable:              fake.Bool(),
-			StorageDurationInSeconds: numbers.OpenRange[uint32]{Max: new(fake.Uint32())},
-			StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-				Max: new(fake.Float32()),
-				Min: new(fake.Float32()),
-			},
+			Name:                           t.Name(),
+			Type:                           RecipeStepProductIngredientType,
+			MeasurementUnitID:              new(t.Name()),
+			MinMeasurementQuantity:         new(fake.Float32()),
+			QuantityNotes:                  t.Name(),
+			Compostable:                    fake.Bool(),
+			MaxStorageDurationInSeconds:    new(fake.Uint32()),
+			MinStorageTemperatureInCelsius: new(fake.Float32()),
+			MaxStorageTemperatureInCelsius: new(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -75,14 +68,17 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:                        new(t.Name()),
-			Type:                        new(RecipeStepProductIngredientType),
-			MeasurementUnitID:           new(t.Name()),
-			MeasurementQuantity:         numbers.OpenRange[float32]{Max: new(fake.Float32()), Min: new(fake.Float32())},
-			QuantityNotes:               new(t.Name()),
-			Compostable:                 new(fake.Bool()),
-			StorageTemperatureInCelsius: numbers.OpenRange[float32]{Max: new(fake.Float32()), Min: new(fake.Float32())},
-			StorageDurationInSeconds:    numbers.OpenRange[uint32]{Max: new(fake.Uint32()), Min: new(fake.Uint32())},
+			Name:                           new(t.Name()),
+			Type:                           new(RecipeStepProductIngredientType),
+			MeasurementUnitID:              new(t.Name()),
+			MinMeasurementQuantity:         new(fake.Float32()),
+			MaxMeasurementQuantity:         new(fake.Float32()),
+			QuantityNotes:                  new(t.Name()),
+			Compostable:                    new(fake.Bool()),
+			MinStorageTemperatureInCelsius: new(fake.Float32()),
+			MaxStorageTemperatureInCelsius: new(fake.Float32()),
+			MinStorageDurationInSeconds:    new(fake.Uint32()),
+			MaxStorageDurationInSeconds:    new(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

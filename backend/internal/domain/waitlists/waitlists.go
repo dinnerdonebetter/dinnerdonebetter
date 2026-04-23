@@ -3,7 +3,6 @@ package waitlists
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -138,24 +137,6 @@ type (
 		CreateWaitlistSignup(ctx context.Context, input *WaitlistSignupDatabaseCreationInput) (*WaitlistSignup, error)
 		UpdateWaitlistSignup(ctx context.Context, waitlistSignup *WaitlistSignup) error
 		ArchiveWaitlistSignup(ctx context.Context, waitlistSignupID string) error
-	}
-
-	// WaitlistDataService describes a structure capable of serving HTTP traffic for waitlists.
-	WaitlistDataService interface {
-		ListWaitlistsHandler(http.ResponseWriter, *http.Request)
-		CreateWaitlistHandler(http.ResponseWriter, *http.Request)
-		ReadWaitlistHandler(http.ResponseWriter, *http.Request)
-		UpdateWaitlistHandler(http.ResponseWriter, *http.Request)
-		ArchiveWaitlistHandler(http.ResponseWriter, *http.Request)
-	}
-
-	// WaitlistSignupDataService describes a structure capable of serving HTTP traffic for waitlist signups.
-	WaitlistSignupDataService interface {
-		ListWaitlistSignupsHandler(http.ResponseWriter, *http.Request)
-		CreateWaitlistSignupHandler(http.ResponseWriter, *http.Request)
-		ReadWaitlistSignupHandler(http.ResponseWriter, *http.Request)
-		UpdateWaitlistSignupHandler(http.ResponseWriter, *http.Request)
-		ArchiveWaitlistSignupHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

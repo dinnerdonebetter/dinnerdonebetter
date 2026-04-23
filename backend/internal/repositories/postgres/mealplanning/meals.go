@@ -15,7 +15,6 @@ import (
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
 )
@@ -154,18 +153,16 @@ func (q *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.
 	for _, result := range results {
 		if meal == nil {
 			meal = &mealplanning.Meal{
-				CreatedAt:     result.CreatedAt,
-				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-				ID:            result.ID,
-				Description:   result.Description,
-				CreatedByUser: result.CreatedByUser,
-				Name:          result.Name,
-				Components:    nil,
-				EstimatedPortions: numbers.MinRange[float32]{
-					Min: database.Float32FromString(result.MinEstimatedPortions),
-					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-				},
+				CreatedAt:            result.CreatedAt,
+				ArchivedAt:           database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:        database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:                   result.ID,
+				Description:          result.Description,
+				CreatedByUser:        result.CreatedByUser,
+				Name:                 result.Name,
+				Components:           nil,
+				MinEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
+				MaxEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				EligibleForMealPlans: result.EligibleForMealPlans,
 			}
 		}
@@ -240,18 +237,16 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 
 		if meal == nil {
 			meal = &mealplanning.Meal{
-				CreatedAt:     result.CreatedAt,
-				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-				ID:            result.ID,
-				Description:   result.Description,
-				CreatedByUser: result.CreatedByUser,
-				Name:          result.Name,
-				Components:    []*mealplanning.MealComponent{},
-				EstimatedPortions: numbers.MinRange[float32]{
-					Min: database.Float32FromString(result.MinEstimatedPortions),
-					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-				},
+				CreatedAt:            result.CreatedAt,
+				ArchivedAt:           database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:        database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:                   result.ID,
+				Description:          result.Description,
+				CreatedByUser:        result.CreatedByUser,
+				Name:                 result.Name,
+				Components:           []*mealplanning.MealComponent{},
+				MinEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
+				MaxEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				EligibleForMealPlans: result.EligibleForMealPlans,
 			}
 		}
@@ -347,18 +342,16 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 
 		if meal == nil {
 			meal = &mealplanning.Meal{
-				CreatedAt:     result.CreatedAt,
-				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-				ID:            result.ID,
-				Description:   result.Description,
-				CreatedByUser: result.CreatedByUser,
-				Name:          result.Name,
-				Components:    []*mealplanning.MealComponent{},
-				EstimatedPortions: numbers.MinRange[float32]{
-					Min: database.Float32FromString(result.MinEstimatedPortions),
-					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-				},
+				CreatedAt:            result.CreatedAt,
+				ArchivedAt:           database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:        database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:                   result.ID,
+				Description:          result.Description,
+				CreatedByUser:        result.CreatedByUser,
+				Name:                 result.Name,
+				Components:           []*mealplanning.MealComponent{},
+				MinEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
+				MaxEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				EligibleForMealPlans: result.EligibleForMealPlans,
 			}
 		}
@@ -431,18 +424,16 @@ func (q *repository) GetMealsWithIDs(ctx context.Context, ids []string) ([]*meal
 		m, exists := mealsByID[result.ID]
 		if !exists {
 			m = &mealplanning.Meal{
-				CreatedAt:     result.CreatedAt,
-				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-				ID:            result.ID,
-				Description:   result.Description,
-				CreatedByUser: result.CreatedByUser,
-				Name:          result.Name,
-				Components:    nil,
-				EstimatedPortions: numbers.MinRange[float32]{
-					Min: database.Float32FromString(result.MinEstimatedPortions),
-					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-				},
+				CreatedAt:            result.CreatedAt,
+				ArchivedAt:           database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:        database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:                   result.ID,
+				Description:          result.Description,
+				CreatedByUser:        result.CreatedByUser,
+				Name:                 result.Name,
+				Components:           nil,
+				MinEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
+				MaxEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				EligibleForMealPlans: result.EligibleForMealPlans,
 			}
 			mealsByID[result.ID] = m
@@ -529,18 +520,16 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 
 		if meal == nil {
 			meal = &mealplanning.Meal{
-				CreatedAt:     result.CreatedAt,
-				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-				ID:            result.ID,
-				Description:   result.Description,
-				CreatedByUser: result.CreatedByUser,
-				Name:          result.Name,
-				Components:    []*mealplanning.MealComponent{},
-				EstimatedPortions: numbers.MinRange[float32]{
-					Min: database.Float32FromString(result.MinEstimatedPortions),
-					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-				},
+				CreatedAt:            result.CreatedAt,
+				ArchivedAt:           database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:        database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:                   result.ID,
+				Description:          result.Description,
+				CreatedByUser:        result.CreatedByUser,
+				Name:                 result.Name,
+				Components:           []*mealplanning.MealComponent{},
+				MinEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
+				MaxEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				EligibleForMealPlans: result.EligibleForMealPlans,
 			}
 		}
@@ -596,9 +585,9 @@ func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 		ID:                   input.ID,
 		Name:                 input.Name,
 		Description:          input.Description,
-		MinEstimatedPortions: database.StringFromFloat32(input.EstimatedPortions.Min),
+		MinEstimatedPortions: database.StringFromFloat32(input.MinEstimatedPortions),
 		CreatedByUser:        input.CreatedByUser,
-		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.EstimatedPortions.Max),
+		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.MaxEstimatedPortions),
 		EligibleForMealPlans: input.EligibleForMealPlans,
 	}); err != nil {
 		q.RollbackTransaction(ctx, querier)
@@ -606,13 +595,11 @@ func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 	}
 
 	x := &mealplanning.Meal{
-		ID:          input.ID,
-		Name:        input.Name,
-		Description: input.Description,
-		EstimatedPortions: numbers.MinRange[float32]{
-			Min: input.EstimatedPortions.Min,
-			Max: input.EstimatedPortions.Max,
-		},
+		ID:                   input.ID,
+		Name:                 input.Name,
+		Description:          input.Description,
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
 		EligibleForMealPlans: input.EligibleForMealPlans,
 		CreatedByUser:        input.CreatedByUser,
 		CreatedAt:            q.CurrentTime(),
@@ -677,7 +664,7 @@ func (q *repository) CreateMealComponent(ctx context.Context, querier database.S
 	// create the meal.
 	if err := q.generatedQuerier.CreateMealComponent(ctx, querier, &generated.CreateMealComponentParams{
 		ID:                identifiers.New(),
-		MealID:            mealID,
+		BelongsToMeal:     mealID,
 		RecipeID:          input.RecipeID,
 		MealComponentType: generated.ComponentType(input.ComponentType),
 		RecipeScale:       database.StringFromFloat32(input.RecipeScale),

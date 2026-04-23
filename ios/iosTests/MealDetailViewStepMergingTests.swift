@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftProtobuf
 @testable import ios
 import Testing
 
@@ -33,10 +32,8 @@ private func makeGrindPeppercornsStep(
   stepIngredient.id = "rsi-\(stepID)"
   stepIngredient.name = "peppercorns"
   stepIngredient.ingredient = ingredient
-  var quantity = Common_Float32RangeWithOptionalMax()
-  quantity.min = quantityGrams
-  quantity.max = quantityGrams
-  stepIngredient.quantity = quantity
+  stepIngredient.minQuantity = quantityGrams
+  stepIngredient.maxQuantity = quantityGrams
   stepIngredient.measurementUnit = unit
 
   var instrument = Mealplanning_ValidInstrument()
@@ -175,8 +172,8 @@ struct MealDetailViewStepMergingTests {
 
     let mergedStep = steps[0].step
     #expect(mergedStep.ingredients.count == 1)
-    #expect(mergedStep.ingredients[0].quantity.min == 5)
-    #expect(mergedStep.ingredients[0].quantity.max == 5)
+    #expect(mergedStep.ingredients[0].minQuantity == 5)
+    #expect(mergedStep.ingredients[0].maxQuantity == 5)
     #expect(mergedStep.ingredients[0].name == "peppercorns")
   }
 
@@ -267,7 +264,7 @@ struct MealDetailViewStepMergingTests {
     #expect(steps.count == 1)
     #expect(steps[0].isMerged == true)
     // 4 * 0.5 + 2 * 1.0 = 2 + 2 = 4
-    #expect(steps[0].step.ingredients[0].quantity.min == 4)
+    #expect(steps[0].step.ingredients[0].minQuantity == 4)
   }
 
   @Test("Single recipe produces non-merged steps")
@@ -393,9 +390,9 @@ struct MealDetailViewStepMergingTests {
     #expect(steps.count == 2)
     #expect(steps[0].isMerged == false)
     #expect(steps[0].category == .done)
-    #expect(steps[0].step.ingredients[0].quantity.min == 3)
+    #expect(steps[0].step.ingredients[0].minQuantity == 3)
     #expect(steps[1].isMerged == false)
     #expect(steps[1].category == .upNext)
-    #expect(steps[1].step.ingredients[0].quantity.min == 2)
+    #expect(steps[1].step.ingredients[0].minQuantity == 2)
   }
 }

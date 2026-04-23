@@ -32,7 +32,7 @@ func createRecipeRatingForTest(t *testing.T, ctx context.Context, exampleRecipeR
 	exampleRecipeRating.CreatedAt = created.CreatedAt
 	assert.Equal(t, exampleRecipeRating, created)
 
-	recipeRating, err := dbc.GetRecipeRating(ctx, created.RecipeID, created.ID)
+	recipeRating, err := dbc.GetRecipeRating(ctx, created.BelongsToRecipe, created.ID)
 	exampleRecipeRating.CreatedAt = recipeRating.CreatedAt
 
 	assert.NoError(t, err)
@@ -64,8 +64,8 @@ func TestQuerier_Integration_RecipeRatings(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 
 	exampleRecipeRating := fakes.BuildFakeRecipeRating()
-	exampleRecipeRating.ByUser = user.ID
-	exampleRecipeRating.RecipeID = createdRecipe.ID
+	exampleRecipeRating.CreatedByUser = user.ID
+	exampleRecipeRating.BelongsToRecipe = createdRecipe.ID
 	createdRecipeRatings := []*types.RecipeRating{}
 
 	// create
@@ -225,8 +225,8 @@ func TestQuerier_Integration_RecipeRatings_CursorBasedPagination(t *testing.T) {
 			// Create a unique user for each rating since there's a unique constraint on (by_user, recipe_id)
 			ratingUser := pgtesting.CreateUserForTest(t, nil, dbc.writeDB)
 			recipeRating := fakes.BuildFakeRecipeRating()
-			recipeRating.RecipeID = recipe.ID
-			recipeRating.ByUser = ratingUser.ID
+			recipeRating.BelongsToRecipe = recipe.ID
+			recipeRating.CreatedByUser = ratingUser.ID
 			return createRecipeRatingForTest(t, ctx, recipeRating, dbc)
 		},
 		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeRating], error) {

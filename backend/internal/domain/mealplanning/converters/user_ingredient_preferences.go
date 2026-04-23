@@ -44,6 +44,6 @@ func ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationIn
 		Rating:            x.Rating,
 		Notes:             x.Notes,
 		Allergy:           x.Allergy,
-		BelongsToUser:     x.BelongsToUser,
+		CreatedByUser:     x.CreatedByUser,
 	}
 }

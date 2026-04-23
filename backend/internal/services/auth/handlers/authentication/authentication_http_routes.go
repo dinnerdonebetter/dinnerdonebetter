@@ -3,12 +3,8 @@ package authentication
 import (
 	"net/http"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
-
 	"github.com/primandproper/platform/observability"
 )
-
-var _ oauth.OAuth2Service = (*service)(nil)
 
 // AuthorizeHandler is our oauth2 auth route.
 func (s *service) AuthorizeHandler(res http.ResponseWriter, req *http.Request) {

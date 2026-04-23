@@ -5,7 +5,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 )
 
 // BuildFakeRecipe builds a faked recipe.
@@ -31,26 +30,24 @@ func BuildFakeRecipe() *mealplanning.Recipe {
 	}
 
 	return &mealplanning.Recipe{
-		ID:                 recipeID,
-		Name:               buildUniqueString(),
-		Slug:               buildUniqueString(),
-		Source:             buildUniqueString(),
-		Description:        buildUniqueString(),
-		InspiredByRecipeID: nil,
-		CreatedAt:          BuildFakeTime(),
-		CreatedByUser:      BuildFakeID(),
-		Steps:              steps,
-		PrepTasks:          prepTasks,
-		Status:             mealplanning.RecipeStatusSubmitted,
-		Media:              recipeMedia,
-		EstimatedPortions: numbers.MinRange[float32]{
-			Max: new(float32(buildFakeNumber())),
-			Min: float32(buildFakeNumber()),
-		},
-		PortionName:         buildUniqueString(),
-		PluralPortionName:   buildUniqueString(),
-		EligibleForMeals:    true,
-		YieldsComponentType: "main",
+		ID:                   recipeID,
+		Name:                 buildUniqueString(),
+		Slug:                 buildUniqueString(),
+		Source:               buildUniqueString(),
+		Description:          buildUniqueString(),
+		InspiredByRecipeID:   nil,
+		CreatedAt:            BuildFakeTime(),
+		CreatedByUser:        BuildFakeID(),
+		Steps:                steps,
+		PrepTasks:            prepTasks,
+		Status:               mealplanning.RecipeStatusSubmitted,
+		Media:                recipeMedia,
+		MinEstimatedPortions: float32(buildFakeNumber()),
+		MaxEstimatedPortions: new(float32(buildFakeNumber())),
+		PortionName:          buildUniqueString(),
+		PluralPortionName:    buildUniqueString(),
+		EligibleForMeals:     true,
+		YieldsComponentType:  "main",
 	}
 }
 

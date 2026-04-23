@@ -66,11 +66,7 @@ class AuthenticationManager: AuthenticationManaging {
       print("🎭 AuthenticationManager: Using mock mode")
     }
 
-    if APIConfiguration.currentEnvironment.isOffline {
-      configureOfflineMode()
-    } else {
-      restoreCredentials()
-    }
+    restoreCredentials()
 
     NotificationCenter.default.addObserver(
       forName: .environmentDidChange,
@@ -79,17 +75,6 @@ class AuthenticationManager: AuthenticationManaging {
     ) { [weak self] _ in
       self?.handleEnvironmentChange()
     }
-  }
-
-  /// Configure fake credentials for offline mode so the app considers itself authenticated.
-  func configureOfflineMode() {
-    isAuthenticated = true
-    username = "offline_user"
-    userID = "offline-user-id"
-    accountID = "offline-account-id"
-    accessToken = "offline"
-    oauth2AccessToken = "offline"
-    print("✈️ AuthenticationManager: Offline mode active")
   }
 
   // MARK: - Keychain Persistence
@@ -179,11 +164,7 @@ class AuthenticationManager: AuthenticationManaging {
     )
     clientManager = nil
     clientEnvironment = nil
-    if APIConfiguration.currentEnvironment.isOffline {
-      configureOfflineMode()
-    } else {
-      Task { await logout() }
-    }
+    Task { await logout() }
   }
 
   /// Get or create the client manager, following the grpc-swift issue #2211 pattern.

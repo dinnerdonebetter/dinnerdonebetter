@@ -4,7 +4,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput creates a RecipeStepInstrumentUpdateRequestInput from a RecipeStepInstrument.
@@ -19,11 +18,9 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 		Optional:            &input.Optional,
 		Index:               &input.Index,
 		OptionIndex:         &input.OptionIndex,
-		Quantity: numbers.OpenRangeUpdateRequestInput[uint32]{
-			Min: &input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
-		ScaleFactor: &input.ScaleFactor,
+		MinQuantity:         &input.MinQuantity,
+		MaxQuantity:         input.MaxQuantity,
+		ScaleFactor:         &input.ScaleFactor,
 	}
 
 	return x
@@ -47,7 +44,8 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 		Optional:                        input.Optional,
 		Index:                           index,
 		OptionIndex:                     input.OptionIndex,
-		Quantity:                        input.Quantity,
+		MinQuantity:                     input.MinQuantity,
+		MaxQuantity:                     input.MaxQuantity,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 		ScaleFactor:                     scaleFactorOrDefault(input.ScaleFactor),
@@ -79,7 +77,8 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input
 		Optional:            input.Optional,
 		Index:               indexPtr,
 		OptionIndex:         input.OptionIndex,
-		Quantity:            input.Quantity,
+		MinQuantity:         input.MinQuantity,
+		MaxQuantity:         input.MaxQuantity,
 		ScaleFactor:         input.ScaleFactor,
 	}
 }
@@ -102,7 +101,8 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(inpu
 		Optional:            input.Optional,
 		Index:               input.Index,
 		OptionIndex:         input.OptionIndex,
-		Quantity:            input.Quantity,
+		MinQuantity:         input.MinQuantity,
+		MaxQuantity:         input.MaxQuantity,
 		ScaleFactor:         scaleFactorOrDefault(input.ScaleFactor),
 	}
 }

@@ -19,7 +19,7 @@ func createRecipeRatingForTest(t *testing.T, recipeID string, clientToUse client
 	ctx := t.Context()
 
 	exampleRecipeRating := fakes.BuildFakeRecipeRating()
-	exampleRecipeRating.RecipeID = recipeID
+	exampleRecipeRating.BelongsToRecipe = recipeID
 	exampleRecipeRatingInput := mpconverters.ConvertRecipeRatingToRecipeRatingCreationRequestInput(exampleRecipeRating)
 	convertedInput := converters.ConvertRecipeRatingCreationRequestInputToGRPCRecipeRatingCreationRequestInput(exampleRecipeRatingInput)
 
@@ -31,7 +31,7 @@ func createRecipeRatingForTest(t *testing.T, recipeID string, clientToUse client
 	require.NotNil(t, createdRecipeRating)
 
 	converted := converters.ConvertGRPCRecipeRatingToRecipeRating(createdRecipeRating.Created)
-	assertRoughEquality(t, exampleRecipeRating, converted, defaultIgnoredFields("ID", "ByUser")...)
+	assertRoughEquality(t, exampleRecipeRating, converted, defaultIgnoredFields("ID", "CreatedByUser")...)
 
 	return converted
 }
@@ -41,7 +41,7 @@ func checkRecipeRatingEquality(t *testing.T, expected, actual *types.RecipeRatin
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe rating %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.RecipeID, actual.RecipeID, "expected RecipeID for recipe rating %s to be %v, but it was %v", expected.ID, expected.RecipeID, actual.RecipeID)
+	assert.Equal(t, expected.BelongsToRecipe, actual.BelongsToRecipe, "expected RecipeID for recipe rating %s to be %v, but it was %v", expected.ID, expected.BelongsToRecipe, actual.BelongsToRecipe)
 	assert.Equal(t, expected.Taste, actual.Taste, "expected Taste for recipe rating %s to be %v, but it was %v", expected.ID, expected.Taste, actual.Taste)
 	assert.Equal(t, expected.Instructions, actual.Instructions, "expected Instructions for recipe rating %s to be %v, but it was %v", expected.ID, expected.Instructions, actual.Instructions)
 	assert.Equal(t, expected.Overall, actual.Overall, "expected Overall for recipe rating %s to be %v, but it was %v", expected.ID, expected.Overall, actual.Overall)
@@ -62,8 +62,8 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 		exampleRecipeRating := createRecipeRatingForTest(t, createdRecipe.ID, testClient)
 
 		newRecipeRating := fakes.BuildFakeRecipeRating()
-		newRecipeRating.RecipeID = createdRecipe.ID
-		newRecipeRating.ByUser = exampleRecipeRating.ByUser
+		newRecipeRating.BelongsToRecipe = createdRecipe.ID
+		newRecipeRating.CreatedByUser = exampleRecipeRating.CreatedByUser
 
 		updateInput := mpconverters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(newRecipeRating)
 		exampleRecipeRating.Update(updateInput)
@@ -101,7 +101,7 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 		exampleRecipeRating := fakes.BuildFakeRecipeRating()
-		exampleRecipeRating.RecipeID = createdRecipe.ID
+		exampleRecipeRating.BelongsToRecipe = createdRecipe.ID
 		exampleRecipeRatingInput := mpconverters.ConvertRecipeRatingToRecipeRatingCreationRequestInput(exampleRecipeRating)
 		convertedInput := converters.ConvertRecipeRatingCreationRequestInputToGRPCRecipeRatingCreationRequestInput(exampleRecipeRatingInput)
 
@@ -127,7 +127,7 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 		exampleRecipeRating := createRecipeRatingForTest(t, createdRecipe.ID, testClient)
 
 		newRecipeRating := fakes.BuildFakeRecipeRating()
-		newRecipeRating.RecipeID = createdRecipe.ID
+		newRecipeRating.BelongsToRecipe = createdRecipe.ID
 		updateInput := mpconverters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(newRecipeRating)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
@@ -181,7 +181,7 @@ func TestRecipeRatings_CompleteLifecycle(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		newRecipeRating := fakes.BuildFakeRecipeRating()
-		newRecipeRating.RecipeID = createdRecipe.ID
+		newRecipeRating.BelongsToRecipe = createdRecipe.ID
 		updateInput := mpconverters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(newRecipeRating)
 
 		_, err := testClient.UpdateRecipeRating(ctx, &mealplanninggrpc.UpdateRecipeRatingRequest{

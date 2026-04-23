@@ -7,8 +7,8 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/audit";
 
 message DataCollection {
-  map<string, AuditLogEntry> account_audit_log_entries = 5;
-  repeated AuditLogEntry user_audit_log_entries = 9;
+  map<string, AuditLogEntry> account_audit_log_entries = 1;
+  repeated AuditLogEntry user_audit_log_entries = 2;
 }
 
 message ChangeLog {

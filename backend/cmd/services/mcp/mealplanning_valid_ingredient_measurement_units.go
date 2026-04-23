@@ -17,14 +17,15 @@ type (
 )
 
 var validIngredientMeasurementUnitsSchema = map[string]any{
-	"ID":                stringField("The ID of the valid ingredient measurement unit"),
-	"CreatedAt":         timestampField("When the valid ingredient measurement unit was created"),
-	"LastUpdatedAt":     timestampField("When the valid ingredient measurement unit was last updated"),
-	"ArchivedAt":        timestampField("When the valid ingredient measurement unit was soft deleted"),
-	"Notes":             stringField("Notes about the ingredient measurement unit"),
-	"AllowableQuantity": float32RangeWithOptionalMaxSchema(),
-	"MeasurementUnit":   objectType(validMeasurementUnitsSchema),
-	"Ingredient":        objectType(validIngredientsSchema),
+	"ID":                   stringField("The ID of the valid ingredient measurement unit"),
+	"CreatedAt":            timestampField("When the valid ingredient measurement unit was created"),
+	"LastUpdatedAt":        timestampField("When the valid ingredient measurement unit was last updated"),
+	"ArchivedAt":           timestampField("When the valid ingredient measurement unit was soft deleted"),
+	"Notes":                stringField("Notes about the ingredient measurement unit"),
+	"MinAllowableQuantity": floatField("Minimum allowable quantity (required)"),
+	"MaxAllowableQuantity": floatField("Maximum allowable quantity (optional)"),
+	"MeasurementUnit":      objectType(validMeasurementUnitsSchema),
+	"Ingredient":           objectType(validIngredientsSchema),
 }
 
 var getValidIngredientMeasurementUnitTool = &mcp.Tool{

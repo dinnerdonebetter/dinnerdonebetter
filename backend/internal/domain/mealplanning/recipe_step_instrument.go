@@ -4,11 +4,9 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -38,77 +36,81 @@ type (
 	RecipeStepInstrument struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt           time.Time                `json:"createdAt"`
-		Quantity            numbers.MinRange[uint32] `json:"quantity"`
-		Instrument          *ValidInstrument         `json:"instrument"`
-		LastUpdatedAt       *time.Time               `json:"lastUpdatedAt"`
-		RecipeStepProductID *string                  `json:"recipeStepProductID"`
-		ArchivedAt          *time.Time               `json:"archivedAt"`
-		Notes               string                   `json:"notes"`
-		BelongsToRecipeStep string                   `json:"belongsToRecipeStep"`
-		ID                  string                   `json:"id"`
-		Name                string                   `json:"name"`
-		Index               uint16                   `json:"index"`
-		OptionIndex         uint16                   `json:"optionIndex"`
-		PreferenceRank      uint8                    `json:"preferenceRank"`
-		Optional            bool                     `json:"optional"`
-		ScaleFactor         float32                  `json:"scaleFactor"`
+		CreatedAt           time.Time        `json:"createdAt"`
+		MaxQuantity         *uint32          `json:"maxQuantity,omitempty"`
+		Instrument          *ValidInstrument `json:"instrument"`
+		LastUpdatedAt       *time.Time       `json:"lastUpdatedAt"`
+		RecipeStepProductID *string          `json:"recipeStepProductID"`
+		ArchivedAt          *time.Time       `json:"archivedAt"`
+		Notes               string           `json:"notes"`
+		BelongsToRecipeStep string           `json:"belongsToRecipeStep"`
+		ID                  string           `json:"id"`
+		Name                string           `json:"name"`
+		MinQuantity         uint32           `json:"minQuantity"`
+		Index               uint16           `json:"index"`
+		OptionIndex         uint16           `json:"optionIndex"`
+		PreferenceRank      uint8            `json:"preferenceRank"`
+		Optional            bool             `json:"optional"`
+		ScaleFactor         float32          `json:"scaleFactor"`
 	}
 
 	// RecipeStepInstrumentCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Quantity                        numbers.MinRange[uint32] `json:"quantity"`
-		ValidPreparationInstrumentID    *string                  `json:"validPreparationInstrumentID"`
-		RecipeStepProductID             *string                  `json:"recipeStepProductID"`
-		ProductOfRecipeStepIndex        *uint64                  `json:"productOfRecipeStepIndex"`
-		ProductOfRecipeStepProductIndex *uint64                  `json:"productOfRecipeStepProductIndex"`
-		Index                           *uint16                  `json:"index,omitempty"`
-		Notes                           string                   `json:"notes"`
-		Name                            string                   `json:"name"`
-		OptionIndex                     uint16                   `json:"optionIndex"`
-		Optional                        bool                     `json:"optional"`
-		PreferenceRank                  uint8                    `json:"preferenceRank"`
-		ScaleFactor                     float32                  `json:"scaleFactor"`
+		MaxQuantity                     *uint32 `json:"maxQuantity,omitempty"`
+		ValidPreparationInstrumentID    *string `json:"validPreparationInstrumentID"`
+		RecipeStepProductID             *string `json:"recipeStepProductID"`
+		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
+		Index                           *uint16 `json:"index,omitempty"`
+		Notes                           string  `json:"notes"`
+		Name                            string  `json:"name"`
+		MinQuantity                     uint32  `json:"minQuantity"`
+		OptionIndex                     uint16  `json:"optionIndex"`
+		Optional                        bool    `json:"optional"`
+		PreferenceRank                  uint8   `json:"preferenceRank"`
+		ScaleFactor                     float32 `json:"scaleFactor"`
 	}
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		Quantity                        numbers.MinRange[uint32] `json:"-"`
-		ProductOfRecipeStepIndex        *uint64                  `json:"-"`
-		RecipeStepProductID             *string                  `json:"-"`
-		ProductOfRecipeStepProductIndex *uint64                  `json:"-"`
-		InstrumentID                    *string                  `json:"-"`
-		ValidPreparationInstrumentID    *string                  `json:"-"`
-		BelongsToRecipeStep             string                   `json:"-"`
-		Name                            string                   `json:"-"`
-		ID                              string                   `json:"-"`
-		Notes                           string                   `json:"-"`
-		Index                           uint16                   `json:"-"`
-		OptionIndex                     uint16                   `json:"-"`
-		Optional                        bool                     `json:"-"`
-		PreferenceRank                  uint8                    `json:"-"`
-		ScaleFactor                     float32                  `json:"-"`
+		MaxQuantity                     *uint32 `json:"-"`
+		ProductOfRecipeStepIndex        *uint64 `json:"-"`
+		RecipeStepProductID             *string `json:"-"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"-"`
+		InstrumentID                    *string `json:"-"`
+		ValidPreparationInstrumentID    *string `json:"-"`
+		BelongsToRecipeStep             string  `json:"-"`
+		Name                            string  `json:"-"`
+		ID                              string  `json:"-"`
+		Notes                           string  `json:"-"`
+		MinQuantity                     uint32  `json:"-"`
+		Index                           uint16  `json:"-"`
+		OptionIndex                     uint16  `json:"-"`
+		Optional                        bool    `json:"-"`
+		PreferenceRank                  uint8   `json:"-"`
+		ScaleFactor                     float32 `json:"-"`
 	}
 
 	// RecipeStepInstrumentUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
 	RecipeStepInstrumentUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		InstrumentID        *string                                     `json:"instrumentID,omitempty"`
-		RecipeStepProductID *string                                     `json:"recipeStepProductID,omitempty"`
-		Notes               *string                                     `json:"notes,omitempty"`
-		PreferenceRank      *uint8                                      `json:"preferenceRank,omitempty"`
-		BelongsToRecipeStep *string                                     `json:"belongsToRecipeStep,omitempty"`
-		Name                *string                                     `json:"name,omitempty"`
-		Optional            *bool                                       `json:"optional,omitempty"`
-		Index               *uint16                                     `json:"index,omitempty"`
-		OptionIndex         *uint16                                     `json:"optionIndex,omitempty"`
-		Quantity            numbers.OpenRangeUpdateRequestInput[uint32] `json:"quantity"`
-		ScaleFactor         *float32                                    `json:"scaleFactor,omitempty"`
+		InstrumentID        *string  `json:"instrumentID,omitempty"`
+		RecipeStepProductID *string  `json:"recipeStepProductID,omitempty"`
+		Notes               *string  `json:"notes,omitempty"`
+		PreferenceRank      *uint8   `json:"preferenceRank,omitempty"`
+		BelongsToRecipeStep *string  `json:"belongsToRecipeStep,omitempty"`
+		Name                *string  `json:"name,omitempty"`
+		Optional            *bool    `json:"optional,omitempty"`
+		Index               *uint16  `json:"index,omitempty"`
+		OptionIndex         *uint16  `json:"optionIndex,omitempty"`
+		MinQuantity         *uint32  `json:"minQuantity,omitempty"`
+		MaxQuantity         *uint32  `json:"maxQuantity,omitempty"`
+		ScaleFactor         *float32 `json:"scaleFactor,omitempty"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -119,15 +121,6 @@ type (
 		CreateRecipeStepInstrument(ctx context.Context, input *RecipeStepInstrumentDatabaseCreationInput) (*RecipeStepInstrument, error)
 		UpdateRecipeStepInstrument(ctx context.Context, updated *RecipeStepInstrument) error
 		ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error
-	}
-
-	// RecipeStepInstrumentDataService describes a structure capable of serving traffic related to recipe step instruments.
-	RecipeStepInstrumentDataService interface {
-		ListRecipeStepInstrumentsHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
@@ -157,12 +150,12 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 		x.Optional = *input.Optional
 	}
 
-	if input.Quantity.Min != nil && *input.Quantity.Min != x.Quantity.Min {
-		x.Quantity.Min = *input.Quantity.Min
+	if input.MinQuantity != nil && *input.MinQuantity != x.MinQuantity {
+		x.MinQuantity = *input.MinQuantity
 	}
 
-	if input.Quantity.Max != nil && x.Quantity.Max != nil && *input.Quantity.Max != *x.Quantity.Max {
-		x.Quantity.Max = input.Quantity.Max
+	if input.MaxQuantity != nil && (x.MaxQuantity == nil || *input.MaxQuantity != *x.MaxQuantity) {
+		x.MaxQuantity = input.MaxQuantity
 	}
 
 	if input.Index != nil && *input.Index != x.Index {

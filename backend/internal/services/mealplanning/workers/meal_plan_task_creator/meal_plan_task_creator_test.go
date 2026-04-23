@@ -14,7 +14,6 @@ import (
 	"github.com/primandproper/platform/messagequeue"
 	msgconfig "github.com/primandproper/platform/messagequeue/config"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
-	"github.com/primandproper/platform/numbers"
 	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
 	metricsnoop "github.com/primandproper/platform/observability/metrics/noop"
 	tracingnoop "github.com/primandproper/platform/observability/tracing/noop"
@@ -113,22 +112,19 @@ func TestWorker_Work(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Ingredient: &mealplanning.ValidIngredient{
-								StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-									Min: new(float32(2.5)),
-								},
-								PluralName:          "chicken breasts",
-								StorageInstructions: "keep frozen",
-								Name:                "chicken breast",
-								ID:                  fakes.BuildFakeID(),
+								MinStorageTemperatureInCelsius: new(float32(2.5)),
+								PluralName:                     "chicken breasts",
+								StorageInstructions:            "keep frozen",
+								Name:                           "chicken breast",
+								ID:                             fakes.BuildFakeID(),
 							},
 							Name:                "chicken breast",
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
-							Quantity: numbers.MinRange[float32]{
-								Max: new(float32(900)),
-								Min: 900,
-							},
+							MinQuantity:         900,
+
+							MaxQuantity: new(float32(900)),
 						},
 					},
 					Products: []*mealplanning.RecipeStepProduct{

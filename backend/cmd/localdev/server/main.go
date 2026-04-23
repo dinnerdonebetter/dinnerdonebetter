@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identityconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/converters"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/localdev"
@@ -49,10 +48,7 @@ func main() {
 	var (
 		adminUserID    string
 		adminAccountID string
-		memberUserIDs  []string
 	)
-
-	var currentMealPlanID string
 
 	server, err := localdev.AllInOne(
 		ctx,
@@ -147,7 +143,6 @@ func main() {
 						}
 						logger.Info(fmt.Sprintf("Added existing user %s to admin account", memberUser.username))
 					}
-					memberUserIDs = append(memberUserIDs, existingUser.ID)
 					continue
 				}
 
@@ -204,12 +199,8 @@ func main() {
 					return fmt.Errorf("failed to mark user %s account as default: %w", memberUser.username, err)
 				}
 
-				memberUserIDs = append(memberUserIDs, user.ID)
 				logger.Info(fmt.Sprintf("Created user %s and added to admin account", memberUser.username))
 			}
-
-			// Also add admin user to member list
-			memberUserIDs = append(memberUserIDs, adminUserID)
 
 			return nil
 		}),
@@ -223,24 +214,6 @@ func main() {
 				ClientSecret: strings.Repeat("A", oauth.ClientSecretSize),
 			})
 			return err
-		}),
-		// Domain: mealplanning - bootstrap enumerations, recipes, and meals
-		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			return bootstrapEnumerationsAndRecipes(ctx, repo, logger, tracerProvider, adminUserID)
-		}),
-		// Domain: mealplanning - create meal plan
-		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			var mealPlanErr error
-			currentMealPlanID, mealPlanErr = bootstrapMealPlan(ctx, repo, logger, adminUserID, adminAccountID)
-			return mealPlanErr
-		}),
-		// Domain: mealplanning - create finalized meal plan with votes
-		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			return bootstrapFinalizedMealPlanAndVotes(ctx, repo, logger, adminUserID, adminAccountID, currentMealPlanID, memberUserIDs)
-		}),
-		// Domain: mealplanning - run grocery list and task creator workers
-		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-			return bootstrapMealPlanWorkers(ctx, logger, apiConfig)
 		}),
 		// Create example service settings
 		localdev.WithSettingsRepository(func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {

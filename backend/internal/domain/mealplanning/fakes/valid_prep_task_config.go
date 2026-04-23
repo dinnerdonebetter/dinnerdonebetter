@@ -11,10 +11,14 @@ import (
 
 // BuildFakeValidPrepTaskConfig builds a faked valid prep task config.
 func BuildFakeValidPrepTaskConfig() *types.ValidPrepTaskConfig {
+	minSD, maxSD := BuildFakeUint32WithOptionalMax()
+	minST, maxST := BuildFakeOptionalFloat32MinMax()
 	return &types.ValidPrepTaskConfig{
-		ID:                          BuildFakeID(),
-		StorageDurationInSeconds:    BuildFakeUint32RangeWithOptionalMax(),
-		StorageTemperatureInCelsius: BuildFakeOptionalFloat32Range(),
+		ID:                             BuildFakeID(),
+		MinStorageDurationInSeconds:    minSD,
+		MaxStorageDurationInSeconds:    maxSD,
+		MinStorageTemperatureInCelsius: minST,
+		MaxStorageTemperatureInCelsius: maxST,
 		StorageType: fake.RandomString([]string{
 			types.RecipePrepTaskStorageTypeUncovered,
 			types.RecipePrepTaskStorageTypeCovered,

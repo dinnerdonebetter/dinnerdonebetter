@@ -9,8 +9,6 @@ import (
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
-	"github.com/primandproper/platform/numbers"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,7 +28,8 @@ func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, exp
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d vessel %d to have BelongsToRecipeStep", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d vessel %d Name", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d vessel %d Notes", stepIndex, vesselIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d vessel %d MeasurementQuantity", stepIndex, vesselIndex)
+	assert.Equal(t, expected.MinQuantity, actual.MinQuantity, "expected step %d vessel %d MinQuantity", stepIndex, vesselIndex)
+	assert.Equal(t, expected.MaxQuantity, actual.MaxQuantity, "expected step %d vessel %d MaxQuantity", stepIndex, vesselIndex)
 	assert.Equal(t, expected.Index, actual.Index, "expected step %d vessel %d Index", stepIndex, vesselIndex)
 	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d vessel %d OptionIndex", stepIndex, vesselIndex)
 	assert.Equal(t, expected.VesselPreposition, actual.VesselPreposition, "expected step %d vessel %d VesselPreposition", stepIndex, vesselIndex)
@@ -181,27 +180,23 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 		linedBakingSheetName := "lined baking sheet"
 
 		expected := &mealplanning.Recipe{
-			Name:                t.Name(),
-			Slug:                "whatever-who-cares-yadda-yadda-vessels",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         t.Name(),
-			PluralPortionName:   t.Name(),
-			EstimatedPortions: numbers.MinRange[float32]{
-				Max: nil,
-				Min: 1,
-			},
+			Name:                 t.Name(),
+			Slug:                 "whatever-who-cares-yadda-yadda-vessels",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          t.Name(),
+			PluralPortionName:    t.Name(),
+			MinEstimatedPortions: 1,
+
+			MaxEstimatedPortions: nil,
 			Steps: []*mealplanning.RecipeStep{
 				{
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:            linedBakingSheetName,
-							Type:            mealplanning.RecipeStepProductVesselType,
-							MeasurementUnit: unit,
-							QuantityNotes:   "",
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Max: nil,
-								Min: new(float32(1)),
-							},
+							Name:                   linedBakingSheetName,
+							Type:                   mealplanning.RecipeStepProductVesselType,
+							MeasurementUnit:        unit,
+							QuantityNotes:          "",
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Notes:       "first step",
@@ -212,20 +207,18 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Ingredient:          aluminumFoil,
 							Name:                "aluminum foil",
 							MeasurementUnit:     *sheets,
-							Quantity: numbers.MinRange[float32]{
-								Max: nil,
-								Min: 3,
-							},
+							MinQuantity:         3,
+
+							MaxQuantity: nil,
 						},
 					},
 					Vessels: []*mealplanning.RecipeStepVessel{
 						{
-							Vessel: bakingSheet,
-							Name:   "baking sheet",
-							Quantity: numbers.MinRange[uint16]{
-								Max: nil,
-								Min: 1,
-							},
+							Vessel:      bakingSheet,
+							Name:        "baking sheet",
+							MinQuantity: 1,
+
+							MaxQuantity: nil,
 						},
 					},
 					Index: 0,
@@ -240,14 +233,11 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:            "roasted garlic",
-							Type:            mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnit: head,
-							QuantityNotes:   "",
-							MeasurementQuantity: numbers.OpenRange[float32]{
-								Max: nil,
-								Min: new(float32(1)),
-							},
+							Name:                   "roasted garlic",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit:        head,
+							QuantityNotes:          "",
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Notes: "second step",
@@ -256,10 +246,9 @@ func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
 							Ingredient:      garlic,
 							Name:            "garlic",
 							MeasurementUnit: *head,
-							Quantity: numbers.MinRange[float32]{
-								Max: nil,
-								Min: 1,
-							},
+							MinQuantity:     1,
+
+							MaxQuantity: nil,
 						},
 					},
 					Index: 1,

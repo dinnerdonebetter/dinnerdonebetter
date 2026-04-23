@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -120,15 +119,6 @@ type (
 		CreateRecipeStepCompletionCondition(ctx context.Context, input *RecipeStepCompletionConditionDatabaseCreationInput) (*RecipeStepCompletionCondition, error)
 		UpdateRecipeStepCompletionCondition(ctx context.Context, updated *RecipeStepCompletionCondition) error
 		ArchiveRecipeStepCompletionCondition(ctx context.Context, recipeStepID, recipeStepIngredientID string) error
-	}
-
-	// RecipeStepCompletionConditionDataService describes a structure capable of serving traffic related to recipe step completion conditions.
-	RecipeStepCompletionConditionDataService interface {
-		ListRecipeStepCompletionConditionsHandler(http.ResponseWriter, *http.Request)
-		CreateRecipeStepCompletionConditionHandler(http.ResponseWriter, *http.Request)
-		ReadRecipeStepCompletionConditionHandler(http.ResponseWriter, *http.Request)
-		UpdateRecipeStepCompletionConditionHandler(http.ResponseWriter, *http.Request)
-		ArchiveRecipeStepCompletionConditionHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

@@ -4,31 +4,24 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertValidPreparationToValidPreparationUpdateRequestInput creates a ValidPreparationUpdateRequestInput from a ValidPreparation.
 func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *mealplanning.ValidPreparation) *mealplanning.ValidPreparationUpdateRequestInput {
 	x := &mealplanning.ValidPreparationUpdateRequestInput{
-		Name:                  &input.Name,
-		Description:           &input.Description,
-		IconPath:              &input.IconPath,
-		YieldsNothing:         &input.YieldsNothing,
-		RestrictToIngredients: &input.RestrictToIngredients,
-		Slug:                  &input.Slug,
-		PastTense:             &input.PastTense,
-		IngredientCount: numbers.OpenRangeUpdateRequestInput[uint16]{
-			Max: input.IngredientCount.Max,
-			Min: &input.IngredientCount.Min,
-		},
-		InstrumentCount: numbers.OpenRangeUpdateRequestInput[uint16]{
-			Max: input.InstrumentCount.Max,
-			Min: &input.InstrumentCount.Min,
-		},
-		VesselCount: numbers.OpenRangeUpdateRequestInput[uint16]{
-			Max: input.VesselCount.Max,
-			Min: &input.VesselCount.Min,
-		},
+		Name:                        &input.Name,
+		Description:                 &input.Description,
+		IconPath:                    &input.IconPath,
+		YieldsNothing:               &input.YieldsNothing,
+		RestrictToIngredients:       &input.RestrictToIngredients,
+		Slug:                        &input.Slug,
+		PastTense:                   &input.PastTense,
+		MinIngredientCount:          &input.MinIngredientCount,
+		MaxIngredientCount:          input.MaxIngredientCount,
+		MinInstrumentCount:          &input.MinInstrumentCount,
+		MaxInstrumentCount:          input.MaxInstrumentCount,
+		MinVesselCount:              &input.MinVesselCount,
+		MaxVesselCount:              input.MaxVesselCount,
 		TemperatureRequired:         &input.TemperatureRequired,
 		TimeEstimateRequired:        &input.TimeEstimateRequired,
 		ConditionExpressionRequired: &input.ConditionExpressionRequired,
@@ -42,26 +35,20 @@ func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *mealplan
 // ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput creates a ValidPreparationDatabaseCreationInput from a ValidPreparationCreationRequestInput.
 func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput(input *mealplanning.ValidPreparationCreationRequestInput) *mealplanning.ValidPreparationDatabaseCreationInput {
 	x := &mealplanning.ValidPreparationDatabaseCreationInput{
-		ID:                    identifiers.New(),
-		Name:                  input.Name,
-		Description:           input.Description,
-		IconPath:              input.IconPath,
-		YieldsNothing:         input.YieldsNothing,
-		RestrictToIngredients: input.RestrictToIngredients,
-		Slug:                  input.Slug,
-		PastTense:             input.PastTense,
-		IngredientCount: numbers.MinRange[uint16]{
-			Max: input.IngredientCount.Max,
-			Min: input.IngredientCount.Min,
-		},
-		InstrumentCount: numbers.MinRange[uint16]{
-			Max: input.InstrumentCount.Max,
-			Min: input.InstrumentCount.Min,
-		},
-		VesselCount: numbers.MinRange[uint16]{
-			Max: input.VesselCount.Max,
-			Min: input.VesselCount.Min,
-		},
+		ID:                          identifiers.New(),
+		Name:                        input.Name,
+		Description:                 input.Description,
+		IconPath:                    input.IconPath,
+		YieldsNothing:               input.YieldsNothing,
+		RestrictToIngredients:       input.RestrictToIngredients,
+		Slug:                        input.Slug,
+		PastTense:                   input.PastTense,
+		MinIngredientCount:          input.MinIngredientCount,
+		MaxIngredientCount:          input.MaxIngredientCount,
+		MinInstrumentCount:          input.MinInstrumentCount,
+		MaxInstrumentCount:          input.MaxInstrumentCount,
+		MinVesselCount:              input.MinVesselCount,
+		MaxVesselCount:              input.MaxVesselCount,
 		TemperatureRequired:         input.TemperatureRequired,
 		TimeEstimateRequired:        input.TimeEstimateRequired,
 		ConditionExpressionRequired: input.ConditionExpressionRequired,
@@ -75,25 +62,19 @@ func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreati
 // ConvertValidPreparationToValidPreparationCreationRequestInput builds a ValidPreparationCreationRequestInput from a ValidPreparation.
 func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparation *mealplanning.ValidPreparation) *mealplanning.ValidPreparationCreationRequestInput {
 	return &mealplanning.ValidPreparationCreationRequestInput{
-		Name:                  validPreparation.Name,
-		Description:           validPreparation.Description,
-		IconPath:              validPreparation.IconPath,
-		YieldsNothing:         validPreparation.YieldsNothing,
-		RestrictToIngredients: validPreparation.RestrictToIngredients,
-		Slug:                  validPreparation.Slug,
-		PastTense:             validPreparation.PastTense,
-		IngredientCount: numbers.MinRange[uint16]{
-			Max: validPreparation.IngredientCount.Max,
-			Min: validPreparation.IngredientCount.Min,
-		},
-		InstrumentCount: numbers.MinRange[uint16]{
-			Max: validPreparation.InstrumentCount.Max,
-			Min: validPreparation.InstrumentCount.Min,
-		},
-		VesselCount: numbers.MinRange[uint16]{
-			Max: validPreparation.VesselCount.Max,
-			Min: validPreparation.VesselCount.Min,
-		},
+		Name:                        validPreparation.Name,
+		Description:                 validPreparation.Description,
+		IconPath:                    validPreparation.IconPath,
+		YieldsNothing:               validPreparation.YieldsNothing,
+		RestrictToIngredients:       validPreparation.RestrictToIngredients,
+		Slug:                        validPreparation.Slug,
+		PastTense:                   validPreparation.PastTense,
+		MinIngredientCount:          validPreparation.MinIngredientCount,
+		MaxIngredientCount:          validPreparation.MaxIngredientCount,
+		MinInstrumentCount:          validPreparation.MinInstrumentCount,
+		MaxInstrumentCount:          validPreparation.MaxInstrumentCount,
+		MinVesselCount:              validPreparation.MinVesselCount,
+		MaxVesselCount:              validPreparation.MaxVesselCount,
 		TemperatureRequired:         validPreparation.TemperatureRequired,
 		TimeEstimateRequired:        validPreparation.TimeEstimateRequired,
 		ConditionExpressionRequired: validPreparation.ConditionExpressionRequired,
@@ -105,26 +86,20 @@ func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparat
 // ConvertValidPreparationToValidPreparationDatabaseCreationInput builds a ValidPreparationDatabaseCreationInput from a ValidPreparation.
 func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPreparation *mealplanning.ValidPreparation) *mealplanning.ValidPreparationDatabaseCreationInput {
 	return &mealplanning.ValidPreparationDatabaseCreationInput{
-		ID:                    validPreparation.ID,
-		Name:                  validPreparation.Name,
-		Description:           validPreparation.Description,
-		IconPath:              validPreparation.IconPath,
-		YieldsNothing:         validPreparation.YieldsNothing,
-		RestrictToIngredients: validPreparation.RestrictToIngredients,
-		Slug:                  validPreparation.Slug,
-		PastTense:             validPreparation.PastTense,
-		IngredientCount: numbers.MinRange[uint16]{
-			Max: validPreparation.IngredientCount.Max,
-			Min: validPreparation.IngredientCount.Min,
-		},
-		InstrumentCount: numbers.MinRange[uint16]{
-			Max: validPreparation.InstrumentCount.Max,
-			Min: validPreparation.InstrumentCount.Min,
-		},
-		VesselCount: numbers.MinRange[uint16]{
-			Max: validPreparation.VesselCount.Max,
-			Min: validPreparation.VesselCount.Min,
-		},
+		ID:                          validPreparation.ID,
+		Name:                        validPreparation.Name,
+		Description:                 validPreparation.Description,
+		IconPath:                    validPreparation.IconPath,
+		YieldsNothing:               validPreparation.YieldsNothing,
+		RestrictToIngredients:       validPreparation.RestrictToIngredients,
+		Slug:                        validPreparation.Slug,
+		PastTense:                   validPreparation.PastTense,
+		MinIngredientCount:          validPreparation.MinIngredientCount,
+		MaxIngredientCount:          validPreparation.MaxIngredientCount,
+		MinInstrumentCount:          validPreparation.MinInstrumentCount,
+		MaxInstrumentCount:          validPreparation.MaxInstrumentCount,
+		MinVesselCount:              validPreparation.MinVesselCount,
+		MaxVesselCount:              validPreparation.MaxVesselCount,
 		TemperatureRequired:         validPreparation.TemperatureRequired,
 		TimeEstimateRequired:        validPreparation.TimeEstimateRequired,
 		ConditionExpressionRequired: validPreparation.ConditionExpressionRequired,

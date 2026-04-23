@@ -11,6 +11,7 @@ import (
 
 // BuildFakeRecipeStepInstrument builds a faked recipe step instrument.
 func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
+	minQty, maxQty := BuildFakeUint32WithOptionalMax()
 	return &types.RecipeStepInstrument{
 		ID:                  BuildFakeID(),
 		Instrument:          BuildFakeValidInstrument(),
@@ -23,7 +24,8 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		Index:               0,
 		OptionIndex:         0,
 		Optional:            fake.Bool(),
-		Quantity:            BuildFakeUint32RangeWithOptionalMax(),
+		MinQuantity:         minQty,
+		MaxQuantity:         maxQty,
 		ScaleFactor:         1.0,
 	}
 }

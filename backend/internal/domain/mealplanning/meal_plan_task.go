@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -115,14 +114,6 @@ type (
 		PrepTaskName        string
 		CreationExplanation string
 		MealName            string
-	}
-
-	// MealPlanTaskDataService describes a structure capable of serving traffic related to meal plan tasks.
-	MealPlanTaskDataService interface {
-		ListMealPlanTasksByMealPlanHandler(http.ResponseWriter, *http.Request)
-		ReadMealPlanTaskHandler(http.ResponseWriter, *http.Request)
-		CreateMealPlanTaskHandler(http.ResponseWriter, *http.Request)
-		MealPlanTaskStatusChangeHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

@@ -31,21 +31,4 @@ type (
 		IngredientMediaDataManager
 		UploadedMediaFetcher
 	}
-
-	ValidEnumerationDataService interface {
-		ValidIngredientGroupDataService
-		ValidIngredientMeasurementUnitDataService
-		ValidIngredientPreparationDataService
-		ValidPrepTaskConfigDataService
-		ValidIngredientDataService
-		ValidIngredientStateIngredientDataService
-		ValidIngredientStateDataService
-		ValidMeasurementUnitDataService
-		ValidInstrumentDataService
-		ValidMeasurementUnitConversionDataService
-		ValidPreparationInstrumentDataService
-		ValidPreparationDataService
-		ValidPreparationVesselDataService
-		ValidVesselDataService
-	}
 )

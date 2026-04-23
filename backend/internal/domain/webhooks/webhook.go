@@ -160,16 +160,6 @@ type (
 		UpdateWebhookTriggerEvent(ctx context.Context, id string, input *WebhookTriggerEventUpdateRequestInput) error
 		ArchiveWebhookTriggerEvent(ctx context.Context, id string) error
 	}
-
-	// WebhookDataService describes a structure capable of serving traffic related to webhooks.
-	WebhookDataService interface {
-		ListWebhooksHandler(http.ResponseWriter, *http.Request)
-		CreateWebhookHandler(http.ResponseWriter, *http.Request)
-		ReadWebhookHandler(http.ResponseWriter, *http.Request)
-		ArchiveWebhookHandler(http.ResponseWriter, *http.Request)
-		AddWebhookTriggerConfigHandler(http.ResponseWriter, *http.Request)
-		ArchiveWebhookTriggerConfigHandler(http.ResponseWriter, *http.Request)
-	}
 )
 
 var _ validation.ValidatableWithContext = (*WebhookCreationRequestInput)(nil)

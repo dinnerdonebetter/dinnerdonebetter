@@ -11,27 +11,36 @@ import (
 
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
-	p := &types.RecipeStepProduct{
-		ID:                          BuildFakeID(),
-		Name:                        buildUniqueString(),
-		Type:                        types.RecipeStepProductIngredientType,
-		QuantityNotes:               buildUniqueString(),
-		MeasurementUnit:             BuildFakeValidMeasurementUnit(),
-		CreatedAt:                   BuildFakeTime(),
-		BelongsToRecipeStep:         fake.UUID(),
-		Compostable:                 fake.Bool(),
-		IsLiquid:                    fake.Bool(),
-		IsWaste:                     fake.Bool(),
-		MeasurementQuantity:         BuildFakeOptionalFloat32Range(),
-		StorageDurationInSeconds:    BuildFakeOptionalUint32Range(),
-		StorageTemperatureInCelsius: BuildFakeOptionalFloat32Range(),
-		StorageInstructions:         buildUniqueString(),
-		Index:                       fake.Uint16(),
-		ContainedInVesselIndex:      new(fake.Uint16()),
-	}
+	measurementMin := float32(buildFakeNumber())
+	measurementMax := measurementMin + float32(buildFakeNumber())
+	itemMin := float32(buildFakeNumber())
+	itemMax := itemMin + float32(buildFakeNumber())
+	storageTempMin := float32(buildFakeNumber())
+	storageTempMax := storageTempMin + float32(buildFakeNumber())
+	storageDurationMax := uint32(buildFakeNumber())
 
-	// TODO: there's no database field for this
-	p.StorageDurationInSeconds.Min = nil
+	p := &types.RecipeStepProduct{
+		ID:                             BuildFakeID(),
+		Name:                           buildUniqueString(),
+		Type:                           types.RecipeStepProductIngredientType,
+		QuantityNotes:                  buildUniqueString(),
+		MeasurementUnit:                BuildFakeValidMeasurementUnit(),
+		CreatedAt:                      BuildFakeTime(),
+		BelongsToRecipeStep:            fake.UUID(),
+		Compostable:                    fake.Bool(),
+		IsLiquid:                       fake.Bool(),
+		IsWaste:                        fake.Bool(),
+		MinMeasurementQuantity:         &measurementMin,
+		MaxMeasurementQuantity:         &measurementMax,
+		MinItemQuantity:                &itemMin,
+		MaxItemQuantity:                &itemMax,
+		MinStorageTemperatureInCelsius: &storageTempMin,
+		MaxStorageTemperatureInCelsius: &storageTempMax,
+		MaxStorageDurationInSeconds:    &storageDurationMax,
+		StorageInstructions:            buildUniqueString(),
+		Index:                          fake.Uint16(),
+		ContainedInVesselIndex:         new(fake.Uint16()),
+	}
 
 	return p
 }

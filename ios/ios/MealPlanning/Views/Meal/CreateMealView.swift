@@ -252,9 +252,9 @@ struct CreateMealView: View {
               get: { component.recipeScale },
               set: { viewModel.setRecipeScale($0, for: component.id) }
             ),
-            estimatedPortions: component.recipe.hasEstimatedPortions
-              ? component.recipe.estimatedPortions
-              : nil
+            estimatedPortionsMin: component.recipe.minEstimatedPortions,
+            estimatedPortionsMax: component.recipe.hasMaxEstimatedPortions
+              ? component.recipe.maxEstimatedPortions : nil
           )
           .frame(maxWidth: .infinity)
         }

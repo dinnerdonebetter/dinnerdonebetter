@@ -9,14 +9,13 @@ import (
 // ConvertRecipeRatingToRecipeRatingUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeRatingToRecipeRatingUpdateRequestInput(x *types.RecipeRating) *types.RecipeRatingUpdateRequestInput {
 	out := &types.RecipeRatingUpdateRequestInput{
-		RecipeID:     &x.RecipeID,
-		Taste:        &x.Taste,
-		Difficulty:   &x.Difficulty,
-		Cleanup:      &x.Cleanup,
-		Instructions: &x.Instructions,
-		Overall:      &x.Overall,
-		Notes:        &x.Notes,
-		ByUser:       &x.ByUser,
+		BelongsToRecipe: &x.BelongsToRecipe,
+		Taste:           &x.Taste,
+		Difficulty:      &x.Difficulty,
+		Cleanup:         &x.Cleanup,
+		Instructions:    &x.Instructions,
+		Overall:         &x.Overall,
+		Notes:           &x.Notes,
 	}
 
 	return out
@@ -25,15 +24,15 @@ func ConvertRecipeRatingToRecipeRatingUpdateRequestInput(x *types.RecipeRating) 
 // ConvertRecipeRatingCreationRequestInputToRecipeRatingDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeRatingCreationRequestInputToRecipeRatingDatabaseCreationInput(x *types.RecipeRatingCreationRequestInput) *types.RecipeRatingDatabaseCreationInput {
 	out := &types.RecipeRatingDatabaseCreationInput{
-		ID:           identifiers.New(),
-		RecipeID:     x.RecipeID,
-		Notes:        x.Notes,
-		ByUser:       x.ByUser,
-		Taste:        x.Taste,
-		Difficulty:   x.Difficulty,
-		Cleanup:      x.Cleanup,
-		Instructions: x.Instructions,
-		Overall:      x.Overall,
+		ID:              identifiers.New(),
+		BelongsToRecipe: x.BelongsToRecipe,
+		Notes:           x.Notes,
+		CreatedByUser:   x.CreatedByUser,
+		Taste:           x.Taste,
+		Difficulty:      x.Difficulty,
+		Cleanup:         x.Cleanup,
+		Instructions:    x.Instructions,
+		Overall:         x.Overall,
 	}
 
 	return out
@@ -42,28 +41,28 @@ func ConvertRecipeRatingCreationRequestInputToRecipeRatingDatabaseCreationInput(
 // ConvertRecipeRatingToRecipeRatingCreationRequestInput builds a RecipeRatingCreationRequestInput from a Ingredient.
 func ConvertRecipeRatingToRecipeRatingCreationRequestInput(x *types.RecipeRating) *types.RecipeRatingCreationRequestInput {
 	return &types.RecipeRatingCreationRequestInput{
-		RecipeID:     x.RecipeID,
-		Notes:        x.Notes,
-		ByUser:       x.ByUser,
-		Taste:        x.Taste,
-		Difficulty:   x.Difficulty,
-		Cleanup:      x.Cleanup,
-		Instructions: x.Instructions,
-		Overall:      x.Overall,
+		BelongsToRecipe: x.BelongsToRecipe,
+		Notes:           x.Notes,
+		CreatedByUser:   x.CreatedByUser,
+		Taste:           x.Taste,
+		Difficulty:      x.Difficulty,
+		Cleanup:         x.Cleanup,
+		Instructions:    x.Instructions,
+		Overall:         x.Overall,
 	}
 }
 
 // ConvertRecipeRatingToRecipeRatingDatabaseCreationInput builds a RecipeRatingDatabaseCreationInput from a RecipeRating.
 func ConvertRecipeRatingToRecipeRatingDatabaseCreationInput(x *types.RecipeRating) *types.RecipeRatingDatabaseCreationInput {
 	return &types.RecipeRatingDatabaseCreationInput{
-		ID:           x.ID,
-		RecipeID:     x.RecipeID,
-		Notes:        x.Notes,
-		ByUser:       x.ByUser,
-		Taste:        x.Taste,
-		Difficulty:   x.Difficulty,
-		Cleanup:      x.Cleanup,
-		Instructions: x.Instructions,
-		Overall:      x.Overall,
+		ID:              x.ID,
+		BelongsToRecipe: x.BelongsToRecipe,
+		Notes:           x.Notes,
+		CreatedByUser:   x.CreatedByUser,
+		Taste:           x.Taste,
+		Difficulty:      x.Difficulty,
+		Cleanup:         x.Cleanup,
+		Instructions:    x.Instructions,
+		Overall:         x.Overall,
 	}
 }

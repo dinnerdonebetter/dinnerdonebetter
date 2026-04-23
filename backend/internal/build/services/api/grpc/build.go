@@ -5,7 +5,6 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
-	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	auditmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/manager"
 	authmgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/managers"
@@ -54,6 +53,7 @@ import (
 	webhookssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
 	"github.com/primandproper/platform/analytics/multisource"
+	tokenscfg "github.com/primandproper/platform/authentication/tokens/config"
 	databasecfg "github.com/primandproper/platform/database/config"
 	featureflagscfg "github.com/primandproper/platform/featureflags/config"
 	"github.com/primandproper/platform/httpclient"

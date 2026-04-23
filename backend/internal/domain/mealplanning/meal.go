@@ -4,11 +4,9 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
-	"github.com/primandproper/platform/numbers"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -57,16 +55,17 @@ type (
 	Meal struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt            time.Time                 `json:"createdAt"`
-		ArchivedAt           *time.Time                `json:"archivedAt"`
-		LastUpdatedAt        *time.Time                `json:"lastUpdatedAt"`
-		EstimatedPortions    numbers.MinRange[float32] `json:"estimatedPortions"`
-		ID                   string                    `json:"id"`
-		Description          string                    `json:"description"`
-		CreatedByUser        string                    `json:"createdByUser"`
-		Name                 string                    `json:"name"`
-		Components           []*MealComponent          `json:"components"`
-		EligibleForMealPlans bool                      `json:"eligibleForMealPlans"`
+		CreatedAt            time.Time        `json:"createdAt"`
+		ArchivedAt           *time.Time       `json:"archivedAt"`
+		LastUpdatedAt        *time.Time       `json:"lastUpdatedAt"`
+		MaxEstimatedPortions *float32         `json:"maxEstimatedPortions,omitempty"`
+		ID                   string           `json:"id"`
+		Description          string           `json:"description"`
+		CreatedByUser        string           `json:"createdByUser"`
+		Name                 string           `json:"name"`
+		Components           []*MealComponent `json:"components"`
+		MinEstimatedPortions float32          `json:"minEstimatedPortions"`
+		EligibleForMealPlans bool             `json:"eligibleForMealPlans"`
 	}
 
 	// MealComponent is a recipe with some extra data attached to it.
@@ -82,10 +81,11 @@ type (
 	MealCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedPortions    numbers.MinRange[float32]            `json:"estimatedPortions"`
+		MaxEstimatedPortions *float32                             `json:"maxEstimatedPortions,omitempty"`
 		Name                 string                               `json:"name"`
 		Description          string                               `json:"description"`
 		Components           []*MealComponentCreationRequestInput `json:"components"`
+		MinEstimatedPortions float32                              `json:"minEstimatedPortions"`
 		EligibleForMealPlans bool                                 `json:"eligibleForMealPlans"`
 	}
 
@@ -102,12 +102,13 @@ type (
 	MealDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedPortions    numbers.MinRange[float32]             `json:"-"`
+		MaxEstimatedPortions *float32                              `json:"-"`
 		ID                   string                                `json:"-"`
 		Name                 string                                `json:"-"`
 		Description          string                                `json:"-"`
 		CreatedByUser        string                                `json:"-"`
 		Components           []*MealComponentDatabaseCreationInput `json:"-"`
+		MinEstimatedPortions float32                               `json:"-"`
 		EligibleForMealPlans bool                                  `json:"-"`
 	}
 
@@ -124,12 +125,13 @@ type (
 	MealUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Name                 *string                                      `json:"name,omitempty"`
-		Description          *string                                      `json:"description,omitempty"`
-		CreatedByUser        *string                                      `json:"-"`
-		EstimatedPortions    numbers.OpenRangeUpdateRequestInput[float32] `json:"estimatedPortions"`
-		EligibleForMealPlans *bool                                        `json:"eligibleForMealPlans"`
-		Components           []*MealComponentUpdateRequestInput           `json:"recipes,omitempty"`
+		Name                 *string                            `json:"name,omitempty"`
+		Description          *string                            `json:"description,omitempty"`
+		CreatedByUser        *string                            `json:"-"`
+		MinEstimatedPortions *float32                           `json:"minEstimatedPortions,omitempty"`
+		MaxEstimatedPortions *float32                           `json:"maxEstimatedPortions,omitempty"`
+		EligibleForMealPlans *bool                              `json:"eligibleForMealPlans"`
+		Components           []*MealComponentUpdateRequestInput `json:"recipes,omitempty"`
 	}
 
 	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.
@@ -156,15 +158,6 @@ type (
 		GetMealsWithIDs(ctx context.Context, ids []string) ([]*Meal, error)
 		AddMealImage(ctx context.Context, mealID, uploadedMediaID, uploadedByUser string) error
 	}
-
-	// MealDataService describes a structure capable of serving traffic related to meals.
-	MealDataService interface {
-		ListMealsHandler(http.ResponseWriter, *http.Request)
-		CreateMealHandler(http.ResponseWriter, *http.Request)
-		ReadMealHandler(http.ResponseWriter, *http.Request)
-		SearchMealsHandler(http.ResponseWriter, *http.Request)
-		ArchiveMealHandler(http.ResponseWriter, *http.Request)
-	}
 )
 
 // Update merges an MealUpdateRequestInput with a meal.
@@ -177,12 +170,12 @@ func (x *Meal) Update(input *MealUpdateRequestInput) {
 		x.Description = *input.Description
 	}
 
-	if input.EstimatedPortions.Min != nil && *input.EstimatedPortions.Min != x.EstimatedPortions.Min {
-		x.EstimatedPortions.Min = *input.EstimatedPortions.Min
+	if input.MinEstimatedPortions != nil && *input.MinEstimatedPortions != x.MinEstimatedPortions {
+		x.MinEstimatedPortions = *input.MinEstimatedPortions
 	}
 
-	if input.EstimatedPortions.Max != nil && input.EstimatedPortions.Max != x.EstimatedPortions.Max {
-		x.EstimatedPortions.Max = input.EstimatedPortions.Max
+	if input.MaxEstimatedPortions != nil && (x.MaxEstimatedPortions == nil || *input.MaxEstimatedPortions != *x.MaxEstimatedPortions) {
+		x.MaxEstimatedPortions = input.MaxEstimatedPortions
 	}
 
 	if input.EligibleForMealPlans != nil && *input.EligibleForMealPlans != x.EligibleForMealPlans {

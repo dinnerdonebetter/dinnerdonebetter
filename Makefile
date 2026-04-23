@@ -108,8 +108,14 @@ test:
 	(cd frontend && $(MAKE) test)
 	(cd ios && $(MAKE) test)
 
+.PHONY: build
+build:
+	(cd backend && $(MAKE) build)
+	(cd frontend && $(MAKE) build)
+	(cd ios && $(MAKE) build)
+
 .PHONY: pre_commit
-pre_commit: proto format test lint
+pre_commit: proto build format test lint
 	(cd backend && $($MAKE) generated_files)
 
 # ──────────────────────────────────────────────────────────────────────────────

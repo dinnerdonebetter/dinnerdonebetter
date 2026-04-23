@@ -4,21 +4,18 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 )
 
 // ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput creates a RecipeStepVesselUpdateRequestInput from a RecipeStepVessel.
 func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselUpdateRequestInput {
 	x := &mealplanning.RecipeStepVesselUpdateRequestInput{
-		VesselID:            &input.Vessel.ID,
-		Notes:               &input.Notes,
-		RecipeStepProductID: input.RecipeStepProductID,
-		Name:                &input.Name,
-		BelongsToRecipeStep: &input.BelongsToRecipeStep,
-		Quantity: numbers.OpenRangeUpdateRequestInput[uint16]{
-			Min: &input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
+		VesselID:             &input.Vessel.ID,
+		Notes:                &input.Notes,
+		RecipeStepProductID:  input.RecipeStepProductID,
+		Name:                 &input.Name,
+		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
+		MinQuantity:          &input.MinQuantity,
+		MaxQuantity:          input.MaxQuantity,
 		Index:                &input.Index,
 		OptionIndex:          &input.OptionIndex,
 		VesselPreposition:    &input.VesselPreposition,
@@ -43,7 +40,8 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 		RecipeStepProductID:             input.RecipeStepProductID,
 		Name:                            input.Name,
 		Notes:                           input.Notes,
-		Quantity:                        input.Quantity,
+		MinQuantity:                     input.MinQuantity,
+		MaxQuantity:                     input.MaxQuantity,
 		Index:                           index,
 		OptionIndex:                     input.OptionIndex,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
@@ -72,7 +70,8 @@ func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealpl
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		Index:                indexPtr,
 		OptionIndex:          input.OptionIndex,
-		Quantity:             input.Quantity,
+		MinQuantity:          input.MinQuantity,
+		MaxQuantity:          input.MaxQuantity,
 		ScaleFactor:          input.ScaleFactor,
 	}
 }
@@ -95,7 +94,8 @@ func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *mealp
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		Index:                input.Index,
 		OptionIndex:          input.OptionIndex,
-		Quantity:             input.Quantity,
+		MinQuantity:          input.MinQuantity,
+		MaxQuantity:          input.MaxQuantity,
 		ScaleFactor:          scaleFactorOrDefault(input.ScaleFactor),
 	}
 }

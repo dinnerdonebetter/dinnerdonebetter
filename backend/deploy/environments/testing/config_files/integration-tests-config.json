@@ -153,6 +153,7 @@
 		"passkey": {},
 		"tokens": {
 			"provider": "",
+			"issuer": "",
 			"audience": "",
 			"base64EncodedSigningKey": "",
 			"maxAccessTokenLifetime": 0,
@@ -260,6 +261,7 @@
 		"auth": {
 			"tokens": {
 				"provider": "paseto",
+				"issuer": "dinner-done-better",
 				"audience": "https://api.dinnerdonebetter.dev",
 				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
 				"maxAccessTokenLifetime": 0,

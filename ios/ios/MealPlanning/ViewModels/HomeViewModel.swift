@@ -198,8 +198,7 @@ class HomeViewModel {
         + tasks.filter { task in
           guard task.status == .unfinished else { return false }
           guard task.hasRecipePrepTask,
-            task.recipePrepTask.hasTimeBufferBeforeRecipeInSeconds,
-            task.recipePrepTask.timeBufferBeforeRecipeInSeconds.hasMax,
+            task.recipePrepTask.hasMaxTimeBufferBeforeRecipeInSeconds,
             task.hasMealPlanOption
           else { return true }
           let eventID = task.mealPlanOption.belongsToMealPlanEvent
@@ -208,7 +207,7 @@ class HomeViewModel {
           else { return true }
           let eventTime = Self.timestampToDate(event.startsAt)
           let startDate = eventTime.addingTimeInterval(
-            -Double(task.recipePrepTask.timeBufferBeforeRecipeInSeconds.max))
+            -Double(task.recipePrepTask.maxTimeBufferBeforeRecipeInSeconds))
           return now >= startDate
         }.count
     }
@@ -254,12 +253,6 @@ class HomeViewModel {
     errorIconColor = DSTheme.Colors.warning
     isServerDownError = false
 
-    if APIConfiguration.currentEnvironment.isOffline {
-      // In offline mode we have no meal plans, tasks, or grocery lists
-      isLoading = false
-      return
-    }
-
     do {
       // Fetch current user for welcome message
       if let user = try? await fetchCurrentUser() {
@@ -269,9 +262,6 @@ class HomeViewModel {
       // First fetch meal plans
       let mealPlans = try await fetchMealPlans()
       self.allMealPlans = mealPlans
-
-      // Log pending vote meal plans count
-      let pendingCount = pendingVoteMealPlans.count
 
       // Then fetch tasks (which needs meal plans to be loaded)
       let tasks = try await fetchUserTasks()

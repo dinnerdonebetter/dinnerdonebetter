@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -123,16 +122,6 @@ type (
 		GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*FinalizedMealPlanDatabaseResult, error)
 		GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*MealPlan, error)
 		GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*MealPlan, error)
-	}
-
-	// MealPlanDataService describes a structure capable of serving traffic related to meal plans.
-	MealPlanDataService interface {
-		ListMealPlanHandler(http.ResponseWriter, *http.Request)
-		CreateMealPlanHandler(http.ResponseWriter, *http.Request)
-		ReadMealPlanHandler(http.ResponseWriter, *http.Request)
-		UpdateMealPlanHandler(http.ResponseWriter, *http.Request)
-		ArchiveMealPlanHandler(http.ResponseWriter, *http.Request)
-		FinalizeMealPlanHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

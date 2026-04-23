@@ -26,8 +26,6 @@ func RegisterMealPlanningService(i do.Injector) {
 		return NewService(
 			do.MustInvoke[logging.Logger](i),
 			do.MustInvoke[tracing.TracerProvider](i),
-			do.MustInvoke[managers.RecipeManager](i),
-			do.MustInvoke[managers.ValidEnumerationsManager](i),
 			do.MustInvoke[managers.MealPlanningManager](i),
 			do.MustInvoke[*mealplanfinalizer.Worker](i),
 			do.MustInvoke[*mealplangrocerylistinitializer.Worker](i),

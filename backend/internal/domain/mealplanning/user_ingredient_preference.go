@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -39,7 +38,7 @@ type (
 		ArchivedAt    *time.Time      `json:"archivedAt"`
 		ID            string          `json:"id"`
 		Notes         string          `json:"notes"`
-		BelongsToUser string          `json:"belongsToUser"`
+		CreatedByUser string          `json:"createdByUser"`
 		Ingredient    ValidIngredient `json:"ingredient"`
 		Rating        int8            `json:"rating"`
 		Allergy       bool            `json:"allergy"`
@@ -63,7 +62,7 @@ type (
 		ValidIngredientGroupID string `json:"-"`
 		ValidIngredientID      string `json:"-"`
 		Notes                  string `json:"-"`
-		BelongsToUser          string `json:"-"`
+		CreatedByUser          string `json:"-"`
 		Rating                 int8   `json:"-"`
 		Allergy                bool   `json:"-"`
 	}
@@ -86,14 +85,6 @@ type (
 		CreateUserIngredientPreference(ctx context.Context, input *UserIngredientPreferenceDatabaseCreationInput) ([]*UserIngredientPreference, error)
 		UpdateUserIngredientPreference(ctx context.Context, updated *UserIngredientPreference) error
 		ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error
-	}
-
-	// UserIngredientPreferenceDataService describes a structure capable of serving traffic related to user ingredient preferences.
-	UserIngredientPreferenceDataService interface {
-		ListUserIngredientPreferencesHandler(http.ResponseWriter, *http.Request)
-		CreateUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
-		UpdateUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
-		ArchiveUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
@@ -138,7 +129,7 @@ func (x *UserIngredientPreferenceDatabaseCreationInput) ValidateWithContext(ctx 
 		x,
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.Rating, validation.Min(minRating), validation.Max(maxRating)),
-		validation.Field(&x.BelongsToUser, validation.Required),
+		validation.Field(&x.CreatedByUser, validation.Required),
 	)
 }
 

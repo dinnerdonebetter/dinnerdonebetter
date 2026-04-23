@@ -103,7 +103,7 @@ SELECT
 	meals.archived_at,
 	meals.created_by_user,
 	meal_components.id as component_id,
-	meal_components.meal_id as component_meal_id,
+	meal_components.belongs_to_meal as component_belongs_to_meal,
 	meal_components.recipe_id as component_recipe_id,
 	meal_components.meal_component_type as component_meal_component_type,
 	meal_components.recipe_scale as component_recipe_scale,
@@ -111,7 +111,7 @@ SELECT
 	meal_components.last_updated_at as component_last_updated_at,
 	meal_components.archived_at as component_archived_at
 FROM meals
-	JOIN meal_components ON meal_components.meal_id=meals.id
+	JOIN meal_components ON meal_components.belongs_to_meal=meals.id
 		AND meal_components.archived_at IS NULL
 		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE meals.archived_at IS NULL
@@ -131,7 +131,7 @@ type GetMealRow struct {
 	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                string
-	ComponentMealID            string
+	ComponentBelongsToMeal     string
 	ComponentRecipeID          string
 	ComponentMealComponentType ComponentType
 	ComponentRecipeScale       string
@@ -162,7 +162,7 @@ func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRo
 			&i.ArchivedAt,
 			&i.CreatedByUser,
 			&i.ComponentID,
-			&i.ComponentMealID,
+			&i.ComponentBelongsToMeal,
 			&i.ComponentRecipeID,
 			&i.ComponentMealComponentType,
 			&i.ComponentRecipeScale,
@@ -197,7 +197,7 @@ SELECT
 	meals.archived_at,
 	meals.created_by_user,
 	meal_components.id as component_id,
-	meal_components.meal_id as component_meal_id,
+	meal_components.belongs_to_meal as component_belongs_to_meal,
 	meal_components.recipe_id as component_recipe_id,
 	meal_components.meal_component_type as component_meal_component_type,
 	meal_components.recipe_scale as component_recipe_scale,
@@ -227,7 +227,7 @@ SELECT
 		WHERE meals.archived_at IS NULL
 	) AS total_count
 FROM meals
-	LEFT JOIN meal_components ON meal_components.meal_id=meals.id AND meal_components.archived_at IS NULL
+	LEFT JOIN meal_components ON meal_components.belongs_to_meal=meals.id AND meal_components.archived_at IS NULL
 		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE
 	meals.archived_at IS NULL
@@ -270,7 +270,7 @@ type GetMealsRow struct {
 	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                sql.NullString
-	ComponentMealID            sql.NullString
+	ComponentBelongsToMeal     sql.NullString
 	ComponentRecipeID          sql.NullString
 	ComponentMealComponentType NullComponentType
 	ComponentRecipeScale       sql.NullString
@@ -311,7 +311,7 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 			&i.ArchivedAt,
 			&i.CreatedByUser,
 			&i.ComponentID,
-			&i.ComponentMealID,
+			&i.ComponentBelongsToMeal,
 			&i.ComponentRecipeID,
 			&i.ComponentMealComponentType,
 			&i.ComponentRecipeScale,
@@ -348,7 +348,7 @@ SELECT
 	meals.archived_at,
 	meals.created_by_user,
 	meal_components.id as component_id,
-	meal_components.meal_id as component_meal_id,
+	meal_components.belongs_to_meal as component_belongs_to_meal,
 	meal_components.recipe_id as component_recipe_id,
 	meal_components.meal_component_type as component_meal_component_type,
 	meal_components.recipe_scale as component_recipe_scale,
@@ -356,7 +356,7 @@ SELECT
 	meal_components.last_updated_at as component_last_updated_at,
 	meal_components.archived_at as component_archived_at
 FROM meals
-	JOIN meal_components ON meal_components.meal_id=meals.id
+	JOIN meal_components ON meal_components.belongs_to_meal=meals.id
 		AND meal_components.archived_at IS NULL
 		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE meals.archived_at IS NULL
@@ -383,7 +383,7 @@ type GetMealsByCreatorAndNameRow struct {
 	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                string
-	ComponentMealID            string
+	ComponentBelongsToMeal     string
 	ComponentRecipeID          string
 	ComponentMealComponentType ComponentType
 	ComponentRecipeScale       string
@@ -414,7 +414,7 @@ func (q *Queries) GetMealsByCreatorAndName(ctx context.Context, db DBTX, arg *Ge
 			&i.ArchivedAt,
 			&i.CreatedByUser,
 			&i.ComponentID,
-			&i.ComponentMealID,
+			&i.ComponentBelongsToMeal,
 			&i.ComponentRecipeID,
 			&i.ComponentMealComponentType,
 			&i.ComponentRecipeScale,
@@ -449,7 +449,7 @@ SELECT
 	meals.archived_at,
 	meals.created_by_user,
 	meal_components.id as component_id,
-	meal_components.meal_id as component_meal_id,
+	meal_components.belongs_to_meal as component_belongs_to_meal,
 	meal_components.recipe_id as component_recipe_id,
 	meal_components.meal_component_type as component_meal_component_type,
 	meal_components.recipe_scale as component_recipe_scale,
@@ -481,7 +481,7 @@ SELECT
 			AND meals.created_by_user = $6
 	) AS total_count
 FROM meals
-	LEFT JOIN meal_components ON meal_components.meal_id=meals.id AND meal_components.archived_at IS NULL
+	LEFT JOIN meal_components ON meal_components.belongs_to_meal=meals.id AND meal_components.archived_at IS NULL
 		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE
 	meals.archived_at IS NULL
@@ -527,7 +527,7 @@ type GetMealsCreatedByUserRow struct {
 	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                sql.NullString
-	ComponentMealID            sql.NullString
+	ComponentBelongsToMeal     sql.NullString
 	ComponentRecipeID          sql.NullString
 	ComponentMealComponentType NullComponentType
 	ComponentRecipeScale       sql.NullString
@@ -569,7 +569,7 @@ func (q *Queries) GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMe
 			&i.ArchivedAt,
 			&i.CreatedByUser,
 			&i.ComponentID,
-			&i.ComponentMealID,
+			&i.ComponentBelongsToMeal,
 			&i.ComponentRecipeID,
 			&i.ComponentMealComponentType,
 			&i.ComponentRecipeScale,
@@ -639,7 +639,7 @@ SELECT
 	meals.archived_at,
 	meals.created_by_user,
 	meal_components.id as component_id,
-	meal_components.meal_id as component_meal_id,
+	meal_components.belongs_to_meal as component_belongs_to_meal,
 	meal_components.recipe_id as component_recipe_id,
 	meal_components.meal_component_type as component_meal_component_type,
 	meal_components.recipe_scale as component_recipe_scale,
@@ -647,7 +647,7 @@ SELECT
 	meal_components.last_updated_at as component_last_updated_at,
 	meal_components.archived_at as component_archived_at
 FROM meals
-	JOIN meal_components ON meal_components.meal_id=meals.id
+	JOIN meal_components ON meal_components.belongs_to_meal=meals.id
 		AND meal_components.archived_at IS NULL
 		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE meals.archived_at IS NULL
@@ -668,7 +668,7 @@ type GetMealsWithIDsRow struct {
 	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                string
-	ComponentMealID            string
+	ComponentBelongsToMeal     string
 	ComponentRecipeID          string
 	ComponentMealComponentType ComponentType
 	ComponentRecipeScale       string
@@ -699,7 +699,7 @@ func (q *Queries) GetMealsWithIDs(ctx context.Context, db DBTX, ids []string) ([
 			&i.ArchivedAt,
 			&i.CreatedByUser,
 			&i.ComponentID,
-			&i.ComponentMealID,
+			&i.ComponentBelongsToMeal,
 			&i.ComponentRecipeID,
 			&i.ComponentMealComponentType,
 			&i.ComponentRecipeScale,
@@ -734,7 +734,7 @@ SELECT
 	meals.archived_at,
 	meals.created_by_user,
 	meal_components.id as component_id,
-	meal_components.meal_id as component_meal_id,
+	meal_components.belongs_to_meal as component_belongs_to_meal,
 	meal_components.recipe_id as component_recipe_id,
 	meal_components.meal_component_type as component_meal_component_type,
 	meal_components.recipe_scale as component_recipe_scale,
@@ -764,7 +764,7 @@ SELECT
 		WHERE meals.archived_at IS NULL
 	) AS total_count
 FROM meals
-	JOIN meal_components ON meal_components.meal_id=meals.id
+	JOIN meal_components ON meal_components.belongs_to_meal=meals.id
 		AND meal_components.archived_at IS NULL
 		AND EXISTS (SELECT 1 FROM recipes WHERE recipes.id = meal_components.recipe_id AND recipes.archived_at IS NULL)
 WHERE
@@ -810,7 +810,7 @@ type SearchForMealsRow struct {
 	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                string
-	ComponentMealID            string
+	ComponentBelongsToMeal     string
 	ComponentRecipeID          string
 	ComponentMealComponentType ComponentType
 	ComponentRecipeScale       string
@@ -852,7 +852,7 @@ func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMea
 			&i.ArchivedAt,
 			&i.CreatedByUser,
 			&i.ComponentID,
-			&i.ComponentMealID,
+			&i.ComponentBelongsToMeal,
 			&i.ComponentRecipeID,
 			&i.ComponentMealComponentType,
 			&i.ComponentRecipeScale,

@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/numbers"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -314,7 +312,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 					},
 				},
 			},
-			EstimatedPortions: numbers.MinRange[float32]{Min: fake.Float32()},
+			MinEstimatedPortions: fake.Float32(),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(t.Context()))
@@ -357,7 +355,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 					},
 				},
 			},
-			EstimatedPortions: numbers.MinRange[float32]{Min: fake.Float32()},
+			MinEstimatedPortions: fake.Float32(),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -869,11 +867,11 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeUpdateRequestInput{
-			Name:               new(t.Name()),
-			Source:             new(t.Name()),
-			Description:        new(t.Name()),
-			InspiredByRecipeID: new(t.Name()),
-			EstimatedPortions:  numbers.OpenRangeUpdateRequestInput[float32]{Min: new(fake.Float32())},
+			Name:                 new(t.Name()),
+			Source:               new(t.Name()),
+			Description:          new(t.Name()),
+			InspiredByRecipeID:   new(t.Name()),
+			MinEstimatedPortions: new(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(t.Context())

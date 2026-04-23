@@ -9,6 +9,7 @@ import (
 
 const (
 	mealComponentsTableName = "meal_components"
+	belongsToMealColumn     = "belongs_to_meal"
 )
 
 func init() {
@@ -17,8 +18,8 @@ func init() {
 
 var mealComponentsColumns = []string{
 	idColumn,
-	"meal_id",
-	"recipe_id",
+	belongsToMealColumn,
+	recipeIDColumn,
 	"meal_component_type",
 	"recipe_scale",
 	createdAtColumn,

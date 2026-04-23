@@ -239,17 +239,13 @@ class CreateMealViewModel {
       input.description_p = mealDescription.trimmingCharacters(in: .whitespacesAndNewlines)
       input.eligibleForMealPlans = true
 
-      if let first = draftComponents.first, first.recipe.hasEstimatedPortions {
-        var portions = Common_Float32RangeWithOptionalMax()
-        portions.min = first.recipe.estimatedPortions.min
-        if first.recipe.estimatedPortions.hasMax {
-          portions.max = first.recipe.estimatedPortions.max
+      if let first = draftComponents.first {
+        input.minEstimatedPortions = first.recipe.minEstimatedPortions
+        if first.recipe.hasMaxEstimatedPortions {
+          input.maxEstimatedPortions = first.recipe.maxEstimatedPortions
         }
-        input.estimatedPortions = portions
       } else {
-        var portions = Common_Float32RangeWithOptionalMax()
-        portions.min = 4
-        input.estimatedPortions = portions
+        input.minEstimatedPortions = 4
       }
 
       for component in draftComponents {

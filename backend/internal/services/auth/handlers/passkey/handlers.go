@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	authsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/pkg/client"
 
+	"github.com/primandproper/platform/cookies"
 	"github.com/primandproper/platform/encoding"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/logging"

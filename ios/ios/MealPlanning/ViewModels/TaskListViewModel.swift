@@ -282,9 +282,7 @@ class TaskListViewModel {
   func canStartAt(task: Mealplanning_MealPlanTask) -> Date? {
     guard task.hasRecipePrepTask else { return nil }
     let prepTask = task.recipePrepTask
-    guard prepTask.hasTimeBufferBeforeRecipeInSeconds,
-      prepTask.timeBufferBeforeRecipeInSeconds.hasMax
-    else { return nil }
+    guard prepTask.hasMaxTimeBufferBeforeRecipeInSeconds else { return nil }
 
     guard task.hasMealPlanOption else { return nil }
     let eventID = task.mealPlanOption.belongsToMealPlanEvent
@@ -293,7 +291,7 @@ class TaskListViewModel {
     else { return nil }
 
     let eventTime = HomeViewModel.timestampToDate(event.startsAt)
-    let maxBuffer = prepTask.timeBufferBeforeRecipeInSeconds.max
+    let maxBuffer = prepTask.maxTimeBufferBeforeRecipeInSeconds
     return eventTime.addingTimeInterval(-Double(maxBuffer))
   }
 

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
-	tokenscfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/branding"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	authservice "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
@@ -18,6 +17,7 @@ import (
 
 	analyticscfg "github.com/primandproper/platform/analytics/config"
 	analyticsposthog "github.com/primandproper/platform/analytics/posthog"
+	tokenscfg "github.com/primandproper/platform/authentication/tokens/config"
 	circuitbreakingcfg "github.com/primandproper/platform/circuitbreaking/config"
 	encryptioncfg "github.com/primandproper/platform/cryptography/encryption/config"
 	databasecfg "github.com/primandproper/platform/database/config"
@@ -258,6 +258,7 @@ func buildProdConfig() *config.APIServiceConfig {
 			},
 			Tokens: tokenscfg.Config{
 				Provider:                tokenscfg.ProviderPASETO,
+				Issuer:                  "dinner-done-better",
 				Audience:                prodTokensAudience,
 				Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 			},
@@ -281,6 +282,7 @@ func buildProdConfig() *config.APIServiceConfig {
 				TokenLifetime:         5 * time.Minute,
 				Tokens: tokenscfg.Config{
 					Provider:                tokenscfg.ProviderPASETO,
+					Issuer:                  "dinner-done-better",
 					Audience:                prodTokensAudience,
 					Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				},

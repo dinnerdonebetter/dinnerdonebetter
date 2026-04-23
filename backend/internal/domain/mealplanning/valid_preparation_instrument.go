@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -79,17 +78,6 @@ type (
 		CreateValidPreparationInstrument(ctx context.Context, input *ValidPreparationInstrumentDatabaseCreationInput) (*ValidPreparationInstrument, error)
 		UpdateValidPreparationInstrument(ctx context.Context, updated *ValidPreparationInstrument) error
 		ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error
-	}
-
-	// ValidPreparationInstrumentDataService describes a structure capable of serving traffic related to valid preparation instruments.
-	ValidPreparationInstrumentDataService interface {
-		ListValidPreparationInstrumentsHandler(http.ResponseWriter, *http.Request)
-		CreateValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
-		ReadValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
-		UpdateValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
-		SearchValidPreparationInstrumentsByPreparationHandler(http.ResponseWriter, *http.Request)
-		SearchValidPreparationInstrumentsByInstrumentHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

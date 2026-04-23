@@ -23,8 +23,6 @@ function createEmptyStep(index: number): RecipeStepCreationRequestInput {
     explicitInstructions: '',
     notes: '',
     conditionExpression: '',
-    estimatedTimeInSeconds: undefined,
-    temperatureInCelsius: undefined,
     instruments: [createEmptyInstrument()],
     vessels: [],
     ingredients: [createEmptyIngredient()],
@@ -41,7 +39,7 @@ function createEmptyIngredient(): RecipeStepIngredientCreationRequestInput {
     name: '',
     ingredientNotes: '',
     quantityNotes: '',
-    quantity: { min: 1 },
+    minQuantity: 1,
     optionIndex: 0,
     optional: false,
     toTaste: false,
@@ -52,7 +50,7 @@ function createEmptyInstrument(): RecipeStepInstrumentCreationRequestInput {
   return {
     name: '',
     notes: '',
-    quantity: { min: 1 },
+    minQuantity: 1,
     optionIndex: 0,
     optional: false,
     preferenceRank: 0,
@@ -63,7 +61,7 @@ function createEmptyVessel(): RecipeStepVesselCreationRequestInput {
   return {
     name: '',
     notes: '',
-    quantity: { min: 1 },
+    minQuantity: 1,
     vesselPreposition: 'in',
     unavailableAfterStep: false,
     optionIndex: 0,
@@ -76,10 +74,6 @@ function createEmptyProduct(index: number): RecipeStepProductCreationRequestInpu
     type: RecipeStepProductType.RECIPE_STEP_PRODUCT_TYPE_INGREDIENT,
     quantityNotes: '',
     storageInstructions: '',
-    storageTemperatureInCelsius: undefined,
-    storageDurationInSeconds: undefined,
-    measurementQuantity: undefined,
-    itemQuantity: undefined,
     index,
     compostable: false,
     isLiquid: false,
@@ -95,6 +89,7 @@ function createEmptyPrepTask(): RecipePrepTaskWithinRecipeCreationRequestInput {
     explicitStorageInstructions: '',
     notes: '',
     belongsToRecipe: '',
+    minTimeBufferBeforeRecipeInSeconds: 0,
     recipeSteps: [],
     optional: false,
   };
@@ -177,7 +172,7 @@ export function createRecipeCreatorState() {
       portionName: 'portion',
       pluralPortionName: 'portions',
       yieldsComponentType: MealComponentType.MEAL_COMPONENT_TYPE_MAIN,
-      estimatedPortions: { min: 1 },
+      minEstimatedPortions: 1,
       prepTasks: [],
       steps: [createEmptyStep(0), createEmptyStep(1)],
       alsoCreateMeal: false,
@@ -1020,7 +1015,7 @@ export function createRecipeCreatorState() {
             ? {
                 ...s,
                 ingredients: s.ingredients.map((ing, j) =>
-                  j === ingredientIndex ? { ...ing, quantity: { min, max } } : ing,
+                  j === ingredientIndex ? { ...ing, minQuantity: min, maxQuantity: max } : ing,
                 ),
               }
             : s,

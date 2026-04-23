@@ -97,13 +97,11 @@ class GroceryListViewModel {
 
       // Update quantity needed if provided
       if let min = quantityNeededMin {
-        var quantityNeeded = Common_Float32RangeWithOptionalMaxUpdateRequestInput()
-        quantityNeeded.min = min
+        updateInput.minQuantityNeeded = min
         if let max = quantityNeededMax {
-          quantityNeeded.max = max
+          updateInput.maxQuantityNeeded = max
         }
         // When max is nil, we omit it so backend clears max (single-value edit)
-        updateInput.quantityNeeded = quantityNeeded
       }
 
       // Update quantity purchased if provided

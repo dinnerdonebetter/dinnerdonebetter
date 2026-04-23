@@ -153,9 +153,8 @@ export function buildRecipeStepText(recipe: Recipe, recipeStep: RecipeStep, reci
   const vesselList = englishListFormatter.format(
     (recipeStep.vessels ?? []).map((x: RecipeStepVessel) => {
       const elementIsProduct = stepElementIsProduct(x);
-      const q = x.quantity;
-      const min = q?.min ?? 1;
-      const max = q?.max ?? -1;
+      const min = x.minQuantity ?? 1;
+      const max = x.maxQuantity ?? -1;
       return (
         (min === 1
           ? `${x.vesselPreposition ? `${x.vesselPreposition} ` : ''}${elementIsProduct ? 'the' : 'a'} ${x.vessel?.name ?? x.name}`
@@ -170,9 +169,8 @@ export function buildRecipeStepText(recipe: Recipe, recipeStep: RecipeStep, reci
   const instrumentList = englishListFormatter.format(
     (recipeStep.instruments ?? []).map((x: RecipeStepInstrument) => {
       const elementIsProduct = stepElementIsProduct(x);
-      const q = x.quantity;
-      const min = q?.min ?? 1;
-      const max = q?.max ?? -1;
+      const min = x.minQuantity ?? 1;
+      const max = x.maxQuantity ?? -1;
       return (
         (min === 1
           ? `${elementIsProduct ? 'the' : 'a'} ${x.instrument?.name ?? x.name}`
@@ -196,12 +194,11 @@ export function buildRecipeStepText(recipe: Recipe, recipeStep: RecipeStep, reci
       const elementIsProduct = stepElementIsProduct(x);
       const mu = x.measurementUnit;
       let measurementUnit =
-        cleanFloat((x.quantity?.min ?? 0) * effectiveScale) === 1 ? (mu?.name ?? '') : (mu?.pluralName ?? '');
+        cleanFloat((x.minQuantity ?? 0) * effectiveScale) === 1 ? (mu?.name ?? '') : (mu?.pluralName ?? '');
       measurementUnit = ['unit', 'units'].includes(measurementUnit) ? '' : measurementUnit;
 
-      const q = x.quantity;
-      const min = q?.min ?? 1;
-      const max = q?.max ?? -1;
+      const min = x.minQuantity ?? 1;
+      const max = x.maxQuantity ?? -1;
       const intro = elementIsProduct
         ? ''
         : `${cleanFloat(min * effectiveScale)}${max > min ? ` to ${cleanFloat((max ?? 0) * effectiveScale)} ` : ''} ${measurementUnit}`;
@@ -236,14 +233,14 @@ export function buildRecipeStepText(recipe: Recipe, recipeStep: RecipeStep, reci
         ? ''
         : englishListFormatter.format(
             instrumentProducts.map(
-              (x) => `${(x.itemQuantity?.min ?? x.measurementQuantity?.min ?? 1) === 1 ? 'a' : 'the'} ${x.name}`,
+              (x) => `${(x.minItemQuantity ?? x.minMeasurementQuantity ?? 1) === 1 ? 'a' : 'the'} ${x.name}`,
             ),
           ),
       vesselProducts.length === 0
         ? ''
         : englishListFormatter.format(
             vesselProducts.map(
-              (x) => `${(x.itemQuantity?.min ?? x.measurementQuantity?.min ?? 1) === 1 ? 'a' : 'the'} ${x.name}`,
+              (x) => `${(x.minItemQuantity ?? x.minMeasurementQuantity ?? 1) === 1 ? 'a' : 'the'} ${x.name}`,
             ),
           ),
     ].filter((s) => s.length > 0),
@@ -277,10 +274,9 @@ export function determineVesselsForRecipes(recipes: Recipe[]): RecipeStepVessel[
       if (existing) {
         uniqueVessels[id] = {
           ...existing,
-          quantity: {
-            min: (existing.quantity?.min ?? 0) + (vessel.quantity?.min ?? 0),
-            max: vessel.quantity?.max ? (existing.quantity?.max ?? 0) + vessel.quantity.max : existing.quantity?.max,
-          },
+          minQuantity: (existing.minQuantity ?? 0) + (vessel.minQuantity ?? 0),
+          maxQuantity:
+            vessel.maxQuantity !== undefined ? (existing.maxQuantity ?? 0) + vessel.maxQuantity : existing.maxQuantity,
         };
       } else {
         uniqueVessels[id] = { ...vessel };
@@ -305,11 +301,8 @@ export function determineAllIngredientsForRecipes(input: MealRecipeInput[]): Rec
         .filter((i) => i.ingredient)
         .map((y) => ({
           ...y,
-          quantity: {
-            ...y.quantity!,
-            min: (y.quantity?.min ?? 0) * x.scale,
-            max: y.quantity?.max ? y.quantity.max * x.scale : undefined,
-          },
+          minQuantity: (y.minQuantity ?? 0) * x.scale,
+          maxQuantity: y.maxQuantity !== undefined ? y.maxQuantity * x.scale : undefined,
         })),
     ),
   );
@@ -322,11 +315,9 @@ export function determineAllIngredientsForRecipes(input: MealRecipeInput[]): Rec
       if (existing) {
         uniqueIngredients[id] = {
           ...existing,
-          quantity: {
-            ...existing.quantity!,
-            min: (existing.quantity?.min ?? 0) + (ing.quantity?.min ?? 0),
-            max: ing.quantity?.max ? (existing.quantity?.max ?? 0) + ing.quantity.max : existing.quantity?.max,
-          },
+          minQuantity: (existing.minQuantity ?? 0) + (ing.minQuantity ?? 0),
+          maxQuantity:
+            ing.maxQuantity !== undefined ? (existing.maxQuantity ?? 0) + ing.maxQuantity : existing.maxQuantity,
         };
       } else {
         uniqueIngredients[id] = { ...ing };

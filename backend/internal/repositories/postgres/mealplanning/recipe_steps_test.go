@@ -13,7 +13,6 @@ import (
 
 	"github.com/primandproper/platform/database/filtering"
 	"github.com/primandproper/platform/identifiers"
-	"github.com/primandproper/platform/numbers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -115,7 +114,7 @@ func buildRecipeStepForTestCreationWithInstrument(t *testing.T, ctx context.Cont
 			Name:                instrument.Name,
 			BelongsToRecipeStep: step.ID,
 			Optional:            false, // Required for SearchForRecipesWithInstrumentOwnership
-			Quantity:            numbers.MinRange[uint32]{Min: 1},
+			MinQuantity:         1,
 		},
 	}
 	return step
@@ -209,8 +208,10 @@ func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string,
 	assert.Equal(t, exampleRecipeStep.ConditionExpression, created.ConditionExpression)
 	assert.Equal(t, exampleRecipeStep.Optional, created.Optional)
 	assert.Equal(t, exampleRecipeStep.StartTimerAutomatically, created.StartTimerAutomatically)
-	assert.Equal(t, exampleRecipeStep.EstimatedTimeInSeconds, created.EstimatedTimeInSeconds)
-	assert.Equal(t, exampleRecipeStep.TemperatureInCelsius, created.TemperatureInCelsius)
+	assert.Equal(t, exampleRecipeStep.MinEstimatedTimeInSeconds, created.MinEstimatedTimeInSeconds)
+	assert.Equal(t, exampleRecipeStep.MaxEstimatedTimeInSeconds, created.MaxEstimatedTimeInSeconds)
+	assert.Equal(t, exampleRecipeStep.MinTemperatureInCelsius, created.MinTemperatureInCelsius)
+	assert.Equal(t, exampleRecipeStep.MaxTemperatureInCelsius, created.MaxTemperatureInCelsius)
 
 	// Check timestamps are within reasonable tolerance (5 seconds)
 	assert.WithinDuration(t, exampleRecipeStep.CreatedAt, created.CreatedAt, 5*time.Second)
@@ -232,8 +233,10 @@ func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string,
 	assert.Equal(t, exampleRecipeStep.ConditionExpression, recipeStep.ConditionExpression)
 	assert.Equal(t, exampleRecipeStep.Optional, recipeStep.Optional)
 	assert.Equal(t, exampleRecipeStep.StartTimerAutomatically, recipeStep.StartTimerAutomatically)
-	assert.Equal(t, exampleRecipeStep.EstimatedTimeInSeconds, recipeStep.EstimatedTimeInSeconds)
-	assert.Equal(t, exampleRecipeStep.TemperatureInCelsius, recipeStep.TemperatureInCelsius)
+	assert.Equal(t, exampleRecipeStep.MinEstimatedTimeInSeconds, recipeStep.MinEstimatedTimeInSeconds)
+	assert.Equal(t, exampleRecipeStep.MaxEstimatedTimeInSeconds, recipeStep.MaxEstimatedTimeInSeconds)
+	assert.Equal(t, exampleRecipeStep.MinTemperatureInCelsius, recipeStep.MinTemperatureInCelsius)
+	assert.Equal(t, exampleRecipeStep.MaxTemperatureInCelsius, recipeStep.MaxTemperatureInCelsius)
 
 	// Check timestamps are within reasonable tolerance (5 seconds)
 	assert.WithinDuration(t, exampleRecipeStep.CreatedAt, recipeStep.CreatedAt, 5*time.Second)

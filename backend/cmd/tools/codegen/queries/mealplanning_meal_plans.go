@@ -173,7 +173,7 @@ ORDER BY
 					mealPlanOptionsTableName,
 					mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,
 					mealPlansTableName, mealPlanEventsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
-					mealComponentsTableName, mealPlanOptionsTableName, mealIDColumn, mealComponentsTableName, mealIDColumn,
+					mealComponentsTableName, mealPlanOptionsTableName, mealIDColumn, mealComponentsTableName, belongsToMealColumn,
 					mealsTableName, mealPlanOptionsTableName, mealIDColumn, mealsTableName, idColumn,
 					mealPlansTableName, archivedAtColumn,
 					mealPlansTableName, mealPlanStatusColumn,

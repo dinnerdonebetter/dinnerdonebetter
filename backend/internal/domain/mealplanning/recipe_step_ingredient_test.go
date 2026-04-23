@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/numbers"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +18,7 @@ func TestRecipeStepIngredient_Update(T *testing.T) {
 
 		assert.NoError(t, fake.Struct(&input))
 		input.RecipeStepProductRecipeID = new(t.Name())
-		input.Quantity.Max = new(fake.Float32())
+		input.MaxQuantity = new(fake.Float32())
 		input.Optional = new(true)
 		input.VesselIndex = new(fake.Uint16())
 		input.ProductPercentageToUse = new(fake.Float32())
@@ -49,7 +47,7 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepIngredientCreationRequestInput{
 			ValidIngredientPreparationID:     new(t.Name()),
 			ValidIngredientMeasurementUnitID: new(t.Name()),
-			Quantity:                         numbers.MinRange[float32]{Min: fake.Float32()},
+			MinQuantity:                      fake.Float32(),
 			QuantityNotes:                    t.Name(),
 			IngredientNotes:                  t.Name(),
 			Optional:                         fake.Bool(),
@@ -66,7 +64,7 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepIngredientCreationRequestInput{
 			ProductOfRecipeStepIndex:        new(uint64(0)),
 			ProductOfRecipeStepProductIndex: new(uint64(0)),
-			Quantity:                        numbers.MinRange[float32]{Min: fake.Float32()},
+			MinQuantity:                     fake.Float32(),
 			QuantityNotes:                   t.Name(),
 			IngredientNotes:                 t.Name(),
 			Optional:                        fake.Bool(),
@@ -95,7 +93,7 @@ func TestRecipeStepIngredientDatabaseCreationInput_Validate(T *testing.T) {
 		x := &RecipeStepIngredientDatabaseCreationInput{
 			ID:                t.Name(),
 			MeasurementUnitID: t.Name(),
-			Quantity:          numbers.MinRange[float32]{Min: fake.Float32()},
+			MinQuantity:       fake.Float32(),
 		}
 
 		actual := x.ValidateWithContext(t.Context())
@@ -121,7 +119,7 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepIngredientUpdateRequestInput{
 			IngredientID:      new(t.Name()),
 			MeasurementUnitID: new(t.Name()),
-			Quantity:          numbers.OpenRangeUpdateRequestInput[float32]{Min: new(fake.Float32())},
+			MinQuantity:       new(fake.Float32()),
 			QuantityNotes:     new(t.Name()),
 			IngredientNotes:   new(t.Name()),
 			Optional:          new(fake.Bool()),

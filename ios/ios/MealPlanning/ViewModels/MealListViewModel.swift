@@ -40,14 +40,6 @@ class MealListViewModel {
     isLoading = true
     errorMessage = nil
 
-    if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
-      provider.loadIfNeeded()
-      self.meals = provider.getMeals()
-      isLoading = false
-      return
-    }
-
     do {
       guard let clientManager = try? authManager.getClientManager() else {
         throw NSError(
@@ -112,13 +104,6 @@ class MealListViewModel {
   private func performSearch(query: String) async {
     isSearching = true
     searchError = nil
-
-    if APIConfiguration.currentEnvironment.isOffline {
-      let provider = await LocalDataProvider.shared
-      searchResults = provider.searchMeals(query: query)
-      isSearching = false
-      return
-    }
 
     do {
       guard let clientManager = try? authManager.getClientManager() else {

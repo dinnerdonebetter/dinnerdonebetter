@@ -6,11 +6,14 @@ import (
 	"testing"
 	"time"
 
-	mocktokens "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/tokens/mock"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identitymock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/mock"
 
+	"github.com/primandproper/platform/authentication/tokens"
+	mocktokens "github.com/primandproper/platform/authentication/tokens/mock"
+	"github.com/primandproper/platform/authentication/totp"
+	mocktotp "github.com/primandproper/platform/authentication/totp/mock"
 	"github.com/primandproper/platform/database/filtering"
 	mockpublishers "github.com/primandproper/platform/messagequeue/mock"
 	loggingnoop "github.com/primandproper/platform/observability/logging/noop"
@@ -27,8 +30,8 @@ type mockAuthenticator struct {
 	mock.Mock
 }
 
-func (m *mockAuthenticator) CredentialsAreValid(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
-	args := m.Called(ctx, hash, password, totpSecret, totpCode)
+func (m *mockAuthenticator) PasswordMatches(ctx context.Context, hash, password string) (bool, error) {
+	args := m.Called(ctx, hash, password)
 	return args.Bool(0), args.Error(1)
 }
 
@@ -82,9 +85,31 @@ func (m *mockSessionDataManager) TouchSessionLastActive(ctx context.Context, ses
 	return m.Called(ctx, sessionTokenID).Error(0)
 }
 
+// newClaimsMock builds a tokens.Claims-compatible mock.
+// "sub" and "jti" are surfaced via Subject()/JTI(); extras are returned by Get/GetString.
+func newClaimsMock(sub, jti string, extras map[string]string) *mocktokens.ClaimsMock {
+	return &mocktokens.ClaimsMock{
+		SubjectFunc: func() string { return sub },
+		JTIFunc:     func() string { return jti },
+		GetStringFunc: func(key string) (string, bool) {
+			v, ok := extras[key]
+			return v, ok
+		},
+		GetFunc: func(key string) (any, bool) {
+			v, ok := extras[key]
+			if !ok {
+				return nil, false
+			}
+			return v, true
+		},
+		ExpiresAtFunc: func() time.Time { return time.Time{} },
+	}
+}
+
 type managerTestMocks struct {
-	tokenIssuer         *mocktokens.Issuer
+	tokenIssuer         *mocktokens.IssuerMock
 	authenticator       *mockAuthenticator
+	totpVerifier        *mocktotp.VerifierMock
 	userAuthDataManager *identitymock.RepositoryMock
 	sessionDataManager  *mockSessionDataManager
 	publisher           *mockpublishers.PublisherMock
@@ -95,8 +120,9 @@ func buildTestManager(t *testing.T) (*manager, *managerTestMocks) {
 	t.Helper()
 
 	mocks := &managerTestMocks{
-		tokenIssuer:         &mocktokens.Issuer{},
+		tokenIssuer:         &mocktokens.IssuerMock{},
 		authenticator:       &mockAuthenticator{},
+		totpVerifier:        &mocktotp.VerifierMock{},
 		userAuthDataManager: &identitymock.RepositoryMock{},
 		sessionDataManager:  &mockSessionDataManager{},
 		publisher: &mockpublishers.PublisherMock{
@@ -108,6 +134,7 @@ func buildTestManager(t *testing.T) (*manager, *managerTestMocks) {
 	m := &manager{
 		tokenIssuer:             mocks.tokenIssuer,
 		authenticator:           mocks.authenticator,
+		totpVerifier:            mocks.totpVerifier,
 		tracer:                  tracing.NewNamedTracer(tracingnoop.NewTracerProvider(), "test"),
 		logger:                  loggingnoop.NewLogger(),
 		dataChangesPublisher:    mocks.publisher,
@@ -140,51 +167,15 @@ func Test_deriveDeviceName(T *testing.T) {
 		userAgent string
 		expected  string
 	}{
-		{
-			name:      "empty user agent",
-			userAgent: "",
-			expected:  "Unknown Device",
-		},
-		{
-			name:      "iPhone",
-			userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)",
-			expected:  "iPhone",
-		},
-		{
-			name:      "iPad",
-			userAgent: "Mozilla/5.0 (iPad; CPU OS 16_0 like Mac OS X)",
-			expected:  "iPad",
-		},
-		{
-			name:      "Android",
-			userAgent: "Mozilla/5.0 (Linux; Android 13; Pixel 7)",
-			expected:  "Android Device",
-		},
-		{
-			name:      "Mac via Macintosh",
-			userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-			expected:  "Mac",
-		},
-		{
-			name:      "Mac via Mac OS",
-			userAgent: "Mozilla/5.0 (compatible; Mac OS X 12_0)",
-			expected:  "Mac",
-		},
-		{
-			name:      "Windows",
-			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-			expected:  "Windows PC",
-		},
-		{
-			name:      "Linux",
-			userAgent: "Mozilla/5.0 (X11; Linux x86_64)",
-			expected:  "Linux",
-		},
-		{
-			name:      "unknown user agent",
-			userAgent: "SomeCustomBot/1.0",
-			expected:  "Unknown Device",
-		},
+		{name: "empty user agent", userAgent: "", expected: "Unknown Device"},
+		{name: "iPhone", userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)", expected: "iPhone"},
+		{name: "iPad", userAgent: "Mozilla/5.0 (iPad; CPU OS 16_0 like Mac OS X)", expected: "iPad"},
+		{name: "Android", userAgent: "Mozilla/5.0 (Linux; Android 13; Pixel 7)", expected: "Android Device"},
+		{name: "Mac via Macintosh", userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", expected: "Mac"},
+		{name: "Mac via Mac OS", userAgent: "Mozilla/5.0 (compatible; Mac OS X 12_0)", expected: "Mac"},
+		{name: "Windows", userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", expected: "Windows PC"},
+		{name: "Linux", userAgent: "Mozilla/5.0 (X11; Linux x86_64)", expected: "Linux"},
+		{name: "unknown user agent", userAgent: "SomeCustomBot/1.0", expected: "Unknown Device"},
 	}
 
 	for _, tc := range tests {
@@ -194,6 +185,19 @@ func Test_deriveDeviceName(T *testing.T) {
 			actual := deriveDeviceName(tc.userAgent)
 			assert.Equal(t, tc.expected, actual)
 		})
+	}
+}
+
+// issueTokenFunc returns a moq IssueToken stub that alternates between (accessToken/accessJTI)
+// on the first call and (refreshToken/refreshJTI) on the second.
+func issueTokenFunc(accessToken, accessJTI, refreshToken, refreshJTI string) func(ctx context.Context, subject string, expiry time.Duration, extraClaims map[string]any) (string, string, error) {
+	count := 0
+	return func(_ context.Context, _ string, _ time.Duration, _ map[string]any) (string, string, error) {
+		count++
+		if count == 1 {
+			return accessToken, accessJTI, nil
+		}
+		return refreshToken, refreshJTI, nil
 	}
 }
 
@@ -213,12 +217,10 @@ func TestManager_ProcessLogin(T *testing.T) {
 		}
 
 		mocks.userAuthDataManager.On("GetUserByUsername", mock.Anything, loginInput.Username).Return(user, nil)
-		mocks.authenticator.On("CredentialsAreValid", mock.Anything, user.HashedPassword, loginInput.Password, user.TwoFactorSecret, loginInput.TOTPToken).Return(true, nil)
+		mocks.authenticator.On("PasswordMatches", mock.Anything, user.HashedPassword, loginInput.Password).Return(true, nil)
 		mocks.userAuthDataManager.On("GetDefaultAccountIDForUser", mock.Anything, user.ID).Return("account123", nil)
 
-		// issueTokensWithSession: two IssueToken calls (access + refresh)
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxAccessTokenLifetime, "account123", mock.AnythingOfType("string")).Return("access-token", "access-jti", nil).Once()
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "account123", mock.AnythingOfType("string")).Return("refresh-token", "refresh-jti", nil).Once()
+		mocks.tokenIssuer.IssueTokenFunc = issueTokenFunc("access-token", "access-jti", "refresh-token", "refresh-jti")
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).Return(&auth.UserSession{}, nil)
 
@@ -234,7 +236,8 @@ func TestManager_ProcessLogin(T *testing.T) {
 		assert.Equal(t, user.ID, response.UserID)
 		assert.Equal(t, "account123", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
+		assert.Len(t, mocks.tokenIssuer.IssueTokenCalls(), 2)
 	})
 
 	T.Run("with desired account ID", func(t *testing.T) {
@@ -251,11 +254,10 @@ func TestManager_ProcessLogin(T *testing.T) {
 		}
 
 		mocks.userAuthDataManager.On("GetUserByUsername", mock.Anything, loginInput.Username).Return(user, nil)
-		mocks.authenticator.On("CredentialsAreValid", mock.Anything, user.HashedPassword, loginInput.Password, user.TwoFactorSecret, loginInput.TOTPToken).Return(true, nil)
+		mocks.authenticator.On("PasswordMatches", mock.Anything, user.HashedPassword, loginInput.Password).Return(true, nil)
 		mocks.userAuthDataManager.On("UserIsMemberOfAccount", mock.Anything, user.ID, "specific-account").Return(true, nil)
 
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxAccessTokenLifetime, "specific-account", mock.AnythingOfType("string")).Return("access-token", "access-jti", nil).Once()
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "specific-account", mock.AnythingOfType("string")).Return("refresh-token", "refresh-jti", nil).Once()
+		mocks.tokenIssuer.IssueTokenFunc = issueTokenFunc("access-token", "access-jti", "refresh-token", "refresh-jti")
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).Return(&auth.UserSession{}, nil)
 
@@ -265,7 +267,7 @@ func TestManager_ProcessLogin(T *testing.T) {
 		require.NotNil(t, response)
 		assert.Equal(t, "specific-account", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with invalid credentials", func(t *testing.T) {
@@ -281,7 +283,8 @@ func TestManager_ProcessLogin(T *testing.T) {
 		}
 
 		mocks.userAuthDataManager.On("GetUserByUsername", mock.Anything, loginInput.Username).Return(user, nil)
-		mocks.authenticator.On("CredentialsAreValid", mock.Anything, user.HashedPassword, loginInput.Password, user.TwoFactorSecret, loginInput.TOTPToken).Return(false, ErrPasswordDoesNotMatch)
+		// PasswordMatches returns (false, nil) on a mismatch; validateLogin converts that to ErrPasswordDoesNotMatch.
+		mocks.authenticator.On("PasswordMatches", mock.Anything, user.HashedPassword, loginInput.Password).Return(false, nil)
 
 		response, err := m.ProcessLogin(ctx, false, loginInput, nil)
 
@@ -345,7 +348,6 @@ func TestManager_ProcessLogin(T *testing.T) {
 		ctx := t.Context()
 		m, _ := buildTestManager(t)
 
-		// empty username and password should fail validation
 		loginInput := &auth.UserLoginInput{
 			Username: "",
 			Password: "",
@@ -375,7 +377,14 @@ func TestManager_ProcessLogin(T *testing.T) {
 		}
 
 		mocks.userAuthDataManager.On("GetUserByUsername", mock.Anything, loginInput.Username).Return(user, nil)
-		mocks.authenticator.On("CredentialsAreValid", mock.Anything, user.HashedPassword, loginInput.Password, user.TwoFactorSecret, "").Return(true, nil)
+		mocks.authenticator.On("PasswordMatches", mock.Anything, user.HashedPassword, loginInput.Password).Return(true, nil)
+		// totp.Verify returns ErrCodeRequired when the code is empty.
+		mocks.totpVerifier.VerifyFunc = func(_ context.Context, _, code string) error {
+			if code == "" {
+				return totp.ErrCodeRequired
+			}
+			return nil
+		}
 
 		response, err := m.ProcessLogin(ctx, false, loginInput, nil)
 
@@ -383,6 +392,7 @@ func TestManager_ProcessLogin(T *testing.T) {
 		assert.Nil(t, response)
 
 		mock.AssertExpectationsForObjects(t, mocks.authenticator, mocks.userAuthDataManager)
+		assert.Len(t, mocks.totpVerifier.VerifyCalls(), 1)
 	})
 
 	T.Run("with user not member of desired account", func(t *testing.T) {
@@ -399,7 +409,7 @@ func TestManager_ProcessLogin(T *testing.T) {
 		}
 
 		mocks.userAuthDataManager.On("GetUserByUsername", mock.Anything, loginInput.Username).Return(user, nil)
-		mocks.authenticator.On("CredentialsAreValid", mock.Anything, user.HashedPassword, loginInput.Password, user.TwoFactorSecret, loginInput.TOTPToken).Return(true, nil)
+		mocks.authenticator.On("PasswordMatches", mock.Anything, user.HashedPassword, loginInput.Password).Return(true, nil)
 		mocks.userAuthDataManager.On("UserIsMemberOfAccount", mock.Anything, user.ID, "other-account").Return(false, nil)
 
 		response, err := m.ProcessLogin(ctx, false, loginInput, nil)
@@ -423,11 +433,10 @@ func TestManager_ProcessLogin(T *testing.T) {
 		}
 
 		mocks.userAuthDataManager.On("GetAdminUserByUsername", mock.Anything, loginInput.Username).Return(user, nil)
-		mocks.authenticator.On("CredentialsAreValid", mock.Anything, user.HashedPassword, loginInput.Password, user.TwoFactorSecret, loginInput.TOTPToken).Return(true, nil)
+		mocks.authenticator.On("PasswordMatches", mock.Anything, user.HashedPassword, loginInput.Password).Return(true, nil)
 		mocks.userAuthDataManager.On("GetDefaultAccountIDForUser", mock.Anything, user.ID).Return("account123", nil)
 
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxAccessTokenLifetime, "account123", mock.AnythingOfType("string")).Return("access-token", "access-jti", nil).Once()
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "account123", mock.AnythingOfType("string")).Return("refresh-token", "refresh-jti", nil).Once()
+		mocks.tokenIssuer.IssueTokenFunc = issueTokenFunc("access-token", "access-jti", "refresh-token", "refresh-jti")
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).Return(&auth.UserSession{}, nil)
 
@@ -436,7 +445,7 @@ func TestManager_ProcessLogin(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, response)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.authenticator, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 }
 
@@ -454,8 +463,7 @@ func TestManager_ProcessPasskeyLogin(T *testing.T) {
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, user.ID).Return(user, nil)
 		mocks.userAuthDataManager.On("GetDefaultAccountIDForUser", mock.Anything, user.ID).Return("account123", nil)
 
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxAccessTokenLifetime, "account123", mock.AnythingOfType("string")).Return("access-token", "access-jti", nil).Once()
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "account123", mock.AnythingOfType("string")).Return("refresh-token", "refresh-jti", nil).Once()
+		mocks.tokenIssuer.IssueTokenFunc = issueTokenFunc("access-token", "access-jti", "refresh-token", "refresh-jti")
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).
 			Run(func(args mock.Arguments) {
@@ -476,7 +484,7 @@ func TestManager_ProcessPasskeyLogin(T *testing.T) {
 		assert.Equal(t, user.ID, response.UserID)
 		assert.Equal(t, "account123", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with desired account ID", func(t *testing.T) {
@@ -490,8 +498,7 @@ func TestManager_ProcessPasskeyLogin(T *testing.T) {
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, user.ID).Return(user, nil)
 		mocks.userAuthDataManager.On("UserIsMemberOfAccount", mock.Anything, user.ID, "specific-account").Return(true, nil)
 
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxAccessTokenLifetime, "specific-account", mock.AnythingOfType("string")).Return("access-token", "access-jti", nil).Once()
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "specific-account", mock.AnythingOfType("string")).Return("refresh-token", "refresh-jti", nil).Once()
+		mocks.tokenIssuer.IssueTokenFunc = issueTokenFunc("access-token", "access-jti", "refresh-token", "refresh-jti")
 
 		mocks.sessionDataManager.On("CreateUserSession", mock.Anything, mock.AnythingOfType("*auth.UserSessionDatabaseCreationInput")).Return(&auth.UserSession{}, nil)
 
@@ -501,7 +508,7 @@ func TestManager_ProcessPasskeyLogin(T *testing.T) {
 		require.NotNil(t, response)
 		assert.Equal(t, "specific-account", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with banned user", func(t *testing.T) {
@@ -571,12 +578,10 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		user := buildExampleUser()
 		refreshToken := "valid-refresh-token"
 
-		// ParseUserIDFromToken delegates to ParseUserIDAndAccountIDFromToken on the mock
-		mocks.tokenIssuer.On("ParseUserIDAndAccountIDFromToken", mock.Anything, refreshToken).Return(user.ID, "account123", nil)
+		mocks.tokenIssuer.ParseTokenFunc = func(_ context.Context, _ string) (tokens.Claims, error) {
+			return newClaimsMock(user.ID, "refresh-jti-old", map[string]string{"account_id": "account123", "sid": "session-abc"}), nil
+		}
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, user.ID).Return(user, nil)
-
-		mocks.tokenIssuer.On("ParseJTIFromToken", mock.Anything, refreshToken).Return("refresh-jti-old", nil)
-		mocks.tokenIssuer.On("ParseSessionIDFromToken", mock.Anything, refreshToken).Return("session-abc", nil)
 
 		mocks.sessionDataManager.On("GetUserSessionByRefreshTokenID", mock.Anything, "refresh-jti-old").Return(&auth.UserSession{
 			ID:             "session-abc",
@@ -586,8 +591,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 
 		mocks.userAuthDataManager.On("GetDefaultAccountIDForUser", mock.Anything, user.ID).Return("account123", nil)
 
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxAccessTokenLifetime, "account123", "session-abc").Return("new-access-token", "new-access-jti", nil).Once()
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "account123", "session-abc").Return("new-refresh-token", "new-refresh-jti", nil).Once()
+		mocks.tokenIssuer.IssueTokenFunc = issueTokenFunc("new-access-token", "new-access-jti", "new-refresh-token", "new-refresh-jti")
 
 		mocks.sessionDataManager.On("UpdateSessionTokenIDs", mock.Anything, "session-abc", "new-access-jti", "new-refresh-jti", mock.AnythingOfType("time.Time")).Return(nil)
 
@@ -600,7 +604,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		assert.Equal(t, user.ID, response.UserID)
 		assert.Equal(t, "account123", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with revoked session", func(t *testing.T) {
@@ -612,11 +616,10 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		user := buildExampleUser()
 		refreshToken := "revoked-refresh-token"
 
-		mocks.tokenIssuer.On("ParseUserIDAndAccountIDFromToken", mock.Anything, refreshToken).Return(user.ID, "account123", nil)
+		mocks.tokenIssuer.ParseTokenFunc = func(_ context.Context, _ string) (tokens.Claims, error) {
+			return newClaimsMock(user.ID, "old-jti", map[string]string{"account_id": "account123", "sid": "session-abc"}), nil
+		}
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, user.ID).Return(user, nil)
-
-		mocks.tokenIssuer.On("ParseJTIFromToken", mock.Anything, refreshToken).Return("old-jti", nil)
-		mocks.tokenIssuer.On("ParseSessionIDFromToken", mock.Anything, refreshToken).Return("session-abc", nil)
 
 		// Session not found means it was revoked
 		mocks.sessionDataManager.On("GetUserSessionByRefreshTokenID", mock.Anything, "old-jti").Return((*auth.UserSession)(nil), errors.New("not found"))
@@ -626,7 +629,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, response)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with desired account ID", func(t *testing.T) {
@@ -638,11 +641,10 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		user := buildExampleUser()
 		refreshToken := "valid-refresh-token"
 
-		mocks.tokenIssuer.On("ParseUserIDAndAccountIDFromToken", mock.Anything, refreshToken).Return(user.ID, "account123", nil)
+		mocks.tokenIssuer.ParseTokenFunc = func(_ context.Context, _ string) (tokens.Claims, error) {
+			return newClaimsMock(user.ID, "refresh-jti", map[string]string{"account_id": "account123", "sid": "session-abc"}), nil
+		}
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, user.ID).Return(user, nil)
-
-		mocks.tokenIssuer.On("ParseJTIFromToken", mock.Anything, refreshToken).Return("refresh-jti", nil)
-		mocks.tokenIssuer.On("ParseSessionIDFromToken", mock.Anything, refreshToken).Return("session-abc", nil)
 
 		mocks.sessionDataManager.On("GetUserSessionByRefreshTokenID", mock.Anything, "refresh-jti").Return(&auth.UserSession{
 			ID:             "session-abc",
@@ -651,8 +653,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 
 		mocks.userAuthDataManager.On("UserIsMemberOfAccount", mock.Anything, user.ID, "desired-account").Return(true, nil)
 
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxAccessTokenLifetime, "desired-account", "session-abc").Return("new-access-token", "new-access-jti", nil).Once()
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "desired-account", "session-abc").Return("new-refresh-token", "new-refresh-jti", nil).Once()
+		mocks.tokenIssuer.IssueTokenFunc = issueTokenFunc("new-access-token", "new-access-jti", "new-refresh-token", "new-refresh-jti")
 
 		mocks.sessionDataManager.On("UpdateSessionTokenIDs", mock.Anything, "session-abc", "new-access-jti", "new-refresh-jti", mock.AnythingOfType("time.Time")).Return(nil)
 
@@ -662,7 +663,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		require.NotNil(t, response)
 		assert.Equal(t, "desired-account", response.AccountID)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 
 	T.Run("with banned user", func(t *testing.T) {
@@ -675,7 +676,9 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		user.AccountStatus = string(identity.BannedUserAccountStatus)
 		refreshToken := "valid-refresh-token"
 
-		mocks.tokenIssuer.On("ParseUserIDAndAccountIDFromToken", mock.Anything, refreshToken).Return(user.ID, "account123", nil)
+		mocks.tokenIssuer.ParseTokenFunc = func(_ context.Context, _ string) (tokens.Claims, error) {
+			return newClaimsMock(user.ID, "jti", map[string]string{"account_id": "account123"}), nil
+		}
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, user.ID).Return(user, nil)
 
 		response, err := m.ExchangeTokenForUser(ctx, refreshToken, "")
@@ -686,7 +689,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		assert.NoError(t, err)
 		assert.Nil(t, response)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager)
 	})
 
 	T.Run("without JTI or session ID in token", func(t *testing.T) {
@@ -698,18 +701,15 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		user := buildExampleUser()
 		refreshToken := "legacy-refresh-token"
 
-		mocks.tokenIssuer.On("ParseUserIDAndAccountIDFromToken", mock.Anything, refreshToken).Return(user.ID, "account123", nil)
+		// Legacy token: JTI empty, no "sid" claim.
+		mocks.tokenIssuer.ParseTokenFunc = func(_ context.Context, _ string) (tokens.Claims, error) {
+			return newClaimsMock(user.ID, "", map[string]string{"account_id": "account123"}), nil
+		}
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, user.ID).Return(user, nil)
-
-		// No JTI or session ID in token (legacy token)
-		mocks.tokenIssuer.On("ParseJTIFromToken", mock.Anything, refreshToken).Return("", errors.New("no jti"))
-		mocks.tokenIssuer.On("ParseSessionIDFromToken", mock.Anything, refreshToken).Return("", errors.New("no session id"))
 
 		mocks.userAuthDataManager.On("GetDefaultAccountIDForUser", mock.Anything, user.ID).Return("account123", nil)
 
-		// Session ID is empty, so tokens are issued with empty session ID
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxAccessTokenLifetime, "account123", "").Return("new-access-token", "new-access-jti", nil).Once()
-		mocks.tokenIssuer.On("IssueToken", mock.Anything, mock.AnythingOfType("*identity.User"), m.maxRefreshTokenLifetime, "account123", "").Return("new-refresh-token", "new-refresh-jti", nil).Once()
+		mocks.tokenIssuer.IssueTokenFunc = issueTokenFunc("new-access-token", "new-access-jti", "new-refresh-token", "new-refresh-jti")
 
 		// UpdateSessionTokenIDs should NOT be called because sessionID is empty
 
@@ -719,7 +719,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		require.NotNil(t, response)
 		assert.Equal(t, "new-access-token", response.AccessToken)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager)
 	})
 
 	T.Run("with invalid refresh token", func(t *testing.T) {
@@ -730,14 +730,14 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 
 		refreshToken := "bad-token"
 
-		mocks.tokenIssuer.On("ParseUserIDAndAccountIDFromToken", mock.Anything, refreshToken).Return("", "", errors.New("invalid token"))
+		mocks.tokenIssuer.ParseTokenFunc = func(_ context.Context, _ string) (tokens.Claims, error) {
+			return nil, errors.New("invalid token")
+		}
 
 		response, err := m.ExchangeTokenForUser(ctx, refreshToken, "")
 
 		assert.Error(t, err)
 		assert.Nil(t, response)
-
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer)
 	})
 
 	T.Run("with nonexistent user", func(t *testing.T) {
@@ -748,7 +748,9 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 
 		refreshToken := "valid-refresh-token"
 
-		mocks.tokenIssuer.On("ParseUserIDAndAccountIDFromToken", mock.Anything, refreshToken).Return("nonexistent-user", "account123", nil)
+		mocks.tokenIssuer.ParseTokenFunc = func(_ context.Context, _ string) (tokens.Claims, error) {
+			return newClaimsMock("nonexistent-user", "jti", map[string]string{"account_id": "account123"}), nil
+		}
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, "nonexistent-user").Return((*identity.User)(nil), errors.New("not found"))
 
 		response, err := m.ExchangeTokenForUser(ctx, refreshToken, "")
@@ -756,7 +758,7 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, response)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager)
 	})
 
 	T.Run("with user not member of desired account", func(t *testing.T) {
@@ -768,11 +770,10 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		user := buildExampleUser()
 		refreshToken := "valid-refresh-token"
 
-		mocks.tokenIssuer.On("ParseUserIDAndAccountIDFromToken", mock.Anything, refreshToken).Return(user.ID, "account123", nil)
+		mocks.tokenIssuer.ParseTokenFunc = func(_ context.Context, _ string) (tokens.Claims, error) {
+			return newClaimsMock(user.ID, "jti", map[string]string{"account_id": "account123", "sid": "session-abc"}), nil
+		}
 		mocks.userAuthDataManager.On("GetUser", mock.Anything, user.ID).Return(user, nil)
-
-		mocks.tokenIssuer.On("ParseJTIFromToken", mock.Anything, refreshToken).Return("jti", nil)
-		mocks.tokenIssuer.On("ParseSessionIDFromToken", mock.Anything, refreshToken).Return("session-abc", nil)
 
 		mocks.sessionDataManager.On("GetUserSessionByRefreshTokenID", mock.Anything, "jti").Return(&auth.UserSession{
 			ID:             "session-abc",
@@ -786,6 +787,6 @@ func TestManager_ExchangeTokenForUser(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, response)
 
-		mock.AssertExpectationsForObjects(t, mocks.tokenIssuer, mocks.userAuthDataManager, mocks.sessionDataManager)
+		mock.AssertExpectationsForObjects(t, mocks.userAuthDataManager, mocks.sessionDataManager)
 	})
 }

@@ -2,7 +2,6 @@ package oauth
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -71,20 +70,6 @@ type (
 		GetOAuth2Clients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[OAuth2Client], error)
 		CreateOAuth2Client(ctx context.Context, input *OAuth2ClientDatabaseCreationInput) (*OAuth2Client, error)
 		ArchiveOAuth2Client(ctx context.Context, clientID string) error
-	}
-
-	// OAuth2ClientDataService describes a structure capable of serving traffic related to OAuth2 clients.
-	OAuth2ClientDataService interface {
-		ListOAuth2ClientsHandler(http.ResponseWriter, *http.Request)
-		CreateOAuth2ClientHandler(http.ResponseWriter, *http.Request)
-		ReadOAuth2ClientHandler(http.ResponseWriter, *http.Request)
-		ArchiveOAuth2ClientHandler(http.ResponseWriter, *http.Request)
-	}
-
-	OAuth2Service interface {
-		AuthorizeHandler(res http.ResponseWriter, req *http.Request)
-		TokenHandler(res http.ResponseWriter, req *http.Request)
-		RevokeHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

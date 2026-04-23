@@ -210,16 +210,14 @@ struct MealDetailView: View {
       }
 
       // Estimated portions (scaled by meal scale when applicable, e.g. from meal plan)
-      if meal.hasEstimatedPortions {
-        HStack(spacing: DSTheme.Spacing.sm) {
-          Image(systemName: "person.2")
-            .foregroundColor(DSTheme.Colors.textSecondary)
-          Text(
-            "Estimated Portions: \(PortionsFormatter.formatScaled(meal.estimatedPortions, scale: mealScale))"
-          )
-          .font(DSTheme.Typography.body)
+      HStack(spacing: DSTheme.Spacing.sm) {
+        Image(systemName: "person.2")
           .foregroundColor(DSTheme.Colors.textSecondary)
-        }
+        Text(
+          "Estimated Portions: \(PortionsFormatter.formatScaled(min: meal.minEstimatedPortions, max: meal.hasMaxEstimatedPortions ? meal.maxEstimatedPortions : nil, scale: mealScale))"
+        )
+        .font(DSTheme.Typography.body)
+        .foregroundColor(DSTheme.Colors.textSecondary)
       }
 
       // Meal Scale Control (hidden when viewing from meal plan – scale is set by the plan)
@@ -1154,12 +1152,17 @@ extension MealDetailView {
                   )
                 }
 
-                if instrument.hasQuantity, var current = aggregated[itemID] {
+                if var current = aggregated[itemID] {
                   let effectiveScale =
                     scale * (instrument.scaleFactor > 0 ? instrument.scaleFactor : 1.0)
-                  let scaledQuantity = DiscreteQuantityScaling.scaled(
-                    instrument.quantity, scale: effectiveScale)
-                  current.addQuantity(scaledQuantity)
+                  let scaledMax: UInt32? =
+                    instrument.hasMaxQuantity
+                    ? (effectiveScale > 1
+                      ? DiscreteQuantityScaling.scaledMax(
+                        instrument.maxQuantity, scale: effectiveScale)
+                      : instrument.maxQuantity)
+                    : nil
+                  current.addQuantity(min: instrument.minQuantity, max: scaledMax)
                   aggregated[itemID] = current
                 }
               }
@@ -1181,11 +1184,17 @@ extension MealDetailView {
                   )
                 }
 
-                if vessel.hasQuantity, var current = aggregated[itemID] {
+                if var current = aggregated[itemID] {
                   let effectiveScale = scale * (vessel.scaleFactor > 0 ? vessel.scaleFactor : 1.0)
-                  let scaledQuantity = DiscreteQuantityScaling.scaled(
-                    vessel.quantity, scale: effectiveScale)
-                  current.addQuantity(scaledQuantity)
+                  let scaledMax: UInt32? =
+                    vessel.hasMaxQuantity
+                    ? (effectiveScale > 1
+                      ? UInt32(
+                        DiscreteQuantityScaling.scaledMax(
+                          UInt16(vessel.maxQuantity), scale: effectiveScale))
+                      : vessel.maxQuantity)
+                    : nil
+                  current.addQuantity(min: vessel.minQuantity, max: scaledMax)
                   aggregated[itemID] = current
                 }
               }
@@ -1235,15 +1244,14 @@ extension MealDetailView {
                 )
               }
 
-              if ingredient.hasQuantity, var current = aggregated[key] {
+              if var current = aggregated[key] {
                 let effectiveScale =
                   scale * (ingredient.scaleFactor > 0 ? ingredient.scaleFactor : 1.0)
-                var scaledQuantity = ingredient.quantity
-                scaledQuantity.min *= effectiveScale
-                if scaledQuantity.hasMax {
-                  scaledQuantity.max *= effectiveScale
-                }
-                current.addQuantity(scaledQuantity)
+                let scaledMin = ingredient.minQuantity * effectiveScale
+                let scaledMax: Float? =
+                  ingredient.hasMaxQuantity
+                  ? ingredient.maxQuantity * effectiveScale : nil
+                current.addQuantity(min: scaledMin, max: scaledMax)
                 aggregated[key] = current
               }
             }

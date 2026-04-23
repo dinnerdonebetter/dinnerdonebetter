@@ -2434,7 +2434,7 @@ extension Auth_PasswordResetTokenRedemptionRequestInput: SwiftProtobuf.Message, 
 
 extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TOTPSecretRefreshResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{2}two_factor_qr_code\0\u{3}two_factor_secret\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}two_factor_qr_code\0\u{3}two_factor_secret\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2442,8 +2442,8 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 2: try { try decoder.decodeSingularStringField(value: &self.twoFactorQrCode) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.twoFactorSecret) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.twoFactorQrCode) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.twoFactorSecret) }()
       default: break
       }
     }
@@ -2451,10 +2451,10 @@ extension Auth_TOTPSecretRefreshResponse: SwiftProtobuf.Message, SwiftProtobuf._
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.twoFactorQrCode.isEmpty {
-      try visitor.visitSingularStringField(value: self.twoFactorQrCode, fieldNumber: 2)
+      try visitor.visitSingularStringField(value: self.twoFactorQrCode, fieldNumber: 1)
     }
     if !self.twoFactorSecret.isEmpty {
-      try visitor.visitSingularStringField(value: self.twoFactorSecret, fieldNumber: 3)
+      try visitor.visitSingularStringField(value: self.twoFactorSecret, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2508,7 +2508,7 @@ extension Auth_TOTPSecretVerificationResponse: SwiftProtobuf.Message, SwiftProto
 
 extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TokenResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{2}user_id\0\u{3}account_id\0\u{3}access_token\0\u{3}refresh_token\0\u{3}expires_utc\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_id\0\u{3}account_id\0\u{3}access_token\0\u{3}refresh_token\0\u{3}expires_utc\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2516,11 +2516,11 @@ extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 2: try { try decoder.decodeSingularStringField(value: &self.userID) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.accountID) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self.accessToken) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.refreshToken) }()
-      case 6: try { try decoder.decodeSingularMessageField(value: &self._expiresUtc) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.userID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.accountID) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.accessToken) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.refreshToken) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._expiresUtc) }()
       default: break
       }
     }
@@ -2532,19 +2532,19 @@ extension Auth_TokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
     if !self.userID.isEmpty {
-      try visitor.visitSingularStringField(value: self.userID, fieldNumber: 2)
+      try visitor.visitSingularStringField(value: self.userID, fieldNumber: 1)
     }
     if !self.accountID.isEmpty {
-      try visitor.visitSingularStringField(value: self.accountID, fieldNumber: 3)
+      try visitor.visitSingularStringField(value: self.accountID, fieldNumber: 2)
     }
     if !self.accessToken.isEmpty {
-      try visitor.visitSingularStringField(value: self.accessToken, fieldNumber: 4)
+      try visitor.visitSingularStringField(value: self.accessToken, fieldNumber: 3)
     }
     if !self.refreshToken.isEmpty {
-      try visitor.visitSingularStringField(value: self.refreshToken, fieldNumber: 5)
+      try visitor.visitSingularStringField(value: self.refreshToken, fieldNumber: 4)
     }
     try { if let v = self._expiresUtc {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }

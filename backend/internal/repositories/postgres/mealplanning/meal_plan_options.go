@@ -14,7 +14,6 @@ import (
 	"github.com/primandproper/platform/database"
 	"github.com/primandproper/platform/database/filtering"
 	platformerrors "github.com/primandproper/platform/errors"
-	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/observability"
 	"github.com/primandproper/platform/observability/tracing"
 
@@ -107,17 +106,15 @@ func (q *repository) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 		BelongsToMealPlanEvent: database.StringFromNullString(result.BelongsToMealPlanEvent),
 		ID:                     result.ID,
 		Meal: mealplanning.Meal{
-			CreatedAt:     result.MealCreatedAt,
-			ArchivedAt:    database.TimePointerFromNullTime(result.MealArchivedAt),
-			LastUpdatedAt: database.TimePointerFromNullTime(result.MealLastUpdatedAt),
-			ID:            result.MealID,
-			Description:   result.MealDescription,
-			CreatedByUser: result.MealCreatedByUser,
-			Name:          result.MealName,
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: database.Float32FromString(result.MealMinEstimatedPortions),
-				Max: database.Float32PointerFromNullString(result.MealMaxEstimatedPortions),
-			},
+			CreatedAt:            result.MealCreatedAt,
+			ArchivedAt:           database.TimePointerFromNullTime(result.MealArchivedAt),
+			LastUpdatedAt:        database.TimePointerFromNullTime(result.MealLastUpdatedAt),
+			ID:                   result.MealID,
+			Description:          result.MealDescription,
+			CreatedByUser:        result.MealCreatedByUser,
+			Name:                 result.MealName,
+			MinEstimatedPortions: database.Float32FromString(result.MealMinEstimatedPortions),
+			MaxEstimatedPortions: database.Float32PointerFromNullString(result.MealMaxEstimatedPortions),
 			EligibleForMealPlans: result.MealEligibleForMealPlans,
 		},
 		MealScale: database.Float32FromString(result.MealScale),
@@ -157,13 +154,11 @@ func (q *repository) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID
 		ID:                     result.ID,
 		Votes:                  nil,
 		Meal: mealplanning.Meal{
-			CreatedAt:     result.MealCreatedAt,
-			ArchivedAt:    database.TimePointerFromNullTime(result.MealArchivedAt),
-			LastUpdatedAt: database.TimePointerFromNullTime(result.MealLastUpdatedAt),
-			EstimatedPortions: numbers.MinRange[float32]{
-				Min: database.Float32FromString(result.MealMinEstimatedPortions),
-				Max: database.Float32PointerFromNullString(result.MealMaxEstimatedPortions),
-			},
+			CreatedAt:            result.MealCreatedAt,
+			ArchivedAt:           database.TimePointerFromNullTime(result.MealArchivedAt),
+			LastUpdatedAt:        database.TimePointerFromNullTime(result.MealLastUpdatedAt),
+			MinEstimatedPortions: database.Float32FromString(result.MealMinEstimatedPortions),
+			MaxEstimatedPortions: database.Float32PointerFromNullString(result.MealMaxEstimatedPortions),
 			ID:                   result.MealID,
 			Description:          result.MealDescription,
 			CreatedByUser:        result.MealCreatedByUser,

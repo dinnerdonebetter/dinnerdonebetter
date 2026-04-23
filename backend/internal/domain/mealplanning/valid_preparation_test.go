@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"testing"
 
-	"github.com/primandproper/platform/numbers"
-
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 )
@@ -74,18 +72,18 @@ func TestValidPreparation_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparation{
-			InstrumentCount: numbers.MinRange[uint16]{Max: new(uint16(0))},
-			IngredientCount: numbers.MinRange[uint16]{Max: new(uint16(0))},
-			VesselCount:     numbers.MinRange[uint16]{Max: new(uint16(0))},
+			MaxInstrumentCount: new(uint16(0)),
+			MaxIngredientCount: new(uint16(0)),
+			MaxVesselCount:     new(uint16(0)),
 		}
 		input := &ValidPreparationUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 		input.YieldsNothing = new(true)
 		input.RestrictToIngredients = new(true)
-		input.IngredientCount.Max = new(uint16(1))
-		input.InstrumentCount.Max = new(uint16(1))
-		input.VesselCount.Max = new(uint16(1))
+		input.MaxIngredientCount = new(uint16(1))
+		input.MaxInstrumentCount = new(uint16(1))
+		input.MaxVesselCount = new(uint16(1))
 		input.TemperatureRequired = new(true)
 		input.TimeEstimateRequired = new(true)
 		input.OnlyForVessels = new(true)

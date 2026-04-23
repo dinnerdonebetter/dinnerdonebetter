@@ -8,10 +8,10 @@ import "uploaded_media/uploaded_media_messages.proto";
 option go_package = "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity";
 
 message DataCollection {
-  User user = 2;
-  repeated AccountInvitation received_invites = 6;
-  repeated AccountInvitation sent_invites = 7;
-  repeated Account accounts = 10;
+  User user = 1;
+  repeated AccountInvitation received_invites = 2;
+  repeated AccountInvitation sent_invites = 3;
+  repeated Account accounts = 4;
 }
 
 message ModifyUserPermissionsInput {

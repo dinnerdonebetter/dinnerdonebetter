@@ -419,41 +419,10 @@ struct DateFormattingTests {
 // MARK: - Discrete Quantity Scaling Tests
 
 struct DiscreteQuantityScalingTests {
-  @Test("Uint32 discrete scaling keeps min and max at sub-1 scale")
-  func testUint32SubOneScaleKeepsBaseline() {
-    var quantity = Common_Uint32RangeWithOptionalMax()
-    quantity.min = 1
-    quantity.max = 3
-
-    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 0.5)
-
-    #expect(scaled.min == 1)
-    #expect(scaled.hasMax)
-    #expect(scaled.max == 3)
-  }
-
-  @Test("Uint32 discrete scaling rounds max up when scaling up")
+  @Test("Uint32 discrete max scaling rounds up")
   func testUint32ScaleUpRoundsMax() {
-    var quantity = Common_Uint32RangeWithOptionalMax()
-    quantity.min = 2
-    quantity.max = 3
-
-    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 1.5)
-
-    #expect(scaled.min == 2)
-    #expect(scaled.hasMax)
-    #expect(scaled.max == 5)
-  }
-
-  @Test("Uint16 discrete scaling keeps open-ended quantities open-ended")
-  func testUint16OpenEndedQuantityRemainsOpenEnded() {
-    var quantity = Common_Uint16RangeWithOptionalMax()
-    quantity.min = 1
-
-    let scaled = DiscreteQuantityScaling.scaled(quantity, scale: 2.0)
-
-    #expect(scaled.min == 1)
-    #expect(!scaled.hasMax)
+    let scaled = DiscreteQuantityScaling.scaledMax(UInt32(3), scale: 1.5)
+    #expect(scaled == 5)
   }
 
   @Test("Uint16 discrete max scaling clamps overflow")
@@ -469,10 +438,7 @@ struct DiscreteQuantityScalingTests {
       name: "Mixing bowl",
       type: .instrument
     )
-    var quantity = Common_Uint32RangeWithOptionalMax()
-    quantity.min = 1
-    quantity.max = 1
-    aggregated.addQuantity(quantity)
+    aggregated.addQuantity(min: UInt32(1), max: UInt32(1))
 
     #expect(aggregated.quantityText(scale: 0.5) == "1")
     #expect(aggregated.quantityText(scale: 2.0) == "1 - 2")
@@ -486,10 +452,8 @@ struct RecipePerformanceStepFormattingTests {
   func testStepIngredientDisplayIncludesQuantityAndUnit() {
     var ingredient = Mealplanning_RecipeStepIngredient()
     ingredient.name = "Flour"
-    var quantity = Common_Float32RangeWithOptionalMax()
-    quantity.min = 2
-    quantity.max = 2  // same as min → exact quantity, avoids "3+" when no max
-    ingredient.quantity = quantity
+    ingredient.minQuantity = 2
+    ingredient.maxQuantity = 2  // same as min → exact quantity, avoids "3+" when no max
     var unit = Mealplanning_ValidMeasurementUnit()
     unit.name = "cup"
     unit.pluralName = "cups"
@@ -504,10 +468,8 @@ struct RecipePerformanceStepFormattingTests {
   func testStepIngredientDisplayUsesSingularForOne() {
     var ingredient = Mealplanning_RecipeStepIngredient()
     ingredient.name = "Water"
-    var quantity = Common_Float32RangeWithOptionalMax()
-    quantity.min = 1
-    quantity.max = 1
-    ingredient.quantity = quantity
+    ingredient.minQuantity = 1
+    ingredient.maxQuantity = 1
     var unit = Mealplanning_ValidMeasurementUnit()
     unit.name = "cup"
     unit.pluralName = "cups"

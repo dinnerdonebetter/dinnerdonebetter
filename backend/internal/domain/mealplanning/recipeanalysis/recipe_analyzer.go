@@ -570,9 +570,9 @@ func frozenIngredientDefrostStepsFilter(recipe *mealplanning.Recipe) map[string]
 			// if it's a valid ingredient
 			if ingredient.Ingredient != nil &&
 				// if the ingredient has storage temperature set
-				ingredient.Ingredient.StorageTemperatureInCelsius.Min != nil &&
+				ingredient.Ingredient.MinStorageTemperatureInCelsius != nil &&
 				// the ingredient's storage temperature is set to something about freezing temperature.
-				*ingredient.Ingredient.StorageTemperatureInCelsius.Min <= 3 {
+				*ingredient.Ingredient.MinStorageTemperatureInCelsius <= 3 {
 				ingredientIndices = append(ingredientIndices, i)
 			}
 		}
@@ -875,8 +875,8 @@ func (g *recipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, rec
 
 			if provides := stepProvidesWhatFromTo(recipe, allSteps[i].step, allSteps[j].step); provides != "" {
 				stepLabel := ""
-				if allSteps[i].step.EstimatedTimeInSeconds.Min != nil && *allSteps[i].step.EstimatedTimeInSeconds.Min > 0 {
-					stepLabel = durafmt.Parse(time.Duration(*allSteps[i].step.EstimatedTimeInSeconds.Min) * time.Second).String()
+				if allSteps[i].step.MinEstimatedTimeInSeconds != nil && *allSteps[i].step.MinEstimatedTimeInSeconds > 0 {
+					stepLabel = durafmt.Parse(time.Duration(*allSteps[i].step.MinEstimatedTimeInSeconds) * time.Second).String()
 				}
 
 				if _, err := fmt.Fprintf(&graphViz, "\tStep%d -> Step%d [color=\"black\" label=%q];\n",
@@ -943,8 +943,8 @@ func (g *recipeAnalyzer) RenderGraphvizDiagramForMeal(ctx context.Context, meal 
 			}
 			if provides := stepProvidesWhatFromTo(allSteps[i].recipe, allSteps[i].step, allSteps[j].step); provides != "" {
 				stepLabel := ""
-				if allSteps[i].step.EstimatedTimeInSeconds.Min != nil && *allSteps[i].step.EstimatedTimeInSeconds.Min > 0 {
-					stepLabel = durafmt.Parse(time.Duration(*allSteps[i].step.EstimatedTimeInSeconds.Min) * time.Second).String()
+				if allSteps[i].step.MinEstimatedTimeInSeconds != nil && *allSteps[i].step.MinEstimatedTimeInSeconds > 0 {
+					stepLabel = durafmt.Parse(time.Duration(*allSteps[i].step.MinEstimatedTimeInSeconds) * time.Second).String()
 				}
 				if _, err := fmt.Fprintf(&graphViz, "\tStep%d -> Step%d [color=\"black\" label=%q];\n",
 					mealGraphID(allSteps[i].componentIndex, allSteps[i].loc),

@@ -352,7 +352,7 @@
                 <div class="portions-range">
                   <NumberInput
                     id="portions"
-                    bind:value={state.recipe.estimatedPortions!.min}
+                    bind:value={state.recipe.minEstimatedPortions}
                     min={1}
                     required
                     dataTestId="recipe-portions"
@@ -365,14 +365,11 @@
                     placeholder="max"
                     class="number-input"
                     data-testid="recipe-portions-max"
-                    value={state.recipe.estimatedPortions?.max ?? ''}
+                    value={state.recipe.maxEstimatedPortions ?? ''}
                     oninput={(e) => {
                       const v = (e.currentTarget as HTMLInputElement).value;
                       const n = v === '' ? undefined : parseInt(v, 10);
-                      state.recipe.estimatedPortions = {
-                        ...state.recipe.estimatedPortions!,
-                        max: n !== undefined && !Number.isNaN(n) ? n : undefined,
-                      };
+                      state.recipe.maxEstimatedPortions = n !== undefined && !Number.isNaN(n) ? n : undefined;
                     }}
                   />
                 </div>
@@ -1210,7 +1207,7 @@
                           {#if !isFromProduct}
                             <FormField label="Quantity">
                               <NumberInput
-                                bind:value={ingredient.quantity!.min}
+                                bind:value={ingredient.minQuantity}
                                 min={0}
                                 step={0.25}
                                 dataTestId={'recipe-step-' + stepIndex + '-ingredient-' + ingIdx + '-quantity'}
@@ -1235,8 +1232,7 @@
                       <h3>Products</h3>
                       {#each step.products as product, prodIdx (`${stepIndex}-prod-${prodIdx}`)}
                         {@const isContinuous =
-                          product.itemQuantity == null ||
-                          (product.itemQuantity.min === undefined && product.itemQuantity.max === undefined)}
+                          product.minItemQuantity === undefined && product.maxItemQuantity === undefined}
                         {@const productUnits =
                           state.stepHelpers[stepIndex]?.productMeasurementUnitSuggestions[prodIdx] ?? []}
                         <div class="step-item">
@@ -1274,14 +1270,18 @@
                                 const v = (e.currentTarget as HTMLSelectElement).value;
                                 if (v === 'continuous') {
                                   state.updateProduct(stepIndex, prodIdx, {
-                                    itemQuantity: undefined,
-                                    measurementQuantity: product.measurementQuantity ?? { min: 1 },
+                                    minItemQuantity: undefined,
+                                    maxItemQuantity: undefined,
+                                    minMeasurementQuantity: product.minMeasurementQuantity ?? 1,
+                                    maxMeasurementQuantity: product.maxMeasurementQuantity,
                                     measurementUnitId: product.measurementUnitId,
                                   });
                                 } else {
                                   state.updateProduct(stepIndex, prodIdx, {
-                                    itemQuantity: product.itemQuantity ?? { min: 1 },
-                                    measurementQuantity: product.measurementQuantity ?? { min: 1 },
+                                    minItemQuantity: product.minItemQuantity ?? 1,
+                                    maxItemQuantity: product.maxItemQuantity,
+                                    minMeasurementQuantity: product.minMeasurementQuantity ?? 1,
+                                    maxMeasurementQuantity: product.maxMeasurementQuantity,
                                     measurementUnitId: product.measurementUnitId,
                                   });
                                 }
@@ -1300,15 +1300,12 @@
                                   step={0.25}
                                   class="number-input"
                                   data-testid={'recipe-step-' + stepIndex + '-product-' + prodIdx + '-qty'}
-                                  value={product.measurementQuantity?.min ?? ''}
+                                  value={product.minMeasurementQuantity ?? ''}
                                   oninput={(e) => {
                                     const v = (e.currentTarget as HTMLInputElement).value;
                                     const n = v === '' ? undefined : parseFloat(v);
                                     state.updateProduct(stepIndex, prodIdx, {
-                                      measurementQuantity: {
-                                        min: n ?? 0,
-                                        max: product.measurementQuantity?.max,
-                                      },
+                                      minMeasurementQuantity: n ?? 0,
                                     });
                                   }}
                                 />
@@ -1320,15 +1317,12 @@
                                   placeholder="max"
                                   class="number-input product-qty-max"
                                   data-testid={'recipe-step-' + stepIndex + '-product-' + prodIdx + '-qty-max'}
-                                  value={product.measurementQuantity?.max ?? ''}
+                                  value={product.maxMeasurementQuantity ?? ''}
                                   oninput={(e) => {
                                     const v = (e.currentTarget as HTMLInputElement).value;
                                     const n = v === '' ? undefined : parseFloat(v);
                                     state.updateProduct(stepIndex, prodIdx, {
-                                      measurementQuantity: {
-                                        min: product.measurementQuantity?.min ?? 0,
-                                        max: n !== undefined && !Number.isNaN(n) ? n : undefined,
-                                      },
+                                      maxMeasurementQuantity: n !== undefined && !Number.isNaN(n) ? n : undefined,
                                     });
                                   }}
                                 />
@@ -1365,15 +1359,12 @@
                                   step={1}
                                   class="number-input"
                                   data-testid={'recipe-step-' + stepIndex + '-product-' + prodIdx + '-item-count'}
-                                  value={product.itemQuantity?.min ?? ''}
+                                  value={product.minItemQuantity ?? ''}
                                   oninput={(e) => {
                                     const v = (e.currentTarget as HTMLInputElement).value;
                                     const n = v === '' ? undefined : parseFloat(v);
                                     state.updateProduct(stepIndex, prodIdx, {
-                                      itemQuantity: {
-                                        min: n ?? 0,
-                                        max: product.itemQuantity?.max,
-                                      },
+                                      minItemQuantity: n ?? 0,
                                     });
                                   }}
                                 />
@@ -1385,15 +1376,12 @@
                                   placeholder="max"
                                   class="number-input product-qty-max"
                                   data-testid={'recipe-step-' + stepIndex + '-product-' + prodIdx + '-item-count-max'}
-                                  value={product.itemQuantity?.max ?? ''}
+                                  value={product.maxItemQuantity ?? ''}
                                   oninput={(e) => {
                                     const v = (e.currentTarget as HTMLInputElement).value;
                                     const n = v === '' ? undefined : parseFloat(v);
                                     state.updateProduct(stepIndex, prodIdx, {
-                                      itemQuantity: {
-                                        min: product.itemQuantity?.min ?? 0,
-                                        max: n !== undefined && !Number.isNaN(n) ? n : undefined,
-                                      },
+                                      maxItemQuantity: n !== undefined && !Number.isNaN(n) ? n : undefined,
                                     });
                                   }}
                                 />
@@ -1407,15 +1395,12 @@
                                   step={0.25}
                                   class="number-input"
                                   data-testid={'recipe-step-' + stepIndex + '-product-' + prodIdx + '-per-item'}
-                                  value={product.measurementQuantity?.min ?? ''}
+                                  value={product.minMeasurementQuantity ?? ''}
                                   oninput={(e) => {
                                     const v = (e.currentTarget as HTMLInputElement).value;
                                     const n = v === '' ? undefined : parseFloat(v);
                                     state.updateProduct(stepIndex, prodIdx, {
-                                      measurementQuantity: {
-                                        min: n ?? 0,
-                                        max: product.measurementQuantity?.max,
-                                      },
+                                      minMeasurementQuantity: n ?? 0,
                                     });
                                   }}
                                 />

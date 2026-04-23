@@ -6,9 +6,7 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 
-	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/pointer"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -115,13 +113,11 @@ func ConvertMealToGRPCMeal(input *mealplanning.Meal) *mealplanningsvc.Meal {
 	}
 
 	return &mealplanningsvc.Meal{
-		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
-		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		EstimatedPortions: &grpctypes.Float32RangeWithOptionalMax{
-			Max: input.EstimatedPortions.Max,
-			Min: input.EstimatedPortions.Min,
-		},
+		CreatedAt:            grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		LastUpdatedAt:        grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:           grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
 		Id:                   input.ID,
 		Description:          input.Description,
 		CreatedByUser:        input.CreatedByUser,
@@ -146,13 +142,11 @@ func ConvertGRPCMealToMeal(input *mealplanningsvc.Meal) *mealplanning.Meal {
 	}
 
 	return &mealplanning.Meal{
-		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		EstimatedPortions: numbers.MinRange[float32]{
-			Max: input.EstimatedPortions.Max,
-			Min: input.EstimatedPortions.Min,
-		},
+		CreatedAt:            grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:        grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:           grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
 		ID:                   input.Id,
 		Description:          input.Description,
 		CreatedByUser:        input.CreatedByUser,
@@ -213,13 +207,11 @@ func ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(input *mealplan
 	}
 
 	return &mealplanningsvc.MealPlanGroceryListItem{
-		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
-		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		QuantityNeeded: &grpctypes.Float32RangeWithOptionalMax{
-			Max: input.QuantityNeeded.Max,
-			Min: input.QuantityNeeded.Min,
-		},
+		CreatedAt:                grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		LastUpdatedAt:            grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:               grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		MinQuantityNeeded:        input.MinQuantityNeeded,
+		MaxQuantityNeeded:        input.MaxQuantityNeeded,
 		Ingredient:               ConvertValidIngredientToGRPCValidIngredient(&input.Ingredient),
 		MeasurementUnit:          ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&input.MeasurementUnit),
 		PurchasedMeasurementUnit: purchasedMeasurementUnit,
@@ -245,13 +237,11 @@ func ConvertGRPCMealPlanGroceryListItemToMealPlanGroceryListItem(input *mealplan
 	}
 
 	return &mealplanning.MealPlanGroceryListItem{
-		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		QuantityNeeded: numbers.MinRange[float32]{
-			Max: input.QuantityNeeded.Max,
-			Min: input.QuantityNeeded.Min,
-		},
+		CreatedAt:                grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:            grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:               grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		MinQuantityNeeded:        input.MinQuantityNeeded,
+		MaxQuantityNeeded:        input.MaxQuantityNeeded,
 		Ingredient:               *ConvertGRPCValidIngredientToValidIngredient(input.Ingredient),
 		MeasurementUnit:          *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
 		PurchasedMeasurementUnit: purchasedMeasurementUnit,
@@ -465,7 +455,7 @@ func ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(input *mealpl
 		Ingredient:    ConvertValidIngredientToGRPCValidIngredient(&input.Ingredient),
 		Id:            input.ID,
 		Notes:         input.Notes,
-		BelongsToUser: input.BelongsToUser,
+		BelongsToUser: input.CreatedByUser,
 		Rating:        int32(input.Rating),
 		Allergy:       input.Allergy,
 	}
@@ -479,7 +469,7 @@ func ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(input *mealpl
 		Ingredient:    *ConvertGRPCValidIngredientToValidIngredient(input.Ingredient),
 		ID:            input.Id,
 		Notes:         input.Notes,
-		BelongsToUser: input.BelongsToUser,
+		CreatedByUser: input.BelongsToUser,
 		Rating:        int8(input.Rating),
 		Allergy:       input.Allergy,
 	}
@@ -492,10 +482,8 @@ func ConvertMealCreationRequestInputToGRPCMealCreationRequestInput(input *mealpl
 	}
 
 	return &mealplanningsvc.MealCreationRequestInput{
-		EstimatedPortions: &grpctypes.Float32RangeWithOptionalMax{
-			Min: input.EstimatedPortions.Min,
-			Max: input.EstimatedPortions.Max,
-		},
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
 		Name:                 input.Name,
 		Description:          input.Description,
 		Components:           components,
@@ -570,10 +558,8 @@ func ConvertGRPCMealCreationRequestInputToMealCreationRequestInput(input *mealpl
 	}
 
 	return &mealplanning.MealCreationRequestInput{
-		EstimatedPortions: numbers.MinRange[float32]{
-			Min: input.EstimatedPortions.Min,
-			Max: input.EstimatedPortions.Max,
-		},
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
 		Name:                 input.Name,
 		Description:          input.Description,
 		Components:           components,
@@ -743,10 +729,8 @@ func ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryList
 		ValidIngredientID:          input.ValidIngredientId,
 		ValidMeasurementUnitID:     input.ValidMeasurementUnitId,
 		StatusExplanation:          input.StatusExplanation,
-		QuantityNeeded: numbers.MinRange[float32]{
-			Max: input.QuantityNeeded.Max,
-			Min: input.QuantityNeeded.Min,
-		},
+		MinQuantityNeeded:          input.MinQuantityNeeded,
+		MaxQuantityNeeded:          input.MaxQuantityNeeded,
 	}
 }
 
@@ -761,10 +745,8 @@ func ConvertMealPlanGroceryListItemCreationRequestInputToGRPCMealPlanGroceryList
 		ValidIngredientId:          input.ValidIngredientID,
 		ValidMeasurementUnitId:     input.ValidMeasurementUnitID,
 		StatusExplanation:          input.StatusExplanation,
-		QuantityNeeded: &grpctypes.Float32RangeWithOptionalMax{
-			Max: input.QuantityNeeded.Max,
-			Min: input.QuantityNeeded.Min,
-		},
+		MinQuantityNeeded:          input.MinQuantityNeeded,
+		MaxQuantityNeeded:          input.MaxQuantityNeeded,
 	}
 }
 
@@ -852,14 +834,6 @@ func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListIt
 		status = new(ConvertMealPlanGroceryListItemStatusToString(*input.Status))
 	}
 
-	var quantityNeeded numbers.OpenRangeUpdateRequestInput[float32]
-	if input.QuantityNeeded != nil {
-		quantityNeeded = numbers.OpenRangeUpdateRequestInput[float32]{
-			Min: input.QuantityNeeded.Min,
-			Max: input.QuantityNeeded.Max,
-		}
-	}
-
 	return &mealplanning.MealPlanGroceryListItemUpdateRequestInput{
 		BelongsToMealPlan:          input.BelongsToMealPlan,
 		ValidIngredientID:          input.ValidIngredientId,
@@ -870,7 +844,8 @@ func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListIt
 		PurchasedUPC:               input.PurchasedUpc,
 		PurchasePrice:              input.PurchasePrice,
 		Status:                     status,
-		QuantityNeeded:             quantityNeeded,
+		MinQuantityNeeded:          input.MinQuantityNeeded,
+		MaxQuantityNeeded:          input.MaxQuantityNeeded,
 	}
 }
 

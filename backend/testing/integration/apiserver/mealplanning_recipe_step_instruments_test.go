@@ -9,8 +9,6 @@ import (
 	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
-	"github.com/primandproper/platform/numbers"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,7 +28,8 @@ func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, 
 	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d instrument %d to have BelongsToRecipeStep", stepIndex, instrIndex)
 	assert.Equal(t, expected.Name, actual.Name, "expected step %d instrument %d Name", stepIndex, instrIndex)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d instrument %d Notes", stepIndex, instrIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d instrument %d MeasurementQuantity", stepIndex, instrIndex)
+	assert.Equal(t, expected.MinQuantity, actual.MinQuantity, "expected step %d instrument %d MinQuantity", stepIndex, instrIndex)
+	assert.Equal(t, expected.MaxQuantity, actual.MaxQuantity, "expected step %d instrument %d MaxQuantity", stepIndex, instrIndex)
 	assert.Equal(t, expected.Index, actual.Index, "expected step %d instrument %d Index", stepIndex, instrIndex)
 	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d instrument %d OptionIndex", stepIndex, instrIndex)
 	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected step %d instrument %d PreferenceRank", stepIndex, instrIndex)
@@ -181,24 +180,23 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 		preheatedKnife := "preheated knife"
 
 		expected := &mealplanning.Recipe{
-			Name:                t.Name(),
-			Slug:                "whatever-who-cares",
-			YieldsComponentType: mealplanning.MealComponentTypesMain,
-			PortionName:         t.Name(),
-			PluralPortionName:   t.Name(),
-			EstimatedPortions: numbers.MinRange[float32]{
-				Max: nil,
-				Min: 1,
-			},
+			Name:                 t.Name(),
+			Slug:                 "whatever-who-cares",
+			YieldsComponentType:  mealplanning.MealComponentTypesMain,
+			PortionName:          t.Name(),
+			PluralPortionName:    t.Name(),
+			MinEstimatedPortions: 1,
+
+			MaxEstimatedPortions: nil,
 			Steps: []*mealplanning.RecipeStep{
 				{
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:                preheatedKnife,
-							Type:                mealplanning.RecipeStepProductInstrumentType,
-							MeasurementUnit:     unit,
-							QuantityNotes:       "",
-							MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+							Name:                   preheatedKnife,
+							Type:                   mealplanning.RecipeStepProductInstrumentType,
+							MeasurementUnit:        unit,
+							QuantityNotes:          "",
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Notes:       "first step",
@@ -221,11 +219,11 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 					},
 					Products: []*mealplanning.RecipeStepProduct{
 						{
-							Name:                "cut butter",
-							Type:                mealplanning.RecipeStepProductIngredientType,
-							MeasurementUnit:     stick,
-							QuantityNotes:       "",
-							MeasurementQuantity: numbers.OpenRange[float32]{Min: new(float32(1))},
+							Name:                   "cut butter",
+							Type:                   mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit:        stick,
+							QuantityNotes:          "",
+							MinMeasurementQuantity: new(float32(1)),
 						},
 					},
 					Notes: "second step",
@@ -234,10 +232,9 @@ func TestRecipeStepInstruments_AsRecipeStepProducts(T *testing.T) {
 							Ingredient:      butter,
 							Name:            "butter",
 							MeasurementUnit: *stick,
-							Quantity: numbers.MinRange[float32]{
-								Max: nil,
-								Min: 1,
-							},
+							MinQuantity:     1,
+
+							MaxQuantity: nil,
 						},
 					},
 					Index: 1,

@@ -361,6 +361,10 @@ public struct Webhooks_WebhookTriggerEventCreationRequestInput: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  public var name: String = String()
+
+  public var description_p: String = String()
+
   /// reference existing catalog event by id
   public var id: String {
     get {return _id ?? String()}
@@ -370,10 +374,6 @@ public struct Webhooks_WebhookTriggerEventCreationRequestInput: Sendable {
   public var hasID: Bool {return self._id != nil}
   /// Clears the value of `id`. Subsequent reads from it will return its default value.
   public mutating func clearID() {self._id = nil}
-
-  public var name: String = String()
-
-  public var description_p: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1232,9 +1232,9 @@ extension Webhooks_WebhookTriggerEventCreationRequestInput: SwiftProtobuf.Messag
   }
 
   public static func ==(lhs: Webhooks_WebhookTriggerEventCreationRequestInput, rhs: Webhooks_WebhookTriggerEventCreationRequestInput) -> Bool {
-    if lhs._id != rhs._id {return false}
     if lhs.name != rhs.name {return false}
     if lhs.description_p != rhs.description_p {return false}
+    if lhs._id != rhs._id {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

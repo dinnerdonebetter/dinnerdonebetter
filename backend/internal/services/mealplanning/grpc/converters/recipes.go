@@ -6,10 +6,8 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	grpcconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	grpctypes "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/types"
 	uploadedmediaconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/uploadedmedia/grpc/converters"
 
-	"github.com/primandproper/platform/numbers"
 	"github.com/primandproper/platform/pointer"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -27,23 +25,22 @@ func ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(input *me
 	}
 
 	return &mealplanning.RecipeCreationRequestInput{
-		InspiredByRecipeID:  input.InspiredByRecipeId,
-		Name:                input.Name,
-		Source:              input.Source,
-		SourceISBN:          input.SourceIsbn,
-		Description:         input.Description,
-		PluralPortionName:   input.PluralPortionName,
-		PortionName:         input.PortionName,
-		Slug:                input.Slug,
-		YieldsComponentType: ConvertMealComponentTypeToString(input.YieldsComponentType),
-		EstimatedPortions: numbers.MinRange[float32]{
-			Max: input.EstimatedPortions.Max,
-			Min: input.EstimatedPortions.Min,
-		},
-		AlsoCreateMeal:   input.AlsoCreateMeal,
-		EligibleForMeals: input.EligibleForMeals,
-		PrepTasks:        prepTasks,
-		Steps:            steps,
+		InspiredByRecipeID:   input.InspiredByRecipeId,
+		Name:                 input.Name,
+		Source:               input.Source,
+		SourceISBN:           input.SourceIsbn,
+		Description:          input.Description,
+		PluralPortionName:    input.PluralPortionName,
+		PortionName:          input.PortionName,
+		Slug:                 input.Slug,
+		YieldsComponentType:  ConvertMealComponentTypeToString(input.YieldsComponentType),
+		MinEstimatedPortions: input.MinEstimatedPortions,
+
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
+		AlsoCreateMeal:       input.AlsoCreateMeal,
+		EligibleForMeals:     input.EligibleForMeals,
+		PrepTasks:            prepTasks,
+		Steps:                steps,
 	}
 }
 
@@ -59,23 +56,21 @@ func ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input *me
 	}
 
 	return &mealplanningsvc.RecipeCreationRequestInput{
-		InspiredByRecipeId:  input.InspiredByRecipeID,
-		Name:                input.Name,
-		Source:              input.Source,
-		SourceIsbn:          input.SourceISBN,
-		Description:         input.Description,
-		PluralPortionName:   input.PluralPortionName,
-		PortionName:         input.PortionName,
-		Slug:                input.Slug,
-		YieldsComponentType: ConvertStringToMealComponentType(input.YieldsComponentType),
-		EstimatedPortions: &grpctypes.Float32RangeWithOptionalMax{
-			Max: input.EstimatedPortions.Max,
-			Min: input.EstimatedPortions.Min,
-		},
-		AlsoCreateMeal:   input.AlsoCreateMeal,
-		EligibleForMeals: input.EligibleForMeals,
-		PrepTasks:        prepTasks,
-		Steps:            steps,
+		InspiredByRecipeId:   input.InspiredByRecipeID,
+		Name:                 input.Name,
+		Source:               input.Source,
+		SourceIsbn:           input.SourceISBN,
+		Description:          input.Description,
+		PluralPortionName:    input.PluralPortionName,
+		PortionName:          input.PortionName,
+		Slug:                 input.Slug,
+		YieldsComponentType:  ConvertStringToMealComponentType(input.YieldsComponentType),
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
+		AlsoCreateMeal:       input.AlsoCreateMeal,
+		EligibleForMeals:     input.EligibleForMeals,
+		PrepTasks:            prepTasks,
+		Steps:                steps,
 	}
 }
 
@@ -86,22 +81,18 @@ func ConvertGRPCRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskWi
 	}
 
 	return &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
-		StorageType:                 input.StorageType,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		Notes:                       input.Notes,
-		Name:                        input.Name,
-		Description:                 input.Description,
-		BelongsToRecipe:             input.BelongsToRecipe,
-		RecipeSteps:                 prepTaskSteps,
-		Optional:                    input.Optional,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
+		StorageType:                        input.StorageType,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Notes:                              input.Notes,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		RecipeSteps:                        prepTaskSteps,
+		Optional:                           input.Optional,
 	}
 }
 
@@ -112,22 +103,18 @@ func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToGRPCRecipePrepTaskWi
 	}
 
 	return &mealplanningsvc.RecipePrepTaskWithinRecipeCreationRequestInput{
-		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
-		TimeBufferBeforeRecipeInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
-		StorageType:                 input.StorageType,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		Notes:                       input.Notes,
-		Name:                        input.Name,
-		Description:                 input.Description,
-		BelongsToRecipe:             input.BelongsToRecipe,
-		RecipeSteps:                 prepTaskSteps,
-		Optional:                    input.Optional,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
+		StorageType:                        input.StorageType,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Notes:                              input.Notes,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		RecipeSteps:                        prepTaskSteps,
+		Optional:                           input.Optional,
 	}
 }
 
@@ -138,22 +125,18 @@ func ConvertGRPCRecipePrepTaskCreationRequestInputToRecipePrepTaskCreationReques
 	}
 
 	return &mealplanning.RecipePrepTaskCreationRequestInput{
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
-		StorageType:                 input.StorageType,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		Notes:                       input.Notes,
-		Name:                        input.Name,
-		Description:                 input.Description,
-		BelongsToRecipe:             input.BelongsToRecipe,
-		RecipeSteps:                 steps,
-		Optional:                    input.Optional,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
+		StorageType:                        input.StorageType,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Notes:                              input.Notes,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		RecipeSteps:                        steps,
+		Optional:                           input.Optional,
 	}
 }
 
@@ -164,43 +147,39 @@ func ConvertRecipePrepTaskCreationRequestInputToGRPCRecipePrepTaskCreationReques
 	}
 
 	return &mealplanningsvc.RecipePrepTaskCreationRequestInput{
-		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
-		TimeBufferBeforeRecipeInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
-		StorageType:                 input.StorageType,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		Notes:                       input.Notes,
-		Name:                        input.Name,
-		Description:                 input.Description,
-		BelongsToRecipe:             input.BelongsToRecipe,
-		RecipeSteps:                 steps,
-		Optional:                    input.Optional,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
+		StorageType:                        input.StorageType,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Notes:                              input.Notes,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		RecipeSteps:                        steps,
+		Optional:                           input.Optional,
 	}
 }
 
 func ConvertGRPCRecipeRatingCreationRequestInputToRecipeRatingCreationRequestInput(input *mealplanningsvc.RecipeRatingCreationRequestInput) *mealplanning.RecipeRatingCreationRequestInput {
 	return &mealplanning.RecipeRatingCreationRequestInput{
-		RecipeID:     input.RecipeId,
-		Notes:        input.Notes,
-		ByUser:       input.ByUser,
-		Taste:        input.Taste,
-		Difficulty:   input.Difficulty,
-		Cleanup:      input.Cleanup,
-		Instructions: input.Instructions,
-		Overall:      input.Overall,
+		BelongsToRecipe: input.RecipeId,
+		Notes:           input.Notes,
+		CreatedByUser:   input.ByUser,
+		Taste:           input.Taste,
+		Difficulty:      input.Difficulty,
+		Cleanup:         input.Cleanup,
+		Instructions:    input.Instructions,
+		Overall:         input.Overall,
 	}
 }
 
 func ConvertRecipeRatingCreationRequestInputToGRPCRecipeRatingCreationRequestInput(input *mealplanning.RecipeRatingCreationRequestInput) *mealplanningsvc.RecipeRatingCreationRequestInput {
 	return &mealplanningsvc.RecipeRatingCreationRequestInput{
-		RecipeId:     input.RecipeID,
+		RecipeId:     input.BelongsToRecipe,
 		Notes:        input.Notes,
-		ByUser:       input.ByUser,
+		ByUser:       input.CreatedByUser,
 		Taste:        input.Taste,
 		Difficulty:   input.Difficulty,
 		Cleanup:      input.Cleanup,
@@ -340,10 +319,9 @@ func ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCr
 		OptionIndex:                     uint16(input.OptionIndex),
 		Optional:                        input.Optional,
 		PreferenceRank:                  uint8(input.PreferenceRank),
-		Quantity: numbers.MinRange[uint32]{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
+		MinQuantity:                     input.MinQuantity,
+
+		MaxQuantity: input.MaxQuantity,
 		ScaleFactor: scaleFactor,
 	}
 }
@@ -360,11 +338,9 @@ func ConvertRecipeStepInstrumentCreationRequestInputToGRPCRecipeStepInstrumentCr
 		OptionIndex:                     uint32(input.OptionIndex),
 		Optional:                        input.Optional,
 		PreferenceRank:                  uint32(input.PreferenceRank),
-		Quantity: &grpctypes.Uint32RangeWithOptionalMax{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
-		ScaleFactor: &input.ScaleFactor,
+		MinQuantity:                     input.MinQuantity,
+		MaxQuantity:                     input.MaxQuantity,
+		ScaleFactor:                     &input.ScaleFactor,
 	}
 }
 
@@ -384,10 +360,9 @@ func ConvertGRPCRecipeStepVesselCreationRequestInputToRecipeStepVesselCreationRe
 		Index:                           grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
 		OptionIndex:                     uint16(input.OptionIndex),
 		UnavailableAfterStep:            input.UnavailableAfterStep,
-		Quantity: numbers.MinRange[uint16]{
-			Min: uint16(input.Quantity.Min),
-			Max: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Max),
-		},
+		MinQuantity:                     uint16(input.MinQuantity),
+
+		MaxQuantity: grpcconverters.ConvertUint32PointerToUint16Pointer(input.MaxQuantity),
 		ScaleFactor: scaleFactor,
 	}
 }
@@ -404,11 +379,9 @@ func ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRe
 		Index:                           grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
 		OptionIndex:                     uint32(input.OptionIndex),
 		UnavailableAfterStep:            input.UnavailableAfterStep,
-		Quantity: &grpctypes.Uint16RangeWithOptionalMax{
-			Min: uint32(input.Quantity.Min),
-			Max: grpcconverters.ConvertUint16PointerToUint32Pointer(input.Quantity.Max),
-		},
-		ScaleFactor: &input.ScaleFactor,
+		MinQuantity:                     uint32(input.MinQuantity),
+		MaxQuantity:                     grpcconverters.ConvertUint16PointerToUint32Pointer(input.MaxQuantity),
+		ScaleFactor:                     &input.ScaleFactor,
 	}
 }
 
@@ -442,63 +415,47 @@ func ConvertRecipeStepProductTypeToString(s mealplanningsvc.RecipeStepProductTyp
 
 func ConvertGRPCRecipeStepProductCreationRequestInputToRecipeStepProductCreationRequestInput(input *mealplanningsvc.RecipeStepProductCreationRequestInput) *mealplanning.RecipeStepProductCreationRequestInput {
 	return &mealplanning.RecipeStepProductCreationRequestInput{
-		MeasurementUnitID:      input.MeasurementUnitId,
-		ContainedInVesselIndex: grpcconverters.ConvertUint32PointerToUint16Pointer(input.ContainedInVesselIndex),
-		QuantityNotes:          input.QuantityNotes,
-		Name:                   input.Name,
-		StorageInstructions:    input.StorageInstructions,
-		Type:                   ConvertRecipeStepProductTypeToString(input.Type),
-		Index:                  uint16(input.Index),
-		Compostable:            input.Compostable,
-		IsLiquid:               input.IsLiquid,
-		IsWaste:                input.IsWaste,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
-		StorageDurationInSeconds: numbers.OpenRange[uint32]{
-			Min: input.StorageDurationInSeconds.Min,
-			Max: input.StorageDurationInSeconds.Max,
-		},
-		MeasurementQuantity: numbers.OpenRange[float32]{
-			Min: input.MeasurementQuantity.Min,
-			Max: input.MeasurementQuantity.Max,
-		},
-		ItemQuantity: numbers.OpenRange[float32]{
-			Min: input.ItemQuantity.Min,
-			Max: input.ItemQuantity.Max,
-		},
+		MeasurementUnitID:              input.MeasurementUnitId,
+		ContainedInVesselIndex:         grpcconverters.ConvertUint32PointerToUint16Pointer(input.ContainedInVesselIndex),
+		QuantityNotes:                  input.QuantityNotes,
+		Name:                           input.Name,
+		StorageInstructions:            input.StorageInstructions,
+		Type:                           ConvertRecipeStepProductTypeToString(input.Type),
+		Index:                          uint16(input.Index),
+		Compostable:                    input.Compostable,
+		IsLiquid:                       input.IsLiquid,
+		IsWaste:                        input.IsWaste,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinStorageDurationInSeconds:    input.MinStorageDurationInSeconds,
+		MaxStorageDurationInSeconds:    input.MaxStorageDurationInSeconds,
+		MinMeasurementQuantity:         input.MinMeasurementQuantity,
+		MaxMeasurementQuantity:         input.MaxMeasurementQuantity,
+		MinItemQuantity:                input.MinItemQuantity,
+		MaxItemQuantity:                input.MaxItemQuantity,
 	}
 }
 
 func ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreationRequestInput(input *mealplanning.RecipeStepProductCreationRequestInput) *mealplanningsvc.RecipeStepProductCreationRequestInput {
 	return &mealplanningsvc.RecipeStepProductCreationRequestInput{
-		MeasurementUnitId:      input.MeasurementUnitID,
-		ContainedInVesselIndex: grpcconverters.ConvertUint16PointerToUint32Pointer(input.ContainedInVesselIndex),
-		QuantityNotes:          input.QuantityNotes,
-		Name:                   input.Name,
-		StorageInstructions:    input.StorageInstructions,
-		Type:                   ConvertStringToRecipeStepProductType(input.Type),
-		Index:                  uint32(input.Index),
-		Compostable:            input.Compostable,
-		IsLiquid:               input.IsLiquid,
-		IsWaste:                input.IsWaste,
-		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
-		StorageDurationInSeconds: &grpctypes.OptionalUint32Range{
-			Min: input.StorageDurationInSeconds.Min,
-			Max: input.StorageDurationInSeconds.Max,
-		},
-		MeasurementQuantity: &grpctypes.OptionalFloat32Range{
-			Min: input.MeasurementQuantity.Min,
-			Max: input.MeasurementQuantity.Max,
-		},
-		ItemQuantity: &grpctypes.OptionalFloat32Range{
-			Min: input.ItemQuantity.Min,
-			Max: input.ItemQuantity.Max,
-		},
+		MeasurementUnitId:              input.MeasurementUnitID,
+		ContainedInVesselIndex:         grpcconverters.ConvertUint16PointerToUint32Pointer(input.ContainedInVesselIndex),
+		QuantityNotes:                  input.QuantityNotes,
+		Name:                           input.Name,
+		StorageInstructions:            input.StorageInstructions,
+		Type:                           ConvertStringToRecipeStepProductType(input.Type),
+		Index:                          uint32(input.Index),
+		Compostable:                    input.Compostable,
+		IsLiquid:                       input.IsLiquid,
+		IsWaste:                        input.IsWaste,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinStorageDurationInSeconds:    input.MinStorageDurationInSeconds,
+		MaxStorageDurationInSeconds:    input.MaxStorageDurationInSeconds,
+		MinMeasurementQuantity:         input.MinMeasurementQuantity,
+		MaxMeasurementQuantity:         input.MaxMeasurementQuantity,
+		MinItemQuantity:                input.MinItemQuantity,
+		MaxItemQuantity:                input.MaxItemQuantity,
 	}
 }
 
@@ -515,7 +472,6 @@ func ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCr
 		VesselIndex:                      grpcconverters.ConvertUint32PointerToUint16Pointer(input.VesselIndex),
 		ProductPercentageToUse:           input.ProductPercentageToUse,
 		RecipeStepProductRecipeID:        input.RecipeStepProductRecipeId,
-		RecipeStepProductRecipeSlug:      input.RecipeStepProductRecipeSlug,
 		IngredientNotes:                  input.IngredientNotes,
 		Name:                             input.Name,
 		QuantityNotes:                    input.QuantityNotes,
@@ -523,10 +479,9 @@ func ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCr
 		OptionIndex:                      uint16(input.OptionIndex),
 		Optional:                         input.Optional,
 		ToTaste:                          input.ToTaste,
-		Quantity: numbers.MinRange[float32]{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
+		MinQuantity:                      input.MinQuantity,
+
+		MaxQuantity: input.MaxQuantity,
 		ScaleFactor: scaleFactor,
 	}
 }
@@ -547,11 +502,9 @@ func ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCr
 		OptionIndex:                      uint32(input.OptionIndex),
 		Optional:                         input.Optional,
 		ToTaste:                          input.ToTaste,
-		Quantity: &grpctypes.Float32RangeWithOptionalMax{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
-		ScaleFactor: &input.ScaleFactor,
+		MinQuantity:                      input.MinQuantity,
+		MaxQuantity:                      input.MaxQuantity,
+		ScaleFactor:                      &input.ScaleFactor,
 	}
 }
 
@@ -632,26 +585,22 @@ func ConvertGRPCRecipeStepCreationRequestInputToRecipeStepCreationRequestInput(i
 	}
 
 	return &mealplanning.RecipeStepCreationRequestInput{
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: input.EstimatedTimeInSeconds.Min,
-			Max: input.EstimatedTimeInSeconds.Max,
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.TemperatureInCelsius.Min,
-			Max: input.TemperatureInCelsius.Max,
-		},
-		PreparationID:           input.PreparationId,
-		Notes:                   input.Notes,
-		ConditionExpression:     input.ConditionExpression,
-		ExplicitInstructions:    input.ExplicitInstructions,
-		Index:                   input.Index,
-		Optional:                input.Optional,
-		StartTimerAutomatically: input.StartTimerAutomatically,
-		Instruments:             recipeStepInstrumentCreationRequestInputs,
-		Vessels:                 recipeStepVesselCreationRequestInputs,
-		Products:                recipeStepProductCreationRequestInputs,
-		Ingredients:             recipeStepIngredientCreationRequestInputs,
-		CompletionConditions:    recipeStepCompletionConditionCreationRequestInputs,
+		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
+		MinTemperatureInCelsius:   input.MinTemperatureInCelsius,
+		MaxTemperatureInCelsius:   input.MaxTemperatureInCelsius,
+		PreparationID:             input.PreparationId,
+		Notes:                     input.Notes,
+		ConditionExpression:       input.ConditionExpression,
+		ExplicitInstructions:      input.ExplicitInstructions,
+		Index:                     input.Index,
+		Optional:                  input.Optional,
+		StartTimerAutomatically:   input.StartTimerAutomatically,
+		Instruments:               recipeStepInstrumentCreationRequestInputs,
+		Vessels:                   recipeStepVesselCreationRequestInputs,
+		Products:                  recipeStepProductCreationRequestInputs,
+		Ingredients:               recipeStepIngredientCreationRequestInputs,
+		CompletionConditions:      recipeStepCompletionConditionCreationRequestInputs,
 	}
 }
 
@@ -682,26 +631,22 @@ func ConvertRecipeStepCreationRequestInputToGRPCRecipeStepCreationRequestInput(i
 	}
 
 	return &mealplanningsvc.RecipeStepCreationRequestInput{
-		EstimatedTimeInSeconds: &grpctypes.OptionalUint32Range{
-			Min: input.EstimatedTimeInSeconds.Min,
-			Max: input.EstimatedTimeInSeconds.Max,
-		},
-		TemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.TemperatureInCelsius.Min,
-			Max: input.TemperatureInCelsius.Max,
-		},
-		PreparationId:           input.PreparationID,
-		Notes:                   input.Notes,
-		ConditionExpression:     input.ConditionExpression,
-		ExplicitInstructions:    input.ExplicitInstructions,
-		Index:                   input.Index,
-		Optional:                input.Optional,
-		StartTimerAutomatically: input.StartTimerAutomatically,
-		Instruments:             recipeStepInstrumentCreationRequestInputs,
-		Vessels:                 recipeStepVesselCreationRequestInputs,
-		Products:                recipeStepProductCreationRequestInputs,
-		Ingredients:             recipeStepIngredientCreationRequestInputs,
-		CompletionConditions:    recipeStepCompletionConditionCreationRequestInputs,
+		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
+		MinTemperatureInCelsius:   input.MinTemperatureInCelsius,
+		MaxTemperatureInCelsius:   input.MaxTemperatureInCelsius,
+		PreparationId:             input.PreparationID,
+		Notes:                     input.Notes,
+		ConditionExpression:       input.ConditionExpression,
+		ExplicitInstructions:      input.ExplicitInstructions,
+		Index:                     input.Index,
+		Optional:                  input.Optional,
+		StartTimerAutomatically:   input.StartTimerAutomatically,
+		Instruments:               recipeStepInstrumentCreationRequestInputs,
+		Vessels:                   recipeStepVesselCreationRequestInputs,
+		Products:                  recipeStepProductCreationRequestInputs,
+		Ingredients:               recipeStepIngredientCreationRequestInputs,
+		CompletionConditions:      recipeStepCompletionConditionCreationRequestInputs,
 	}
 }
 
@@ -727,30 +672,28 @@ func ConvertRecipeToGRPCRecipe(input *mealplanning.Recipe) *mealplanningsvc.Reci
 	}
 
 	recipe := &mealplanningsvc.Recipe{
-		EstimatedPortions: &grpctypes.Float32RangeWithOptionalMax{
-			Max: input.EstimatedPortions.Max,
-			Min: input.EstimatedPortions.Min,
-		},
-		CreatedAt:           grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		LastUpdatedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
-		ArchivedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		Id:                  input.ID,
-		YieldsComponentType: ConvertStringToMealComponentType(input.YieldsComponentType),
-		Description:         input.Description,
-		Name:                input.Name,
-		PortionName:         input.PortionName,
-		CreatedByUser:       input.CreatedByUser,
-		Source:              input.Source,
-		SourceIsbn:          input.SourceISBN,
-		Slug:                input.Slug,
-		PluralPortionName:   input.PluralPortionName,
-		Status:              input.Status,
-		EligibleForMeals:    input.EligibleForMeals,
-		Steps:               recipeSteps,
-		Media:               recipeMedia,
-		PrepTasks:           recipePrepTasks,
-		InspiredByRecipeId:  input.InspiredByRecipeID,
-		AssociatedRecipes:   associatedRecipes,
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
+		CreatedAt:            grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		LastUpdatedAt:        grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:           grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		Id:                   input.ID,
+		YieldsComponentType:  ConvertStringToMealComponentType(input.YieldsComponentType),
+		Description:          input.Description,
+		Name:                 input.Name,
+		PortionName:          input.PortionName,
+		CreatedByUser:        input.CreatedByUser,
+		Source:               input.Source,
+		SourceIsbn:           input.SourceISBN,
+		Slug:                 input.Slug,
+		PluralPortionName:    input.PluralPortionName,
+		Status:               input.Status,
+		EligibleForMeals:     input.EligibleForMeals,
+		Steps:                recipeSteps,
+		Media:                recipeMedia,
+		PrepTasks:            recipePrepTasks,
+		InspiredByRecipeId:   input.InspiredByRecipeID,
+		AssociatedRecipes:    associatedRecipes,
 	}
 
 	return recipe
@@ -778,30 +721,29 @@ func ConvertGRPCRecipeToRecipe(input *mealplanningsvc.Recipe) *mealplanning.Reci
 	}
 
 	recipe := &mealplanning.Recipe{
-		EstimatedPortions: numbers.MinRange[float32]{
-			Max: input.EstimatedPortions.Max,
-			Min: input.EstimatedPortions.Min,
-		},
-		CreatedAt:           grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		LastUpdatedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		ArchivedAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		ID:                  input.Id,
-		YieldsComponentType: ConvertMealComponentTypeToString(input.YieldsComponentType),
-		Description:         input.Description,
-		Name:                input.Name,
-		PortionName:         input.PortionName,
-		CreatedByUser:       input.CreatedByUser,
-		Source:              input.Source,
-		SourceISBN:          input.SourceIsbn,
-		Slug:                input.Slug,
-		PluralPortionName:   input.PluralPortionName,
-		Status:              input.Status,
-		EligibleForMeals:    input.EligibleForMeals,
-		Steps:               recipeSteps,
-		Media:               recipeMedia,
-		PrepTasks:           recipePrepTasks,
-		InspiredByRecipeID:  input.InspiredByRecipeId,
-		AssociatedRecipes:   associatedRecipes,
+		MinEstimatedPortions: input.MinEstimatedPortions,
+
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
+		CreatedAt:            grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:        grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:           grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		ID:                   input.Id,
+		YieldsComponentType:  ConvertMealComponentTypeToString(input.YieldsComponentType),
+		Description:          input.Description,
+		Name:                 input.Name,
+		PortionName:          input.PortionName,
+		CreatedByUser:        input.CreatedByUser,
+		Source:               input.Source,
+		SourceISBN:           input.SourceIsbn,
+		Slug:                 input.Slug,
+		PluralPortionName:    input.PluralPortionName,
+		Status:               input.Status,
+		EligibleForMeals:     input.EligibleForMeals,
+		Steps:                recipeSteps,
+		Media:                recipeMedia,
+		PrepTasks:            recipePrepTasks,
+		InspiredByRecipeID:   input.InspiredByRecipeId,
+		AssociatedRecipes:    associatedRecipes,
 	}
 
 	return recipe
@@ -809,26 +751,22 @@ func ConvertGRPCRecipeToRecipe(input *mealplanningsvc.Recipe) *mealplanning.Reci
 
 func ConvertRecipeStepToGRPCRecipeStep(input *mealplanning.RecipeStep) *mealplanningsvc.RecipeStep {
 	step := &mealplanningsvc.RecipeStep{
-		CreatedAt: grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		EstimatedTimeInSeconds: &grpctypes.OptionalUint32Range{
-			Max: input.EstimatedTimeInSeconds.Max,
-			Min: input.EstimatedTimeInSeconds.Min,
-		},
-		TemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: input.TemperatureInCelsius.Max,
-			Min: input.TemperatureInCelsius.Min,
-		},
-		ArchivedAt:              grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		LastUpdatedAt:           grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
-		ExplicitInstructions:    input.ExplicitInstructions,
-		BelongsToRecipe:         input.BelongsToRecipe,
-		Notes:                   input.Notes,
-		ConditionExpression:     input.ConditionExpression,
-		Id:                      input.ID,
-		Index:                   input.Index,
-		Optional:                input.Optional,
-		StartTimerAutomatically: input.StartTimerAutomatically,
-		Preparation:             ConvertValidPreparationToGRPCValidPreparation(&input.Preparation),
+		CreatedAt:                 grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
+		MinTemperatureInCelsius:   input.MinTemperatureInCelsius,
+		MaxTemperatureInCelsius:   input.MaxTemperatureInCelsius,
+		ArchivedAt:                grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		LastUpdatedAt:             grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ExplicitInstructions:      input.ExplicitInstructions,
+		BelongsToRecipe:           input.BelongsToRecipe,
+		Notes:                     input.Notes,
+		ConditionExpression:       input.ConditionExpression,
+		Id:                        input.ID,
+		Index:                     input.Index,
+		Optional:                  input.Optional,
+		StartTimerAutomatically:   input.StartTimerAutomatically,
+		Preparation:               ConvertValidPreparationToGRPCValidPreparation(&input.Preparation),
 	}
 
 	for _, media := range input.Media {
@@ -864,26 +802,22 @@ func ConvertRecipeStepToGRPCRecipeStep(input *mealplanning.RecipeStep) *mealplan
 
 func ConvertGRPCRecipeStepToRecipeStep(input *mealplanningsvc.RecipeStep) *mealplanning.RecipeStep {
 	step := &mealplanning.RecipeStep{
-		CreatedAt: grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Max: input.EstimatedTimeInSeconds.Max,
-			Min: input.EstimatedTimeInSeconds.Min,
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: input.TemperatureInCelsius.Max,
-			Min: input.TemperatureInCelsius.Min,
-		},
-		ArchivedAt:              grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		LastUpdatedAt:           grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		ExplicitInstructions:    input.ExplicitInstructions,
-		BelongsToRecipe:         input.BelongsToRecipe,
-		Notes:                   input.Notes,
-		ConditionExpression:     input.ConditionExpression,
-		ID:                      input.Id,
-		Index:                   input.Index,
-		Optional:                input.Optional,
-		StartTimerAutomatically: input.StartTimerAutomatically,
-		Preparation:             *ConvertGRPCValidPreparationToValidPreparation(input.Preparation),
+		CreatedAt:                 grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
+		MinTemperatureInCelsius:   input.MinTemperatureInCelsius,
+		MaxTemperatureInCelsius:   input.MaxTemperatureInCelsius,
+		ArchivedAt:                grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		LastUpdatedAt:             grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ExplicitInstructions:      input.ExplicitInstructions,
+		BelongsToRecipe:           input.BelongsToRecipe,
+		Notes:                     input.Notes,
+		ConditionExpression:       input.ConditionExpression,
+		ID:                        input.Id,
+		Index:                     input.Index,
+		Optional:                  input.Optional,
+		StartTimerAutomatically:   input.StartTimerAutomatically,
+		Preparation:               *ConvertGRPCValidPreparationToValidPreparation(input.Preparation),
 	}
 
 	for _, media := range input.Media {
@@ -920,13 +854,11 @@ func ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(input *mealplanning.R
 	}
 
 	return &mealplanningsvc.RecipeStepInstrument{
-		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		Instrument:    convertedInstrument,
-		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
-		Quantity: &grpctypes.Uint32RangeWithOptionalMax{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
-		},
+		CreatedAt:           grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		Instrument:          convertedInstrument,
+		LastUpdatedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		MinQuantity:         input.MinQuantity,
+		MaxQuantity:         input.MaxQuantity,
 		ArchivedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Name:                input.Name,
@@ -955,10 +887,9 @@ func ConvertGRPCRecipeStepInstrumentToRecipeStepInstrument(input *mealplanningsv
 		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		Instrument:    convertedInstrument,
 		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		Quantity: numbers.MinRange[uint32]{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
-		},
+		MinQuantity:   input.MinQuantity,
+
+		MaxQuantity:         input.MaxQuantity,
 		ArchivedAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Name:                input.Name,
@@ -980,11 +911,9 @@ func ConvertRecipeStepVesselToGRPCRecipeStepVessel(input *mealplanning.RecipeSte
 	}
 
 	return &mealplanningsvc.RecipeStepVessel{
-		Vessel: validVessel,
-		Quantity: &grpctypes.Uint16RangeWithOptionalMax{
-			Max: grpcconverters.ConvertUint16PointerToUint32Pointer(input.Quantity.Max),
-			Min: uint32(input.Quantity.Min),
-		},
+		Vessel:               validVessel,
+		MinQuantity:          uint32(input.MinQuantity),
+		MaxQuantity:          grpcconverters.ConvertUint16PointerToUint32Pointer(input.MaxQuantity),
 		CreatedAt:            grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		LastUpdatedAt:        grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:           grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
@@ -1012,11 +941,10 @@ func ConvertGRPCRecipeStepVesselToRecipeStepVessel(input *mealplanningsvc.Recipe
 		scaleFactor = 1.0
 	}
 	return &mealplanning.RecipeStepVessel{
-		Vessel: validVessel,
-		Quantity: numbers.MinRange[uint16]{
-			Max: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Max),
-			Min: uint16(input.Quantity.Min),
-		},
+		Vessel:      validVessel,
+		MinQuantity: uint16(input.MinQuantity),
+
+		MaxQuantity:          grpcconverters.ConvertUint32PointerToUint16Pointer(input.MaxQuantity),
 		CreatedAt:            grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
 		LastUpdatedAt:        grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		ArchivedAt:           grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
@@ -1106,12 +1034,10 @@ func ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(input *mealplanning.R
 	}
 
 	ingredient := &mealplanningsvc.RecipeStepIngredient{
-		MeasurementUnit: ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&input.MeasurementUnit),
-		CreatedAt:       grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		Quantity: &grpctypes.Float32RangeWithOptionalMax{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
-		},
+		MeasurementUnit:           ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&input.MeasurementUnit),
+		CreatedAt:                 grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		MinQuantity:               input.MinQuantity,
+		MaxQuantity:               input.MaxQuantity,
 		ArchivedAt:                grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		Ingredient:                validIngredient,
 		LastUpdatedAt:             grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
@@ -1147,10 +1073,9 @@ func ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(input *mealplanningsv
 	ingredient := &mealplanning.RecipeStepIngredient{
 		MeasurementUnit: *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
 		CreatedAt:       grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		Quantity: numbers.MinRange[float32]{
-			Max: input.Quantity.Max,
-			Min: input.Quantity.Min,
-		},
+		MinQuantity:     input.MinQuantity,
+
+		MaxQuantity:               input.MaxQuantity,
 		ArchivedAt:                grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
 		Ingredient:                validIngredient,
 		LastUpdatedAt:             grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
@@ -1180,36 +1105,28 @@ func ConvertRecipeStepProductToGRPCRecipeStepProduct(input *mealplanning.RecipeS
 	}
 
 	rsp := &mealplanningsvc.RecipeStepProduct{
-		CreatedAt: grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
-		},
-		StorageDurationInSeconds: &grpctypes.OptionalUint32Range{
-			Max: input.StorageDurationInSeconds.Max,
-			Min: input.StorageDurationInSeconds.Min,
-		},
-		MeasurementQuantity: &grpctypes.OptionalFloat32Range{
-			Max: input.MeasurementQuantity.Max,
-			Min: input.MeasurementQuantity.Min,
-		},
-		ItemQuantity: &grpctypes.OptionalFloat32Range{
-			Max: input.ItemQuantity.Max,
-			Min: input.ItemQuantity.Min,
-		},
-		ArchivedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		LastUpdatedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
-		MeasurementUnit:     validMeasurementUnit,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		Name:                input.Name,
-		Type:                ConvertStringToRecipeStepProductType(input.Type),
-		Id:                  input.ID,
-		StorageInstructions: input.StorageInstructions,
-		QuantityNotes:       input.QuantityNotes,
-		Index:               uint32(input.Index),
-		IsWaste:             input.IsWaste,
-		IsLiquid:            input.IsLiquid,
-		Compostable:         input.Compostable,
+		CreatedAt:                      grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinStorageDurationInSeconds:    input.MinStorageDurationInSeconds,
+		MaxStorageDurationInSeconds:    input.MaxStorageDurationInSeconds,
+		MinMeasurementQuantity:         input.MinMeasurementQuantity,
+		MaxMeasurementQuantity:         input.MaxMeasurementQuantity,
+		MinItemQuantity:                input.MinItemQuantity,
+		MaxItemQuantity:                input.MaxItemQuantity,
+		ArchivedAt:                     grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		LastUpdatedAt:                  grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		MeasurementUnit:                validMeasurementUnit,
+		BelongsToRecipeStep:            input.BelongsToRecipeStep,
+		Name:                           input.Name,
+		Type:                           ConvertStringToRecipeStepProductType(input.Type),
+		Id:                             input.ID,
+		StorageInstructions:            input.StorageInstructions,
+		QuantityNotes:                  input.QuantityNotes,
+		Index:                          uint32(input.Index),
+		IsWaste:                        input.IsWaste,
+		IsLiquid:                       input.IsLiquid,
+		Compostable:                    input.Compostable,
 	}
 
 	if input.ContainedInVesselIndex != nil {
@@ -1221,37 +1138,29 @@ func ConvertRecipeStepProductToGRPCRecipeStepProduct(input *mealplanning.RecipeS
 
 func ConvertGRPCRecipeStepProductToRecipeStepProduct(input *mealplanningsvc.RecipeStepProduct) *mealplanning.RecipeStepProduct {
 	rsp := &mealplanning.RecipeStepProduct{
-		CreatedAt: grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
-		},
-		StorageDurationInSeconds: numbers.OpenRange[uint32]{
-			Max: input.StorageDurationInSeconds.Max,
-			Min: input.StorageDurationInSeconds.Min,
-		},
-		MeasurementQuantity: numbers.OpenRange[float32]{
-			Max: input.MeasurementQuantity.Max,
-			Min: input.MeasurementQuantity.Min,
-		},
-		ItemQuantity: numbers.OpenRange[float32]{
-			Max: input.ItemQuantity.Max,
-			Min: input.ItemQuantity.Min,
-		},
-		ArchivedAt:             grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		LastUpdatedAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		MeasurementUnit:        ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
-		BelongsToRecipeStep:    input.BelongsToRecipeStep,
-		Name:                   input.Name,
-		Type:                   ConvertRecipeStepProductTypeToString(input.Type),
-		ID:                     input.Id,
-		StorageInstructions:    input.StorageInstructions,
-		QuantityNotes:          input.QuantityNotes,
-		Index:                  uint16(input.Index),
-		IsWaste:                input.IsWaste,
-		IsLiquid:               input.IsLiquid,
-		Compostable:            input.Compostable,
-		ContainedInVesselIndex: grpcconverters.ConvertUint32PointerToUint16Pointer(input.ContainedInVesselIndex),
+		CreatedAt:                      grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageDurationInSeconds:    input.MaxStorageDurationInSeconds,
+		MinStorageDurationInSeconds:    input.MinStorageDurationInSeconds,
+		MaxMeasurementQuantity:         input.MaxMeasurementQuantity,
+		MinMeasurementQuantity:         input.MinMeasurementQuantity,
+		MaxItemQuantity:                input.MaxItemQuantity,
+		MinItemQuantity:                input.MinItemQuantity,
+		ArchivedAt:                     grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		LastUpdatedAt:                  grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		MeasurementUnit:                ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
+		BelongsToRecipeStep:            input.BelongsToRecipeStep,
+		Name:                           input.Name,
+		Type:                           ConvertRecipeStepProductTypeToString(input.Type),
+		ID:                             input.Id,
+		StorageInstructions:            input.StorageInstructions,
+		QuantityNotes:                  input.QuantityNotes,
+		Index:                          uint16(input.Index),
+		IsWaste:                        input.IsWaste,
+		IsLiquid:                       input.IsLiquid,
+		Compostable:                    input.Compostable,
+		ContainedInVesselIndex:         grpcconverters.ConvertUint32PointerToUint16Pointer(input.ContainedInVesselIndex),
 	}
 
 	return rsp
@@ -1317,25 +1226,21 @@ func ConvertRecipeMediaCreationRequestInputToGRPCRecipeMediaCreationRequestInput
 
 func ConvertRecipePrepTaskToGRPCRecipePrepTask(input *mealplanning.RecipePrepTask) *mealplanningsvc.RecipePrepTask {
 	recipePrepTask := &mealplanningsvc.RecipePrepTask{
-		CreatedAt: grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
-		},
-		TimeBufferBeforeRecipeInSeconds: &grpctypes.Uint32RangeWithOptionalMax{
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-		},
-		ArchivedAt:                  grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		LastUpdatedAt:               grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
-		BelongsToRecipe:             input.BelongsToRecipe,
-		StorageType:                 input.StorageType,
-		Id:                          input.ID,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		Notes:                       input.Notes,
-		Name:                        input.Name,
-		Description:                 input.Description,
-		Optional:                    input.Optional,
+		CreatedAt:                          grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
+		ArchivedAt:                         grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		LastUpdatedAt:                      grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		StorageType:                        input.StorageType,
+		Id:                                 input.ID,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Notes:                              input.Notes,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		Optional:                           input.Optional,
 	}
 
 	for _, taskStep := range input.TaskSteps {
@@ -1347,25 +1252,21 @@ func ConvertRecipePrepTaskToGRPCRecipePrepTask(input *mealplanning.RecipePrepTas
 
 func ConvertGRPCRecipePrepTaskToRecipePrepTask(input *mealplanningsvc.RecipePrepTask) *mealplanning.RecipePrepTask {
 	recipePrepTask := &mealplanning.RecipePrepTask{
-		CreatedAt: grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
-		},
-		TimeBufferBeforeRecipeInSeconds: numbers.MinRange[uint32]{
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-		},
-		ArchivedAt:                  grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		LastUpdatedAt:               grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		BelongsToRecipe:             input.BelongsToRecipe,
-		StorageType:                 input.StorageType,
-		ID:                          input.Id,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		Notes:                       input.Notes,
-		Name:                        input.Name,
-		Description:                 input.Description,
-		Optional:                    input.Optional,
+		CreatedAt:                          grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
+		ArchivedAt:                         grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		LastUpdatedAt:                      grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		StorageType:                        input.StorageType,
+		ID:                                 input.Id,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		Notes:                              input.Notes,
+		Name:                               input.Name,
+		Description:                        input.Description,
+		Optional:                           input.Optional,
 	}
 
 	for _, taskStep := range input.TaskSteps {
@@ -1398,10 +1299,10 @@ func ConvertRecipeRatingToGRPCRecipeRating(input *mealplanning.RecipeRating) *me
 		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
-		RecipeId:      input.RecipeID,
+		RecipeId:      input.BelongsToRecipe,
 		Id:            input.ID,
 		Notes:         input.Notes,
-		ByUser:        input.ByUser,
+		ByUser:        input.CreatedByUser,
 		Taste:         input.Taste,
 		Instructions:  input.Instructions,
 		Overall:       input.Overall,
@@ -1412,18 +1313,18 @@ func ConvertRecipeRatingToGRPCRecipeRating(input *mealplanning.RecipeRating) *me
 
 func ConvertGRPCRecipeRatingToRecipeRating(input *mealplanningsvc.RecipeRating) *mealplanning.RecipeRating {
 	return &mealplanning.RecipeRating{
-		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
-		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
-		RecipeID:      input.RecipeId,
-		ID:            input.Id,
-		Notes:         input.Notes,
-		ByUser:        input.ByUser,
-		Taste:         input.Taste,
-		Instructions:  input.Instructions,
-		Overall:       input.Overall,
-		Cleanup:       input.Cleanup,
-		Difficulty:    input.Difficulty,
+		CreatedAt:       grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:   grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:      grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		BelongsToRecipe: input.RecipeId,
+		ID:              input.Id,
+		Notes:           input.Notes,
+		CreatedByUser:   input.ByUser,
+		Taste:           input.Taste,
+		Instructions:    input.Instructions,
+		Overall:         input.Overall,
+		Cleanup:         input.Cleanup,
+		Difficulty:      input.Difficulty,
 	}
 }
 
@@ -1434,20 +1335,19 @@ func ConvertGRPCRecipeUpdateRequestInputToRecipeUpdateRequestInput(input *mealpl
 	}
 
 	return &mealplanning.RecipeUpdateRequestInput{
-		Name:                input.Name,
-		Slug:                input.Slug,
-		Source:              input.Source,
-		SourceISBN:          input.SourceIsbn,
-		Description:         input.Description,
-		InspiredByRecipeID:  input.InspiredByRecipeId,
-		PortionName:         input.PortionName,
-		PluralPortionName:   input.PluralPortionName,
-		EligibleForMeals:    input.EligibleForMeals,
-		YieldsComponentType: componentType,
-		EstimatedPortions: numbers.OpenRangeUpdateRequestInput[float32]{
-			Min: input.EstimatedPortions.Min,
-			Max: input.EstimatedPortions.Max,
-		},
+		Name:                 input.Name,
+		Slug:                 input.Slug,
+		Source:               input.Source,
+		SourceISBN:           input.SourceIsbn,
+		Description:          input.Description,
+		InspiredByRecipeID:   input.InspiredByRecipeId,
+		PortionName:          input.PortionName,
+		PluralPortionName:    input.PluralPortionName,
+		EligibleForMeals:     input.EligibleForMeals,
+		YieldsComponentType:  componentType,
+		MinEstimatedPortions: input.MinEstimatedPortions,
+
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
 	}
 }
 
@@ -1458,20 +1358,18 @@ func ConvertRecipeUpdateRequestInputToGRPCRecipeUpdateRequestInput(input *mealpl
 	}
 
 	return &mealplanningsvc.RecipeUpdateRequestInput{
-		Name:                input.Name,
-		Slug:                input.Slug,
-		Source:              input.Source,
-		SourceIsbn:          input.SourceISBN,
-		Description:         input.Description,
-		InspiredByRecipeId:  input.InspiredByRecipeID,
-		PortionName:         input.PortionName,
-		PluralPortionName:   input.PluralPortionName,
-		EligibleForMeals:    input.EligibleForMeals,
-		YieldsComponentType: componentType,
-		EstimatedPortions: &grpctypes.Float32RangeWithOptionalMaxUpdateRequestInput{
-			Min: input.EstimatedPortions.Min,
-			Max: input.EstimatedPortions.Max,
-		},
+		Name:                 input.Name,
+		Slug:                 input.Slug,
+		Source:               input.Source,
+		SourceIsbn:           input.SourceISBN,
+		Description:          input.Description,
+		InspiredByRecipeId:   input.InspiredByRecipeID,
+		PortionName:          input.PortionName,
+		PluralPortionName:    input.PluralPortionName,
+		EligibleForMeals:     input.EligibleForMeals,
+		YieldsComponentType:  componentType,
+		MinEstimatedPortions: input.MinEstimatedPortions,
+		MaxEstimatedPortions: input.MaxEstimatedPortions,
 	}
 }
 
@@ -1482,22 +1380,18 @@ func ConvertGRPCRecipePrepTaskUpdateRequestInputToRecipePrepTaskUpdateRequestInp
 	}
 
 	return &mealplanning.RecipePrepTaskUpdateRequestInput{
-		Notes:                       input.Notes,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		StorageType:                 input.StorageType,
-		Name:                        input.Name,
-		Optional:                    input.Optional,
-		Description:                 input.Description,
-		BelongsToRecipe:             input.BelongsToRecipe,
-		TaskSteps:                   taskSteps,
-		TimeBufferBeforeRecipeInSeconds: numbers.OpenRangeUpdateRequestInput[uint32]{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
+		Notes:                              input.Notes,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		StorageType:                        input.StorageType,
+		Name:                               input.Name,
+		Optional:                           input.Optional,
+		Description:                        input.Description,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		TaskSteps:                          taskSteps,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 	}
 }
 
@@ -1508,22 +1402,18 @@ func ConvertRecipePrepTaskUpdateRequestInputToGRPCRecipePrepTaskUpdateRequestInp
 	}
 
 	return &mealplanningsvc.RecipePrepTaskUpdateRequestInput{
-		Notes:                       input.Notes,
-		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
-		StorageType:                 input.StorageType,
-		Name:                        input.Name,
-		Optional:                    input.Optional,
-		Description:                 input.Description,
-		BelongsToRecipe:             input.BelongsToRecipe,
-		TaskSteps:                   taskSteps,
-		TimeBufferBeforeRecipeInSeconds: &grpctypes.Uint32RangeWithOptionalMaxUpdateRequestInput{
-			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
-			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
-		},
-		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.StorageTemperatureInCelsius.Min,
-			Max: input.StorageTemperatureInCelsius.Max,
-		},
+		Notes:                              input.Notes,
+		ExplicitStorageInstructions:        input.ExplicitStorageInstructions,
+		StorageType:                        input.StorageType,
+		Name:                               input.Name,
+		Optional:                           input.Optional,
+		Description:                        input.Description,
+		BelongsToRecipe:                    input.BelongsToRecipe,
+		TaskSteps:                          taskSteps,
+		MinTimeBufferBeforeRecipeInSeconds: input.MinTimeBufferBeforeRecipeInSeconds,
+		MaxTimeBufferBeforeRecipeInSeconds: input.MaxTimeBufferBeforeRecipeInSeconds,
+		MinStorageTemperatureInCelsius:     input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius:     input.MaxStorageTemperatureInCelsius,
 	}
 }
 
@@ -1545,69 +1435,59 @@ func ConvertRecipePrepTaskStepUpdateRequestInputToGRPCRecipePrepTaskStepUpdateRe
 
 func ConvertGRPCRecipeRatingUpdateRequestInputToRecipeRatingUpdateRequestInput(input *mealplanningsvc.RecipeRatingUpdateRequestInput) *mealplanning.RecipeRatingUpdateRequestInput {
 	return &mealplanning.RecipeRatingUpdateRequestInput{
-		RecipeID:     input.RecipeId,
-		Taste:        input.Taste,
-		Difficulty:   input.Difficulty,
-		Cleanup:      input.Cleanup,
-		Instructions: input.Instructions,
-		Overall:      input.Overall,
-		Notes:        input.Notes,
-		ByUser:       input.ByUser,
+		BelongsToRecipe: input.RecipeId,
+		Taste:           input.Taste,
+		Difficulty:      input.Difficulty,
+		Cleanup:         input.Cleanup,
+		Instructions:    input.Instructions,
+		Overall:         input.Overall,
+		Notes:           input.Notes,
 	}
 }
 
 func ConvertRecipeRatingUpdateRequestInputToGRPCRecipeRatingUpdateRequestInput(input *mealplanning.RecipeRatingUpdateRequestInput) *mealplanningsvc.RecipeRatingUpdateRequestInput {
 	return &mealplanningsvc.RecipeRatingUpdateRequestInput{
-		RecipeId:     input.RecipeID,
+		RecipeId:     input.BelongsToRecipe,
 		Taste:        input.Taste,
 		Difficulty:   input.Difficulty,
 		Cleanup:      input.Cleanup,
 		Instructions: input.Instructions,
 		Overall:      input.Overall,
 		Notes:        input.Notes,
-		ByUser:       input.ByUser,
 	}
 }
 
 func ConvertGRPCRecipeStepUpdateRequestInputToRecipeStepUpdateRequestInput(input *mealplanningsvc.RecipeStepUpdateRequestInput) *mealplanning.RecipeStepUpdateRequestInput {
 	return &mealplanning.RecipeStepUpdateRequestInput{
-		EstimatedTimeInSeconds: numbers.OpenRange[uint32]{
-			Min: input.EstimatedTimeInSeconds.Min,
-			Max: input.EstimatedTimeInSeconds.Max,
-		},
-		TemperatureInCelsius: numbers.OpenRange[float32]{
-			Min: input.TemperatureInCelsius.Min,
-			Max: input.TemperatureInCelsius.Max,
-		},
-		Notes:                   input.Notes,
-		Preparation:             ConvertGRPCValidPreparationToValidPreparation(input.Preparation),
-		Index:                   input.Index,
-		Optional:                input.Optional,
-		ExplicitInstructions:    input.ExplicitInstructions,
-		ConditionExpression:     input.ConditionExpression,
-		StartTimerAutomatically: input.StartTimerAutomatically,
-		BelongsToRecipe:         input.BelongsToRecipe,
+		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
+		MinTemperatureInCelsius:   input.MinTemperatureInCelsius,
+		MaxTemperatureInCelsius:   input.MaxTemperatureInCelsius,
+		Notes:                     input.Notes,
+		Preparation:               ConvertGRPCValidPreparationToValidPreparation(input.Preparation),
+		Index:                     input.Index,
+		Optional:                  input.Optional,
+		ExplicitInstructions:      input.ExplicitInstructions,
+		ConditionExpression:       input.ConditionExpression,
+		StartTimerAutomatically:   input.StartTimerAutomatically,
+		BelongsToRecipe:           input.BelongsToRecipe,
 	}
 }
 
 func ConvertRecipeStepUpdateRequestInputToGRPCRecipeStepUpdateRequestInput(input *mealplanning.RecipeStepUpdateRequestInput) *mealplanningsvc.RecipeStepUpdateRequestInput {
 	return &mealplanningsvc.RecipeStepUpdateRequestInput{
-		EstimatedTimeInSeconds: &grpctypes.OptionalUint32Range{
-			Min: input.EstimatedTimeInSeconds.Min,
-			Max: input.EstimatedTimeInSeconds.Max,
-		},
-		TemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Min: input.TemperatureInCelsius.Min,
-			Max: input.TemperatureInCelsius.Max,
-		},
-		Notes:                   input.Notes,
-		Preparation:             ConvertValidPreparationToGRPCValidPreparation(input.Preparation),
-		Index:                   input.Index,
-		Optional:                input.Optional,
-		ExplicitInstructions:    input.ExplicitInstructions,
-		ConditionExpression:     input.ConditionExpression,
-		StartTimerAutomatically: input.StartTimerAutomatically,
-		BelongsToRecipe:         input.BelongsToRecipe,
+		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
+		MinTemperatureInCelsius:   input.MinTemperatureInCelsius,
+		MaxTemperatureInCelsius:   input.MaxTemperatureInCelsius,
+		Notes:                     input.Notes,
+		Preparation:               ConvertValidPreparationToGRPCValidPreparation(input.Preparation),
+		Index:                     input.Index,
+		Optional:                  input.Optional,
+		ExplicitInstructions:      input.ExplicitInstructions,
+		ConditionExpression:       input.ConditionExpression,
+		StartTimerAutomatically:   input.StartTimerAutomatically,
+		BelongsToRecipe:           input.BelongsToRecipe,
 	}
 }
 
@@ -1653,10 +1533,9 @@ func ConvertGRPCRecipeStepIngredientUpdateRequestInputToRecipeStepIngredientUpda
 		ToTaste:                   input.ToTaste,
 		ProductPercentageToUse:    input.ProductPercentageToUse,
 		RecipeStepProductRecipeID: input.RecipeStepProductRecipeId,
-		Quantity: numbers.OpenRangeUpdateRequestInput[float32]{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
+		MinQuantity:               input.MinQuantity,
+
+		MaxQuantity: input.MaxQuantity,
 		ScaleFactor: scaleFactor,
 	}
 	return out
@@ -1678,11 +1557,9 @@ func ConvertRecipeStepIngredientUpdateRequestInputToGRPCRecipeStepIngredientUpda
 		ToTaste:                   input.ToTaste,
 		ProductPercentageToUse:    input.ProductPercentageToUse,
 		RecipeStepProductRecipeId: input.RecipeStepProductRecipeID,
-		Quantity: &grpctypes.Float32RangeWithOptionalMaxUpdateRequestInput{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
-		ScaleFactor: input.ScaleFactor,
+		MinQuantity:               input.MinQuantity,
+		MaxQuantity:               input.MaxQuantity,
+		ScaleFactor:               input.ScaleFactor,
 	}
 }
 
@@ -1705,10 +1582,9 @@ func ConvertGRPCRecipeStepInstrumentUpdateRequestInputToRecipeStepInstrumentUpda
 		Optional:            input.Optional,
 		Index:               grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
 		OptionIndex:         grpcconverters.ConvertUint32PointerToUint16Pointer(input.OptionIndex),
-		Quantity: numbers.OpenRangeUpdateRequestInput[uint32]{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
+		MinQuantity:         input.MinQuantity,
+
+		MaxQuantity: input.MaxQuantity,
 		ScaleFactor: scaleFactor,
 	}
 
@@ -1726,11 +1602,9 @@ func ConvertRecipeStepInstrumentUpdateRequestInputToGRPCRecipeStepInstrumentUpda
 		Optional:            input.Optional,
 		Index:               grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
 		OptionIndex:         grpcconverters.ConvertUint16PointerToUint32Pointer(input.OptionIndex),
-		Quantity: &grpctypes.Uint32RangeWithOptionalMaxUpdateRequestInput{
-			Min: input.Quantity.Min,
-			Max: input.Quantity.Max,
-		},
-		ScaleFactor: input.ScaleFactor,
+		MinQuantity:         input.MinQuantity,
+		MaxQuantity:         input.MaxQuantity,
+		ScaleFactor:         input.ScaleFactor,
 	}
 }
 
@@ -1741,33 +1615,25 @@ func ConvertGRPCRecipeStepProductUpdateRequestInputToRecipeStepProductUpdateRequ
 	}
 
 	return &mealplanning.RecipeStepProductUpdateRequestInput{
-		Name:                input.Name,
-		Type:                newType,
-		MeasurementUnitID:   input.MeasurementUnitId,
-		QuantityNotes:       input.QuantityNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		StorageTemperatureInCelsius: numbers.OpenRange[float32]{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
-		},
-		StorageDurationInSeconds: numbers.OpenRange[uint32]{
-			Max: input.StorageDurationInSeconds.Max,
-			Min: input.StorageDurationInSeconds.Min,
-		},
-		MeasurementQuantity: numbers.OpenRange[float32]{
-			Max: input.MeasurementQuantity.Max,
-			Min: input.MeasurementQuantity.Min,
-		},
-		ItemQuantity: numbers.OpenRange[float32]{
-			Max: input.ItemQuantity.Max,
-			Min: input.ItemQuantity.Min,
-		},
-		Compostable:            input.Compostable,
-		StorageInstructions:    input.StorageInstructions,
-		IsLiquid:               input.IsLiquid,
-		IsWaste:                input.IsWaste,
-		Index:                  grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
-		ContainedInVesselIndex: grpcconverters.ConvertUint32PointerToUint16Pointer(input.ContainedInVesselIndex),
+		Name:                           input.Name,
+		Type:                           newType,
+		MeasurementUnitID:              input.MeasurementUnitId,
+		QuantityNotes:                  input.QuantityNotes,
+		BelongsToRecipeStep:            input.BelongsToRecipeStep,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageDurationInSeconds:    input.MaxStorageDurationInSeconds,
+		MinStorageDurationInSeconds:    input.MinStorageDurationInSeconds,
+		MaxMeasurementQuantity:         input.MaxMeasurementQuantity,
+		MinMeasurementQuantity:         input.MinMeasurementQuantity,
+		MaxItemQuantity:                input.MaxItemQuantity,
+		MinItemQuantity:                input.MinItemQuantity,
+		Compostable:                    input.Compostable,
+		StorageInstructions:            input.StorageInstructions,
+		IsLiquid:                       input.IsLiquid,
+		IsWaste:                        input.IsWaste,
+		Index:                          grpcconverters.ConvertUint32PointerToUint16Pointer(input.Index),
+		ContainedInVesselIndex:         grpcconverters.ConvertUint32PointerToUint16Pointer(input.ContainedInVesselIndex),
 	}
 }
 
@@ -1778,33 +1644,25 @@ func ConvertRecipeStepProductUpdateRequestInputToGRPCRecipeStepProductUpdateRequ
 	}
 
 	return &mealplanningsvc.RecipeStepProductUpdateRequestInput{
-		Name:                input.Name,
-		Type:                newType,
-		MeasurementUnitId:   input.MeasurementUnitID,
-		QuantityNotes:       input.QuantityNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
-			Max: input.StorageTemperatureInCelsius.Max,
-			Min: input.StorageTemperatureInCelsius.Min,
-		},
-		StorageDurationInSeconds: &grpctypes.OptionalUint32Range{
-			Max: input.StorageDurationInSeconds.Max,
-			Min: input.StorageDurationInSeconds.Min,
-		},
-		MeasurementQuantity: &grpctypes.OptionalFloat32Range{
-			Max: input.MeasurementQuantity.Max,
-			Min: input.MeasurementQuantity.Min,
-		},
-		ItemQuantity: &grpctypes.OptionalFloat32Range{
-			Max: input.ItemQuantity.Max,
-			Min: input.ItemQuantity.Min,
-		},
-		Compostable:            input.Compostable,
-		StorageInstructions:    input.StorageInstructions,
-		IsLiquid:               input.IsLiquid,
-		IsWaste:                input.IsWaste,
-		Index:                  grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
-		ContainedInVesselIndex: grpcconverters.ConvertUint16PointerToUint32Pointer(input.ContainedInVesselIndex),
+		Name:                           input.Name,
+		Type:                           newType,
+		MeasurementUnitId:              input.MeasurementUnitID,
+		QuantityNotes:                  input.QuantityNotes,
+		BelongsToRecipeStep:            input.BelongsToRecipeStep,
+		MinStorageTemperatureInCelsius: input.MinStorageTemperatureInCelsius,
+		MaxStorageTemperatureInCelsius: input.MaxStorageTemperatureInCelsius,
+		MinStorageDurationInSeconds:    input.MinStorageDurationInSeconds,
+		MaxStorageDurationInSeconds:    input.MaxStorageDurationInSeconds,
+		MinMeasurementQuantity:         input.MinMeasurementQuantity,
+		MaxMeasurementQuantity:         input.MaxMeasurementQuantity,
+		MinItemQuantity:                input.MinItemQuantity,
+		MaxItemQuantity:                input.MaxItemQuantity,
+		Compostable:                    input.Compostable,
+		StorageInstructions:            input.StorageInstructions,
+		IsLiquid:                       input.IsLiquid,
+		IsWaste:                        input.IsWaste,
+		Index:                          grpcconverters.ConvertUint16PointerToUint32Pointer(input.Index),
+		ContainedInVesselIndex:         grpcconverters.ConvertUint16PointerToUint32Pointer(input.ContainedInVesselIndex),
 	}
 }
 
@@ -1827,10 +1685,9 @@ func ConvertGRPCRecipeStepVesselUpdateRequestInputToRecipeStepVesselUpdateReques
 		OptionIndex:          grpcconverters.ConvertUint32PointerToUint16Pointer(input.OptionIndex),
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
-		Quantity: numbers.OpenRangeUpdateRequestInput[uint16]{
-			Min: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Min),
-			Max: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Max),
-		},
+		MinQuantity:          grpcconverters.ConvertUint32PointerToUint16Pointer(input.MinQuantity),
+
+		MaxQuantity: grpcconverters.ConvertUint32PointerToUint16Pointer(input.MaxQuantity),
 		ScaleFactor: scaleFactor,
 	}
 
@@ -1848,10 +1705,8 @@ func ConvertRecipeStepVesselUpdateRequestInputToGRPCRecipeStepVesselUpdateReques
 		OptionIndex:          grpcconverters.ConvertUint16PointerToUint32Pointer(input.OptionIndex),
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
-		Quantity: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: grpcconverters.ConvertUint16PointerToUint32Pointer(input.Quantity.Min),
-			Max: grpcconverters.ConvertUint16PointerToUint32Pointer(input.Quantity.Max),
-		},
-		ScaleFactor: input.ScaleFactor,
+		MinQuantity:          grpcconverters.ConvertUint16PointerToUint32Pointer(input.MinQuantity),
+		MaxQuantity:          grpcconverters.ConvertUint16PointerToUint32Pointer(input.MaxQuantity),
+		ScaleFactor:          input.ScaleFactor,
 	}
 }

@@ -12,7 +12,7 @@ import (
 const createMealComponent = `-- name: CreateMealComponent :exec
 INSERT INTO meal_components (
 	id,
-	meal_id,
+	belongs_to_meal,
 	recipe_id,
 	meal_component_type,
 	recipe_scale
@@ -27,7 +27,7 @@ INSERT INTO meal_components (
 
 type CreateMealComponentParams struct {
 	ID                string
-	MealID            string
+	BelongsToMeal     string
 	RecipeID          string
 	MealComponentType ComponentType
 	RecipeScale       string
@@ -36,7 +36,7 @@ type CreateMealComponentParams struct {
 func (q *Queries) CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error {
 	_, err := db.ExecContext(ctx, createMealComponent,
 		arg.ID,
-		arg.MealID,
+		arg.BelongsToMeal,
 		arg.RecipeID,
 		arg.MealComponentType,
 		arg.RecipeScale,

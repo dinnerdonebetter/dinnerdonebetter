@@ -28,7 +28,8 @@ var recipeStepVesselsSchema = map[string]any{
 	"Notes":                stringField("Notes about the vessel"),
 	"Vessel":               objectType(validVesselsSchema),
 	"RecipeStepProductID":  stringField("The ID of the recipe step product this vessel is associated with, if any"),
-	"MeasurementQuantity":  uint16RangeWithOptionalMaxSchema(),
+	"MinQuantity":          uintField("Minimum quantity of this vessel (required)"),
+	"MaxQuantity":          uintField("Maximum quantity of this vessel (optional)"),
 	"VesselPreposition":    stringField("The preposition to use with the vessel (e.g., 'in', 'on', 'over')"),
 	"UnavailableAfterStep": boolField("Whether this vessel becomes unavailable after this step"),
 }

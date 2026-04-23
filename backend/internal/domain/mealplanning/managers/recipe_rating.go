@@ -1,0 +1,139 @@
+package managers
+
+import (
+	"context"
+
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit"
+	types "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	mealplanningkeys "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/keys"
+
+	"github.com/primandproper/platform/database/filtering"
+	platformerrors "github.com/primandproper/platform/errors"
+	"github.com/primandproper/platform/observability"
+	"github.com/primandproper/platform/observability/tracing"
+)
+
+func (m *mealPlanningManager) ListRecipeRatings(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeRating], error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+	logger = filter.AttachToLogger(logger)
+
+	results, err := m.db.GetRecipeRatingsForRecipe(ctx, recipeID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching list of recipe ratings")
+	}
+
+	return results, nil
+}
+
+func (m *mealPlanningManager) ReadRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*types.RecipeRating, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
+	})
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
+
+	x, err := m.db.GetRecipeRating(ctx, recipeID, recipeRatingID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe rating")
+	}
+
+	return x, nil
+}
+
+func (m *mealPlanningManager) CreateRecipeRating(ctx context.Context, recipeID string, input *types.RecipeRatingCreationRequestInput) (*types.RecipeRating, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, platformerrors.ErrNilInputParameter
+	}
+
+	logger := m.logger.WithSpan(span).WithValue(mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+
+	convertedInput := converters.ConvertRecipeRatingCreationRequestInputToRecipeRatingDatabaseCreationInput(input)
+	logger = logger.WithValue(mealplanningkeys.RecipeRatingIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, convertedInput.ID)
+
+	created, err := m.db.CreateRecipeRating(ctx, convertedInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe rating")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.RecipeRatingCreatedServiceEventType, map[string]any{
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: convertedInput.ID,
+	}))
+
+	return created, nil
+}
+
+func (m *mealPlanningManager) UpdateRecipeRating(ctx context.Context, recipeID, recipeRatingID string, input *types.RecipeRatingUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return platformerrors.ErrNilInputParameter
+	}
+
+	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
+	})
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
+
+	existingRecipeRating, err := m.db.GetRecipeRating(ctx, recipeID, recipeRatingID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "retrieving existing recipe rating")
+	}
+
+	existingRecipeRating.Update(input)
+	if err = m.db.UpdateRecipeRating(ctx, existingRecipeRating); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.RecipeRatingUpdatedServiceEventType, map[string]any{
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
+	}))
+
+	return nil
+}
+
+func (m *mealPlanningManager) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
+	})
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, mealplanningkeys.RecipeRatingIDKey, recipeRatingID)
+
+	if err := m.db.ArchiveRecipeRating(ctx, recipeID, recipeRatingID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.RecipeRatingArchivedServiceEventType, map[string]any{
+		mealplanningkeys.RecipeIDKey:       recipeID,
+		mealplanningkeys.RecipeRatingIDKey: recipeRatingID,
+	}))
+
+	return nil
+}

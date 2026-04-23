@@ -3,7 +3,6 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	"github.com/primandproper/platform/database/filtering"
@@ -78,17 +77,6 @@ type (
 		CreateValidIngredientStateIngredient(ctx context.Context, input *ValidIngredientStateIngredientDatabaseCreationInput) (*ValidIngredientStateIngredient, error)
 		UpdateValidIngredientStateIngredient(ctx context.Context, updated *ValidIngredientStateIngredient) error
 		ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientPreparationID string) error
-	}
-
-	// ValidIngredientStateIngredientDataService describes a structure capable of serving traffic related to valid ingredient state ingredients.
-	ValidIngredientStateIngredientDataService interface {
-		ListValidIngredientStateIngredientsHandler(http.ResponseWriter, *http.Request)
-		CreateValidIngredientStateIngredientHandler(http.ResponseWriter, *http.Request)
-		ReadValidIngredientStateIngredientHandler(http.ResponseWriter, *http.Request)
-		UpdateValidIngredientStateIngredientHandler(http.ResponseWriter, *http.Request)
-		ArchiveValidIngredientStateIngredientHandler(http.ResponseWriter, *http.Request)
-		SearchValidIngredientStateIngredientsByIngredientHandler(http.ResponseWriter, *http.Request)
-		SearchValidIngredientStateIngredientsByIngredientStateHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
