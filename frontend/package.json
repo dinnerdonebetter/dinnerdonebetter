@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@smarlhens/npm-pin-dependencies": "0.11.1",
-    "prettier": "3.8.1",
+    "prettier": "^3.8.1",
     "prettier-plugin-svelte": "3.5.1"
   }
 }
