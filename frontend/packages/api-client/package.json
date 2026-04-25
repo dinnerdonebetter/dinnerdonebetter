@@ -17,10 +17,10 @@
     "./mealplanning/mealplanning_messages": "./src/mealplanning/mealplanning_messages.ts"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.12.4"
+    "@grpc/grpc-js": "1.14.3"
   },
   "devDependencies": {
-    "ts-proto": "^2.5.2",
-    "typescript": "^5.9.3"
+    "ts-proto": "2.11.5",
+    "typescript": "5.9.3"
   }
 }

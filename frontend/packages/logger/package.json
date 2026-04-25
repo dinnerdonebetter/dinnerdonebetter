@@ -9,6 +9,6 @@
     ".": "./index.ts"
   },
   "dependencies": {
-    "tslog": "^4.10.0"
+    "tslog": "4.10.2"
   }
 }
