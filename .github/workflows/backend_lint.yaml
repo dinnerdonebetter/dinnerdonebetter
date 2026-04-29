@@ -13,22 +13,14 @@ jobs:
   golang:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: ['1.26.x']
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '${{ matrix.go-version }}'
-          cache: true
-          cache-dependency-path: backend/go.sum
-
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v9
+        uses: dagger/dagger-for-github@v8
         with:
-          version: v2.10.1
-          working-directory: backend
+          version: "0.18.19"
+          verb: call
+          module: ./dagger
+          args: backend-lint --source=.

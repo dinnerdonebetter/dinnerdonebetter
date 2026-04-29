@@ -1,6 +1,5 @@
 ---
-on:  
-  # gollum:
+on:
   pull_request:
     paths:
       - backend/cmd/**
@@ -17,132 +16,60 @@ name: backend - generated files
 jobs:
   configs:
     timeout-minutes: 20
-    strategy:
-      matrix:
-        go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '${{ matrix.go-version }}'
-          cache: true
-          cache-dependency-path: backend/go.sum
-
-      - name: Cache vendor directory
-        uses: actions/cache@v4
-        with:
-          path: backend/vendor
-          key: go-vendor-${{ hashFiles('backend/go.sum') }}
-          restore-keys: |
-            go-vendor-
-
-      - name: Vendor dependencies
-        working-directory: backend
-        run: make vendor
-
       - name: Ensure configs can be generated
-        working-directory: backend
-        run: make configs
-
-      - name: Check for changes
-        run: git diff --exit-code
+        uses: dagger/dagger-for-github@v8
+        with:
+          version: "0.18.19"
+          verb: call
+          module: ./dagger
+          args: backend-gen-configs --source=.
 
   queries:
     timeout-minutes: 20
-    strategy:
-      matrix:
-        go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '${{ matrix.go-version }}'
-          cache: true
-          cache-dependency-path: backend/go.sum
-
-      - name: Cache vendor directory
-        uses: actions/cache@v4
-        with:
-          path: backend/vendor
-          key: go-vendor-${{ hashFiles('backend/go.sum') }}
-          restore-keys: |
-            go-vendor-
-
-      - name: Vendor dependencies
-        working-directory: backend
-        run: make vendor
-
       - name: Ensure queries and querier can be generated
-        working-directory: backend
-        run: make queries struct_usage_check format_golang
-
-      - name: Check for changes
-        run: git diff --exit-code
+        uses: dagger/dagger-for-github@v8
+        with:
+          version: "0.18.19"
+          verb: call
+          module: ./dagger
+          args: backend-gen-queries --source=.
 
   env_vars_file:
     timeout-minutes: 20
-    strategy:
-      matrix:
-        go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '${{ matrix.go-version }}'
-          cache: true
-          cache-dependency-path: backend/go.sum
-
-      - name: Cache vendor directory
-        uses: actions/cache@v4
-        with:
-          path: backend/vendor
-          key: go-vendor-${{ hashFiles('backend/go.sum') }}
-          restore-keys: |
-            go-vendor-
-
-      - name: Vendor dependencies
-        working-directory: backend
-        run: make vendor
-
       - name: generate env vars file
-        working-directory: backend
-        run: make env_vars
-
-      - name: Fail on changes
-        run: git diff --exit-code
+        uses: dagger/dagger-for-github@v8
+        with:
+          version: "0.18.19"
+          verb: call
+          module: ./dagger
+          args: backend-gen-env-vars --source=.
 
   go_mod_tidy:
     timeout-minutes: 20
-    strategy:
-      matrix:
-        go-version: ['1.26.x']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '${{ matrix.go-version }}'
-          cache: true
-          cache-dependency-path: backend/go.sum
-
       - name: Ensure go.mod and go.sum are tidy
-        working-directory: backend
-        run: go mod tidy
-
-      - name: Check for changes
-        run: git diff --exit-code
+        uses: dagger/dagger-for-github@v8
+        with:
+          version: "0.18.19"
+          verb: call
+          module: ./dagger
+          args: backend-go-mod-tidy --source=.

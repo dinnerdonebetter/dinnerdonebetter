@@ -12,20 +12,15 @@ name: backend build
 jobs:
   backend:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: ['1.26.x']
+    timeout-minutes: 25
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ matrix.go-version }}
-          cache: true
-          cache-dependency-path: backend/go.sum
-
       - name: Build backend
-        working-directory: backend/
-        run: make build
+        uses: dagger/dagger-for-github@v8
+        with:
+          version: "0.18.19"
+          verb: call
+          module: ./dagger
+          args: backend-build --source=.
