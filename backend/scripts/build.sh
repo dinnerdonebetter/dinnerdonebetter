@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# touch: trigger CI
+
 # Build packages. Two modes:
 # 1) Single binary with VCS ldflags: build.sh -o <output_path> <package>
 #    e.g. build.sh -o /server github.com/dinnerdonebetter/dinnerdonebetter/backend/cmd/services/api
