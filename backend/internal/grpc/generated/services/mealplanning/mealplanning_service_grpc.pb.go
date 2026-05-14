@@ -9,8 +9,6 @@ package mealplanning
 import (
 	context "context"
 
-	comments "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/comments"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -25,7 +23,6 @@ const (
 	MealPlanningService_AddCommentToMeal_FullMethodName                                    = "/mealplanning.MealPlanningService/AddCommentToMeal"
 	MealPlanningService_AddCommentToMealPlan_FullMethodName                                = "/mealplanning.MealPlanningService/AddCommentToMealPlan"
 	MealPlanningService_AddCommentToRecipe_FullMethodName                                  = "/mealplanning.MealPlanningService/AddCommentToRecipe"
-	MealPlanningService_CreateComment_FullMethodName                                       = "/mealplanning.MealPlanningService/CreateComment"
 	MealPlanningService_ArchiveMeal_FullMethodName                                         = "/mealplanning.MealPlanningService/ArchiveMeal"
 	MealPlanningService_ArchiveMealPlan_FullMethodName                                     = "/mealplanning.MealPlanningService/ArchiveMealPlan"
 	MealPlanningService_ArchiveMealPlanEvent_FullMethodName                                = "/mealplanning.MealPlanningService/ArchiveMealPlanEvent"
@@ -47,7 +44,6 @@ const (
 	MealPlanningService_ArchiveRecipeStepProduct_FullMethodName                            = "/mealplanning.MealPlanningService/ArchiveRecipeStepProduct"
 	MealPlanningService_ArchiveRecipeStepVessel_FullMethodName                             = "/mealplanning.MealPlanningService/ArchiveRecipeStepVessel"
 	MealPlanningService_ArchiveValidIngredient_FullMethodName                              = "/mealplanning.MealPlanningService/ArchiveValidIngredient"
-	MealPlanningService_ArchiveComment_FullMethodName                                      = "/mealplanning.MealPlanningService/ArchiveComment"
 	MealPlanningService_ArchiveValidIngredientGroup_FullMethodName                         = "/mealplanning.MealPlanningService/ArchiveValidIngredientGroup"
 	MealPlanningService_ArchiveValidIngredientMeasurementUnit_FullMethodName               = "/mealplanning.MealPlanningService/ArchiveValidIngredientMeasurementUnit"
 	MealPlanningService_ArchiveValidIngredientPreparation_FullMethodName                   = "/mealplanning.MealPlanningService/ArchiveValidIngredientPreparation"
@@ -97,7 +93,6 @@ const (
 	MealPlanningService_CreateValidPreparationVessel_FullMethodName                        = "/mealplanning.MealPlanningService/CreateValidPreparationVessel"
 	MealPlanningService_CreateValidVessel_FullMethodName                                   = "/mealplanning.MealPlanningService/CreateValidVessel"
 	MealPlanningService_FinalizeMealPlan_FullMethodName                                    = "/mealplanning.MealPlanningService/FinalizeMealPlan"
-	MealPlanningService_GetCommentsForReference_FullMethodName                             = "/mealplanning.MealPlanningService/GetCommentsForReference"
 	MealPlanningService_GetMeal_FullMethodName                                             = "/mealplanning.MealPlanningService/GetMeal"
 	MealPlanningService_GetMealPlan_FullMethodName                                         = "/mealplanning.MealPlanningService/GetMealPlan"
 	MealPlanningService_GetMealPlanEvent_FullMethodName                                    = "/mealplanning.MealPlanningService/GetMealPlanEvent"
@@ -246,7 +241,6 @@ const (
 	MealPlanningService_GetUserIngredientPreference_FullMethodName                         = "/mealplanning.MealPlanningService/GetUserIngredientPreference"
 	MealPlanningService_GetUserIngredientPreferences_FullMethodName                        = "/mealplanning.MealPlanningService/GetUserIngredientPreferences"
 	MealPlanningService_UpdateAccountInstrumentOwnership_FullMethodName                    = "/mealplanning.MealPlanningService/UpdateAccountInstrumentOwnership"
-	MealPlanningService_UpdateComment_FullMethodName                                       = "/mealplanning.MealPlanningService/UpdateComment"
 	MealPlanningService_UpdateUserIngredientPreference_FullMethodName                      = "/mealplanning.MealPlanningService/UpdateUserIngredientPreference"
 	MealPlanningService_UploadMealImage_FullMethodName                                     = "/mealplanning.MealPlanningService/UploadMealImage"
 	MealPlanningService_UploadRecipeImage_FullMethodName                                   = "/mealplanning.MealPlanningService/UploadRecipeImage"
@@ -262,7 +256,6 @@ type MealPlanningServiceClient interface {
 	AddCommentToMeal(ctx context.Context, in *AddCommentToMealRequest, opts ...grpc.CallOption) (*AddCommentToMealResponse, error)
 	AddCommentToMealPlan(ctx context.Context, in *AddCommentToMealPlanRequest, opts ...grpc.CallOption) (*AddCommentToMealPlanResponse, error)
 	AddCommentToRecipe(ctx context.Context, in *AddCommentToRecipeRequest, opts ...grpc.CallOption) (*AddCommentToRecipeResponse, error)
-	CreateComment(ctx context.Context, in *comments.CreateCommentRequest, opts ...grpc.CallOption) (*comments.CreateCommentResponse, error)
 	ArchiveMeal(ctx context.Context, in *ArchiveMealRequest, opts ...grpc.CallOption) (*ArchiveMealResponse, error)
 	ArchiveMealPlan(ctx context.Context, in *ArchiveMealPlanRequest, opts ...grpc.CallOption) (*ArchiveMealPlanResponse, error)
 	ArchiveMealPlanEvent(ctx context.Context, in *ArchiveMealPlanEventRequest, opts ...grpc.CallOption) (*ArchiveMealPlanEventResponse, error)
@@ -284,7 +277,6 @@ type MealPlanningServiceClient interface {
 	ArchiveRecipeStepProduct(ctx context.Context, in *ArchiveRecipeStepProductRequest, opts ...grpc.CallOption) (*ArchiveRecipeStepProductResponse, error)
 	ArchiveRecipeStepVessel(ctx context.Context, in *ArchiveRecipeStepVesselRequest, opts ...grpc.CallOption) (*ArchiveRecipeStepVesselResponse, error)
 	ArchiveValidIngredient(ctx context.Context, in *ArchiveValidIngredientRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientResponse, error)
-	ArchiveComment(ctx context.Context, in *comments.ArchiveCommentRequest, opts ...grpc.CallOption) (*comments.ArchiveCommentResponse, error)
 	ArchiveValidIngredientGroup(ctx context.Context, in *ArchiveValidIngredientGroupRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientGroupResponse, error)
 	ArchiveValidIngredientMeasurementUnit(ctx context.Context, in *ArchiveValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientMeasurementUnitResponse, error)
 	ArchiveValidIngredientPreparation(ctx context.Context, in *ArchiveValidIngredientPreparationRequest, opts ...grpc.CallOption) (*ArchiveValidIngredientPreparationResponse, error)
@@ -334,7 +326,6 @@ type MealPlanningServiceClient interface {
 	CreateValidPreparationVessel(ctx context.Context, in *CreateValidPreparationVesselRequest, opts ...grpc.CallOption) (*CreateValidPreparationVesselResponse, error)
 	CreateValidVessel(ctx context.Context, in *CreateValidVesselRequest, opts ...grpc.CallOption) (*CreateValidVesselResponse, error)
 	FinalizeMealPlan(ctx context.Context, in *FinalizeMealPlanRequest, opts ...grpc.CallOption) (*FinalizeMealPlanResponse, error)
-	GetCommentsForReference(ctx context.Context, in *comments.GetCommentsForReferenceRequest, opts ...grpc.CallOption) (*comments.GetCommentsForReferenceResponse, error)
 	GetMeal(ctx context.Context, in *GetMealRequest, opts ...grpc.CallOption) (*GetMealResponse, error)
 	GetMealPlan(ctx context.Context, in *GetMealPlanRequest, opts ...grpc.CallOption) (*GetMealPlanResponse, error)
 	GetMealPlanEvent(ctx context.Context, in *GetMealPlanEventRequest, opts ...grpc.CallOption) (*GetMealPlanEventResponse, error)
@@ -483,7 +474,6 @@ type MealPlanningServiceClient interface {
 	GetUserIngredientPreference(ctx context.Context, in *GetUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferenceResponse, error)
 	GetUserIngredientPreferences(ctx context.Context, in *GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferencesResponse, error)
 	UpdateAccountInstrumentOwnership(ctx context.Context, in *UpdateAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*UpdateAccountInstrumentOwnershipResponse, error)
-	UpdateComment(ctx context.Context, in *comments.UpdateCommentRequest, opts ...grpc.CallOption) (*comments.UpdateCommentResponse, error)
 	UpdateUserIngredientPreference(ctx context.Context, in *UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*UpdateUserIngredientPreferenceResponse, error)
 	UploadMealImage(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadMealMediaRequest, UploadMealImageResponse], error)
 	UploadRecipeImage(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadRecipeMediaRequest, UploadRecipeImageResponse], error)
@@ -524,16 +514,6 @@ func (c *mealPlanningServiceClient) AddCommentToRecipe(ctx context.Context, in *
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AddCommentToRecipeResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_AddCommentToRecipe_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *mealPlanningServiceClient) CreateComment(ctx context.Context, in *comments.CreateCommentRequest, opts ...grpc.CallOption) (*comments.CreateCommentResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(comments.CreateCommentResponse)
-	err := c.cc.Invoke(ctx, MealPlanningService_CreateComment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -744,16 +724,6 @@ func (c *mealPlanningServiceClient) ArchiveValidIngredient(ctx context.Context, 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ArchiveValidIngredientResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveValidIngredient_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *mealPlanningServiceClient) ArchiveComment(ctx context.Context, in *comments.ArchiveCommentRequest, opts ...grpc.CallOption) (*comments.ArchiveCommentResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(comments.ArchiveCommentResponse)
-	err := c.cc.Invoke(ctx, MealPlanningService_ArchiveComment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1244,16 +1214,6 @@ func (c *mealPlanningServiceClient) FinalizeMealPlan(ctx context.Context, in *Fi
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(FinalizeMealPlanResponse)
 	err := c.cc.Invoke(ctx, MealPlanningService_FinalizeMealPlan_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *mealPlanningServiceClient) GetCommentsForReference(ctx context.Context, in *comments.GetCommentsForReferenceRequest, opts ...grpc.CallOption) (*comments.GetCommentsForReferenceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(comments.GetCommentsForReferenceResponse)
-	err := c.cc.Invoke(ctx, MealPlanningService_GetCommentsForReference_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2740,16 +2700,6 @@ func (c *mealPlanningServiceClient) UpdateAccountInstrumentOwnership(ctx context
 	return out, nil
 }
 
-func (c *mealPlanningServiceClient) UpdateComment(ctx context.Context, in *comments.UpdateCommentRequest, opts ...grpc.CallOption) (*comments.UpdateCommentResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(comments.UpdateCommentResponse)
-	err := c.cc.Invoke(ctx, MealPlanningService_UpdateComment_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *mealPlanningServiceClient) UpdateUserIngredientPreference(ctx context.Context, in *UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*UpdateUserIngredientPreferenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateUserIngredientPreferenceResponse)
@@ -2832,7 +2782,6 @@ type MealPlanningServiceServer interface {
 	AddCommentToMeal(context.Context, *AddCommentToMealRequest) (*AddCommentToMealResponse, error)
 	AddCommentToMealPlan(context.Context, *AddCommentToMealPlanRequest) (*AddCommentToMealPlanResponse, error)
 	AddCommentToRecipe(context.Context, *AddCommentToRecipeRequest) (*AddCommentToRecipeResponse, error)
-	CreateComment(context.Context, *comments.CreateCommentRequest) (*comments.CreateCommentResponse, error)
 	ArchiveMeal(context.Context, *ArchiveMealRequest) (*ArchiveMealResponse, error)
 	ArchiveMealPlan(context.Context, *ArchiveMealPlanRequest) (*ArchiveMealPlanResponse, error)
 	ArchiveMealPlanEvent(context.Context, *ArchiveMealPlanEventRequest) (*ArchiveMealPlanEventResponse, error)
@@ -2854,7 +2803,6 @@ type MealPlanningServiceServer interface {
 	ArchiveRecipeStepProduct(context.Context, *ArchiveRecipeStepProductRequest) (*ArchiveRecipeStepProductResponse, error)
 	ArchiveRecipeStepVessel(context.Context, *ArchiveRecipeStepVesselRequest) (*ArchiveRecipeStepVesselResponse, error)
 	ArchiveValidIngredient(context.Context, *ArchiveValidIngredientRequest) (*ArchiveValidIngredientResponse, error)
-	ArchiveComment(context.Context, *comments.ArchiveCommentRequest) (*comments.ArchiveCommentResponse, error)
 	ArchiveValidIngredientGroup(context.Context, *ArchiveValidIngredientGroupRequest) (*ArchiveValidIngredientGroupResponse, error)
 	ArchiveValidIngredientMeasurementUnit(context.Context, *ArchiveValidIngredientMeasurementUnitRequest) (*ArchiveValidIngredientMeasurementUnitResponse, error)
 	ArchiveValidIngredientPreparation(context.Context, *ArchiveValidIngredientPreparationRequest) (*ArchiveValidIngredientPreparationResponse, error)
@@ -2904,7 +2852,6 @@ type MealPlanningServiceServer interface {
 	CreateValidPreparationVessel(context.Context, *CreateValidPreparationVesselRequest) (*CreateValidPreparationVesselResponse, error)
 	CreateValidVessel(context.Context, *CreateValidVesselRequest) (*CreateValidVesselResponse, error)
 	FinalizeMealPlan(context.Context, *FinalizeMealPlanRequest) (*FinalizeMealPlanResponse, error)
-	GetCommentsForReference(context.Context, *comments.GetCommentsForReferenceRequest) (*comments.GetCommentsForReferenceResponse, error)
 	GetMeal(context.Context, *GetMealRequest) (*GetMealResponse, error)
 	GetMealPlan(context.Context, *GetMealPlanRequest) (*GetMealPlanResponse, error)
 	GetMealPlanEvent(context.Context, *GetMealPlanEventRequest) (*GetMealPlanEventResponse, error)
@@ -3053,7 +3000,6 @@ type MealPlanningServiceServer interface {
 	GetUserIngredientPreference(context.Context, *GetUserIngredientPreferenceRequest) (*GetUserIngredientPreferenceResponse, error)
 	GetUserIngredientPreferences(context.Context, *GetUserIngredientPreferencesRequest) (*GetUserIngredientPreferencesResponse, error)
 	UpdateAccountInstrumentOwnership(context.Context, *UpdateAccountInstrumentOwnershipRequest) (*UpdateAccountInstrumentOwnershipResponse, error)
-	UpdateComment(context.Context, *comments.UpdateCommentRequest) (*comments.UpdateCommentResponse, error)
 	UpdateUserIngredientPreference(context.Context, *UpdateUserIngredientPreferenceRequest) (*UpdateUserIngredientPreferenceResponse, error)
 	UploadMealImage(grpc.ClientStreamingServer[UploadMealMediaRequest, UploadMealImageResponse]) error
 	UploadRecipeImage(grpc.ClientStreamingServer[UploadRecipeMediaRequest, UploadRecipeImageResponse]) error
@@ -3078,9 +3024,6 @@ func (UnimplementedMealPlanningServiceServer) AddCommentToMealPlan(context.Conte
 }
 func (UnimplementedMealPlanningServiceServer) AddCommentToRecipe(context.Context, *AddCommentToRecipeRequest) (*AddCommentToRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCommentToRecipe not implemented")
-}
-func (UnimplementedMealPlanningServiceServer) CreateComment(context.Context, *comments.CreateCommentRequest) (*comments.CreateCommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateComment not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) ArchiveMeal(context.Context, *ArchiveMealRequest) (*ArchiveMealResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMeal not implemented")
@@ -3144,9 +3087,6 @@ func (UnimplementedMealPlanningServiceServer) ArchiveRecipeStepVessel(context.Co
 }
 func (UnimplementedMealPlanningServiceServer) ArchiveValidIngredient(context.Context, *ArchiveValidIngredientRequest) (*ArchiveValidIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredient not implemented")
-}
-func (UnimplementedMealPlanningServiceServer) ArchiveComment(context.Context, *comments.ArchiveCommentRequest) (*comments.ArchiveCommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ArchiveComment not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) ArchiveValidIngredientGroup(context.Context, *ArchiveValidIngredientGroupRequest) (*ArchiveValidIngredientGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredientGroup not implemented")
@@ -3294,9 +3234,6 @@ func (UnimplementedMealPlanningServiceServer) CreateValidVessel(context.Context,
 }
 func (UnimplementedMealPlanningServiceServer) FinalizeMealPlan(context.Context, *FinalizeMealPlanRequest) (*FinalizeMealPlanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinalizeMealPlan not implemented")
-}
-func (UnimplementedMealPlanningServiceServer) GetCommentsForReference(context.Context, *comments.GetCommentsForReferenceRequest) (*comments.GetCommentsForReferenceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCommentsForReference not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetMeal(context.Context, *GetMealRequest) (*GetMealResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMeal not implemented")
@@ -3742,9 +3679,6 @@ func (UnimplementedMealPlanningServiceServer) GetUserIngredientPreferences(conte
 func (UnimplementedMealPlanningServiceServer) UpdateAccountInstrumentOwnership(context.Context, *UpdateAccountInstrumentOwnershipRequest) (*UpdateAccountInstrumentOwnershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccountInstrumentOwnership not implemented")
 }
-func (UnimplementedMealPlanningServiceServer) UpdateComment(context.Context, *comments.UpdateCommentRequest) (*comments.UpdateCommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateComment not implemented")
-}
 func (UnimplementedMealPlanningServiceServer) UpdateUserIngredientPreference(context.Context, *UpdateUserIngredientPreferenceRequest) (*UpdateUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserIngredientPreference not implemented")
 }
@@ -3834,24 +3768,6 @@ func _MealPlanningService_AddCommentToRecipe_Handler(srv interface{}, ctx contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).AddCommentToRecipe(ctx, req.(*AddCommentToRecipeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MealPlanningService_CreateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(comments.CreateCommentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MealPlanningServiceServer).CreateComment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MealPlanningService_CreateComment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MealPlanningServiceServer).CreateComment(ctx, req.(*comments.CreateCommentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4230,24 +4146,6 @@ func _MealPlanningService_ArchiveValidIngredient_Handler(srv interface{}, ctx co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).ArchiveValidIngredient(ctx, req.(*ArchiveValidIngredientRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MealPlanningService_ArchiveComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(comments.ArchiveCommentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MealPlanningServiceServer).ArchiveComment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MealPlanningService_ArchiveComment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MealPlanningServiceServer).ArchiveComment(ctx, req.(*comments.ArchiveCommentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5130,24 +5028,6 @@ func _MealPlanningService_FinalizeMealPlan_Handler(srv interface{}, ctx context.
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MealPlanningServiceServer).FinalizeMealPlan(ctx, req.(*FinalizeMealPlanRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MealPlanningService_GetCommentsForReference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(comments.GetCommentsForReferenceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MealPlanningServiceServer).GetCommentsForReference(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MealPlanningService_GetCommentsForReference_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MealPlanningServiceServer).GetCommentsForReference(ctx, req.(*comments.GetCommentsForReferenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -7816,24 +7696,6 @@ func _MealPlanningService_UpdateAccountInstrumentOwnership_Handler(srv interface
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MealPlanningService_UpdateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(comments.UpdateCommentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MealPlanningServiceServer).UpdateComment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MealPlanningService_UpdateComment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MealPlanningServiceServer).UpdateComment(ctx, req.(*comments.UpdateCommentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MealPlanningService_UpdateUserIngredientPreference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateUserIngredientPreferenceRequest)
 	if err := dec(in); err != nil {
@@ -7905,10 +7767,6 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddCommentToRecipe",
 			Handler:    _MealPlanningService_AddCommentToRecipe_Handler,
-		},
-		{
-			MethodName: "CreateComment",
-			Handler:    _MealPlanningService_CreateComment_Handler,
 		},
 		{
 			MethodName: "ArchiveMeal",
@@ -7993,10 +7851,6 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ArchiveValidIngredient",
 			Handler:    _MealPlanningService_ArchiveValidIngredient_Handler,
-		},
-		{
-			MethodName: "ArchiveComment",
-			Handler:    _MealPlanningService_ArchiveComment_Handler,
 		},
 		{
 			MethodName: "ArchiveValidIngredientGroup",
@@ -8193,10 +8047,6 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FinalizeMealPlan",
 			Handler:    _MealPlanningService_FinalizeMealPlan_Handler,
-		},
-		{
-			MethodName: "GetCommentsForReference",
-			Handler:    _MealPlanningService_GetCommentsForReference_Handler,
 		},
 		{
 			MethodName: "GetMeal",
@@ -8789,10 +8639,6 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateAccountInstrumentOwnership",
 			Handler:    _MealPlanningService_UpdateAccountInstrumentOwnership_Handler,
-		},
-		{
-			MethodName: "UpdateComment",
-			Handler:    _MealPlanningService_UpdateComment_Handler,
 		},
 		{
 			MethodName: "UpdateUserIngredientPreference",

@@ -5,6 +5,13 @@
 -- ENUMERATED TYPES
 -- =============================================================================
 
+-- Extend the core comment_target_type enum (defined in the comments migration)
+-- with meal-planning target types. Done here so the comments domain remains
+-- standalone if the meal planning migration is removed.
+ALTER TYPE comment_target_type ADD VALUE IF NOT EXISTS 'meals';
+ALTER TYPE comment_target_type ADD VALUE IF NOT EXISTS 'recipes';
+ALTER TYPE comment_target_type ADD VALUE IF NOT EXISTS 'meal_plans';
+
 CREATE TYPE component_type AS ENUM (
     'unspecified',
     'amuse-bouche',
