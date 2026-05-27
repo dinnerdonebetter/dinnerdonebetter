@@ -18,6 +18,8 @@ import {
   type UntypedServiceImplementation,
 } from '@grpc/grpc-js';
 import {
+  AddCommentToIssueReportRequest,
+  AddCommentToIssueReportResponse,
   ArchiveIssueReportRequest,
   ArchiveIssueReportResponse,
   CreateIssueReportRequest,
@@ -40,6 +42,18 @@ export const protobufPackage = 'issue_reports';
 
 export type IssueReportsServiceService = typeof IssueReportsServiceService;
 export const IssueReportsServiceService = {
+  addCommentToIssueReport: {
+    path: '/issue_reports.IssueReportsService/AddCommentToIssueReport' as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: AddCommentToIssueReportRequest): Buffer =>
+      Buffer.from(AddCommentToIssueReportRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): AddCommentToIssueReportRequest => AddCommentToIssueReportRequest.decode(value),
+    responseSerialize: (value: AddCommentToIssueReportResponse): Buffer =>
+      Buffer.from(AddCommentToIssueReportResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AddCommentToIssueReportResponse =>
+      AddCommentToIssueReportResponse.decode(value),
+  },
   createIssueReport: {
     path: '/issue_reports.IssueReportsService/CreateIssueReport' as const,
     requestStream: false as const,
@@ -136,6 +150,7 @@ export const IssueReportsServiceService = {
 } as const;
 
 export interface IssueReportsServiceServer extends UntypedServiceImplementation {
+  addCommentToIssueReport: handleUnaryCall<AddCommentToIssueReportRequest, AddCommentToIssueReportResponse>;
   createIssueReport: handleUnaryCall<CreateIssueReportRequest, CreateIssueReportResponse>;
   getIssueReport: handleUnaryCall<GetIssueReportRequest, GetIssueReportResponse>;
   getIssueReports: handleUnaryCall<GetIssueReportsRequest, GetIssueReportsResponse>;
@@ -147,6 +162,21 @@ export interface IssueReportsServiceServer extends UntypedServiceImplementation 
 }
 
 export interface IssueReportsServiceClient extends Client {
+  addCommentToIssueReport(
+    request: AddCommentToIssueReportRequest,
+    callback: (error: ServiceError | null, response: AddCommentToIssueReportResponse) => void,
+  ): ClientUnaryCall;
+  addCommentToIssueReport(
+    request: AddCommentToIssueReportRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AddCommentToIssueReportResponse) => void,
+  ): ClientUnaryCall;
+  addCommentToIssueReport(
+    request: AddCommentToIssueReportRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AddCommentToIssueReportResponse) => void,
+  ): ClientUnaryCall;
   createIssueReport(
     request: CreateIssueReportRequest,
     callback: (error: ServiceError | null, response: CreateIssueReportResponse) => void,

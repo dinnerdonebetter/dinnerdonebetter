@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
+import { Comment, CommentCreationRequestInput } from '../comments/comments_messages';
 import { ResponseDetails } from '../common';
 import { Pagination, QueryFilter } from '../filtering';
 import { IssueReport } from './issue_reports_messages';
@@ -104,6 +105,16 @@ export interface ArchiveIssueReportRequest {
 
 export interface ArchiveIssueReportResponse {
   responseDetails: ResponseDetails | undefined;
+}
+
+export interface AddCommentToIssueReportRequest {
+  issueReportId: string;
+  input: CommentCreationRequestInput | undefined;
+}
+
+export interface AddCommentToIssueReportResponse {
+  responseDetails: ResponseDetails | undefined;
+  comment: Comment | undefined;
 }
 
 function createBaseIssueReportCreationRequestInput(): IssueReportCreationRequestInput {
@@ -1685,6 +1696,177 @@ export const ArchiveIssueReportResponse: MessageFns<ArchiveIssueReportResponse> 
       object.responseDetails !== undefined && object.responseDetails !== null
         ? ResponseDetails.fromPartial(object.responseDetails)
         : undefined;
+    return message;
+  },
+};
+
+function createBaseAddCommentToIssueReportRequest(): AddCommentToIssueReportRequest {
+  return { issueReportId: '', input: undefined };
+}
+
+export const AddCommentToIssueReportRequest: MessageFns<AddCommentToIssueReportRequest> = {
+  encode(message: AddCommentToIssueReportRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.issueReportId !== '') {
+      writer.uint32(10).string(message.issueReportId);
+    }
+    if (message.input !== undefined) {
+      CommentCreationRequestInput.encode(message.input, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AddCommentToIssueReportRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAddCommentToIssueReportRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.issueReportId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.input = CommentCreationRequestInput.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AddCommentToIssueReportRequest {
+    return {
+      issueReportId: isSet(object.issueReportId)
+        ? globalThis.String(object.issueReportId)
+        : isSet(object.issue_report_id)
+          ? globalThis.String(object.issue_report_id)
+          : '',
+      input: isSet(object.input) ? CommentCreationRequestInput.fromJSON(object.input) : undefined,
+    };
+  },
+
+  toJSON(message: AddCommentToIssueReportRequest): unknown {
+    const obj: any = {};
+    if (message.issueReportId !== '') {
+      obj.issueReportId = message.issueReportId;
+    }
+    if (message.input !== undefined) {
+      obj.input = CommentCreationRequestInput.toJSON(message.input);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AddCommentToIssueReportRequest>, I>>(base?: I): AddCommentToIssueReportRequest {
+    return AddCommentToIssueReportRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AddCommentToIssueReportRequest>, I>>(
+    object: I,
+  ): AddCommentToIssueReportRequest {
+    const message = createBaseAddCommentToIssueReportRequest();
+    message.issueReportId = object.issueReportId ?? '';
+    message.input =
+      object.input !== undefined && object.input !== null
+        ? CommentCreationRequestInput.fromPartial(object.input)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseAddCommentToIssueReportResponse(): AddCommentToIssueReportResponse {
+  return { responseDetails: undefined, comment: undefined };
+}
+
+export const AddCommentToIssueReportResponse: MessageFns<AddCommentToIssueReportResponse> = {
+  encode(message: AddCommentToIssueReportResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.responseDetails !== undefined) {
+      ResponseDetails.encode(message.responseDetails, writer.uint32(10).fork()).join();
+    }
+    if (message.comment !== undefined) {
+      Comment.encode(message.comment, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AddCommentToIssueReportResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAddCommentToIssueReportResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.responseDetails = ResponseDetails.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.comment = Comment.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AddCommentToIssueReportResponse {
+    return {
+      responseDetails: isSet(object.responseDetails)
+        ? ResponseDetails.fromJSON(object.responseDetails)
+        : isSet(object.response_details)
+          ? ResponseDetails.fromJSON(object.response_details)
+          : undefined,
+      comment: isSet(object.comment) ? Comment.fromJSON(object.comment) : undefined,
+    };
+  },
+
+  toJSON(message: AddCommentToIssueReportResponse): unknown {
+    const obj: any = {};
+    if (message.responseDetails !== undefined) {
+      obj.responseDetails = ResponseDetails.toJSON(message.responseDetails);
+    }
+    if (message.comment !== undefined) {
+      obj.comment = Comment.toJSON(message.comment);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AddCommentToIssueReportResponse>, I>>(base?: I): AddCommentToIssueReportResponse {
+    return AddCommentToIssueReportResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AddCommentToIssueReportResponse>, I>>(
+    object: I,
+  ): AddCommentToIssueReportResponse {
+    const message = createBaseAddCommentToIssueReportResponse();
+    message.responseDetails =
+      object.responseDetails !== undefined && object.responseDetails !== null
+        ? ResponseDetails.fromPartial(object.responseDetails)
+        : undefined;
+    message.comment =
+      object.comment !== undefined && object.comment !== null ? Comment.fromPartial(object.comment) : undefined;
     return message;
   },
 };
