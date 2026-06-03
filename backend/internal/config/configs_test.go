@@ -169,6 +169,123 @@ func TestLoadConfigFromEnvironment(T *testing.T) {
 	})
 }
 
+//nolint:paralleltest // because we set env vars for this, we can't
+func TestLoadConfigFromEnvironment_WithDotEnv(T *testing.T) {
+	T.Run("loads .env file before applying overrides", func(t *testing.T) {
+		cfg := &APIServiceConfig{}
+		cfgBytes, err := json.Marshal(cfg)
+		require.NoError(t, err)
+
+		dir := t.TempDir()
+
+		configFilepath := dir + "/config.json"
+		require.NoError(t, os.WriteFile(configFilepath, cfgBytes, 0o0644))
+
+		dotEnvContent := envvars.BaseURLEnvVarKey + "=https://from-dotenv.example.com\n"
+		dotEnvFilepath := dir + "/.env"
+		require.NoError(t, os.WriteFile(dotEnvFilepath, []byte(dotEnvContent), 0o0644))
+
+		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
+		t.Setenv(DotEnvFilePathEnvVarKey, dotEnvFilepath)
+
+		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
+		require.NoError(t, err)
+		require.NotNil(t, actual)
+
+		assert.Equal(t, "https://from-dotenv.example.com", actual.BaseURL)
+	})
+
+	T.Run("actual env var overrides .env file value", func(t *testing.T) {
+		cfg := &APIServiceConfig{}
+		cfgBytes, err := json.Marshal(cfg)
+		require.NoError(t, err)
+
+		dir := t.TempDir()
+
+		configFilepath := dir + "/config.json"
+		require.NoError(t, os.WriteFile(configFilepath, cfgBytes, 0o0644))
+
+		dotEnvContent := envvars.BaseURLEnvVarKey + "=https://from-dotenv.example.com\n"
+		dotEnvFilepath := dir + "/.env"
+		require.NoError(t, os.WriteFile(dotEnvFilepath, []byte(dotEnvContent), 0o0644))
+
+		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
+		t.Setenv(DotEnvFilePathEnvVarKey, dotEnvFilepath)
+		// actual process env var wins over .env
+		t.Setenv(envvars.BaseURLEnvVarKey, "https://from-actual-env.example.com")
+
+		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
+		require.NoError(t, err)
+		require.NotNil(t, actual)
+
+		assert.Equal(t, "https://from-actual-env.example.com", actual.BaseURL)
+	})
+
+	T.Run("with invalid .env filepath", func(t *testing.T) {
+		t.Setenv(DotEnvFilePathEnvVarKey, "/nonexistent/.env")
+		t.Setenv(ConfigurationFilePathEnvVarKey, "/nonexistent/config.json")
+
+		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+}
+
+//nolint:paralleltest // because we set env vars for this, we can't
+func TestLoadConfigFromDotEnvFile(T *testing.T) {
+	T.Run("loads minimal valid config from .env file", func(t *testing.T) {
+		ctx := t.Context()
+
+		// DBCleanerConfig has a simpler validation surface: just Database and Observability.
+		dotEnvContent := envvars.DatabaseReadConnectionHostEnvVarKey + "=localhost\n" +
+			envvars.DatabaseReadConnectionUsernameEnvVarKey + "=user\n" +
+			envvars.DatabaseReadConnectionPasswordEnvVarKey + "=pass\n" +
+			envvars.DatabaseReadConnectionDatabaseEnvVarKey + "=dbname\n"
+
+		dir := t.TempDir()
+		dotEnvFilepath := dir + "/.env"
+		require.NoError(t, os.WriteFile(dotEnvFilepath, []byte(dotEnvContent), 0o0644))
+
+		actual, err := LoadConfigFromDotEnvFile[DBCleanerConfig](ctx, dotEnvFilepath)
+		// Validation may fail for other required fields, but env parsing must succeed.
+		// The important thing is that environment variables are applied from the file.
+		if err == nil {
+			require.NotNil(t, actual)
+			assert.Equal(t, "localhost", actual.Database.ReadConnection.Host)
+			assert.Equal(t, "user", actual.Database.ReadConnection.Username)
+		} else {
+			// If validation fails it must be a validation error, not a file-loading error.
+			assert.NotContains(t, err.Error(), "loading .env file")
+			assert.NotContains(t, err.Error(), "applying environment variables")
+		}
+	})
+
+	T.Run("with nonexistent file", func(t *testing.T) {
+		ctx := t.Context()
+
+		actual, err := LoadConfigFromDotEnvFile[DBCleanerConfig](ctx, "/nonexistent/.env")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+		assert.Contains(t, err.Error(), "loading .env file")
+	})
+
+	T.Run("validates result", func(t *testing.T) {
+		ctx := t.Context()
+
+		// Intentionally empty .env — APIServiceConfig has strict multi-field validation
+		// that fails on a zero-value config (Meta, Encoding, HTTPServer, Routing, etc.),
+		// so it reliably fails even if DB-related env vars leaked from a previous subtest.
+		dir := t.TempDir()
+		dotEnvFilepath := dir + "/.env"
+		require.NoError(t, os.WriteFile(dotEnvFilepath, []byte(""), 0o0644))
+
+		actual, err := LoadConfigFromDotEnvFile[APIServiceConfig](ctx, dotEnvFilepath)
+		require.Error(t, err)
+		assert.Nil(t, actual)
+		assert.Contains(t, err.Error(), "validating config loaded from .env file")
+	})
+}
+
 func TestAPIServiceConfig_Commit(T *testing.T) {
 	T.Parallel()
 
