@@ -31,6 +31,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/heimdalr/dag v1.5.0
 	github.com/jackc/pgx/v5 v5.9.1
+	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.11.2
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/modelcontextprotocol/go-sdk v1.4.0
@@ -114,7 +115,6 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/inbucket/html2text v1.0.0 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/keighl/postmark v0.0.0-20190821160221-28358b1a94e3 // indirect
 	github.com/keith-turner/ecoji/v2 v2.0.2 // indirect
 	github.com/klauspost/compress v1.18.5 // indirect

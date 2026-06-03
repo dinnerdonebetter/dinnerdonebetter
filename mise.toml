@@ -1,0 +1,20 @@
+[tools]
+# Core languages
+go   = "1.26.4"   # backend/go.mod / CI: go 1.26.x
+node = "20.20.2"  # CI: node-version: '20' (npm version comes from Node bundle)
+
+# Infrastructure
+terraform = "1.14.5"  # infra/**/_terraform_.tf required_version
+
+# Protobuf toolchain
+buf                = "1.70.0"  # Makefile PROTOBUF_FORMAT (was Docker image bufbuild/buf:1.5.0)
+protoc             = "35.0"    # was: brew install protobuf (unversioned)
+protoc-gen-go      = "1.36.4"  # Makefile: go install protoc-gen-go@v1.36.4
+protoc-gen-go-grpc = "1.5.1"   # Makefile: go install protoc-gen-go-grpc@v1.5.1
+
+# Backend tools
+golangci-lint = "2.10.1"  # backend/Makefile LINTER_IMAGE
+sqlc          = "1.26.0"  # backend/Makefile SQL_GENERATOR_IMAGE
+
+# Formatting
+yamlfmt = "0.21.0"  # was: go install yamlfmt@latest (unversioned)

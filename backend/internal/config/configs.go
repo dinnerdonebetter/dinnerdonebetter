@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	authcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/config"
@@ -32,6 +34,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -46,6 +49,10 @@ const (
 
 	// ConfigurationFilePathEnvVarKey is the env var key we use to indicate where the config file is located.
 	ConfigurationFilePathEnvVarKey = "CONFIGURATION_FILEPATH"
+	// DotEnvFilePathEnvVarKey is the env var key we use to indicate where the .env file is located.
+	// When set, the .env file is loaded before environment variable overrides are applied,
+	// meaning .env values override JSON config but are themselves overridden by actual process env vars.
+	DotEnvFilePathEnvVarKey = "DOTENV_FILEPATH"
 )
 
 type (
@@ -400,7 +407,59 @@ func (cfg *MCPServiceConfig) ValidateWithContext(ctx context.Context) error {
 	return result.ErrorOrNil()
 }
 
+// resolveDotEnvFilePathFromDir returns the path of the .env file that should be
+// loaded for the current environment, searching under baseDir.
+//
+// Priority and selection rules:
+//  1. If DOTENV_FILEPATH is set, return it as-is (explicit override wins).
+//  2. Otherwise, derive the filename from META_RUN_MODE:
+//     - "development" → .env.dev
+//     - "testing"     → .env.qa
+//     - anything else → .env  (covers "production" and the unset case)
+//  3. If the derived file does not exist under baseDir, return "" so the
+//     caller can skip loading without treating a missing file as an error.
+func resolveDotEnvFilePathFromDir(baseDir string) string {
+	if explicit := os.Getenv(DotEnvFilePathEnvVarKey); explicit != "" {
+		return explicit
+	}
+
+	var filename string
+	switch runMode(strings.TrimSpace(os.Getenv(EnvVarPrefix + "META_RUN_MODE"))) {
+	case DevelopmentRunMode:
+		filename = ".env.dev"
+	case TestingRunMode:
+		filename = ".env.testing"
+	default: // ProductionRunMode or unset
+		filename = ".env"
+	}
+
+	path := filepath.Join(baseDir, filename)
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		return ""
+	}
+	return path
+}
+
+// resolveDotEnvFilePath is the production entry point for resolveDotEnvFilePathFromDir,
+// using the process's current working directory as the base.
+func resolveDotEnvFilePath() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	return resolveDotEnvFilePathFromDir(dir)
+}
+
 func LoadConfigFromEnvironment[T configurations]() (*T, error) {
+	// Resolve and load the appropriate .env file before applying env var overrides.
+	// godotenv.Load does not override env vars already set in the process, so
+	// priority order is: JSON config < .env file < actual process environment.
+	if dotEnvPath := resolveDotEnvFilePath(); dotEnvPath != "" {
+		if err := godotenv.Load(dotEnvPath); err != nil {
+			return nil, fmt.Errorf("loading .env file: %w", err)
+		}
+	}
+
 	configFilepath := os.Getenv(ConfigurationFilePathEnvVarKey)
 
 	configBytes, err := os.ReadFile(configFilepath) //nolint:gosec // G703: path from env var (deployer-configured)
@@ -421,6 +480,15 @@ func LoadConfigFromEnvironment[T configurations]() (*T, error) {
 }
 
 func LoadConfigFromPath[T configurations](ctx context.Context, configurationFilepath string) (*T, error) {
+	// Resolve and load the appropriate .env file before applying env var overrides.
+	// godotenv.Load does not override env vars already set in the process, so
+	// priority order is: JSON config < .env file < actual process environment.
+	if dotEnvPath := resolveDotEnvFilePath(); dotEnvPath != "" {
+		if err := godotenv.Load(dotEnvPath); err != nil {
+			return nil, fmt.Errorf("loading .env file: %w", err)
+		}
+	}
+
 	content, err := os.ReadFile(configurationFilepath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read api configuration file: %w", err)
@@ -438,4 +506,28 @@ func LoadConfigFromPath[T configurations](ctx context.Context, configurationFile
 	}
 
 	return x, nil
+}
+
+// LoadConfigFromDotEnvFile loads a configuration entirely from a .env file, with no JSON config file baseline.
+// Because there is no JSON baseline to fall back on, the resulting config is validated to ensure
+// the caller provided enough values to produce a usable configuration.
+// godotenv.Load does not override env vars already set in the process, so actual process env vars
+// still take precedence over values in the file.
+func LoadConfigFromDotEnvFile[T configurations](ctx context.Context, dotEnvFilepath string) (*T, error) {
+	if err := godotenv.Load(dotEnvFilepath); err != nil {
+		return nil, fmt.Errorf("loading .env file: %w", err)
+	}
+
+	var cfg T
+	if err := ApplyEnvironmentVariables(&cfg); err != nil {
+		return nil, fmt.Errorf("applying environment variables: %w", err)
+	}
+
+	if validator, ok := any(&cfg).(validation.ValidatableWithContext); ok {
+		if err := validator.ValidateWithContext(ctx); err != nil {
+			return nil, fmt.Errorf("validating config loaded from .env file: %w", err)
+		}
+	}
+
+	return &cfg, nil
 }

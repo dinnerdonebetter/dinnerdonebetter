@@ -10,7 +10,7 @@ CONTAINER_RUNNER      := docker
 RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD)
 RUN_CONTAINER_AS_USER := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP)
 
-PROTOBUF_FORMAT       := bufbuild/buf:1.5.0
+PROTOBUF_FORMAT       := bufbuild/buf:1.70.0
 FORMAT_PROTOBUFS      := $(RUN_CONTAINER) $(PROTOBUF_FORMAT)
 ARTIFACTS_DIR         := artifacts
 
