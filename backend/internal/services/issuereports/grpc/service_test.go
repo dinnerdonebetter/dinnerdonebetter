@@ -3,6 +3,7 @@ package grpc
 import (
 	"testing"
 
+	commentsmanagermock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager/mock"
 	issuereportmock "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/mock"
 	issuereportssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 
@@ -21,8 +22,9 @@ func TestNewService(t *testing.T) {
 		logger := loggingnoop.NewLogger()
 		tracerProvider := tracingnoop.NewTracerProvider()
 		issueReportsManager := &issuereportmock.Repository{}
+		commentsManager := &commentsmanagermock.MockCommentsDataManager{}
 
-		service := NewService(logger, tracerProvider, issueReportsManager)
+		service := NewService(logger, tracerProvider, issueReportsManager, commentsManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*issuereportssvc.IssueReportsServiceServer)(nil), service)

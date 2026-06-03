@@ -495,6 +495,60 @@ public struct IssueReports_ArchiveIssueReportResponse: Sendable {
   fileprivate var _responseDetails: Common_ResponseDetails? = nil
 }
 
+public struct IssueReports_AddCommentToIssueReportRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var issueReportID: String = String()
+
+  public var input: Comments_CommentCreationRequestInput {
+    get {return _input ?? Comments_CommentCreationRequestInput()}
+    set {_input = newValue}
+  }
+  /// Returns true if `input` has been explicitly set.
+  public var hasInput: Bool {return self._input != nil}
+  /// Clears the value of `input`. Subsequent reads from it will return its default value.
+  public mutating func clearInput() {self._input = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _input: Comments_CommentCreationRequestInput? = nil
+}
+
+public struct IssueReports_AddCommentToIssueReportResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var responseDetails: Common_ResponseDetails {
+    get {return _responseDetails ?? Common_ResponseDetails()}
+    set {_responseDetails = newValue}
+  }
+  /// Returns true if `responseDetails` has been explicitly set.
+  public var hasResponseDetails: Bool {return self._responseDetails != nil}
+  /// Clears the value of `responseDetails`. Subsequent reads from it will return its default value.
+  public mutating func clearResponseDetails() {self._responseDetails = nil}
+
+  public var comment: Comments_Comment {
+    get {return _comment ?? Comments_Comment()}
+    set {_comment = newValue}
+  }
+  /// Returns true if `comment` has been explicitly set.
+  public var hasComment: Bool {return self._comment != nil}
+  /// Clears the value of `comment`. Subsequent reads from it will return its default value.
+  public mutating func clearComment() {self._comment = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _responseDetails: Common_ResponseDetails? = nil
+  fileprivate var _comment: Comments_Comment? = nil
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "issue_reports"
@@ -1204,6 +1258,84 @@ extension IssueReports_ArchiveIssueReportResponse: SwiftProtobuf.Message, SwiftP
 
   public static func ==(lhs: IssueReports_ArchiveIssueReportResponse, rhs: IssueReports_ArchiveIssueReportResponse) -> Bool {
     if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension IssueReports_AddCommentToIssueReportRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AddCommentToIssueReportRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}issue_report_id\0\u{1}input\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.issueReportID) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._input) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.issueReportID.isEmpty {
+      try visitor.visitSingularStringField(value: self.issueReportID, fieldNumber: 1)
+    }
+    try { if let v = self._input {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: IssueReports_AddCommentToIssueReportRequest, rhs: IssueReports_AddCommentToIssueReportRequest) -> Bool {
+    if lhs.issueReportID != rhs.issueReportID {return false}
+    if lhs._input != rhs._input {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension IssueReports_AddCommentToIssueReportResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AddCommentToIssueReportResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}response_details\0\u{1}comment\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._responseDetails) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._comment) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._responseDetails {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._comment {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: IssueReports_AddCommentToIssueReportResponse, rhs: IssueReports_AddCommentToIssueReportResponse) -> Bool {
+    if lhs._responseDetails != rhs._responseDetails {return false}
+    if lhs._comment != rhs._comment {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

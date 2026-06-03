@@ -34,9 +34,12 @@ struct RecipePerformanceContentView: View {  // swiftlint:disable:this type_body
   var onStepCompleted: (() -> Void)?
 
   // State for option selections (for interactive selection outside meal plan context)
-  @State private var selectedIngredientOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
-  @State private var selectedInstrumentOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
-  @State private var selectedVesselOptions: [String: UInt32] = [:]  // optionGroupID -> selectedOptionIndex
+  // optionGroupID -> selectedOptionIndex
+  @State private var selectedIngredientOptions: [String: UInt32] = [:]
+  // optionGroupID -> selectedOptionIndex
+  @State private var selectedInstrumentOptions: [String: UInt32] = [:]
+  // optionGroupID -> selectedOptionIndex
+  @State private var selectedVesselOptions: [String: UInt32] = [:]
 
   // State for recipe scaling
   @State private var internalRecipeScale: Float = 1.0

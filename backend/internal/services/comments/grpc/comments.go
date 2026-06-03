@@ -70,6 +70,10 @@ func (s *serviceImpl) GetCommentsForReference(ctx context.Context, request *comm
 		"target_type":             request.TargetType,
 	}, span, s.logger)
 
+	if _, err := s.sessionContextDataFetcher(ctx); err != nil {
+		return nil, errorsgrpc.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "fetching session context data")
+	}
+
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 

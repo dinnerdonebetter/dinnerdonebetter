@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	commentsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/comments/manager"
 	issuereportsmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/issuereports/manager"
 	issuereportssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
 
@@ -24,6 +25,7 @@ type (
 		logger                    logging.Logger
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 		issueReportsManager       issuereportsmanager.IssueReportsDataManager
+		commentsManager           commentsmanager.CommentsDataManager
 	}
 )
 
@@ -31,11 +33,13 @@ func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	issueReportsManager issuereportsmanager.IssueReportsDataManager,
+	commentsManager commentsmanager.CommentsDataManager,
 ) issuereportssvc.IssueReportsServiceServer {
 	return &serviceImpl{
 		logger:                    logging.NewNamedLogger(logger, o11yName),
 		tracer:                    tracing.NewNamedTracer(tracerProvider, o11yName),
 		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
 		issueReportsManager:       issueReportsManager,
+		commentsManager:           commentsManager,
 	}
 }

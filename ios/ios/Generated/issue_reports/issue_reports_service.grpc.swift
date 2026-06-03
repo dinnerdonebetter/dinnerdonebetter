@@ -20,6 +20,18 @@ internal enum IssueReports_IssueReportsService {
     internal static let descriptor = GRPCCore.ServiceDescriptor(fullyQualifiedService: "issue_reports.IssueReportsService")
     /// Namespace for method metadata.
     internal enum Method {
+        /// Namespace for "AddCommentToIssueReport" metadata.
+        internal enum AddCommentToIssueReport {
+            /// Request type for "AddCommentToIssueReport".
+            internal typealias Input = IssueReports_AddCommentToIssueReportRequest
+            /// Response type for "AddCommentToIssueReport".
+            internal typealias Output = IssueReports_AddCommentToIssueReportResponse
+            /// Descriptor for "AddCommentToIssueReport".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "issue_reports.IssueReportsService"),
+                method: "AddCommentToIssueReport"
+            )
+        }
         /// Namespace for "CreateIssueReport" metadata.
         internal enum CreateIssueReport {
             /// Request type for "CreateIssueReport".
@@ -118,6 +130,7 @@ internal enum IssueReports_IssueReportsService {
         }
         /// Descriptors for all methods in the "issue_reports.IssueReportsService" service.
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
+            AddCommentToIssueReport.descriptor,
             CreateIssueReport.descriptor,
             GetIssueReport.descriptor,
             GetIssueReports.descriptor,
@@ -145,6 +158,25 @@ extension IssueReports_IssueReportsService {
     /// You don't need to implement this protocol directly, use the generated
     /// implementation, ``Client``.
     internal protocol ClientProtocol: Sendable {
+        /// Call the "AddCommentToIssueReport" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `IssueReports_AddCommentToIssueReportRequest` message.
+        ///   - serializer: A serializer for `IssueReports_AddCommentToIssueReportRequest` messages.
+        ///   - deserializer: A deserializer for `IssueReports_AddCommentToIssueReportResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func addCommentToIssueReport<Result>(
+            request: GRPCCore.ClientRequest<IssueReports_AddCommentToIssueReportRequest>,
+            serializer: some GRPCCore.MessageSerializer<IssueReports_AddCommentToIssueReportRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<IssueReports_AddCommentToIssueReportResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<IssueReports_AddCommentToIssueReportResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
         /// Call the "CreateIssueReport" method.
         ///
         /// - Parameters:
@@ -312,6 +344,36 @@ extension IssueReports_IssueReportsService {
         ///   - client: A `GRPCCore.GRPCClient` providing a communication channel to the service.
         internal init(wrapping client: GRPCCore.GRPCClient<Transport>) {
             self.client = client
+        }
+
+        /// Call the "AddCommentToIssueReport" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `IssueReports_AddCommentToIssueReportRequest` message.
+        ///   - serializer: A serializer for `IssueReports_AddCommentToIssueReportRequest` messages.
+        ///   - deserializer: A deserializer for `IssueReports_AddCommentToIssueReportResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func addCommentToIssueReport<Result>(
+            request: GRPCCore.ClientRequest<IssueReports_AddCommentToIssueReportRequest>,
+            serializer: some GRPCCore.MessageSerializer<IssueReports_AddCommentToIssueReportRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<IssueReports_AddCommentToIssueReportResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<IssueReports_AddCommentToIssueReportResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: IssueReports_IssueReportsService.Method.AddCommentToIssueReport.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
         }
 
         /// Call the "CreateIssueReport" method.
@@ -559,6 +621,31 @@ extension IssueReports_IssueReportsService {
 // Helpers providing default arguments to 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension IssueReports_IssueReportsService.ClientProtocol {
+    /// Call the "AddCommentToIssueReport" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `IssueReports_AddCommentToIssueReportRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func addCommentToIssueReport<Result>(
+        request: GRPCCore.ClientRequest<IssueReports_AddCommentToIssueReportRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<IssueReports_AddCommentToIssueReportResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.addCommentToIssueReport(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<IssueReports_AddCommentToIssueReportRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<IssueReports_AddCommentToIssueReportResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "CreateIssueReport" method.
     ///
     /// - Parameters:
@@ -763,6 +850,35 @@ extension IssueReports_IssueReportsService.ClientProtocol {
 // Helpers providing sugared APIs for 'ClientProtocol' methods.
 @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension IssueReports_IssueReportsService.ClientProtocol {
+    /// Call the "AddCommentToIssueReport" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func addCommentToIssueReport<Result>(
+        _ message: IssueReports_AddCommentToIssueReportRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<IssueReports_AddCommentToIssueReportResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<IssueReports_AddCommentToIssueReportRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.addCommentToIssueReport(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "CreateIssueReport" method.
     ///
     /// - Parameters:

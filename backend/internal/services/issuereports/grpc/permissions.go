@@ -35,5 +35,8 @@ func ProvideMethodPermissions() IssueReportsMethodPermissions {
 		issuereportssvc.IssueReportsService_ArchiveIssueReport_FullMethodName: {
 			authorization.ArchiveIssueReportsPermission,
 		},
+		issuereportssvc.IssueReportsService_AddCommentToIssueReport_FullMethodName: {
+			authorization.CreateCommentsPermission,
+		},
 	}
 }

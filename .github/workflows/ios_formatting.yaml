@@ -12,7 +12,7 @@ name: ios formatting
 jobs:
   swift:
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
