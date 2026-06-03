@@ -46,8 +46,10 @@ struct MealDetailView: View {
   @Environment(AuthenticationManager.self) private var authManager
   @State private var viewModel: MealDetailViewModel?
   @State private var loadedRecipes: [String: (recipe: Mealplanning_Recipe, scale: Float)] = [:]
-  @State private var baseComponentScales: [String: Float] = [:]  // Maps component recipe ID to base scale from meal
-  @State private var mealScale: Float = 1.0  // Meal-level scale multiplier
+  // Maps component recipe ID to base scale from meal
+  @State private var baseComponentScales: [String: Float] = [:]
+  // Meal-level scale multiplier
+  @State private var mealScale: Float = 1.0
   @State private var mealScaleText: String = "1.0"
   @FocusState private var isMealScaleFocused: Bool
   @State private var isInstrumentsVesselsExpanded = false
