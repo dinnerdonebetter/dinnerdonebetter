@@ -4,6 +4,7 @@ import (
 	"context"
 	"maps"
 
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api/grpc/domainreg"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	analyticspb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/analytics"
 	auditsvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
@@ -13,7 +14,6 @@ import (
 	identitysvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopssvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	issuereportssvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
-	mealplanningsvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationssvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	paymentssvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
@@ -30,7 +30,6 @@ import (
 	identityindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/identity/indexing"
 	internalopsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/internalops/grpc"
 	issuereportsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/issuereports/grpc"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
 	notificationsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/notifications/grpc"
 	oauthgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	paymentsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/payments/grpc"
@@ -68,7 +67,7 @@ func RegisterExtras(i do.Injector) {
 	})
 
 	do.Provide(i, func(i do.Injector) (interceptors.MethodPermissionsMap, error) {
-		return AggregateMethodPermissions(
+		base := AggregateMethodPermissions(
 			do.MustInvoke[analyticsgrpc.AnalyticsMethodPermissions](i),
 			do.MustInvoke[auditgrpc.AuditMethodPermissions](i),
 			do.MustInvoke[authgrpc.AuthMethodPermissions](i),
@@ -76,7 +75,6 @@ func RegisterExtras(i do.Injector) {
 			do.MustInvoke[identitygrpc.IdentityMethodPermissions](i),
 			do.MustInvoke[internalopsgrpc.InternalOpsMethodPermissions](i),
 			do.MustInvoke[issuereportsgrpc.IssueReportsMethodPermissions](i),
-			do.MustInvoke[mealplanninggrpc.MealPlanningMethodPermissions](i),
 			do.MustInvoke[notificationsgrpc.NotificationsMethodPermissions](i),
 			do.MustInvoke[oauthgrpc.OAuthMethodPermissions](i),
 			do.MustInvoke[paymentsgrpc.PaymentsMethodPermissions](i),
@@ -84,7 +82,12 @@ func RegisterExtras(i do.Injector) {
 			do.MustInvoke[uploadedmediagrpc.UploadedMediaMethodPermissions](i),
 			do.MustInvoke[waitlistsgrpc.WaitlistsMethodPermissions](i),
 			do.MustInvoke[webhooksgrpc.WebhooksMethodPermissions](i),
-		), nil
+		)
+		// Merge in any domain-provided permissions (optional — core compiles without a domain).
+		if extra, err := do.Invoke[domainreg.ExtraMethodPermissions](i); err == nil {
+			maps.Copy(base, interceptors.MethodPermissionsMap(extra))
+		}
+		return base, nil
 	})
 
 	do.Provide(i, func(i do.Injector) ([]grpc.UnaryServerInterceptor, error) {
@@ -98,7 +101,7 @@ func RegisterExtras(i do.Injector) {
 	})
 
 	do.Provide(i, func(i do.Injector) ([]platformgrpc.RegistrationFunc, error) {
-		return BuildRegistrationFuncs(
+		base := BuildRegistrationFuncs(
 			do.MustInvoke[analyticspb.AnalyticsServiceServer](i),
 			do.MustInvoke[auditsvcpb.AuditServiceServer](i),
 			do.MustInvoke[authsvcpb.AuthServiceServer](i),
@@ -107,7 +110,6 @@ func RegisterExtras(i do.Injector) {
 			do.MustInvoke[identitysvcpb.IdentityServiceServer](i),
 			do.MustInvoke[internalopssvcpb.InternalOperationsServer](i),
 			do.MustInvoke[issuereportssvcpb.IssueReportsServiceServer](i),
-			do.MustInvoke[mealplanningsvcpb.MealPlanningServiceServer](i),
 			do.MustInvoke[notificationssvcpb.UserNotificationsServiceServer](i),
 			do.MustInvoke[oauthsvcpb.OAuthServiceServer](i),
 			do.MustInvoke[paymentssvcpb.PaymentsServiceServer](i),
@@ -115,7 +117,12 @@ func RegisterExtras(i do.Injector) {
 			do.MustInvoke[uploadedmediasvcpb.UploadedMediaServiceServer](i),
 			do.MustInvoke[waitlistssvcpb.WaitlistsServiceServer](i),
 			do.MustInvoke[webhookssvcpb.WebhooksServiceServer](i),
-		), nil
+		)
+		// Append any domain-provided registration funcs (optional — core compiles without a domain).
+		if extra, err := do.Invoke[domainreg.ExtraRegistrationFuncs](i); err == nil {
+			base = append(base, extra.ToRegistrationFuncs()...)
+		}
+		return base, nil
 	})
 
 	do.Provide(i, func(i do.Injector) (*GRPCService, error) {
@@ -126,7 +133,6 @@ func RegisterExtras(i do.Injector) {
 			do.MustInvoke[identitysvcpb.IdentityServiceServer](i),
 			do.MustInvoke[internalopssvcpb.InternalOperationsServer](i),
 			do.MustInvoke[issuereportssvcpb.IssueReportsServiceServer](i),
-			do.MustInvoke[mealplanningsvcpb.MealPlanningServiceServer](i),
 			do.MustInvoke[notificationssvcpb.UserNotificationsServiceServer](i),
 			do.MustInvoke[oauthsvcpb.OAuthServiceServer](i),
 			do.MustInvoke[paymentssvcpb.PaymentsServiceServer](i),
@@ -148,7 +154,6 @@ func BuildRegistrationFuncs(
 	identityServiceServer identitysvcpb.IdentityServiceServer,
 	internalOpsService internalopssvcpb.InternalOperationsServer,
 	issueReportsService issuereportssvcpb.IssueReportsServiceServer,
-	mealPlanningService mealplanningsvcpb.MealPlanningServiceServer,
 	notificationsService notificationssvcpb.UserNotificationsServiceServer,
 	oauthService oauthsvcpb.OAuthServiceServer,
 	paymentsService paymentssvcpb.PaymentsServiceServer,
@@ -167,7 +172,6 @@ func BuildRegistrationFuncs(
 			identitysvcpb.RegisterIdentityServiceServer(server, identityServiceServer)
 			internalopssvcpb.RegisterInternalOperationsServer(server, internalOpsService)
 			issuereportssvcpb.RegisterIssueReportsServiceServer(server, issueReportsService)
-			mealplanningsvcpb.RegisterMealPlanningServiceServer(server, mealPlanningService)
 			notificationssvcpb.RegisterUserNotificationsServiceServer(server, notificationsService)
 			oauthsvcpb.RegisterOAuthServiceServer(server, oauthService)
 			paymentssvcpb.RegisterPaymentsServiceServer(server, paymentsService)
@@ -214,7 +218,8 @@ func ProvideUserTextSearcher(
 	)
 }
 
-// AggregateMethodPermissions combines method permissions from all services into a single map.
+// AggregateMethodPermissions combines method permissions from all platform/core services into a single map.
+// Domain-specific permissions are merged in RegisterExtras via domainreg.ExtraMethodPermissions.
 func AggregateMethodPermissions(
 	analyticsPermissions analyticsgrpc.AnalyticsMethodPermissions,
 	auditPermissions auditgrpc.AuditMethodPermissions,
@@ -223,7 +228,6 @@ func AggregateMethodPermissions(
 	identityPermissions identitygrpc.IdentityMethodPermissions,
 	internalopsPermissions internalopsgrpc.InternalOpsMethodPermissions,
 	issuereportsPermissions issuereportsgrpc.IssueReportsMethodPermissions,
-	mealplanningPermissions mealplanninggrpc.MealPlanningMethodPermissions,
 	notificationsPermissions notificationsgrpc.NotificationsMethodPermissions,
 	oauthPermissions oauthgrpc.OAuthMethodPermissions,
 	paymentsPermissions paymentsgrpc.PaymentsMethodPermissions,
@@ -241,7 +245,6 @@ func AggregateMethodPermissions(
 	maps.Copy(result, identityPermissions)
 	maps.Copy(result, internalopsPermissions)
 	maps.Copy(result, issuereportsPermissions)
-	maps.Copy(result, mealplanningPermissions)
 	maps.Copy(result, notificationsPermissions)
 	maps.Copy(result, oauthPermissions)
 	maps.Copy(result, paymentsPermissions)

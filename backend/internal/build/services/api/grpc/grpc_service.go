@@ -7,7 +7,6 @@ import (
 	identitysvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	issuereportssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
-	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	paymentssvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
@@ -26,7 +25,6 @@ type GRPCService struct {
 	identitysvc.IdentityServiceServer
 	internalopssvc.InternalOperationsServer
 	issuereportssvc.IssueReportsServiceServer
-	mealplanningsvc.MealPlanningServiceServer
 	notificationssvc.UserNotificationsServiceServer
 	oauthsvc.OAuthServiceServer
 	paymentssvc.PaymentsServiceServer
@@ -44,7 +42,6 @@ func NewGRPCService(
 	identityServiceServer identitysvc.IdentityServiceServer,
 	internalOperationsServer internalopssvc.InternalOperationsServer,
 	issueReportsServiceServer issuereportssvc.IssueReportsServiceServer,
-	mealPlanningServiceServer mealplanningsvc.MealPlanningServiceServer,
 	userNotificationsServiceServer notificationssvc.UserNotificationsServiceServer,
 	oauthServiceServer oauthsvc.OAuthServiceServer,
 	paymentsServiceServer paymentssvc.PaymentsServiceServer,
@@ -62,7 +59,6 @@ func NewGRPCService(
 		IdentityServiceServer:          identityServiceServer,
 		InternalOperationsServer:       internalOperationsServer,
 		IssueReportsServiceServer:      issueReportsServiceServer,
-		MealPlanningServiceServer:      mealPlanningServiceServer,
 		UserNotificationsServiceServer: userNotificationsServiceServer,
 		OAuthServiceServer:             oauthServiceServer,
 		PaymentsServiceServer:          paymentsServiceServer,

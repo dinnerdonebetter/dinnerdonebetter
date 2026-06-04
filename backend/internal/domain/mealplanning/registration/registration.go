@@ -3,13 +3,18 @@
 package registration
 
 import (
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api/grpc/domainreg"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	domaindataprivacy "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	grocerylistpreparation "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
 	mealplanningmgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	mealplanningprivacy "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/privacy"
 	recipeanalysis "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	mealplanningsvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
+	mealplanningcfg "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/config"
 	mealplanningsvc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
 	eatingindexing "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 	mealplanfinalizer "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
@@ -20,6 +25,7 @@ import (
 	"github.com/primandproper/platform/observability/tracing"
 
 	"github.com/samber/do/v2"
+	"google.golang.org/grpc"
 )
 
 func registerRepository(i do.Injector) {
@@ -49,6 +55,28 @@ func RegisterForGRPCAPI(i do.Injector) {
 	mealplantaskcreator.RegisterMealPlanTaskCreator(i)
 	recipeanalysis.RegisterRecipeAnalyzer(i)
 	grocerylistpreparation.RegisterGroceryListCreator(i)
+
+	// Provide the mealplanning service config (previously wired in grpcapi/config.go).
+	do.Provide[*mealplanningcfg.Config](i, func(i do.Injector) (*mealplanningcfg.Config, error) {
+		svc := do.MustInvoke[*config.ServicesConfig](i)
+		return &svc.MealPlanning, nil
+	})
+
+	// Provide the gRPC registration func so extras.go can append it without knowing the type.
+	do.Provide[domainreg.ExtraRegistrationFuncs](i, func(i do.Injector) (domainreg.ExtraRegistrationFuncs, error) {
+		svc := do.MustInvoke[mealplanningsvcpb.MealPlanningServiceServer](i)
+		return domainreg.ExtraRegistrationFuncs{
+			func(s *grpc.Server) {
+				mealplanningsvcpb.RegisterMealPlanningServiceServer(s, svc)
+			},
+		}, nil
+	})
+
+	// Provide method permissions so extras.go can merge them without knowing the type.
+	do.Provide[domainreg.ExtraMethodPermissions](i, func(i do.Injector) (domainreg.ExtraMethodPermissions, error) {
+		perms := do.MustInvoke[mealplanningsvc.MealPlanningMethodPermissions](i)
+		return domainreg.ExtraMethodPermissions(interceptors.MethodPermissionsMap(perms)), nil
+	})
 }
 
 // RegisterForDataChangeHandler registers mealplanning components needed by the async message handler.
