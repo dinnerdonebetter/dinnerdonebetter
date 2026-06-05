@@ -16,4 +16,17 @@ var (
 		ReadOAuth2ClientsPermission,
 		ArchiveOAuth2ClientsPermission,
 	}
+
+	// OAuthServiceAdminPermissions contains OAuth permissions for the service admin role.
+	// Pass to RegisterServiceAdminPermissions in the domain registration module.
+	OAuthServiceAdminPermissions = []Permission{
+		CreateOAuth2ClientsPermission,
+		ArchiveOAuth2ClientsPermission,
+	}
+
+	// OAuthAccountMemberPermissions contains OAuth permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	OAuthAccountMemberPermissions = []Permission{
+		ReadOAuth2ClientsPermission,
+	}
 )

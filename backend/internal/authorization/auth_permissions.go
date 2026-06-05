@@ -25,4 +25,15 @@ var (
 		ArchiveUserPermission,
 		ManageUserSessionsPermission,
 	}
+
+	// AuthServiceAdminPermissions contains auth permissions for the service admin role.
+	// Pass to RegisterServiceAdminPermissions in the domain registration module.
+	AuthServiceAdminPermissions = []Permission{
+		UpdateUserStatusPermission,
+		ReadUserPermission,
+		SearchUserPermission,
+		ArchiveUserPermission,
+		ImpersonateUserPermission,
+		ManageUserSessionsPermission,
+	}
 )

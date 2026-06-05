@@ -10,4 +10,10 @@ var (
 	AuditPermissions = []Permission{
 		ReadAuditLogEntriesPermission,
 	}
+
+	// AuditAccountMemberPermissions contains audit permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	AuditAccountMemberPermissions = []Permission{
+		ReadAuditLogEntriesPermission,
+	}
 )

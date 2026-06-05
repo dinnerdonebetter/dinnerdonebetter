@@ -32,4 +32,22 @@ var (
 		UpdateServiceSettingConfigurationsPermission,
 		ArchiveServiceSettingConfigurationsPermission,
 	}
+
+	// SettingsServiceAdminPermissions contains settings permissions for the service admin role.
+	// Pass to RegisterServiceAdminPermissions in the domain registration module.
+	SettingsServiceAdminPermissions = []Permission{
+		CreateServiceSettingsPermission,
+		ArchiveServiceSettingsPermission,
+	}
+
+	// SettingsAccountMemberPermissions contains settings permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	SettingsAccountMemberPermissions = []Permission{
+		ReadServiceSettingsPermission,
+		SearchServiceSettingsPermission,
+		CreateServiceSettingConfigurationsPermission,
+		ReadServiceSettingConfigurationsPermission,
+		UpdateServiceSettingConfigurationsPermission,
+		ArchiveServiceSettingConfigurationsPermission,
+	}
 )

@@ -25,4 +25,15 @@ var (
 		RemoveMemberAccountPermission,
 		TransferAccountPermission,
 	}
+
+	// IdentityAccountAdminPermissions contains identity permissions for the account admin role.
+	// Pass to RegisterAccountAdminPermissions in the domain registration module.
+	IdentityAccountAdminPermissions = []Permission{
+		UpdateAccountPermission,
+		ArchiveAccountPermission,
+		TransferAccountPermission,
+		InviteUserToAccountPermission,
+		ModifyMemberPermissionsForAccountPermission,
+		RemoveMemberAccountPermission,
+	}
 )

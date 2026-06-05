@@ -13,4 +13,11 @@ var (
 		ReadUserDataPermission,
 		PublishArbitraryQueueMessagePermission,
 	}
+
+	// AdminServiceAdminPermissions contains admin permissions for the service admin role.
+	// Pass to RegisterServiceAdminPermissions in the domain registration module.
+	AdminServiceAdminPermissions = []Permission{
+		ReadUserDataPermission,
+		PublishArbitraryQueueMessagePermission,
+	}
 )
