@@ -25,4 +25,20 @@ var (
 		ReadUserDeviceTokensPermission,
 		ArchiveUserDeviceTokensPermission,
 	}
+
+	// NotificationsServiceAdminPermissions contains notification permissions for the service admin role.
+	// Pass to RegisterServiceAdminPermissions in the domain registration module.
+	NotificationsServiceAdminPermissions = []Permission{
+		CreateUserNotificationsPermission,
+	}
+
+	// NotificationsAccountMemberPermissions contains notification permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	NotificationsAccountMemberPermissions = []Permission{
+		ReadUserNotificationsPermission,
+		UpdateUserNotificationsPermission,
+		CreateUserDeviceTokensPermission,
+		ReadUserDeviceTokensPermission,
+		ArchiveUserDeviceTokensPermission,
+	}
 )

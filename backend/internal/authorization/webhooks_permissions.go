@@ -37,4 +37,24 @@ var (
 		UpdateWebhookTriggerEventsPermission,
 		ArchiveWebhookTriggerEventsPermission,
 	}
+
+	// WebhooksAccountAdminPermissions contains webhook permissions for the account admin role.
+	// Pass to RegisterAccountAdminPermissions in the domain registration module.
+	WebhooksAccountAdminPermissions = []Permission{
+		CreateWebhooksPermission,
+		UpdateWebhooksPermission,
+		ArchiveWebhooksPermission,
+		CreateWebhookTriggerConfigsPermission,
+		ArchiveWebhookTriggerConfigsPermission,
+		CreateWebhookTriggerEventsPermission,
+		ReadWebhookTriggerEventsPermission,
+		UpdateWebhookTriggerEventsPermission,
+		ArchiveWebhookTriggerEventsPermission,
+	}
+
+	// WebhooksAccountMemberPermissions contains webhook permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	WebhooksAccountMemberPermissions = []Permission{
+		ReadWebhooksPermission,
+	}
 )

@@ -19,4 +19,18 @@ var (
 		UpdateIssueReportsPermission,
 		ArchiveIssueReportsPermission,
 	}
+
+	// IssueReportsAccountAdminPermissions contains issue report permissions for the account admin role.
+	// Pass to RegisterAccountAdminPermissions in the domain registration module.
+	IssueReportsAccountAdminPermissions = []Permission{
+		CreateIssueReportsPermission,
+		UpdateIssueReportsPermission,
+		ArchiveIssueReportsPermission,
+	}
+
+	// IssueReportsAccountMemberPermissions contains issue report permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	IssueReportsAccountMemberPermissions = []Permission{
+		ReadIssueReportsPermission,
+	}
 )

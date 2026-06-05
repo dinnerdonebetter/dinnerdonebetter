@@ -10,3 +10,22 @@ const (
 	// ArchiveCommentsPermission is a permission.
 	ArchiveCommentsPermission Permission = "archive.comments"
 )
+
+var (
+	// CommentsPermissions contains all comment-related permissions.
+	CommentsPermissions = []Permission{
+		CreateCommentsPermission,
+		ReadCommentsPermission,
+		UpdateCommentsPermission,
+		ArchiveCommentsPermission,
+	}
+
+	// CommentsAccountMemberPermissions contains comment permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	CommentsAccountMemberPermissions = []Permission{
+		CreateCommentsPermission,
+		ReadCommentsPermission,
+		UpdateCommentsPermission,
+		ArchiveCommentsPermission,
+	}
+)

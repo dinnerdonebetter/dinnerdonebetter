@@ -31,4 +31,22 @@ var (
 		UpdateWaitlistSignupsPermission,
 		ArchiveWaitlistSignupsPermission,
 	}
+
+	// WaitlistsServiceAdminPermissions contains waitlist permissions for the service admin role.
+	// Pass to RegisterServiceAdminPermissions in the domain registration module.
+	WaitlistsServiceAdminPermissions = []Permission{
+		CreateWaitlistsPermission,
+		UpdateWaitlistsPermission,
+		ArchiveWaitlistsPermission,
+	}
+
+	// WaitlistsAccountMemberPermissions contains waitlist permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	WaitlistsAccountMemberPermissions = []Permission{
+		ReadWaitlistsPermission,
+		ReadWaitlistSignupsPermission,
+		CreateWaitlistSignupsPermission,
+		UpdateWaitlistSignupsPermission,
+		ArchiveWaitlistSignupsPermission,
+	}
 )

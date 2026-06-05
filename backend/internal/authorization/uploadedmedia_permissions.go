@@ -19,4 +19,13 @@ var (
 		UpdateUploadedMediaPermission,
 		ArchiveUploadedMediaPermission,
 	}
+
+	// UploadedMediaAccountMemberPermissions contains uploaded media permissions for the account member role.
+	// Pass to RegisterAccountMemberPermissions in the domain registration module.
+	UploadedMediaAccountMemberPermissions = []Permission{
+		CreateUploadedMediaPermission,
+		ReadUploadedMediaPermission,
+		UpdateUploadedMediaPermission,
+		ArchiveUploadedMediaPermission,
+	}
 )

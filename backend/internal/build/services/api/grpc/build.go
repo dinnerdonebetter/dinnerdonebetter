@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	auditmanager "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/audit/manager"
 	authmgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth/managers"
@@ -155,6 +156,9 @@ func BuildInjector(
 	paymentssvc.RegisterPaymentsService(i)
 	waitlistssvc.RegisterWaitlistsService(i)
 	uploadedmediacfg.RegisterUploadedMediaConfig(i)
+
+	// Core domain permissions (waitlists, payments, webhooks, issuereports, uploadedmedia, notifications, comments)
+	authorization.RegisterCoreDomainPermissions()
 
 	// Domain: mealplanning
 	mealplanningregistration.RegisterForGRPCAPI(i)
