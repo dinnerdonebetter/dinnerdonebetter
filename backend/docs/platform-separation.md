@@ -10,10 +10,10 @@ See the [template philosophy](../../README.md) for background.
 
 ### High Priority
 
-- [ ] **Make authorization permissions domain-pluggable**
+- [x] **Make authorization permissions domain-pluggable**
   Refactor `internal/authorization/permissions.go` so the generic role sets (`ServiceAdmin`, `ServiceDataAdmin`, `AccountAdmin`, `AccountMember`) contain only platform-level permissions. Introduce a registration pattern (mirroring the DI registration module) so a domain can inject its own permission constants into the appropriate roles at startup. Currently almost the entire content of those role sets is meal-planning-specific constants with no injection mechanism.
 
-- [ ] **Make the top-level gRPC server struct domain-agnostic**
+- [x] **Make the top-level gRPC server struct domain-agnostic**
   Refactor `internal/build/services/api/grpc/grpc_service.go` and `extras.go` so `MealPlanningServiceServer` is not embedded in the struct definition or hardcoded in `BuildRegistrationFuncs`/`AggregateMethodPermissions` signatures. The domain registration module should handle its own server registration. Currently the project will not compile without the meal planning domain present because it is embedded as a named field in the server struct.
 
 ### Medium Priority

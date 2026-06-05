@@ -3,14 +3,15 @@
 package registration
 
 import (
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/build/services/api/grpc/domainreg"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
 	domaindataprivacy "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
-	grocerylistpreparation "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
 	mealplanningmgr "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	mealplanningprivacy "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/privacy"
-	recipeanalysis "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	mealplanningsvcpb "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
@@ -46,6 +47,12 @@ func registerDataPrivacyCollector(i do.Injector) {
 
 // RegisterForGRPCAPI registers all mealplanning components needed by the gRPC API server.
 func RegisterForGRPCAPI(i do.Injector) {
+	// Register meal-planning permissions into the platform role sets.
+	authorization.RegisterServiceAdminPermissions(authorization.MealPlanningServiceAdminPermissions...)
+	authorization.RegisterServiceDataAdminPermissions(authorization.MealPlanningServiceDataAdminPermissions...)
+	authorization.RegisterAccountAdminPermissions(authorization.MealPlanningAccountAdminPermissions...)
+	authorization.RegisterAccountMemberPermissions(authorization.MealPlanningAccountMemberPermissions...)
+
 	registerRepository(i)
 	registerDataPrivacyCollector(i)
 	mealplanningmgr.RegisterManagers(i)
