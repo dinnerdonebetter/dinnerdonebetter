@@ -16,7 +16,6 @@ import (
 	identitygrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	internalopsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	issuereportsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/issue_reports"
-	mealplanninggrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	notificationsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	oauthgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	paymentsgrpc "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/grpc/generated/services/payments"
@@ -49,7 +48,6 @@ type Client interface {
 	dataprivacygrpc.DataPrivacyServiceClient
 	internalopsgrpc.InternalOperationsClient
 	issuereportsgrpc.IssueReportsServiceClient
-	mealplanninggrpc.MealPlanningServiceClient
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
 	paymentsgrpc.PaymentsServiceClient
@@ -58,8 +56,7 @@ type Client interface {
 	waitlistsgrpc.WaitlistsServiceClient
 	webhooksgrpc.WebhooksServiceClient
 
-	// CommentsService returns the standalone CommentsService client. Use this to call
-	// CommentsService RPCs directly instead of via MealPlanningService.
+	// CommentsService returns the standalone CommentsService client.
 	CommentsService() commentsgrpc.CommentsServiceClient
 }
 
@@ -71,7 +68,6 @@ type client struct {
 	dataprivacygrpc.DataPrivacyServiceClient
 	internalopsgrpc.InternalOperationsClient
 	issuereportsgrpc.IssueReportsServiceClient
-	mealplanninggrpc.MealPlanningServiceClient
 	notificationsgrpc.UserNotificationsServiceClient
 	oauthgrpc.OAuthServiceClient
 	paymentsgrpc.PaymentsServiceClient
@@ -83,14 +79,9 @@ type client struct {
 	commentsClient commentsgrpc.CommentsServiceClient
 }
 
-// BuildClient builds a new Client.
-func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, error) {
-	conn, err := grpc.NewClient(grpcServerAddress, opts...)
-	if err != nil {
-		return nil, fmt.Errorf("building grpc client: %w", err)
-	}
-
-	c := &client{
+// newClientFromConn creates a *client from an existing gRPC connection.
+func newClientFromConn(conn *grpc.ClientConn) *client {
+	return &client{
 		AnalyticsServiceClient:         analyticsgrpc.NewAnalyticsServiceClient(conn),
 		AuthServiceClient:              authgrpc.NewAuthServiceClient(conn),
 		IdentityServiceClient:          identitygrpc.NewIdentityServiceClient(conn),
@@ -98,7 +89,6 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 		DataPrivacyServiceClient:       dataprivacygrpc.NewDataPrivacyServiceClient(conn),
 		InternalOperationsClient:       internalopsgrpc.NewInternalOperationsClient(conn),
 		IssueReportsServiceClient:      issuereportsgrpc.NewIssueReportsServiceClient(conn),
-		MealPlanningServiceClient:      mealplanninggrpc.NewMealPlanningServiceClient(conn),
 		UserNotificationsServiceClient: notificationsgrpc.NewUserNotificationsServiceClient(conn),
 		OAuthServiceClient:             oauthgrpc.NewOAuthServiceClient(conn),
 		PaymentsServiceClient:          paymentsgrpc.NewPaymentsServiceClient(conn),
@@ -108,8 +98,16 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 		WebhooksServiceClient:          webhooksgrpc.NewWebhooksServiceClient(conn),
 		commentsClient:                 commentsgrpc.NewCommentsServiceClient(conn),
 	}
+}
 
-	return c, nil
+// BuildClient builds a new Client.
+func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, error) {
+	conn, err := grpc.NewClient(grpcServerAddress, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("building grpc client: %w", err)
+	}
+
+	return newClientFromConn(conn), nil
 }
 
 func (c *client) CommentsService() commentsgrpc.CommentsServiceClient {

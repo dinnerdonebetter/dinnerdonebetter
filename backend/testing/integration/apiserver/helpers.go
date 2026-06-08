@@ -41,8 +41,6 @@ var (
 		Username:        "admin_user",
 		HashedPassword:  adminUserPassword,
 	}
-
-	adminClient client.Client
 )
 
 func getAccountIDForTest(t *testing.T, c client.Client) string {
@@ -54,41 +52,6 @@ func getAccountIDForTest(t *testing.T, c client.Client) string {
 	require.NotNil(t, status)
 	require.NotEmpty(t, status.ActiveAccount)
 	return status.ActiveAccount
-}
-
-func buildUnauthenticatedGRPCClientForTest(t *testing.T) client.Client {
-	t.Helper()
-
-	c, err := client.BuildUnauthenticatedGRPCClient(fmt.Sprintf(":%d", apiServiceConfig.GRPCServer.Port))
-	require.NoError(t, err)
-
-	return c
-}
-
-func buildAuthedGRPCClient(ctx context.Context, token string) (client.Client, error) {
-	c, err := localdev.BuildInsecureOAuthedGRPCClient(
-		ctx,
-		createdClientID,
-		createdClientSecret,
-		httpTestServerAddress,
-		fmt.Sprintf(":%d", apiServiceConfig.GRPCServer.Port),
-		token,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return c, nil
-}
-
-// buildAuthedGRPCClientWithBearerToken builds a client that sends the JWT directly as Bearer.
-// Use this when the token has an account_id claim (e.g. from LoginForToken with DesiredAccountId)
-// so that GetAuthStatus and other calls use that account as the active one.
-func buildAuthedGRPCClientWithBearerToken(token string) (client.Client, error) {
-	return client.BuildUnauthenticatedGRPCClientWithBearerToken(
-		fmt.Sprintf(":%d", apiServiceConfig.GRPCServer.Port),
-		token,
-	)
 }
 
 func hashStringToNumber(s string) uint64 {
@@ -166,20 +129,6 @@ func verifyTOTPSecretForUser(ctx context.Context, c client.Client, userID, twoFa
 	return nil
 }
 
-func createClientForUser(ctx context.Context, user *identity.User) (client.Client, error) {
-	token, err := fetchLoginTokenForUser(ctx, user)
-	if err != nil {
-		return nil, fmt.Errorf("fetching token for user %s: %w", user.Username, err)
-	}
-
-	oauthedClient, err := buildAuthedGRPCClient(ctx, token)
-	if err != nil {
-		return nil, fmt.Errorf("building oauthed client: %w", err)
-	}
-
-	return oauthedClient, nil
-}
-
 func buildUserRegistrationInputForTest(t *testing.T) *identity.UserRegistrationInput {
 	t.Helper()
 
@@ -194,24 +143,6 @@ func buildUserRegistrationInputForTest(t *testing.T) *identity.UserRegistrationI
 		AcceptedPrivacyPolicy: true,
 		AcceptedTOS:           true,
 	}
-}
-
-func createUserAndClientForTest(t *testing.T) (*identity.User, client.Client) {
-	t.Helper()
-
-	return createUserAndClientForTestWithRegistrationInput(t, buildUserRegistrationInputForTest(t))
-}
-
-func createUserAndClientForTestWithRegistrationInput(t *testing.T, input *identity.UserRegistrationInput) (*identity.User, client.Client) {
-	t.Helper()
-
-	ctx := t.Context()
-
-	user := createServiceUserForTest(t, true, input)
-	oauthedClient, err := buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, user))
-	require.NoError(t, err)
-
-	return user, oauthedClient
 }
 
 func fetchLoginTokenForUserForTest(t *testing.T, user *identity.User) string {

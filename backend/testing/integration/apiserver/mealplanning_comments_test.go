@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createCommentForRecipeForTest(t *testing.T, recipeID string, clientToUse client.Client, content string) *commentsgrpc.Comment {
+func createCommentForRecipeForTest(t *testing.T, recipeID string, clientToUse client.MealPlanningClient, content string) *commentsgrpc.Comment {
 	t.Helper()
 	ctx := t.Context()
 

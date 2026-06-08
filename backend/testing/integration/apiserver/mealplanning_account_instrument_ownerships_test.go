@@ -16,7 +16,7 @@ import (
 
 // createAccountInstrumentOwnershipForInstrumentForTest creates account instrument ownership for the given instrument.
 // Use when the test needs ownership of a specific instrument (e.g. for SearchForRecipesWithInstrumentOwnership).
-func createAccountInstrumentOwnershipForInstrumentForTest(t *testing.T, clientToUse client.Client, validInstrument *mealplanning.ValidInstrument) *mealplanning.AccountInstrumentOwnership {
+func createAccountInstrumentOwnershipForInstrumentForTest(t *testing.T, clientToUse client.MealPlanningClient, validInstrument *mealplanning.ValidInstrument) *mealplanning.AccountInstrumentOwnership {
 	t.Helper()
 	ctx := t.Context()
 
@@ -31,7 +31,7 @@ func createAccountInstrumentOwnershipForInstrumentForTest(t *testing.T, clientTo
 	return converted
 }
 
-func createAccountInstrumentOwnershipForTest(t *testing.T, clientToUse client.Client) *mealplanning.AccountInstrumentOwnership {
+func createAccountInstrumentOwnershipForTest(t *testing.T, clientToUse client.MealPlanningClient) *mealplanning.AccountInstrumentOwnership {
 	t.Helper()
 	ctx := t.Context()
 

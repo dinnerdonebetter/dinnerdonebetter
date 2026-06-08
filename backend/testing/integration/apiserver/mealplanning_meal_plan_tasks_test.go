@@ -70,7 +70,7 @@ func TestMealPlanTasks_CompleteLifecycle(T *testing.T) {
 // createFinalizedMealPlanWithTasks creates a meal plan that has been finalized and has tasks created.
 // It sets up household members, votes, forces the deadline, runs finalization, and returns the
 // meal plan ID and the user client that owns the meal plan.
-func createFinalizedMealPlanWithTasks(t *testing.T) (string, client.Client) {
+func createFinalizedMealPlanWithTasks(t *testing.T) (string, client.MealPlanningClient) {
 	t.Helper()
 	ctx := t.Context()
 
@@ -82,7 +82,7 @@ func createFinalizedMealPlanWithTasks(t *testing.T) (string, client.Client) {
 	relevantAccountID := currentStatus.ActiveAccount
 
 	// Create 2 additional household members
-	createdClients := []client.Client{}
+	createdClients := []client.MealPlanningClient{}
 	for range 2 {
 		u, c := createUserAndClientForTest(t)
 

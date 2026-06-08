@@ -33,7 +33,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *mealplanning.MealPlan
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createMealPlanForTest(t *testing.T, clientToUse client.Client, mealPlan *mealplanning.MealPlan) *mealplanning.MealPlan {
+func createMealPlanForTest(t *testing.T, clientToUse client.MealPlanningClient, mealPlan *mealplanning.MealPlan) *mealplanning.MealPlan {
 	t.Helper()
 	ctx := t.Context()
 
@@ -184,7 +184,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 		require.NoError(t, statusErr)
 		relevantAccountID := currentStatus.ActiveAccount
 
-		createdClients := []client.Client{}
+		createdClients := []client.MealPlanningClient{}
 		for range 2 {
 			u, c := createUserAndClientForTest(t)
 
@@ -461,7 +461,7 @@ func TestMealPlans_FinalizeMealPlan(T *testing.T) {
 		relevantAccountID := currentStatus.ActiveAccount
 
 		// Create 2 additional household members (total 3 including admin)
-		createdClients := []client.Client{}
+		createdClients := []client.MealPlanningClient{}
 		for range 2 {
 			u, c := createUserAndClientForTest(t)
 
@@ -666,7 +666,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		require.NoError(t, statusErr)
 		relevantAccountID := currentStatus.ActiveAccount
 
-		createdClients := []client.Client{}
+		createdClients := []client.MealPlanningClient{}
 		for range 2 {
 			u, c := createUserAndClientForTest(t)
 

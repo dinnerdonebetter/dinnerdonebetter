@@ -35,7 +35,7 @@ See the [template philosophy](../../README.md) for background.
 - [ ] **Fix MCP server build to use the registration pattern**
   Refactor `internal/build/services/mcp/build.go` to go through `mealplanningregistration` like the gRPC API builder does, rather than directly importing the meal planning repo. Currently inconsistent with the registration pattern used everywhere else.
 
-- [ ] **Make the public client interface domain-agnostic**
+- [x] **Make the public client interface domain-agnostic**
   Remove `MealPlanningServiceClient` from the `Client` interface, struct, and `BuildClient` constructor in `pkg/client/client.go`. Consider a pattern where domain clients are accessed via a separate domain-specific client builder or type assertion so the base client compiles without the domain.
 
 - [ ] **Write a fork/copy guide**

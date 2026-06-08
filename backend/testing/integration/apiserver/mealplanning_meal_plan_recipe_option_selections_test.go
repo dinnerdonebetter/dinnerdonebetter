@@ -37,7 +37,7 @@ func TestMealPlans_WithRecipeOptionSelections(T *testing.T) {
 		relevantAccountID := currentStatus.ActiveAccount
 
 		// Create 3 additional household members (total of 4 users including admin)
-		householdClients := []client.Client{accountAdminUserClient}
+		householdClients := []client.MealPlanningClient{accountAdminUserClient}
 		for range 3 {
 			u, c := createUserAndClientForTest(t)
 
@@ -530,7 +530,7 @@ func createMealFromRecipe(t *testing.T, recipe *mealplanning.Recipe, nameSuffix 
 
 // selectionTestSetup holds all the IDs and objects needed for selection CRUD tests.
 type selectionTestSetup struct {
-	userClient       client.Client
+	userClient       client.MealPlanningClient
 	recipe           *mealplanning.Recipe
 	mealPlan         *mealplanning.MealPlan
 	validPreparation *mealplanning.ValidPreparation

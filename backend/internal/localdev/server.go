@@ -16,7 +16,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity"
 	identityconverters "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/identity/converters"
-	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/settings"
@@ -26,7 +25,6 @@ import (
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
-	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	notificationsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	settingsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/settings"
@@ -222,18 +220,6 @@ func WithAuthRepository(fn func(ctx context.Context, repo auth.Repository, logge
 	}
 }
 
-// WithMealPlanningRepository provides a meal planning repository for custom operations.
-// The provided function receives a fully configured mealplanning.Repository along with logger and tracer.
-// This repository handles all meal planning entities including recipes, ingredients, preparations, vessels, instruments, etc.
-func WithMealPlanningRepository(fn func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
-	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
-		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
-		identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, dbClient)
-		mealPlanningRepo := mealplanningrepo.ProvideMealPlanningRepository(logger, tracerProvider, auditLogRepo, identityRepo, dbClient)
-		return fn(ctx, mealPlanningRepo, logger, tracerProvider)
-	}
-}
-
 // WithSettingsRepository provides a settings repository for custom operations.
 // The provided function receives a fully configured settings.Repository along with logger and tracer.
 func WithSettingsRepository(fn func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
@@ -289,14 +275,16 @@ func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, initFuncs ...Da
 	return server, nil
 }
 
-func BuildInsecureOAuthedGRPCClient(
+// buildInsecureOAuthedDialOptions performs the OAuth2 authorization-code exchange and returns
+// the resulting gRPC dial options (insecure transport + per-RPC OAuth2 credentials).
+// Domain-agnostic: callers decide which client type to build with the returned options.
+func buildInsecureOAuthedDialOptions(
 	ctx context.Context,
 	createdClientID,
 	createdClientSecret,
 	httpTestServerAddress,
-	grpcServerAddress,
 	token string,
-) (client.Client, error) {
+) ([]grpc.DialOption, error) {
 	state, err := random.GenerateBase64EncodedString(ctx, 32)
 	if err != nil {
 		return nil, fmt.Errorf("generating state: %w", err)
@@ -319,12 +307,7 @@ func BuildInsecureOAuthedGRPCClient(
 		oauth2.SetAuthURLParam("code_challenge_method", "plain"),
 	)
 
-	req, err := http.NewRequestWithContext(
-		ctx,
-		http.MethodGet,
-		authCodeURL,
-		http.NoBody,
-	)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, authCodeURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get oauth2 code: %w", err)
 	}
@@ -347,14 +330,12 @@ func BuildInsecureOAuthedGRPCClient(
 		}
 	}()
 
-	const (
-		codeKey = "code"
-	)
-
 	rl, err := res.Location()
 	if err != nil {
 		return nil, fmt.Errorf("getting location value from response: %w", err)
 	}
+
+	const codeKey = "code"
 
 	code := rl.Query().Get(codeKey)
 	if code == "" {
@@ -366,11 +347,27 @@ func BuildInsecureOAuthedGRPCClient(
 		return nil, fmt.Errorf("exchanging OAuth2 code: %w", err)
 	}
 
-	opts := []grpc.DialOption{
+	return []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&insecureOAuth{
 			TokenSource: oauth2Config.TokenSource(ctx, oauth2Token),
 		}),
+	}, nil
+}
+
+// BuildInsecureOAuthedGRPCClient performs the OAuth2 authorization-code flow and returns a
+// base Client.
+func BuildInsecureOAuthedGRPCClient(
+	ctx context.Context,
+	createdClientID,
+	createdClientSecret,
+	httpTestServerAddress,
+	grpcServerAddress,
+	token string,
+) (client.Client, error) {
+	opts, err := buildInsecureOAuthedDialOptions(ctx, createdClientID, createdClientSecret, httpTestServerAddress, token)
+	if err != nil {
+		return nil, err
 	}
 
 	c, err := client.BuildClient(grpcServerAddress, opts...)

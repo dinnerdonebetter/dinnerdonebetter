@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createUserIngredientPreferenceForTest(t *testing.T, clientToUse client.Client) *mealplanning.UserIngredientPreference {
+func createUserIngredientPreferenceForTest(t *testing.T, clientToUse client.MealPlanningClient) *mealplanning.UserIngredientPreference {
 	t.Helper()
 	ctx := t.Context()
 

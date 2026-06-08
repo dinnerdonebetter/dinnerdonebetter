@@ -34,7 +34,7 @@ func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createMealForTest(t *testing.T, clientToUse client.Client, mealInput *types.Meal) *types.Meal {
+func createMealForTest(t *testing.T, clientToUse client.MealPlanningClient, mealInput *types.Meal) *types.Meal {
 	t.Helper()
 
 	ctx := t.Context()
@@ -266,7 +266,7 @@ func TestMeals_GetMermaidDiagramForMeal(T *testing.T) {
 	})
 }
 
-func createMealWithInputForTest(t *testing.T, clientToUse client.Client, name string, components []*types.MealComponentCreationRequestInput) (*types.Meal, *types.MealCreationRequestInput) {
+func createMealWithInputForTest(t *testing.T, clientToUse client.MealPlanningClient, name string, components []*types.MealComponentCreationRequestInput) (*types.Meal, *types.MealCreationRequestInput) {
 	t.Helper()
 
 	ctx := t.Context()

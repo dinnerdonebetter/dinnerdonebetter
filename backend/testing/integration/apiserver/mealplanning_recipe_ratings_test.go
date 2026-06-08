@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRecipeRatingForTest(t *testing.T, recipeID string, clientToUse client.Client) *types.RecipeRating {
+func createRecipeRatingForTest(t *testing.T, recipeID string, clientToUse client.MealPlanningClient) *types.RecipeRating {
 	t.Helper()
 	ctx := t.Context()
 
