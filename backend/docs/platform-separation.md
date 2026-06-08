@@ -24,7 +24,7 @@ See the [template philosophy](../../README.md) for background.
 - [ ] **Make the search data index scheduler pluggable**
   Refactor `internal/build/jobs/search_data_index_scheduler/build.go` and `indexers.go` so `ProvideIndexFunctions` accepts domain indexers via the registration pattern rather than hardcoding the merge of generic + meal-planning indexers.
 
-- [ ] **Make data change message handler searchers pluggable**
+- [x] **Make data change message handler searchers pluggable**
   Refactor `internal/build/functions/data_change_message_handler/searchers.go` so the 8 meal-planning-specific search index providers are registered by the domain registration module rather than hardcoded in an infrastructure file.
 
 - [ ] **Write a domain-swap script**
@@ -32,7 +32,7 @@ See the [template philosophy](../../README.md) for background.
 
 ### Low Priority
 
-- [ ] **Fix MCP server build to use the registration pattern**
+- [x] **Fix MCP server build to use the registration pattern**
   Refactor `internal/build/services/mcp/build.go` to go through `mealplanningregistration` like the gRPC API builder does, rather than directly importing the meal planning repo. Currently inconsistent with the registration pattern used everywhere else.
 
 - [x] **Make the public client interface domain-agnostic**

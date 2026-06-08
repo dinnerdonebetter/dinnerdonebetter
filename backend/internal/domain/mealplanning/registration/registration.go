@@ -90,6 +90,7 @@ func RegisterForGRPCAPI(i do.Injector) {
 func RegisterForDataChangeHandler(i do.Injector) {
 	registerRepository(i)
 	registerDataPrivacyCollector(i)
+	eatingindexing.RegisterMealPlanningSearchers(i)
 	eatingindexing.RegisterMealPlanningDataIndexer(i)
 }
 
