@@ -5,10 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/config"
+	mealplanningregistration "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/domain/mealplanning/registration"
 	auditrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	issuereportsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/issuereports"
-	mealplanningrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	waitlistsrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/waitlists"
 	webhooksrepo "github.com/dinnerdonebetter/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 
@@ -46,10 +46,12 @@ func BuildInjector(ctx context.Context, cfg *config.MCPServiceConfig) *do.RootSc
 	// repositories
 	auditrepo.RegisterAuditLogRepository(i)
 	identityrepo.RegisterIdentityRepository(i)
-	mealplanningrepo.RegisterMealPlanningRepository(i)
 	webhooksrepo.RegisterWebhooksRepository(i)
 	waitlistsrepo.RegisterWaitlistsRepository(i)
 	issuereportsrepo.RegisterIssueReportsRepository(i)
+
+	// Domain: mealplanning
+	mealplanningregistration.RegisterForMCPServer(i)
 
 	return i
 }

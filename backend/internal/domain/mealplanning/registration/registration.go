@@ -98,3 +98,8 @@ func RegisterForSearchIndexScheduler(i do.Injector) {
 	registerRepository(i)
 	eatingindexing.RegisterMealPlanningDataIndexer(i)
 }
+
+// RegisterForMCPServer registers mealplanning components needed by the MCP server.
+func RegisterForMCPServer(i do.Injector) {
+	registerRepository(i)
+}
